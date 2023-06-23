@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# hydromt_wflow documentation build configuration file, created by
-# sphinx-quickstart on Wed Jul 24 15:19:00 2019.
+# hydromt_delft3dfm documentation build configuration file, created by
+# sphinx-quickstart on Fri June 23 15:19:00 2023.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -20,7 +20,7 @@ import os
 import sys
 import shutil
 import hydromt
-import hydromt_wflow
+import hydromt_delft3dfm
 from distutils.dir_util import copy_tree
 
 here = os.path.dirname(__file__)
@@ -39,12 +39,12 @@ def remove_dir_content(path: str) -> None:
 
 # -- Project information -----------------------------------------------------
 
-project = "HydroMT Wflow"
+project = "HydroMT Delft3D FM"
 copyright = "Deltares"
-author = "Dirk Eilander"
+authors = "Xiaohan Li, Hélène Boisgointier, Rinske Hutten"
 
 # The short version which is displayed
-version = hydromt_wflow.__version__
+version = hydromt_delft3dfm.__version__
 
 # # -- Copy notebooks to include in docs -------
 if os.path.isdir("_examples"):
@@ -131,14 +131,14 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/Deltares/hydromt_wflow",  # required
+            "url": "https://github.com/Deltares/hydromt_delft3dfm",  # required
             "icon": "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg",
             "type": "url",
         },
         {
-            "name": "Wflow",
-            "url": "https://deltares.github.io/Wflow.jl/dev/",
-            "icon": "_static/wflow_logo.png",
+            "name": "Delft3D FM Suite",
+            "url": "for https://oss.deltares.nl/web/delft3dfm",
+            "icon": "_static/logo_delft3dfm.png",
             "type": "local",
         },
         {
@@ -155,7 +155,7 @@ html_theme_options = {
         },
     ],
     "logo": {
-        "text": "HydroMT Wflow",
+        "text": "HydroMT Delft3D FM",
     },
     "navbar_end": ["navbar-icon-links"],  # remove dark mode switch
 }
@@ -163,8 +163,8 @@ html_theme_options = {
 html_context = {
     "github_url": "https://github.com",  # or your GitHub Enterprise interprise
     "github_user": "Deltares",
-    "github_repo": "hydromt_wflow",
-    "github_version": "main",  # FIXME
+    "github_repo": "hydromt_delft3dfm",
+    "github_version": "main",
     "doc_path": "docs",
     "default_mode": "light",
 }
@@ -193,7 +193,7 @@ remove_from_toctrees = ["_generated/*"]
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "hydromt_wflow_doc"
+htmlhelp_basename = "hydromt_delft3dfm_doc"
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -219,9 +219,9 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        "hydromt_wflow.tex",
-        "HydroMT wflow plugin Documentation",
-        [author],
+        "hydromt_delft3dfm.tex",
+        "HydroMT Delft3D FM plugin Documentation",
+        [authors],
         "manual",
     ),
 ]
@@ -232,7 +232,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, "hydromt_wflow", "HydroMT wflow plugin Documentation", [author], 1)
+    (master_doc, "hydromt_delft3dfm", "HydroMT Delft3D FM plugin Documentation", [authors], 1)
 ]
 
 
@@ -244,11 +244,11 @@ man_pages = [
 texinfo_documents = [
     (
         master_doc,
-        "hydromt_wflow",
-        "HydroMT wflow plugin Documentation",
-        author,
-        "HydroMT wflow plugin",
-        "Build and analyze wflow models like a data-wizard.",
+        "hydromt_delft3dfm",
+        "HydroMT Delft3D FM plugin Documentation",
+        authors,
+        "HydroMT Delft3D FM plugin",
+        "Build and analyze Delft3D FM models like a data-wizard.",
         "Miscellaneous",
     ),
 ]
@@ -272,15 +272,16 @@ intersphinx_mapping = {
 # -- NBSPHINX --------------------------------------------------------------
 
 # This is processed by Jinja2 and inserted before each notebook
-nbsphinx_prolog = r"""
-{% set docname = env.doc2path(env.docname, base=None).split('\\')[-1].split('/')[-1] %}
-
-.. TIP::
-
-    .. raw:: html
-
-        <div>
-            For an interactive online version click here: 
-            <a href="https://mybinder.org/v2/gh/Deltares/hydromt_wflow/main?urlpath=lab/tree/examples/{{ docname|e }}" target="_blank" rel="noopener noreferrer"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg"></a>
-        </div>
-"""
+# FIXME: change the binder below to delft3dfm
+#nbsphinx_prolog = r"""
+#{% set docname = env.doc2path(env.docname, base=None).split('\\')[-1].split('/')[-1] %}
+#
+#.. TIP::
+#
+#    .. raw:: html
+#
+#        <div>
+#            For an interactive online version click here:
+#            <a href="https://mybinder.org/v2/gh/Deltares/hydromt_wflow/main?urlpath=lab/tree/examples/{{ docname|e }}" target="_blank" rel="noopener noreferrer"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg"></a>
+#        </div>
+#"""
