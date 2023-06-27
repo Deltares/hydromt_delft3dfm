@@ -314,3 +314,14 @@ statsInterval                     = -60.0  # Interval [s] between screen step ou
 timingsInterval                   = 0.0    # Timings output interval TimingsInterval.
 richardsonOnOutput                = 0      # Write Richardson number, (1: yes, 0: no).
 
+[Grw]
+GroundWater              = 0
+Infiltrationmodel        = 2    # Infiltration method (0: No infiltration, 1: Interception layer, 2: Constant infiltration capacity, 3: model unsaturated/saturated (with grw), 4: Horton).
+Hinterceptionlayer       =
+UnifInfiltrationCapacity = 0.0  # Uniform maximum infiltration capacity [m/s].
+Conductivity             = 0.0  # Non-dimensionless K conductivity   saturated (m/s), Q = K*A*i (m3/s)
+h_aquiferuni             = 20.0 # bgrw = bl - h_aquiferuni (m), if negative, bgrw = bgrwuni.
+bgrwuni                  =      # uniform level of impervious layer, only used if h_aquiferuni is negative.
+h_unsatini               = 0.2  # initial level groundwater is bedlevel - h_unsatini (m), if negative, sgrw = sgrwini.
+sgrwini                  =      # Initial groundwater level, if h_unsatini < 0.
+

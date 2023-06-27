@@ -491,7 +491,7 @@ def split_lines(line, num_new_lines):
     new_lines = []
     for n, p in enumerate(points):
         split_line = split(snap(line, p, 1e-8), p)
-        segments = [feature for feature in split_line]
+        segments = [feature for feature in split_line.geoms]
         if n == 0:
             line = segments[0]
         elif n == num_new_lines:
