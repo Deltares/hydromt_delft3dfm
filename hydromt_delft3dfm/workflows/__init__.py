@@ -3,6 +3,7 @@
 from .boundaries import *
 from .branches import *
 from .crosssections import *
+from .mesh import *
 from .dem import *
 from .graphs import *
 from .helper import *

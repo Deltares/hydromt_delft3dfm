@@ -24,7 +24,7 @@ from meshkernel import MeshKernel
 
 from hydrolib.core.dflowfm import FMModel, IniFieldModel, Mesh1d, Network
 from hydrolib.core.dimr import DIMR, FMComponent, Start
-from hydrolib.dhydamo.geometry import mesh
+# from hydrolib.dhydamo.geometry import mesh
 from meshkernel import GeometryList
 
 
@@ -334,7 +334,7 @@ class DFlowFMModel(MeshModel):
 
         # filter for allowed columns
         allowed_columns = set(allowed_columns).intersection(gdf_br.columns)
-        gdf_br = gpd.GeoDataFrame(gdf_br[allowed_columns], crs=gdf_br.crs)
+        gdf_br = gpd.GeoDataFrame(gdf_br[list(allowed_columns)], crs=gdf_br.crs)
 
         # Add spacing to defaults
         if spacing is not None:
@@ -1352,7 +1352,7 @@ class DFlowFMModel(MeshModel):
                 f'filtering for allowed columns:{",".join(allowed_columns)}'
             )
             gdf_manhole = gpd.GeoDataFrame(
-                gdf_manhole[allowed_columns], crs=gdf_manhole.crs
+                gdf_manhole[list(allowed_columns)], crs=gdf_manhole.crs
             )
             # replace generated manhole using user manholes
             self.logger.debug(f"overwriting generated manholes using user manholes.")
@@ -1637,7 +1637,7 @@ class DFlowFMModel(MeshModel):
         # filter for allowed columns
         allowed_columns = set(defaults.columns).intersection(gdf_st.columns)
         allowed_columns.update({"geometry"})
-        gdf_st = gpd.GeoDataFrame(gdf_st[allowed_columns], crs=gdf_st.crs)
+        gdf_st = gpd.GeoDataFrame(gdf_st[list(allowed_columns)], crs=gdf_st.crs)
         self.logger.info("Adding/Filling default attributes values")
         gdf_st = workflows.update_data_columns_attributes_based_on_filter(
             gdf_st, defaults, type_col, st_type
@@ -1757,7 +1757,7 @@ class DFlowFMModel(MeshModel):
         # filter for allowed columns
         allowed_columns = set(_allowed_columns).intersection(bridges.columns)
         allowed_columns.update({"geometry"})
-        bridges = gpd.GeoDataFrame(bridges[allowed_columns], crs=bridges.crs)
+        bridges = gpd.GeoDataFrame(bridges[list(allowed_columns)], crs=bridges.crs)
         self.set_geoms(bridges, "bridges")
 
 
@@ -1843,7 +1843,7 @@ class DFlowFMModel(MeshModel):
         # filter for allowed columns
         allowed_columns = set(_allowed_columns).intersection(culverts.columns)
         allowed_columns.update({"geometry"})
-        culverts = gpd.GeoDataFrame(culverts[allowed_columns], crs=culverts.crs)
+        culverts = gpd.GeoDataFrame(culverts[list(allowed_columns)], crs=culverts.crs)
         self.set_geoms(culverts, "culverts")
 
 
@@ -1939,114 +1939,114 @@ class DFlowFMModel(MeshModel):
         # update res
         self._res = res
 
-    def setup_link1d2d(
-            self,
-            link_direction: Optional[str] = "1d_to_2d",
-            link_type: Optional[str] = "embedded",
-            polygon_fn: Optional[str] = None,
-            branch_type: Optional[str] = None,
-            max_length: Union[float, None] = np.inf,
-            dist_factor: Union[float, None] = 2.0,
-            **kwargs,
-    ):
-        """Generate 1d2d links that link mesh1d and mesh2d according UGRID conventions.
+    # def setup_link1d2d(
+    #         self,
+    #         link_direction: Optional[str] = "1d_to_2d",
+    #         link_type: Optional[str] = "embedded",
+    #         polygon_fn: Optional[str] = None,
+    #         branch_type: Optional[str] = None,
+    #         max_length: Union[float, None] = np.inf,
+    #         dist_factor: Union[float, None] = 2.0,
+    #         **kwargs,
+    # ):
+    #     """Generate 1d2d links that link mesh1d and mesh2d according UGRID conventions.
 
-        1d2d links are added to allow water exchange between 1d and 2d for an 1d2d model.
-        They can only be added if both mesh1d and mesh2d are present. By default, 1d_to_2d links are generated for the entire mesh1d except boundary locations.
-        When ''polygon_fn'' is specified, only links within the polygon will be added.
-        When ''branch_type'' is specified, only 1d branches matching the specified type will be used for generating 1d2d link.
-        # TODO: This option should also allows more customised setup for pipes and tunnels: 1d2d links will also be generated at boundary locations.
+    #     1d2d links are added to allow water exchange between 1d and 2d for an 1d2d model.
+    #     They can only be added if both mesh1d and mesh2d are present. By default, 1d_to_2d links are generated for the entire mesh1d except boundary locations.
+    #     When ''polygon_fn'' is specified, only links within the polygon will be added.
+    #     When ''branch_type'' is specified, only 1d branches matching the specified type will be used for generating 1d2d link.
+    #     # TODO: This option should also allows more customised setup for pipes and tunnels: 1d2d links will also be generated at boundary locations.
 
-        Parameters
-        ----------
-        link_direction : str, optional
-            Direction of the links: ["1d_to_2d", "2d_to_1d"].
-            Default to 1d_to_2d.
-        link_type : str, optional
-            Type of the links to be generated: ["embedded", "lateral"]. Only used when ''link_direction'' = '2d_to_1d'.
-            Default to None.
-        polygon_fn: str Path, optional
-             Source name of polygon data in data_catalog.
-             Area within 1D2D links are generated.
-             Default to None.
-        branch_type: str, Optional
-             Type of branch to be used for 1d: ["river","pipe","channel", "tunnel"].
-             When ''branch_type'' = "pipe" or "tunnel" are specified, 1d2d links will also be generated at end nodes.
-             This is not yet implemented.
-             Default to None. Add 1d2d links for the all branches at non-end node locations.
-        max_length : Union[float, None], optional
-             Max allowed edge length for generated links.
-             Only used when ''link_direction'' = '2d_to_1d'  and ''link_type'' = 'lateral'.
-             Defaults to infinity.
-        dist_factor : Union[float, None], optional:
-             Factor to determine which links are kept.
-             Only used when ''link_direction'' = '2d_to_1d'  and ''link_type'' = 'lateral'.
-             Defaults to 2.0. Links with an intersection distance larger than 2 (dist_factor) times the center to edge distance of the cell, are removed.
+    #     Parameters
+    #     ----------
+    #     link_direction : str, optional
+    #         Direction of the links: ["1d_to_2d", "2d_to_1d"].
+    #         Default to 1d_to_2d.
+    #     link_type : str, optional
+    #         Type of the links to be generated: ["embedded", "lateral"]. Only used when ''link_direction'' = '2d_to_1d'.
+    #         Default to None.
+    #     polygon_fn: str Path, optional
+    #          Source name of polygon data in data_catalog.
+    #          Area within 1D2D links are generated.
+    #          Default to None.
+    #     branch_type: str, Optional
+    #          Type of branch to be used for 1d: ["river","pipe","channel", "tunnel"].
+    #          When ''branch_type'' = "pipe" or "tunnel" are specified, 1d2d links will also be generated at end nodes.
+    #          This is not yet implemented.
+    #          Default to None. Add 1d2d links for the all branches at non-end node locations.
+    #     max_length : Union[float, None], optional
+    #          Max allowed edge length for generated links.
+    #          Only used when ''link_direction'' = '2d_to_1d'  and ''link_type'' = 'lateral'.
+    #          Defaults to infinity.
+    #     dist_factor : Union[float, None], optional:
+    #          Factor to determine which links are kept.
+    #          Only used when ''link_direction'' = '2d_to_1d'  and ''link_type'' = 'lateral'.
+    #          Defaults to 2.0. Links with an intersection distance larger than 2 (dist_factor) times the center to edge distance of the cell, are removed.
 
-         See Also
-         ----------
-         mesh.links1d2d_add_links_1d_to_2d
-         mesh.links1d2d_add_links_2d_to_1d_embedded
-         mesh.links1d2d_add_links_2d_to_1d_lateral
-        """
+    #      See Also
+    #      ----------
+    #      mesh.links1d2d_add_links_1d_to_2d
+    #      mesh.links1d2d_add_links_2d_to_1d_embedded
+    #      mesh.links1d2d_add_links_2d_to_1d_lateral
+    #     """
 
-        # check existing network
-        if self.mesh1d.is_empty() or self.mesh2d.is_empty():
-            self.logger.error(
-                "cannot setup link1d2d: either mesh1d or mesh2d or both do not exist"
-            )
+    #     # check existing network
+    #     if self.mesh1d.is_empty() or self.mesh2d.is_empty():
+    #         self.logger.error(
+    #             "cannot setup link1d2d: either mesh1d or mesh2d or both do not exist"
+    #         )
 
-        if not self.link1d2d.is_empty():
-            self.logger.warning("adding to existing link1d2d: link1d2d already exists")
-            # FIXME: question - how to seperate if the user wants to update the entire 1d2d links object or simply wants to add another set of links?
-            # TODO: would be nice in hydrolib to allow clear of subset of 1d2d links for specific branches
+    #     if not self.link1d2d.is_empty():
+    #         self.logger.warning("adding to existing link1d2d: link1d2d already exists")
+    #         # FIXME: question - how to seperate if the user wants to update the entire 1d2d links object or simply wants to add another set of links?
+    #         # TODO: would be nice in hydrolib to allow clear of subset of 1d2d links for specific branches
 
-        # check input
-        if polygon_fn is not None:
-            within = self.data_catalog.get_geodataframe(polygon_fn).geometry
-            self.logger.info(f"adding 1d2d links only within polygon {polygon_fn}")
-        else:
-            within = None
+    #     # check input
+    #     if polygon_fn is not None:
+    #         within = self.data_catalog.get_geodataframe(polygon_fn).geometry
+    #         self.logger.info(f"adding 1d2d links only within polygon {polygon_fn}")
+    #     else:
+    #         within = None
 
-        if branch_type is not None:
-            branchids = self.branches[
-                self.branches.branchType == branch_type
-                ].branchId.to_list()  # use selective branches
-            self.logger.info(f"adding 1d2d links for {branch_type} branches.")
-        else:
-            branchids = None  # use all branches
-            self.logger.warning(f"adding 1d2d links for all branches at non boundary locations.")
+    #     if branch_type is not None:
+    #         branchids = self.branches[
+    #             self.branches.branchType == branch_type
+    #             ].branchId.to_list()  # use selective branches
+    #         self.logger.info(f"adding 1d2d links for {branch_type} branches.")
+    #     else:
+    #         branchids = None  # use all branches
+    #         self.logger.warning(f"adding 1d2d links for all branches at non boundary locations.")
 
-        # setup 1d2d links
-        if link_direction == "1d_to_2d":
-            self.logger.info("setting up 1d_to_2d links.")
-            # recompute max_length based on the diagonal distance of the max mesh area
-            max_length = np.sqrt(self._mesh.ugrid.to_geodataframe().area.max()) * np.sqrt(2)
-            mesh.links1d2d_add_links_1d_to_2d(
-                self.network, branchids=branchids, within=within, max_length=max_length)
+    #     # setup 1d2d links
+    #     if link_direction == "1d_to_2d":
+    #         self.logger.info("setting up 1d_to_2d links.")
+    #         # recompute max_length based on the diagonal distance of the max mesh area
+    #         max_length = np.sqrt(self._mesh.ugrid.to_geodataframe().area.max()) * np.sqrt(2)
+    #         mesh.links1d2d_add_links_1d_to_2d(
+    #             self.network, branchids=branchids, within=within, max_length=max_length)
 
-        elif link_direction == "2d_to_1d":
-            if link_type == "embedded":
-                self.logger.info("setting up 2d_to_1d embedded links.")
+    #     elif link_direction == "2d_to_1d":
+    #         if link_type == "embedded":
+    #             self.logger.info("setting up 2d_to_1d embedded links.")
 
-                mesh.links1d2d_add_links_2d_to_1d_embedded(
-                    self.network, branchids=branchids, within=within
-                )
-            elif link_type == "lateral":
+    #             mesh.links1d2d_add_links_2d_to_1d_embedded(
+    #                 self.network, branchids=branchids, within=within
+    #             )
+    #         elif link_type == "lateral":
 
-                self.logger.info("setting up 2d_to_1d lateral links.")
-                mesh.links1d2d_add_links_2d_to_1d_lateral(
-                    self.network,
-                    branchids=branchids,
-                    within=within,
-                    max_length=max_length,
-                    dist_factor=dist_factor,
-                )
-            else:
-                self.logger.error(f"link_type {link_type} is not recognised.")
+    #             self.logger.info("setting up 2d_to_1d lateral links.")
+    #             mesh.links1d2d_add_links_2d_to_1d_lateral(
+    #                 self.network,
+    #                 branchids=branchids,
+    #                 within=within,
+    #                 max_length=max_length,
+    #                 dist_factor=dist_factor,
+    #             )
+    #         else:
+    #             self.logger.error(f"link_type {link_type} is not recognised.")
 
-        else:
-            self.logger.error(f"link_direction {link_direction} is not recognised.")
+    #     else:
+    #         self.logger.error(f"link_direction {link_direction} is not recognised.")
 
     # TODO: Create link1d2d mesh in xu Ugrid
 
@@ -2172,112 +2172,112 @@ class DFlowFMModel(MeshModel):
         else:
             logger.warning("2d mesh unrefined.")
 
-    def setup_link1d2d(
-            self,
-            link_direction: Optional[str] = "1d_to_2d",
-            link_type: Optional[str] = "embedded",
-            polygon_fn: Optional[str] = None,
-            branch_type: Optional[str] = None,
-            max_length: Union[float, None] = np.inf,
-            dist_factor: Union[float, None] = 2.0,
-            **kwargs,
-    ):
-        """Generate 1d2d links that link mesh1d and mesh2d according UGRID conventions.
+    # def setup_link1d2d(
+    #         self,
+    #         link_direction: Optional[str] = "1d_to_2d",
+    #         link_type: Optional[str] = "embedded",
+    #         polygon_fn: Optional[str] = None,
+    #         branch_type: Optional[str] = None,
+    #         max_length: Union[float, None] = np.inf,
+    #         dist_factor: Union[float, None] = 2.0,
+    #         **kwargs,
+    # ):
+    #     """Generate 1d2d links that link mesh1d and mesh2d according UGRID conventions.
 
-        1d2d links are added to allow water exchange between 1d and 2d for a 1d2d model.
-        They can only be added if both mesh1d and mesh2d are present. By default, 1d_to_2d links are generated for the entire mesh1d except boundary locations.
-        When ''polygon_fn'' is specified, only links within the polygon will be added.
-        When ''branch_type'' is specified, only 1d branches matching the specified type will be used for generating 1d2d link.
-        # TODO: This option should also allows more customised setup for pipes and tunnels: 1d2d links will also be generated at boundary locations.
+    #     1d2d links are added to allow water exchange between 1d and 2d for a 1d2d model.
+    #     They can only be added if both mesh1d and mesh2d are present. By default, 1d_to_2d links are generated for the entire mesh1d except boundary locations.
+    #     When ''polygon_fn'' is specified, only links within the polygon will be added.
+    #     When ''branch_type'' is specified, only 1d branches matching the specified type will be used for generating 1d2d link.
+    #     # TODO: This option should also allows more customised setup for pipes and tunnels: 1d2d links will also be generated at boundary locations.
 
-        Parameters
-        ----------
-        link_direction : str, optional
-            Direction of the links: ["1d_to_2d", "2d_to_1d"].
-            Default to 1d_to_2d.
-        link_type : str, optional
-            Type of the links to be generated: ["embedded", "lateral"]. only used when ''link_direction'' = '2d_to_1d'.
-            Default to None.
-        polygon_fn: str Path, optional
-             Source name of raster data in data_catalog.
-             Default to None.
-        branch_type: str, Optional
-             Type of branch to be used for 1d: ["river","pipe","channel", "tunnel"].
-             When ''branch_type'' = "pipe" or "tunnel" are specified, 1d2d links will also be generated at boundary locations.
-             Default to None. Add 1d2d links for the all branches at non-boundary locations.
-        max_length : Union[float, None], optional
-             Max allowed edge length for generated links.
-             Only used when ''link_direction'' = '2d_to_1d'  and ''link_type'' = 'lateral'.
-             Defaults to infinity.
-        dist_factor : Union[float, None], optional:
-             Factor to determine which links are kept.
-             Only used when ''link_direction'' = '2d_to_1d'  and ''link_type'' = 'lateral'.
-             Defaults to 2.0. Links with an intersection distance larger than 2 times the center to edge distance of the cell, are removed.
+    #     Parameters
+    #     ----------
+    #     link_direction : str, optional
+    #         Direction of the links: ["1d_to_2d", "2d_to_1d"].
+    #         Default to 1d_to_2d.
+    #     link_type : str, optional
+    #         Type of the links to be generated: ["embedded", "lateral"]. only used when ''link_direction'' = '2d_to_1d'.
+    #         Default to None.
+    #     polygon_fn: str Path, optional
+    #          Source name of raster data in data_catalog.
+    #          Default to None.
+    #     branch_type: str, Optional
+    #          Type of branch to be used for 1d: ["river","pipe","channel", "tunnel"].
+    #          When ''branch_type'' = "pipe" or "tunnel" are specified, 1d2d links will also be generated at boundary locations.
+    #          Default to None. Add 1d2d links for the all branches at non-boundary locations.
+    #     max_length : Union[float, None], optional
+    #          Max allowed edge length for generated links.
+    #          Only used when ''link_direction'' = '2d_to_1d'  and ''link_type'' = 'lateral'.
+    #          Defaults to infinity.
+    #     dist_factor : Union[float, None], optional:
+    #          Factor to determine which links are kept.
+    #          Only used when ''link_direction'' = '2d_to_1d'  and ''link_type'' = 'lateral'.
+    #          Defaults to 2.0. Links with an intersection distance larger than 2 times the center to edge distance of the cell, are removed.
 
-         See Also
-         ----------
-         mesh.links1d2d_add_links_1d_to_2d
-         mesh.links1d2d_add_links_2d_to_1d_embedded
-         mesh.links1d2d_add_links_2d_to_1d_lateral
-        """
+    #      See Also
+    #      ----------
+    #      mesh.links1d2d_add_links_1d_to_2d
+    #      mesh.links1d2d_add_links_2d_to_1d_embedded
+    #      mesh.links1d2d_add_links_2d_to_1d_lateral
+    #     """
 
-        # check existing network
-        if self.mesh1d.is_empty() or self.mesh2d.is_empty():
-            self.logger.error(
-                "cannot setup link1d2d: either mesh1d or mesh2d or both do not exist"
-            )
+    #     # check existing network
+    #     if self.mesh1d.is_empty() or self.mesh2d.is_empty():
+    #         self.logger.error(
+    #             "cannot setup link1d2d: either mesh1d or mesh2d or both do not exist"
+    #         )
 
-        if not self.link1d2d.is_empty():
-            self.logger.warning("adding to existing link1d2d: link1d2d already exists")
-            # FIXME: question - how to seperate if the user wants to update the entire 1d2d links object or simply wants to add another set of links?
-            # TODO: would be nice in hydrolib to allow clear of subset of 1d2d links for specific branches
+    #     if not self.link1d2d.is_empty():
+    #         self.logger.warning("adding to existing link1d2d: link1d2d already exists")
+    #         # FIXME: question - how to seperate if the user wants to update the entire 1d2d links object or simply wants to add another set of links?
+    #         # TODO: would be nice in hydrolib to allow clear of subset of 1d2d links for specific branches
 
-        # check input
-        if polygon_fn is not None:
-            within = self.data_catalog.get_geodataframe(polygon_fn).gemetry
-            self.logger.info(f"adding 1d2d links only within polygon {polygon_fn}")
-        else:
-            within = None
+    #     # check input
+    #     if polygon_fn is not None:
+    #         within = self.data_catalog.get_geodataframe(polygon_fn).gemetry
+    #         self.logger.info(f"adding 1d2d links only within polygon {polygon_fn}")
+    #     else:
+    #         within = None
 
-        if branch_type is not None:
-            branchids = self.branches[
-                self.branches.branchType == branch_type
-                ].branchId.to_list()  # use selective branches
-            self.logger.info(f"adding 1d2d links for {branch_type} branches.")
-        else:
-            branchids = None  # use all branches
-            self.logger.warning(f"adding 1d2d links for all branches at non boundary locations.")
+    #     if branch_type is not None:
+    #         branchids = self.branches[
+    #             self.branches.branchType == branch_type
+    #             ].branchId.to_list()  # use selective branches
+    #         self.logger.info(f"adding 1d2d links for {branch_type} branches.")
+    #     else:
+    #         branchids = None  # use all branches
+    #         self.logger.warning(f"adding 1d2d links for all branches at non boundary locations.")
 
-        # setup 1d2d links
-        if link_direction == "1d_to_2d":
-            self.logger.info("setting up 1d_to_2d links.")
-            # recompute max_length based on the diagnal distance of the max mesh area
-            max_length = np.sqrt(self._mesh.ugrid.to_geodataframe().area.max()) * np.sqrt(2)
-            mesh.links1d2d_add_links_1d_to_2d(
-                self.network, branchids=branchids, within=within, max_length=max_length)
+    #     # setup 1d2d links
+    #     if link_direction == "1d_to_2d":
+    #         self.logger.info("setting up 1d_to_2d links.")
+    #         # recompute max_length based on the diagnal distance of the max mesh area
+    #         max_length = np.sqrt(self._mesh.ugrid.to_geodataframe().area.max()) * np.sqrt(2)
+    #         mesh.links1d2d_add_links_1d_to_2d(
+    #             self.network, branchids=branchids, within=within, max_length=max_length)
 
-        elif link_direction == "2d_to_1d":
-            if link_type == "embedded":
-                self.logger.info("setting up 2d_to_1d embedded links.")
+    #     elif link_direction == "2d_to_1d":
+    #         if link_type == "embedded":
+    #             self.logger.info("setting up 2d_to_1d embedded links.")
 
-                mesh.links1d2d_add_links_2d_to_1d_embedded(
-                    self.network, branchids=branchids, within=within
-                )
-            elif link_type == "lateral":
+    #             mesh.links1d2d_add_links_2d_to_1d_embedded(
+    #                 self.network, branchids=branchids, within=within
+    #             )
+    #         elif link_type == "lateral":
 
-                self.logger.info("setting up 2d_to_1d lateral links.")
-                mesh.links1d2d_add_links_2d_to_1d_lateral(
-                    self.network,
-                    branchids=branchids,
-                    within=within,
-                    max_length=max_length,
-                    dist_factor=dist_factor,
-                )
-            else:
-                self.logger.error(f"link_type {link_type} is not recognised.")
+    #             self.logger.info("setting up 2d_to_1d lateral links.")
+    #             mesh.links1d2d_add_links_2d_to_1d_lateral(
+    #                 self.network,
+    #                 branchids=branchids,
+    #                 within=within,
+    #                 max_length=max_length,
+    #                 dist_factor=dist_factor,
+    #             )
+    #         else:
+    #             self.logger.error(f"link_type {link_type} is not recognised.")
 
-        else:
-            self.logger.error(f"link_direction {link_direction} is not recognised.")
+    #     else:
+    #         self.logger.error(f"link_direction {link_direction} is not recognised.")
 
     # TODO: Create link1d2d mesh in xu Ugrid
 
@@ -3463,10 +3463,10 @@ class DFlowFMModel(MeshModel):
             )
 
             # update the branches
-            branches = branches_snapped.append(new_branches_snapped, ignore_index=True)
+            branches = pd.concat([branches_snapped,new_branches_snapped], ignore_index=True)
         else:
             # update the branches
-            branches = branches.append(new_branches, ignore_index=True)
+            branches = pd.concat([branches, new_branches], ignore_index=True)
 
         if (
             branches.crs is None
@@ -3562,7 +3562,7 @@ class DFlowFMModel(MeshModel):
         # add open system mesh1d
         opensystem = self.opensystem
         node_distance = self._openwater_computation_node_distance
-        mesh.mesh1d_add_branch(
+        workflows.mesh1d_add_branch(
             self._dfmmodel.geometry.netfile.network,
             opensystem.geometry.to_list(),
             node_distance=node_distance,
@@ -3573,7 +3573,7 @@ class DFlowFMModel(MeshModel):
         # add closed system mesh1d
         closedsystem = self.closedsystem
         node_distance = np.inf
-        mesh.mesh1d_add_branch(
+        workflows.mesh1d_add_branch(
             self._dfmmodel.geometry.netfile.network,
             closedsystem.geometry.to_list(),
             node_distance=node_distance,

@@ -122,8 +122,8 @@ def generate_manholes_on_branches(
 
     # drop pipe nodes that are outlets (located at channels)
     _nodes_channels = gpd.GeoDataFrame(
-        [(Point(l.coords[0]), li) for li, l in channels["geometry"].iteritems()]
-        + [(Point(l.coords[-1]), li) for li, l in channels["geometry"].iteritems()],
+        [(Point(l.coords[0]), li) for li, l in channels["geometry"].items()]
+        + [(Point(l.coords[-1]), li) for li, l in channels["geometry"].items()],
         columns=["geometry", channels.index.name],
         crs=branches.crs,
     )

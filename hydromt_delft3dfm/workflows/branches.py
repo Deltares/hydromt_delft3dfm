@@ -403,8 +403,8 @@ def generate_branchnodes(
 
     # generate node up and downstream
     nodes = pd.DataFrame(
-        [Point(l.coords[0]) for li, l in branches["geometry"].iteritems()]
-        + [Point(l.coords[-1]) for li, l in branches["geometry"].iteritems()],
+        [Point(l.coords[0]) for li, l in branches["geometry"].items()]
+        + [Point(l.coords[-1]) for li, l in branches["geometry"].items()],
         columns=["geometry"],
     )
 
