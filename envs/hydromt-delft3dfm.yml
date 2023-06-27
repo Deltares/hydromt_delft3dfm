@@ -1,5 +1,4 @@
 # note that these are the developer dependencies
-# use environment.yml in the root to install for normal use
 name: hydromt-delft3dfm
 
 channels:
@@ -16,12 +15,13 @@ dependencies:
   - pandas
   - pip
   - pydata-sphinx-theme  # docs
+  - pygeos
   - pyproj
   - pytest # tests
   - pytest-cov # tests
   - pytest-mock # tests
   - pytest-timeout # test
-  - python>=3.10
+  - python>=3.10,<3.11
   - responses # tests
   - shapely>=2.0.0
   - sphinx # docs

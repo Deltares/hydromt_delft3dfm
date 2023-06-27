@@ -176,7 +176,7 @@ def set_branch_crosssections(
         crosssections_dn["frictionType"] = branches["frictionType"].values
         crosssections_dn["frictionValue"] = branches["frictionValue"].values
         # Merge
-        crosssections = crosssections_up.append(crosssections_dn)
+        crosssections = pd.concat([crosssections_up, crosssections_dn])
 
         crosssections_ = pd.DataFrame()
 
