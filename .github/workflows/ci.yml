@@ -1,0 +1,49 @@
+name: ci
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -l {0}
+    strategy:
+      max-parallel: 5
+      matrix:
+        python-version: [3.10]
+        os: [ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: conda-incubator/setup-miniconda@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+        miniforge-variant: Mambaforge
+        channels: conda-forge
+        channel-priority: strict
+        environment-file: envs/hydromt_delft3dfm.yml
+        activate-environment: hydromt_delft3dfm
+
+    - name: Conda info
+      run: |
+       conda info
+       conda list
+     
+    - name: Install hydromt_delft3dfm
+      run: |
+        flit install --pth-file
+        hydromt --models
+        
+    - name: Test with pytest
+      run: python -m pytest
+
+    - name: Autoformat 
+      if: ${{ (matrix.os == 'ubuntu-latest') && (matrix.python-version == 3.10) }}
+      run: |
+        python -m black .
+        git config --global user.name '${{ github.actor }}'
+        git config --global user.email '${{ github.actor }}@users.noreply.github.com'
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+        git checkout $GITHUB_HEAD_REF
+        git commit -am "autoformat: isort & black" && git push || true
