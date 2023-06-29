@@ -25,7 +25,7 @@ dependencies = [
 	"scipy",
 	"pyflwdir >=0.5.4"
 ]
-requires-python = ">=3.10,<3.11" # support 3.11 after new meshkernelpy releases
+requires-python = ">=3.9,<3.11" # support 3.11 after new meshkernelpy releases
 readme = "README.rst"
 classifiers = [
 	# https://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -35,6 +35,9 @@ classifiers = [
 	"Topic :: Scientific/Engineering :: Hydrology",
 	"License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
 	"Programming Language :: Python :: 3",
+	"Programming Language :: Python :: 3.9",
+	"Programming Language :: Python :: 3.10",
+	"Programming Language :: Python :: 3.11",
 ]
 dynamic = ['version', 'description']
 
