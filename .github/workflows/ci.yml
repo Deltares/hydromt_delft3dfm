@@ -22,8 +22,8 @@ jobs:
         miniforge-variant: Mambaforge
         channels: conda-forge
         channel-priority: strict
-        environment-file: envs/hydromt_delft3dfm.yml
-        activate-environment: hydromt_delft3dfm
+        environment-file: envs/hydromt-delft3dfm.yml
+        activate-environment: hydromt-delft3dfm
 
     - name: Conda info
       run: |
