@@ -42,7 +42,7 @@ def set_branch_crosssections(
     ----------
     branches : gpd.GeoDataFrame
         The branches.
-        * Required variables: branchId, shape, shift, frictionId, frictionType, frictionValue
+        * Required variables: branchid, shape, shift, frictionid, frictiontype, frictionvalue
         * Optional variables:
             if shape = 'circle': 'diameter'
             if shape = 'rectangle': 'width', 'height', 'closed'
@@ -65,7 +65,7 @@ def set_branch_crosssections(
     # Get the crs at the midpoint of branches if midpoint
     if midpoint:
         crosssections = branches.copy()
-        crosssections["branch_id"] = crosssections["branchId"]
+        crosssections["branch_id"] = crosssections["branchid"]
         crosssections["branch_offset"] = [
             l / 2 for l in crosssections["geometry"].length
         ]
@@ -95,9 +95,9 @@ def set_branch_crosssections(
                     required_columns=[
                         "branch_id",
                         "branch_offset",
-                        "frictionId",
-                        "frictionType",
-                        "frictionValue",
+                        "frictionid",
+                        "frictiontype",
+                        "frictionvalue",
                         "width",
                         "height",
                         "closed",
@@ -123,9 +123,9 @@ def set_branch_crosssections(
                     required_columns=[
                         "branch_id",
                         "branch_offset",
-                        "frictionId",
-                        "frictionType",
-                        "frictionValue",
+                        "frictionid",
+                        "frictiontype",
+                        "frictionvalue",
                         "width",
                         "height",
                         "t_width",
@@ -147,16 +147,16 @@ def set_branch_crosssections(
         )
 
         crosssections_up["crsloc_id"] = [
-            f"crs_up_{bid}" for bid in branches["branchId"]
+            f"crs_up_{bid}" for bid in branches["branchid"]
         ]
-        crosssections_up["branch_id"] = branches["branchId"].values
+        crosssections_up["branch_id"] = branches["branchid"].values
         crosssections_up["branch_offset"] = [0.0 for l in branches.geometry]
         crosssections_up["shift"] = branches["invlev_up"].values
         crosssections_up["shape"] = branches["shape"].values
         crosssections_up["diameter"] = branches["diameter"].values
-        crosssections_up["frictionId"] = branches["frictionId"].values
-        crosssections_up["frictionType"] = branches["frictionType"].values
-        crosssections_up["frictionValue"] = branches["frictionValue"].values
+        crosssections_up["frictionid"] = branches["frictionid"].values
+        crosssections_up["frictiontype"] = branches["frictiontype"].values
+        crosssections_up["frictionvalue"] = branches["frictionvalue"].values
         # Downstream
         ids = [f"{i}_dn" for i in branches.index]
         crosssections_dn = gpd.GeoDataFrame(
@@ -165,16 +165,16 @@ def set_branch_crosssections(
             crs=branches.crs,
         )
         crosssections_dn["crsloc_id"] = [
-            f"crs_dn_{bid}" for bid in branches["branchId"]
+            f"crs_dn_{bid}" for bid in branches["branchid"]
         ]
-        crosssections_dn["branch_id"] = branches["branchId"].values
+        crosssections_dn["branch_id"] = branches["branchid"].values
         crosssections_dn["branch_offset"] = [l for l in branches["geometry"].length]
         crosssections_dn["shift"] = branches["invlev_dn"].values
         crosssections_dn["shape"] = branches["shape"].values
         crosssections_dn["diameter"] = branches["diameter"].values
-        crosssections_dn["frictionId"] = branches["frictionId"].values
-        crosssections_dn["frictionType"] = branches["frictionType"].values
-        crosssections_dn["frictionValue"] = branches["frictionValue"].values
+        crosssections_dn["frictionid"] = branches["frictionid"].values
+        crosssections_dn["frictiontype"] = branches["frictiontype"].values
+        crosssections_dn["frictionvalue"] = branches["frictionvalue"].values
         # Merge
         crosssections = pd.concat([crosssections_up, crosssections_dn])
 
@@ -194,9 +194,9 @@ def set_branch_crosssections(
                     required_columns=[
                         "branch_id",
                         "branch_offset",
-                        "frictionId",
-                        "frictionType",
-                        "frictionValue",
+                        "frictionid",
+                        "frictiontype",
+                        "frictionvalue",
                         "diameter",
                         "shift",
                     ],
@@ -237,7 +237,7 @@ def set_xyz_crosssections(
         The xyz cross sections.
     """
     # check if require columns exist
-    required_columns = ["geometry", "crsId", "order", "z"]
+    required_columns = ["geometry", "crsid", "order", "z"]
     if set(required_columns).issubset(crosssections.columns):
         crosssections = gpd.GeoDataFrame(crosssections[required_columns])
     else:
@@ -268,7 +268,7 @@ def set_xyz_crosssections(
     _old_ids = crosssections.index.to_list()
     crosssections.dropna(axis=0, inplace=True, subset=["branch_offset"])
     crosssections = crosssections.merge(
-        branches[["frictionId", "frictionType", "frictionValue"]],
+        branches[["frictionid", "frictiontype", "frictionvalue"]],
         left_on="branch_id",
         right_index=True,
     )
@@ -282,44 +282,44 @@ def set_xyz_crosssections(
     crsdefs = pd.DataFrame(
         {
             "crsdef_id": crosssections.index.to_list(),
-            "crsdef_branchId": crosssections.branch_id.to_list(),
+            "crsdef_branchid": crosssections.branch_id.to_list(),
             "crsdef_type": "xyz",
-            "crsdef_xyzCount": crosssections.x.map(len).to_list(),
-            "crsdef_xCoordinates": [
+            "crsdef_xyzcount": crosssections.x.map(len).to_list(),
+            "crsdef_xcoordinates": [
                 " ".join([f"{i}" for i in l])
                 for l in crosssections.x.to_list()
             ],
-            "crsdef_yCoordinates": [
+            "crsdef_ycoordinates": [
                 " ".join([f"{i}" for i in l])
                 for l in crosssections.y.to_list()
             ],
-            "crsdef_zCoordinates": [
+            "crsdef_zcoordinates": [
                 " ".join([f"{i}" for i in l])
                 for l in crosssections.z.to_list()
             ],
             # --- start of yz ---
             # "crsdef_type": "yz",
             # "crsdef_yzCount": crosssections.l.map(len).to_list(),
-            # 'crsdef_yCoordinates': [
+            # 'crsdef_ycoordinates': [
             #      " ".join(["{:.1f}".format(i) for i in l])
             #      for l in crosssections.l.to_list()
             #  ],
-            # "crsdef_zCoordinates": [
+            # "crsdef_zcoordinates": [
             #     " ".join(["{:.1f}".format(i) for i in l])
             #     for l in crosssections.z.to_list()
             # ],
             # --- end of yz ---
             # lower case key means temp keys (not written to file)
-            "crsdef_frictionIds": branches.loc[
-                crosssections.branch_id.to_list(), "frictionId"
+            "crsdef_frictionids": branches.loc[
+                crosssections.branch_id.to_list(), "frictionid"
             ],
-            "frictionType": branches.loc[
-                crosssections.branch_id.to_list(), "frictionType"
+            "frictiontype": branches.loc[
+                crosssections.branch_id.to_list(), "frictiontype"
             ],
-            "frictionValue": branches.loc[
-                crosssections.branch_id.to_list(), "frictionValue"
+            "frictionvalue": branches.loc[
+                crosssections.branch_id.to_list(), "frictionvalue"
             ],
-            "crsdef_frictionPositions": [
+            "crsdef_frictionpositions": [
                 f"0 {l}" for l in crosssections.geometry.length.to_list()
             ],
         }
@@ -336,10 +336,10 @@ def set_xyz_crosssections(
                     crosssections.branch_offset.to_list(),
                 )
             ],
-            "crsloc_branchId": crosssections.branch_id.to_list(),
+            "crsloc_branchid": crosssections.branch_id.to_list(),
             "crsloc_chainage": crosssections.branch_offset.to_list(),
             "crsloc_shift": 0.0,
-            "crsloc_definitionId": crosssections.index.to_list(),
+            "crsloc_definitionid": crosssections.index.to_list(),
             "geometry": crosssections.geometry.centroid.to_list(),  # line to centroid. because crossection geom has point feature.
         }
     )
@@ -347,7 +347,7 @@ def set_xyz_crosssections(
         crslocs,
         crsdefs,
         how="left",
-        left_on=["crsloc_definitionId"],
+        left_on=["crsloc_definitionid"],
         right_on=["crsdef_id"],
     )
 
@@ -415,7 +415,7 @@ def set_point_crosssections(
     
     # get branch friction
     crosssections = crosssections.merge(
-        branches[["frictionId", "frictionType", "frictionValue"]],
+        branches[["frictionid", "frictiontype", "frictionvalue"]],
         left_on="branch_id",
         right_index=True,
     )
@@ -446,9 +446,9 @@ def set_point_crosssections(
                 required_columns=[
                     "branch_id",
                     "branch_offset",
-                    "frictionId",
-                    "frictionType",
-                    "frictionValue",
+                    "frictionid",
+                    "frictiontype",
+                    "frictionvalue",
                     "diameter",
                     "shift",
                 ],
@@ -472,9 +472,9 @@ def set_point_crosssections(
                 required_columns=[
                     "branch_id",
                     "branch_offset",
-                    "frictionId",
-                    "frictionType",
-                    "frictionValue",
+                    "frictionid",
+                    "frictiontype",
+                    "frictionvalue",
                     "width",
                     "height",
                     "closed",
@@ -500,9 +500,9 @@ def set_point_crosssections(
                 required_columns=[
                     "branch_id",
                     "branch_offset",
-                    "frictionId",
-                    "frictionType",
-                    "frictionValue",
+                    "frictionid",
+                    "frictiontype",
+                    "frictionvalue",
                     "width",
                     "height",
                     "t_width",
@@ -519,9 +519,9 @@ def set_point_crosssections(
                 required_columns=[
                     "branch_id",
                     "branch_offset",
-                    "frictionId",
-                    "frictionType",
-                    "frictionValue",
+                    "frictionid",
+                    "frictiontype",
+                    "frictionvalue",
                     "numlevels",
                     "levels",
                     "flowwidths",
@@ -537,9 +537,9 @@ def set_point_crosssections(
                 required_columns=[
                     "branch_id",
                     "branch_offset",
-                    "frictionId",
-                    "frictionType",
-                    "frictionValue",
+                    "frictionid",
+                    "frictiontype",
+                    "frictionvalue",
                     "yzcount",
                     "ycoordinates",
                     "zcoordinates",
@@ -573,21 +573,21 @@ def _set_circle_crs(crosssections: gpd.GeoDataFrame):
             {
                 "crsdef_id": c.definitionid,
                 "crsdef_type": "circle",
-                "crsdef_branchId": c.branch_id,
+                "crsdef_branchid": c.branch_id,
                 "crsdef_diameter": c.diameter,
                 "crsdef_closed": "yes",
-                "crsdef_frictionId": c.frictionId,
-                "frictionType": c.frictionType,
-                "frictionValue": c.frictionValue,
+                "crsdef_frictionid": c.frictionid,
+                "frictiontype": c.frictiontype,
+                "frictionvalue": c.frictionvalue,
             }
         )
         crslocs.append(
             {
                 "crsloc_id": f"{c.branch_id}_{c.branch_offset:.2f}",
-                "crsloc_branchId": c.branch_id,
+                "crsloc_branchid": c.branch_id,
                 "crsloc_chainage": c.branch_offset,
                 "crsloc_shift": c.shift,
-                "crsloc_definitionId": c.definitionid,
+                "crsloc_definitionid": c.definitionid,
                 "geometry": c.geometry,
             }
         )
@@ -596,8 +596,8 @@ def _set_circle_crs(crosssections: gpd.GeoDataFrame):
         pd.DataFrame.from_records(crslocs),
         pd.DataFrame.from_records(crsdefs).drop_duplicates(),
         how="left",
-        left_on=["crsloc_branchId", "crsloc_definitionId"],
-        right_on=["crsdef_branchId", "crsdef_id"],
+        left_on=["crsloc_branchid", "crsloc_definitionid"],
+        right_on=["crsdef_branchid", "crsdef_id"],
     )
     
     crosssections_.index = crosssections.index
@@ -615,22 +615,22 @@ def _set_rectangle_crs(crosssections: gpd.GeoDataFrame):
             {
                 "crsdef_id": c.definitionid,
                 "crsdef_type": "rectangle",
-                "crsdef_branchId": c.branch_id,
+                "crsdef_branchid": c.branch_id,
                 "crsdef_height": c.height,
                 "crsdef_width": c.width,
                 "crsdef_closed": c.closed,
-                "crsdef_frictionId": c.frictionId,
-                "frictionType": c.frictionType,
-                "frictionValue": c.frictionValue,
+                "crsdef_frictionid": c.frictionid,
+                "frictiontype": c.frictiontype,
+                "frictionvalue": c.frictionvalue,
             }
         )
         crslocs.append(
             {
                 "crsloc_id": f"{c.branch_id}_{c.branch_offset:.2f}",
-                "crsloc_branchId": c.branch_id,
+                "crsloc_branchid": c.branch_id,
                 "crsloc_chainage": c.branch_offset,
                 "crsloc_shift": c.shift,
-                "crsloc_definitionId": c.definitionid,
+                "crsloc_definitionid": c.definitionid,
                 "geometry": c.geometry,
             }
         )
@@ -639,8 +639,8 @@ def _set_rectangle_crs(crosssections: gpd.GeoDataFrame):
         pd.DataFrame.from_records(crslocs),
         pd.DataFrame.from_records(crsdefs).drop_duplicates(),
         how="left",
-        left_on=["crsloc_branchId", "crsloc_definitionId"],
-        right_on=["crsdef_branchId", "crsdef_id"],
+        left_on=["crsloc_branchid", "crsloc_definitionid"],
+        right_on=["crsdef_branchid", "crsdef_id"],
     )
     
     crosssections_.index = crosssections.index
@@ -667,24 +667,24 @@ def _set_trapezoid_crs(crosssections: gpd.GeoDataFrame):
             {
                 "crsdef_id": c.definitionid,
                 "crsdef_type": "zw",
-                "crsdef_branchId": c.branch_id,
+                "crsdef_branchid": c.branch_id,
                 "crsdef_numlevels": 2,
                 "crsdef_levels": levels,
                 "crsdef_flowwidths": flowwidths,
                 "crsdef_totalwidths": flowwidths,
-                "crsdef_frictionId": c.frictionId,
-                "frictionType": c.frictionType,
-                "frictionValue": c.frictionValue,
+                "crsdef_frictionid": c.frictionid,
+                "frictiontype": c.frictiontype,
+                "frictionvalue": c.frictionvalue,
                 "crsdef_closed": c.closed,
             }
         )
         crslocs.append(
             {
                 "crsloc_id": f"{c.branch_id}_{c.branch_offset:.2f}",
-                "crsloc_branchId": c.branch_id,
+                "crsloc_branchid": c.branch_id,
                 "crsloc_chainage": c.branch_offset,
                 "crsloc_shift": c.shift,
-                "crsloc_definitionId": c.definitionid,
+                "crsloc_definitionid": c.definitionid,
                 "geometry": c.geometry,
             }
         )
@@ -694,8 +694,8 @@ def _set_trapezoid_crs(crosssections: gpd.GeoDataFrame):
         pd.DataFrame.from_records(crslocs),
         pd.DataFrame.from_records(crsdefs).drop_duplicates(),
         how="left",
-        left_on=["crsloc_branchId", "crsloc_definitionId"],
-        right_on=["crsdef_branchId", "crsdef_id"],
+        left_on=["crsloc_branchid", "crsloc_definitionid"],
+        right_on=["crsdef_branchid", "crsdef_id"],
     )
     return crosssections_
 
@@ -710,23 +710,23 @@ def _set_zw_crs(crosssections: gpd.GeoDataFrame):
             {
                 "crsdef_id": c.Index,
                 "crsdef_type": "zw",
-                "crsdef_branchId": c.branch_id,
+                "crsdef_branchid": c.branch_id,
                 "crsdef_numlevels": c.numlevels,
                 "crsdef_levels": c.levels,
                 "crsdef_flowwidths": c.flowwidths,
                 "crsdef_totalwidths": c.totalwidths,
-                "crsdef_frictionId": c.frictionId,
-                "frictionType": c.frictionType,
-                "frictionValue": c.frictionValue,
+                "crsdef_frictionid": c.frictionid,
+                "frictiontype": c.frictiontype,
+                "frictionvalue": c.frictionvalue,
             }
         )
         crslocs.append(
             {
                 "crsloc_id": f"{c.branch_id}_{c.branch_offset:.2f}",
-                "crsloc_branchId": c.branch_id,
+                "crsloc_branchid": c.branch_id,
                 "crsloc_chainage": c.branch_offset,
                 "crsloc_shift": c.shift,
-                "crsloc_definitionId": c.Index,
+                "crsloc_definitionid": c.Index,
                 "geometry": c.geometry,
             }
         )
@@ -735,8 +735,8 @@ def _set_zw_crs(crosssections: gpd.GeoDataFrame):
         pd.DataFrame.from_records(crslocs),
         pd.DataFrame.from_records(crsdefs).drop_duplicates(),
         how="left",
-        left_on=["crsloc_branchId", "crsloc_definitionId"],
-        right_on=["crsdef_branchId", "crsdef_id"],
+        left_on=["crsloc_branchid", "crsloc_definitionid"],
+        right_on=["crsdef_branchid", "crsdef_id"],
     )
     
     crosssections_.index = crosssections.index
@@ -754,22 +754,22 @@ def _set_yz_crs(crosssections: gpd.GeoDataFrame):
             {
                 "crsdef_id": c.Index,
                 "crsdef_type": "yz",
-                "crsdef_branchId": c.branch_id,
+                "crsdef_branchid": c.branch_id,
                 "crsdef_yzcount": c.yzcount,
                 "crsdef_ycoordinates": c.ycoordinates,
                 "crsdef_zcoordinates": c.zcoordinates,
-                "crsdef_frictionId": c.frictionId,
-                "frictionType": c.frictionType,
-                "frictionValue": c.frictionValue,
+                "crsdef_frictionid": c.frictionid,
+                "frictiontype": c.frictiontype,
+                "frictionvalue": c.frictionvalue,
             }
         )
         crslocs.append(
             {
                 "crsloc_id": f"{c.branch_id}_{c.branch_offset:.2f}",
-                "crsloc_branchId": c.branch_id,
+                "crsloc_branchid": c.branch_id,
                 "crsloc_chainage": c.branch_offset,
                 "crsloc_shift": c.shift,
-                "crsloc_definitionId": c.Index,
+                "crsloc_definitionid": c.Index,
                 "geometry": c.geometry,
             }
         )
@@ -778,8 +778,8 @@ def _set_yz_crs(crosssections: gpd.GeoDataFrame):
         pd.DataFrame.from_records(crslocs),
         pd.DataFrame.from_records(crsdefs).drop_duplicates(),
         how="left",
-        left_on=["crsloc_branchId", "crsloc_definitionId"],
-        right_on=["crsdef_branchId", "crsdef_id"],
+        left_on=["crsloc_branchid", "crsloc_definitionid"],
+        right_on=["crsdef_branchid", "crsdef_id"],
     )
     
     crosssections_.index = crosssections.index
@@ -853,12 +853,12 @@ def _set_yz_crs(crosssections: gpd.GeoDataFrame):
 #                 # Z vertical distance increasing from bottom to top in m.
 #                 # In other words, use a coordinate system to define the Y-Z profile.
 #                 l, t = l.split("lt yz\nTBLE")
-#                 yCoordinates, zCoordinates = np.array(
+#                 ycoordinates, zcoordinates = np.array(
 #                     [shlex.split(r, posix=False) for r in t.split("<")][:-1]
 #                 ).T
-#                 table_dict["yzcount"] = len(yCoordinates)
-#                 table_dict["ycoordinates"] = " ".join(str(n) for n in yCoordinates)
-#                 table_dict["zcoordinates"] = " ".join(str(n) for n in zCoordinates)
+#                 table_dict["yzcount"] = len(ycoordinates)
+#                 table_dict["ycoordinates"] = " ".join(str(n) for n in ycoordinates)
+#                 table_dict["zcoordinates"] = " ".join(str(n) for n in zcoordinates)
 #                 # storage width on surface in m
 #                 if "lt sw 0" in l:
 #                     l.replace("lt lw 0", "lt_lw_0")  # remove space

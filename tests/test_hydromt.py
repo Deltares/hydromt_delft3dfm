@@ -8,10 +8,10 @@ import pytest
 from hydromt.cli.cli_utils import parse_config
 from hydromt.log import setuplog
 
-from hydrolib.hydromt_delft3dfm import DFlowFMModel
+from hydromt_delft3dfm import DFlowFMModel
 
 TESTDATADIR = join(dirname(abspath(__file__)), "data")
-EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples", "hydromt")
+EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 
 _models = {
     "piave": {

@@ -25,7 +25,7 @@ __all__ = [
     "validate_boundaries",
     "compute_boundary_values",
     "compute_2dboundary_values",
-    "compute_meteo_forcings"
+    "compute_meteo_forcings",
 ]
 
 
@@ -124,7 +124,7 @@ def select_boundary_type(
         A data frame containing the boundary location per branch type and boundary type.
     """
 
-    boundaries_branch_type = boundaries.loc[boundaries["branchType"] == branch_type, :]
+    boundaries_branch_type = boundaries.loc[boundaries["branchtype"] == branch_type, :]
     if branch_type == "river":
         if boundary_type == "waterlevel":
             if boundary_locs != "both":
@@ -178,7 +178,7 @@ def validate_boundaries(boundaries: gpd.GeoDataFrame, branch_type: str = "river"
             # TODO extended
             if bnd["where"] == "downstream" and bnd["boundary_type"] == "discharge":
                 logger.warning(
-                    f'Boundary type violates modeller suggestions: using downstream discharge boundary at branch {bnd["branchId"]}'
+                    f'Boundary type violates modeller suggestions: using downstream discharge boundary at branch {bnd["branchid"]}'
                 )
 
     if branch_type == "pipe":  # TODO add other close system branch_type
@@ -186,7 +186,7 @@ def validate_boundaries(boundaries: gpd.GeoDataFrame, branch_type: str = "river"
             # TODO extended
             if bnd["where"] == "upstream":
                 logger.warning(
-                    f'Boundary type violates modeller suggestions: using upstream boundary at branch {bnd["branchId"]}'
+                    f'Boundary type violates modeller suggestions: using upstream boundary at branch {bnd["branchid"]}'
                 )
 
 
@@ -207,7 +207,7 @@ def compute_boundary_values(
     boundaries : gpd.GeoDataFrame
         Point locations of the 1D boundaries to which to add data.
 
-        * Required variables: ['nodeId']
+        * Required variables: ['nodeid']
     da_bnd : xr.DataArray, optional
         xr.DataArray containing the boundary timeseries values. If None, uses a constant values for all boundaries.
 
@@ -235,7 +235,7 @@ def compute_boundary_values(
     if da_bnd is not None:
         logger.info(f"Preparing 1D {boundary_type} boundaries from timeseries.")
 
-        # snap user boundary to potential boundary locations to get nodeId
+        # snap user boundary to potential boundary locations to get nodeid
         gdf_bnd = da_bnd.vector.to_gdf()
         gdf_bnd = hydromt.gis_utils.nearest_merge(
             gdf_bnd,
@@ -252,7 +252,7 @@ def compute_boundary_values(
         if freq == "D":
             logger.warning(
                 "time unit days is not supported by the current GUI version: 2022.04"
-            ) # converting to hours as temporary solution # FIXME: day is converted to hours temporarily
+            )  # converting to hours as temporary solution # FIXME: day is converted to hours temporarily
             multiplier = 24
         if len(
             pd.date_range(da_bnd.time[0].values, da_bnd.time[-1].values, freq=dt)
@@ -262,7 +262,9 @@ def compute_boundary_values(
         freq_step = getattr(dt.components, freq_name)
         bd_times = np.array([(i * freq_step) for i in range(len(da_bnd.time))])
         if multiplier == 24:
-            bd_times = np.array([(i * freq_step * multiplier) for i in range(len(da_bnd.time))])
+            bd_times = np.array(
+                [(i * freq_step * multiplier) for i in range(len(da_bnd.time))]
+            )
             freq_name = "hours"
 
         # instantiate xr.DataArray for bnd data
@@ -270,7 +272,7 @@ def compute_boundary_values(
             data=da_bnd.data,
             dims=["index", "time"],
             coords=dict(
-                index=gdf_bnd["nodeId"],
+                index=gdf_bnd["nodeid"],
                 time=bd_times,
                 x=("index", gdf_bnd.geometry.x.values),
                 y=("index", gdf_bnd.geometry.y.values),
@@ -288,7 +290,7 @@ def compute_boundary_values(
         da_out = da_out.fillna(boundary_value)
 
         # drop na in time
-        da_out.dropna(dim='time')
+        da_out.dropna(dim="time")
 
         # add name
         da_out.name = f"{boundary_type}bnd"
@@ -301,7 +303,7 @@ def compute_boundary_values(
             data=np.full((len(boundaries.index)), boundary_value, dtype=np.float32),
             dims=["index"],
             coords=dict(
-                index=boundaries["nodeId"],
+                index=boundaries["nodeid"],
                 x=("index", boundaries.geometry.x.values),
                 y=("index", boundaries.geometry.y.values),
             ),
@@ -393,7 +395,6 @@ def compute_2dboundary_values(
         # for each boundary apply boundary data
         da_out_dict = {}
         for _index, _bnd in boundaries.iterrows():
-
             bnd_id = _bnd["boundary_id"]
 
             # convert line to points
@@ -499,10 +500,10 @@ def df_to_bc(
 
 def compute_meteo_forcings(
     df_meteo: pd.DataFrame = None,
-    fill_value : float = 0.0,
-    is_rate : bool = True,
+    fill_value: float = 0.0,
+    is_rate: bool = True,
     meteo_location: tuple = None,
-    logger = logger,
+    logger=logger,
 ) -> xr.DataArray:
     """
     Compute meteo forcings
@@ -533,21 +534,19 @@ def compute_meteo_forcings(
         * Required variables if netcdf: [``precip``]
     """
     # Set units and type
-    if is_rate: 
+    if is_rate:
         meteo_type = "rainfall_rate"
         meteo_unit = "mm/day"
-    else: 
+    else:
         meteo_type = "rainfall"
         meteo_unit = "mm"
 
     # Timeseries boundary values
 
-    logger.info(
-        f"Preparing global (spatially uniform) timeseries."
-    )
+    logger.info(f"Preparing global (spatially uniform) timeseries.")
     # get data freq in seconds
     _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
-    dt = (df_meteo.time[1] - df_meteo.time[0])
+    dt = df_meteo.time[1] - df_meteo.time[0]
     freq = dt.resolution_string
     multiplier = 1
     if freq == "D":
@@ -556,24 +555,24 @@ def compute_meteo_forcings(
         )  # converting to hours as temporary solution # FIXME: day is converted to hours temporarily
         multiplier = 24
     if len(
-            pd.date_range(df_meteo.iloc[0,:].time, df_meteo.iloc[-1,:].time, freq=dt)
+        pd.date_range(df_meteo.iloc[0, :].time, df_meteo.iloc[-1, :].time, freq=dt)
     ) != len(df_meteo.time):
         logger.error("does not support non-equidistant time-series.")
     freq_name = _TIMESTR[freq]
     freq_step = getattr(dt.components, freq_name)
     meteo_times = np.array([(i * freq_step) for i in range(len(df_meteo.time))])
     if multiplier == 24:
-        meteo_times = np.array([(i * freq_step * multiplier) for i in range(len(df_meteo.time))])
+        meteo_times = np.array(
+            [(i * freq_step * multiplier) for i in range(len(df_meteo.time))]
+        )
         freq_name = "hours"
     # instantiate xr.DataArray for global time series
     da_out = xr.DataArray(
-        data=np.full(
-            (1, len(df_meteo)), df_meteo["precip"].values, dtype=np.float32
-        ),
+        data=np.full((1, len(df_meteo)), df_meteo["precip"].values, dtype=np.float32),
         dims=["index", "time"],
         coords=dict(
             index=["global"],
-            time= meteo_times,
+            time=meteo_times,
             x=("index", meteo_location[0].values),
             y=("index", meteo_location[1].values),
         ),
@@ -589,6 +588,6 @@ def compute_meteo_forcings(
     # fill in na using default
     da_out = da_out.fillna(fill_value)
     da_out.name = f"{meteo_type}"
-    da_out.dropna(dim='time')
+    da_out.dropna(dim="time")
 
     return da_out
