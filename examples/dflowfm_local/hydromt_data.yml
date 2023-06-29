@@ -13,8 +13,8 @@
   filesystem: local
   crs: 32647
   rename:
-    BRANCH_ID: branchId
-    BR_TYPE: branchType
+    BRANCH_ID: branchid
+    BR_TYPE: branchtype
 1D_rivers_pointcrosssections:
   data_type: GeoDataFrame
   path: C:\Developments\hydromt_delft3dfm\tests\data\local_data\1D_rivers_pointcrosssections.geojson
@@ -22,7 +22,7 @@
   filesystem: local
   crs: 32647
   rename:
-    id: crsId
+    id: crsid
     TYPE: shape
     WIDTH: width
     HEIGHT: height
@@ -35,7 +35,7 @@
   crs: 32647
   rename:
     ORDER: order
-    CRS_ID: crsId
+    CRS_ID: crsid
     Z: z
 1d_bridges:
   data_type: GeoDataFrame
@@ -78,7 +78,7 @@
   filesystem: local
   crs: 32647
   rename:
-    ID: manholeId
+    ID: manholeid
     AREA: area
     STR_AREA: streetArea
 2D_boundary:
