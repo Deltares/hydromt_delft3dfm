@@ -21,7 +21,7 @@ dependencies:
   - pytest-cov # tests
   - pytest-mock # tests
   - pytest-timeout # test
-  - python>=3.10,<3.11
+  - python=3.10
   - responses # tests
   - shapely>=2.0.0
   - sphinx # docs
