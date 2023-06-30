@@ -23,7 +23,8 @@ dependencies = [
 	"pyproj",
 	"shapely >=0.2.0",
 	"scipy",
-	"pyflwdir >=0.5.4"
+	"pyflwdir >=0.5.4",
+	"networkx",
 ]
 requires-python = ">=3.9,<3.11" # support 3.11 after new meshkernelpy releases
 readme = "README.rst"
