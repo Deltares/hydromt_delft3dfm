@@ -174,7 +174,6 @@ def read_crosssections(
     """
 
     def _list2Str(lst):
-
         if type(lst) is list:
             # apply conversion to list columns
             if isinstance(lst[0], float):
@@ -196,13 +195,15 @@ def read_crosssections(
     # convert list to str ()
     df_crsdef = df_crsdef.applymap(lambda x: _list2Str(x))
     # convert float to int
-    int_columns = set(df_crsdef.columns).intersection(("xyzcount", "sectioncount"))
-    df_crsdef.loc[:, int_columns] = (
-        df_crsdef.loc[:, int_columns]
+    int_columns = list(
+        set(df_crsdef.columns).intersection(("xyzcount", "sectioncount"))
+    )
+    df_crsdef[int_columns] = (
+        df_crsdef[int_columns]
         .fillna(-999)
         .astype(int)
         .astype(object)
-        .where(df_crsdef.loc[:, int_columns].notnull())
+        .where(df_crsdef[int_columns].notnull())
     )
     # Rename to prepare for crossection geom
     _gdf_crsdef = df_crsdef.rename(
@@ -242,7 +243,9 @@ def read_crosssections(
     )
 
     # Combine def attributes with locs for crossection geom
-    gdf_crs = _gdf_crsloc.merge(_gdf_crsdef, on="crs_id", how='outer') # use outer because some crsdefs are from structures, therefore no crslocs associated
+    gdf_crs = _gdf_crsloc.merge(
+        _gdf_crsdef, on="crs_id", how="outer"
+    )  # use outer because some crsdefs are from structures, therefore no crslocs associated
     gdf_crs = gpd.GeoDataFrame(gdf_crs, crs=gdf.crs)
 
     return gdf_crs
@@ -288,7 +291,9 @@ def write_crosssections(gdf: gpd.GeoDataFrame, savedir: str) -> Tuple[str, str]:
     gpd_crsloc = gpd_crsloc.rename(
         columns={c: c.removeprefix("crsloc_") for c in gpd_crsloc.columns}
     )
-    gpd_crsloc = gpd_crsloc.dropna(subset="id") # structures have crsdefs but no crslocs
+    gpd_crsloc = gpd_crsloc.dropna(
+        subset="id"
+    )  # structures have crsdefs but no crslocs
 
     # add x,y column --> hydrolib value_error: branchid and chainage or x and y should be provided
     # x,y would make reading back much faster than re-computing from branchid and chainage....
@@ -371,15 +376,11 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
     friction_fns: List of str
         list of relative filepaths to friction files.
     """
-    friction_keys = [
-        "crsdef_frictionid",
-        "frictionvalue",
-        "frictiontype"
-    ] if "crsdef_frictionid" in gdf else [
-        "frictionvalue",
-        "frictiontype",
-        "crsdef_frictionids"
-    ]
+    friction_keys = (
+        ["crsdef_frictionid", "frictionvalue", "frictiontype"]
+        if "crsdef_frictionid" in gdf
+        else ["frictionvalue", "frictiontype", "crsdef_frictionids"]
+    )
     frictions = gdf[friction_keys]
     if "crsdef_frictionid" in frictions:
         # Remove nan
@@ -409,7 +410,6 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
         friction_fns.append(fric_filename)
 
     return friction_fns
-
 
 
 def read_structures(branches: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
@@ -443,14 +443,11 @@ def read_structures(branches: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDat
         ["comments"],
         axis=1,
     )
-    
+
     # Add geometry
     gdf_structures = helper.get_gdf_from_branches(branches, df_structures)
 
     return gdf_structures
-
-
-
 
 
 def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
@@ -478,8 +475,6 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     )
 
     return structures_fn
-
-
 
 
 def read_manholes(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
@@ -582,7 +577,7 @@ def read_1dboundary(
     # Initialise dataarray attributes
     bc = {"quantity": quantity}
     nodeids = df.nodeid.values
-    nodeids = nodeids[nodeids!="nan"]
+    nodeids = nodeids[nodeids != "nan"]
     # Assume one forcing file (hydromt writer) and read
     forcing = df.forcingfile.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
@@ -635,7 +630,9 @@ def read_1dboundary(
     # index_name = node_geoms.index.name
     # node_geoms = pd.DataFrame([row for n, row in node_geoms.iterrows() if row["geometry"] is not None])
     # node_geoms.index.name = index_name
-    xs, ys = np.vectorize(lambda p: (np.nan, np.nan) if p is None else (p.xy[0][0], p.xy[1][0]))(node_geoms["geometry"])
+    xs, ys = np.vectorize(
+        lambda p: (np.nan, np.nan) if p is None else (p.xy[0][0], p.xy[1][0])
+    )(node_geoms["geometry"])
     coords["x"] = ("index", xs)
     coords["y"] = ("index", ys)
 
@@ -708,7 +705,11 @@ def write_1dboundary(forcing: Dict, savedir: str = None, ext_fn: str = None) -> 
     # write forcing file
     for bc in bcdict:
         try:
-            ForcingModel(forcing=[bc for bc in bcdict if bc["name"] == '481349.951956_8041528.002583' ])
+            ForcingModel(
+                forcing=[
+                    bc for bc in bcdict if bc["name"] == "481349.951956_8041528.002583"
+                ]
+            )
         except:
             raise ValueError(f"Error in boundary forcing {bc['name']}")
 
@@ -895,9 +896,8 @@ def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[di
             )
     return forcing_fn, ext_fn
 
-def read_meteo(
-    df: pd.DataFrame, quantity: str
-) -> xr.DataArray:
+
+def read_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
     """
     Read for a specific quantity the corresponding external and forcing files and parse to xarray
 
@@ -975,8 +975,9 @@ def read_meteo(
         attrs=bc,
     )
     da_out.name = f"{quantity}"
-    
+
     return da_out
+
 
 def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     """
@@ -997,12 +998,9 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     """
 
     # filter for 2d meteo
-    forcing = {
-        key: forcing[key] for key in forcing.keys() if key.startswith("meteo")
-    }
+    forcing = {key: forcing[key] for key in forcing.keys() if key.startswith("meteo")}
     if len(forcing) == 0:
         return
-
 
     extdicts = list()
     bcdict = list()
@@ -1013,7 +1011,9 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
             # Meteo
             ext = dict()
             ext["quantity"] = bc["quantity"]
-            ext["forcingFileType"] = "bcAscii" #FIXME: hardcoded, decide whether use bcAscii or netcdf in setup
+            ext[
+                "forcingFileType"
+            ] = "bcAscii"  # FIXME: hardcoded, decide whether use bcAscii or netcdf in setup
             # Forcing
             bc["name"] = i
             if bc["function"] == "constant":
@@ -1037,7 +1037,7 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
             bcdict.append(bc)
 
     forcing_model = ForcingModel(forcing=bcdict)
-    forcing_fn = f'meteo_{forcing_model._filename()}.bc'
+    forcing_fn = f"meteo_{forcing_model._filename()}.bc"
     forcing_model.save(join(savedir, forcing_fn), recurse=True)
 
     # add forcingfile to ext
@@ -1047,11 +1047,10 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     # write external forcing file
     if ext_fn is not None:
         # write to external forcing file
-        write_ext(
-            extdicts, savedir, ext_fn=ext_fn, block_name="meteo", mode="append"
-        )
+        write_ext(extdicts, savedir, ext_fn=ext_fn, block_name="meteo", mode="append")
 
     return forcing_fn, ext_fn
+
 
 def write_ext(
     extdicts: Dict,
@@ -1109,5 +1108,3 @@ def write_ext(
     os.chdir(cwd)
 
     return ext_fn
-
-
