@@ -1,38 +1,22 @@
 grip_roads:
   data_type: GeoDataFrame
-  path: p:\wflow_global\hydromt\infrastructure\grip\GRIP4_world.fgb
+  path: C:\Users\li_xn\.hydromt_data\artifact_data\v0.0.8\grip_roads.gpkg
   driver: vector
   filesystem: local
   crs: 4326
-  rename:
-    GP_RTP: road_type
-    GP_RCY: country_code
   meta:
     category: road
-    source_url: https://www.globio.info/download-grip-dataset
-    paper_ref: Meijer et al, 2018
     paper_doi: 10.1088/1748-9326/aabd42
+    paper_ref: Meijer et al, 2018
     source_license: CC0-1.0
+    source_url: https://www.globio.info/download-grip-dataset
     source_version: v4
 merit_hydro:
   data_type: RasterDataset
-  path: p:\wflow_global\hydromt\topography\merit_hydro\*.vrt
+  path: C:\Users\li_xn\.hydromt_data\artifact_data\v0.0.8\merit_hydro\{variable}.tif
   driver: raster
   filesystem: local
-  kwargs:
-    chunks:
-      x: 6000
-      y: 6000
   crs: 4326
-  rename:
-    bas: basins
-    dir: flwdir
-    elv: elevtn
-    slp: lndslp
-    sto: strord
-    upa: uparea
-    upg: upgrid
-    wth: rivwth
   meta:
     category: topography
     paper_doi: 10.1029/2019WR024873
@@ -47,12 +31,9 @@ pipes_defaults:
   filesystem: local
 rivers_lin2019_v1:
   data_type: GeoDataFrame
-  path: p:\wflow_global\hydromt\hydrography\rivers_lin2019\rivers_ge30m.fgb
+  path: C:\Users\li_xn\.hydromt_data\artifact_data\v0.0.8\rivers_lin2019_v1.gpkg
   driver: vector
   filesystem: local
-  rename:
-    width_m: rivwth
-    Q2: qbankfull
   meta:
     category: hydrography
     paper_doi: 10.5281/zenodo.3552776
@@ -62,16 +43,12 @@ rivers_lin2019_v1:
     source_version: 1
 vito:
   data_type: RasterDataset
-  path: p:\wflow_global\hydromt\landuse\vito\ProbaV_LC100_epoch2015_global_v2.0.2_discrete-classification_EPSG-4326.tif
+  path: C:\Users\li_xn\.hydromt_data\artifact_data\v0.0.8\vito.tif
   driver: raster
   filesystem: local
-  kwargs:
-    chunks:
-      x: 3600
-      y: 3600
   crs: 4326
   meta:
-    category: landuse
+    category: landuse & landcover
     paper_doi: 10.5281/zenodo.3939038
     paper_ref: Buchhorn et al (2020)
     source_url: https://land.copernicus.eu/global/products/lc
