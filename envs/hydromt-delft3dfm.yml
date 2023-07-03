@@ -28,6 +28,7 @@ dependencies:
   - sphinx-design # docs
   - xarray 
   - xugrid
+  - networkx
   - pip:
     - hydrolib-core
     - meshkernel
