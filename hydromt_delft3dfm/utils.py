@@ -791,8 +791,8 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
         )
 
     # Get coordinates
-    coords["x"] = ("index", boundary_points.x)
-    coords["y"] = ("index", boundary_points.y)
+    coords["x"] = ("index", boundary_points.x.values)
+    coords["y"] = ("index", boundary_points.y.values)
 
     # Prep DataArray and add to forcing
     da_out = xr.DataArray(
@@ -831,10 +831,11 @@ def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[di
     if len(forcing) == 0:
         return
 
-    extdicts = list()
-    bcdicts = list()
     # Loop over forcing dict
     for name, da in forcing.items():
+        bcdicts = list()
+        extdicts = list()
+
         # Boundary ext (one instance per da for 2d boundary)
         ext = dict()
         ext["quantity"] = da.attrs["quantity"]
@@ -894,6 +895,7 @@ def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[di
             write_ext(
                 extdicts, savedir, ext_fn=ext_fn, block_name="boundary", mode="append"
             )
+
     return forcing_fn, ext_fn
 
 

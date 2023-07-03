@@ -20,7 +20,7 @@ _models = {
         "model": DFlowFMModel,
         "data": "artifact_data",
         "region": {"bbox": [12.4331, 46.4661, 12.5212, 46.5369]},
-        "snap_offset": 40,
+        "snap_offset": 25,
     },
     "local": {
         "example": "dflowfm_local",

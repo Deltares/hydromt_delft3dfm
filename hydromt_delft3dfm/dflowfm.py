@@ -898,16 +898,6 @@ class DFlowFMModel(MeshModel):
                 rivers["branchid"].isin(_overwrite_branchorder), "branchorder"
             ] = -1
 
-            # for crossection type yz or xyz, always use branchorder = -1, because no interpolation can be applied.
-            # TODO: change to lower case is needed
-            _overwrite_branchorder = self.crosssections[
-                self.crosssections["crsdef_type"].str.contains("yz")
-            ]["crsdef_branchid"].tolist()
-            if len(_overwrite_branchorder) > 0:
-                rivers.loc[
-                    rivers["branchid"].isin(_overwrite_branchorder), "branchorder"
-                ] = -1
-
         # setup geoms
         self.logger.debug(f"Adding rivers and river_nodes vector to geoms.")
         self.set_geoms(rivers, "rivers")
@@ -2670,7 +2660,7 @@ class DFlowFMModel(MeshModel):
         Prepares spatially uniform rainfall forcings to 2d grid using timeseries from ``meteo_timeseries_fn``.
         For now only support global  (spatially uniform) timeseries.
 
-        If ``meteo_timeseries_fn`` has missing values, the constant ``fill_value`` will be used, e.g. 0.
+        If ``meteo_timeseries_fn`` has missing values or shorter than model simulation time, the constant ``fill_value`` will be used, e.g. 0.
 
         The dataset/timeseries are clipped to the model time based on the model config
         tstart and tstop entries.
@@ -2686,13 +2676,14 @@ class DFlowFMModel(MeshModel):
             * Required variables : ['precip']
 
             see :py:meth:`hydromt.get_dataframe`, for details.
-            NOTE: Require equidistant time series
+            NOTE:
+            Require equidistant time series
+            If ``is_rate`` = True, unit is expected to be in mm/day and else mm.
         fill_value : float, optional
             Constant value to use to fill in missing data. By default 0.
         is_rate : bool, optional
             Specify if the type of meteo data is direct "rainfall" (False) or "rainfall_rate" (True).
             By default True for "rainfall_rate". Note that Delft3DFM 1D2D Suite 2022.04 supports only "rainfall_rate".
-            If rate, unit is expected to be in mm/day and else mm.
 
         """
         self.logger.info(f"Preparing rainfall meteo forcing from uniform timeseries.")
@@ -2714,10 +2705,13 @@ class DFlowFMModel(MeshModel):
                 "Update the source kwargs in the DataCatalog based on the driver function arguments (eg pandas.read_csv for csv driver)."
             )
         if (df_meteo.index[-1] - df_meteo.index[0]) < (tstop - tstart):
-            raise ValueError(
+            self.logger.warning(
                 "Time in meteo_timeseries_fn were shorter than model simulation time. "
-                "Update the source kwargs in the DataCatalog based on the driver function arguments (eg pandas.read_csv for csv driver)."
+                "Will fill in using fill_value."
             )
+            dt = df_meteo.index[1] - df_meteo.index[0]
+            t_index = pd.DatetimeIndex(pd.date_range(start=tstart, end=tstop, freq=dt))
+            df_meteo = df_meteo.reindex(t_index).fillna(fill_value)
         df_meteo["time"] = df_meteo.index
 
         # 3. Derive DataArray with meteo values
