@@ -10,5 +10,6 @@
     :alt: Coverage
     :target: https://codecov.io/gh/Deltares/hydromt_delft3dfm
 
-# hydromt_delft3dfm
+hydromt_delft3dfm
+----------------
 Delft3D FM plugin for HydroMT
