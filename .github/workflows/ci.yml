@@ -49,5 +49,5 @@ jobs:
         
     - name: Test with pytest
       run: |
-        pytest -m "not acceptance" --cov=hydromt_delft3dfm --cov-report xml --cov-report term
+        python -m pytest --cov=hydromt_delft3dfm --cov-report xml --cov-report term
     - uses: codecov/codecov-action@v1
