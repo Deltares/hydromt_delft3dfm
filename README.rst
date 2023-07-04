@@ -1,6 +1,10 @@
 .. _readme:
 
-|ci| |codecov| |black| 
+================================================
+hydromt_delft3dfm: Delft3D FM plugin for HydroMT
+================================================
+
+|ci| |codecov| |black| |license|
 
 .. |ci| image:: https://github.com/Deltares/hydromt_delft3dfm/actions/workflows/ci.yml/badge.svg?branch=main
     :alt: ci
@@ -13,6 +17,6 @@
 .. |black|  image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
 
-hydromt_delft3dfm
-----------------
-Delft3D FM plugin for HydroMT
+.. |license| image:: https://img.shields.io/github/license/Deltares/hydromt?style=flat
+    :alt: License
+    :target: https://github.com/Deltares/hydromt/blob/main/LICENSE
