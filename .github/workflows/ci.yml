@@ -49,5 +49,21 @@ jobs:
         
     - name: Test with pytest
       run: |
+<<<<<<< HEAD
         pytest -m "not acceptance" --cov=hydromt_delft3dfm --cov-report xml --cov-report term
     - uses: codecov/codecov-action@v1
+=======
+        python -m pytest --cov=hydromt_delft3dfm --cov-report xml --cov-report term
+    
+    - uses: codecov/codecov-action@v3
+
+    - name: Autoformat 
+      if: ${{ (matrix.os == 'windows-latest') && (matrix.python-version == 3.9) }}
+      run: |
+        python -m black .
+        git config --global user.name '${{ github.actor }}'
+        git config --global user.email '${{ github.actor }}@users.noreply.github.com'
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+        git checkout $GITHUB_HEAD_REF
+        git commit -am "autoformat: black" && git push || true
+>>>>>>> fab05b3daccf2207d5c6bca7cdeba5a605e1048e
