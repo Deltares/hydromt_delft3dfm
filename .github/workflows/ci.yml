@@ -41,8 +41,9 @@ jobs:
         
     - name: Test with pytest
       run: |
-        pytest -m "not acceptance" --cov=hydromt_delft3dfm --cov-report xml --cov-report term
-    - uses: codecov/codecov-action@v1
+        python -m pytest --cov=hydromt_delft3dfm --cov-report xml --cov-report term
+    
+    - uses: codecov/codecov-action@v3
 
     - name: Autoformat 
       if: ${{ (matrix.os == 'windows-latest') && (matrix.python-version == 3.9) }}
