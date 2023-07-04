@@ -1,3 +1,7 @@
+.. _readme:
+
+|ci| |codecov|
+
 .. |ci| image:: https://github.com/Deltares/hydromt_delft3dfm/actions/workflows/ci.yml/badge.svg?branch=main
     :alt: ci
     :target: https://github.com/Deltares/hydromt_delft3dfm/actions/workflows/ci.yml
