@@ -22,6 +22,6 @@ hydromt_delft3dfm: Delft3D FM plugin for HydroMT
     :alt: License
     :target: https://github.com/Deltares/hydromt_delft3dfm/blob/main/LICENSE
 
-.. |sonarcloud| image: https://sonarcloud.io/api/project_badges/measure?project=Deltares_hydromt_delft3dfm&metric=alert_status
+.. |sonarcloud| image:: https://sonarcloud.io/api/project_badges/measure?project=Deltares_hydromt_delft3dfm&metric=alert_status
     :alt: Quality Gate Status
     :target: (https://sonarcloud.io/summary/new_code?id=Deltares_hydromt_delft3dfm)
