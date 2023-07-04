@@ -192,7 +192,6 @@ def slice_geodataframe(
         data = _data
 
     else:
-
         if not set(required_columns).issubset(_data.columns):
             logger.error(
                 f"GeoDataFrame: cannot perform slicing. required_columns must exist in data columns {_data.columns}."
@@ -387,7 +386,6 @@ def append_data_columns_based_on_ini_query(
         else:  # overwrite default key,value pairs based on [query]
             for key, val in ini[section].items():
                 try:
-
                     try:
                         val = float(val)
                     except:
@@ -536,6 +534,7 @@ def check_gpd_attributes(
         return False
     return True
 
+
 def update_data_columns_attributes_based_on_filter(
     gdf: gpd.GeoDataFrame,
     df: pd.DataFrame,
@@ -572,12 +571,12 @@ def update_data_columns_attributes_based_on_filter(
     """
     if filter_column is None:
         raise ValueError("Name of the column linking df to gdf must be specified")
-    
+
     if filter_value is not None:
         attributes = df[df[filter_column] == filter_value]
     else:
         attributes = df
-    
+
     # Update attributes
     for i in range(len(attributes.index)):
         row = attributes.iloc[i, :]
@@ -588,19 +587,19 @@ def update_data_columns_attributes_based_on_filter(
                 gdf[colname] = pd.Series(dtype=attributes[colname].dtype)
             # Then fill in empty or NaN values with defaults
             gdf.loc[
-                np.logical_and(
-                    gdf[colname].isna(), gdf[filter_column] == filter_value
-                ),
+                np.logical_and(gdf[colname].isna(), gdf[filter_column] == filter_value),
                 colname,
             ] = row.loc[colname]
 
     return gdf
 
 
-def get_gdf_from_branches(branches:gpd.GeoDataFrame, df:pd.DataFrame) -> gpd.GeoDataFrame:
-    """Get geodataframe from dataframe. 
+def get_gdf_from_branches(
+    branches: gpd.GeoDataFrame, df: pd.DataFrame
+) -> gpd.GeoDataFrame:
+    """Get geodataframe from dataframe.
     Based on interpolation of branches, using columns ["branchid", "chainage" in df]
-    
+
     Parameters
     ----------
     branches:gpd.GeoDataFrame
@@ -609,22 +608,22 @@ def get_gdf_from_branches(branches:gpd.GeoDataFrame, df:pd.DataFrame) -> gpd.Geo
     df:pd.DataFrame
         dataframe containing the features located on branches
         Required varaibles: ["branchid"/"branchid", "chainage" ]
-    
+
     Return
     ------
     gdf:gpd.GeoDataFrame
         dataframe cotaining the features located on branches, with point geometry
-    
+
     """
     branches.columns = branches.columns.str.lower()
     branches = branches.set_index("branchid")
-    
+
     df["geometry"] = None
-    
+
     # Iterate over each point and interpolate a point along the corresponding line feature
     for i, row in df.iterrows():
         line_geometry = branches.loc[row.branchid, "geometry"]
         new_point_geometry = line_geometry.interpolate(row.chainage)
         df.loc[i, "geometry"] = new_point_geometry
-    
+
     return gpd.GeoDataFrame(df)

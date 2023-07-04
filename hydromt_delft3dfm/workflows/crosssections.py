@@ -286,16 +286,13 @@ def set_xyz_crosssections(
             "crsdef_type": "xyz",
             "crsdef_xyzcount": crosssections.x.map(len).to_list(),
             "crsdef_xcoordinates": [
-                " ".join([f"{i}" for i in l])
-                for l in crosssections.x.to_list()
+                " ".join([f"{i}" for i in l]) for l in crosssections.x.to_list()
             ],
             "crsdef_ycoordinates": [
-                " ".join([f"{i}" for i in l])
-                for l in crosssections.y.to_list()
+                " ".join([f"{i}" for i in l]) for l in crosssections.y.to_list()
             ],
             "crsdef_zcoordinates": [
-                " ".join([f"{i}" for i in l])
-                for l in crosssections.z.to_list()
+                " ".join([f"{i}" for i in l]) for l in crosssections.z.to_list()
             ],
             # --- start of yz ---
             # "crsdef_type": "yz",
@@ -381,11 +378,10 @@ def set_point_crosssections(
         The cross sections.
     """
 
-
     # check if crs mismatch
     if crosssections.crs != branches.crs:
         logger.error(f"mismatch crs between cross-sections and branches")
-        
+
     # remove duplicated geometries
     _nodes = crosssections.copy()
     G = _nodes["geometry"].apply(lambda geom: geom.wkb)
@@ -406,13 +402,11 @@ def set_point_crosssections(
         logger.warning(
             f"Crosssection with id: {list(set(_old_ids) - set(_new_ids))} are dropped: unable to find closest branch. "
         )
-    
+
     if len(crosssections.branch_offset.dropna()) == 0:
-        logger.error(
-            f"No crossections are set up."
-        )
+        logger.error("No crossections are set up.")
         return pd.DataFrame()
-    
+
     # get branch friction
     crosssections = crosssections.merge(
         branches[["frictionid", "frictiontype", "frictionvalue"]],
@@ -453,9 +447,7 @@ def set_point_crosssections(
                     "shift",
                 ],
             )
-            crosssections_ = pd.concat(
-                [crosssections_, _set_circle_crs(circle_crs)]
-            )
+            crosssections_ = pd.concat([crosssections_, _set_circle_crs(circle_crs)])
         elif shape == "rectangle":
             rectangle_crs = crosssections.loc[crosssections["shape"] == shape, :]
             rectangle_crs["definitionid"] = rectangle_crs.apply(
@@ -599,9 +591,9 @@ def _set_circle_crs(crosssections: gpd.GeoDataFrame):
         left_on=["crsloc_branchid", "crsloc_definitionid"],
         right_on=["crsdef_branchid", "crsdef_id"],
     )
-    
+
     crosssections_.index = crosssections.index
-    
+
     return crosssections_
 
 
@@ -642,9 +634,9 @@ def _set_rectangle_crs(crosssections: gpd.GeoDataFrame):
         left_on=["crsloc_branchid", "crsloc_definitionid"],
         right_on=["crsdef_branchid", "crsdef_id"],
     )
-    
+
     crosssections_.index = crosssections.index
-    
+
     return crosssections_
 
 
@@ -652,9 +644,14 @@ def _set_trapezoid_crs(crosssections: gpd.GeoDataFrame):
     """trapezoid need to be converted into zw type"""
 
     # check for non-valid trapezoid crs
-    if (crosssections["width"] <= 0).any() or (crosssections["t_width"] <= 0).any() or (
-            crosssections["height"] <= 0).any():
-        logger.error("Invalid DataFrame: Found non-positive values in the 'width', 't_width', or 'height' columns.")
+    if (
+        (crosssections["width"] <= 0).any()
+        or (crosssections["t_width"] <= 0).any()
+        or (crosssections["height"] <= 0).any()
+    ):
+        logger.error(
+            "Invalid DataFrame: Found non-positive values in the 'width', 't_width', or 'height' columns."
+        )
     else:
         pass
 
@@ -738,9 +735,9 @@ def _set_zw_crs(crosssections: gpd.GeoDataFrame):
         left_on=["crsloc_branchid", "crsloc_definitionid"],
         right_on=["crsdef_branchid", "crsdef_id"],
     )
-    
+
     crosssections_.index = crosssections.index
-    
+
     return crosssections_
 
 
@@ -781,9 +778,9 @@ def _set_yz_crs(crosssections: gpd.GeoDataFrame):
         left_on=["crsloc_branchid", "crsloc_definitionid"],
         right_on=["crsdef_branchid", "crsdef_id"],
     )
-    
+
     crosssections_.index = crosssections.index
-    
+
     return crosssections_
 
 

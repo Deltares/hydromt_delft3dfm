@@ -252,10 +252,12 @@ def cleanup_branches(
 
     # explode multiline string
     _branches = branches.explode()
-    #3 remove z coordinates
-    _branches["geometry"] = _branches["geometry"].apply(lambda x: LineString(
-                [p[:2] for p in x.coords]  # simply line geometry by removing Z coodinates
-            ))
+    # 3 remove z coordinates
+    _branches["geometry"] = _branches["geometry"].apply(
+        lambda x: LineString(
+            [p[:2] for p in x.coords]  # simply line geometry by removing Z coodinates
+        )
+    )
     logger.debug(f"Exploding branches.")
 
     # remove duplicated geometry
@@ -992,4 +994,3 @@ def _remove_branches_with_ring_geometries(
     logger.debug("Removing branches with ring geometries.")
 
     return branches
-

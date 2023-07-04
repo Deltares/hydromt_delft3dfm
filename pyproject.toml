@@ -61,7 +61,7 @@ dflowfm = "hydromt_delft3dfm.dflowfm:DFlowFMModel"
 
 [tool.black]
 line-length = 88
-target-version = ['py310']
+target-version = ['py39']
 
 [tool.flit.sdist]
 include = ["hydromt_delft3dfm"]
