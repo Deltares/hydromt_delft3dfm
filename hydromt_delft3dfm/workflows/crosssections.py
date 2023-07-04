@@ -404,7 +404,7 @@ def set_point_crosssections(
         )
 
     if len(crosssections.branch_offset.dropna()) == 0:
-        logger.error(f"No crossections are set up.")
+        logger.error("No crossections are set up.")
         return pd.DataFrame()
 
     # get branch friction
