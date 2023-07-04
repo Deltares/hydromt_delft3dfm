@@ -2346,11 +2346,14 @@ class DFlowFMModel(MeshModel):
                 self._MAPS[var]["interpolation"] = interpolation_method
                 if interpolation_method != "triangulation":
                     # adjust relative search cell size for averaging methods
-                    relsize = np.round(
-                        np.abs(self.maps[var].raster.res[0]) / self.res * np.sqrt(2)
-                        + 0.05,
-                        2,
-                    )
+                    if self.maps[var].raster.res[0] > self.res:
+                        relsize = np.round(
+                            np.abs(self.maps[var].raster.res[0]) / self.res * np.sqrt(2)
+                            + 0.05,
+                            2,
+                        )
+                    else:
+                        relsize = 1.01
                     self._MAPS[var]["averagingrelsize"] = relsize
 
     def setup_maps_from_raster_reclass(
