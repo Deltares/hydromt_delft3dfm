@@ -3195,6 +3195,7 @@ class DFlowFMModel(MeshModel):
 
             # Add branches
             self._branches = branches
+            self.set_geoms(branches, "branches")
 
     def write_mesh(self, write_gui=True):
         """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc> in model ready format"""
