@@ -75,7 +75,7 @@ line-length = 88
 select = ["E", "F", "I", "PT", "D"]
 ignore-init-module-imports = true
 ignore = ["D211", "D213", "E741", "D105", "E712"]
-exclude = ["docs"]
+exclude = ["examples", "tests", "docs"]
 
 [tool.ruff.pydocstyle]
 convention = "numpy"
