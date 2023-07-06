@@ -1,18 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import configparser
 import logging
-from typing import Union
 
 import geopandas as gpd
-import hydromt.io
 import numpy as np
 import pandas as pd
 import shapely
-from hydromt import config
 from scipy.spatial import distance
 from shapely.geometry import LineString, MultiLineString, Point
-from shapely.ops import snap, split
 
 from .helper import cut_pieces, split_lines
 
@@ -188,8 +183,7 @@ def process_branches(
     branches_nodes : gpd.GeoDataFrame
         Preprocessed branches' nodes.
     """
-
-    logger.debug(f"Cleaning up branches")
+    logger.debug("Cleaning up branches")
     # TODO: maybe add arguments,use branch cross sections
     # global_controls = branches_ini.get("global", None)
 
@@ -201,11 +195,11 @@ def process_branches(
         logger=logger,
     )
 
-    logger.debug(f"Splitting branches based on spacing")
+    logger.debug("Splitting branches based on spacing")
     # TODO: add check, if spacing is used, then in branch cross section cannot be setup later
     branches = space_branches(branches, smooth_branches=smooth_branches, logger=logger)
 
-    logger.debug(f"Generating branchnodes")
+    logger.debug("Generating branchnodes")
     branch_nodes = generate_branchnodes(branches, id_col, logger=logger)
 
     return branches, branch_nodes
@@ -226,7 +220,7 @@ def cleanup_branches(
     * Removing branches that are shorter than 0.1 meters
     * Renaming branches with duplicate IDs
     * Reducing the precision of the branch geometry to 6 digits.
-    * Snapping the branches
+    * Snapping the branches.
 
     Parameters
     ----------
@@ -246,7 +240,6 @@ def cleanup_branches(
     gpd.GeoDataFrame
         The cleanup branches.
     """
-
     # remove null geometry
     branches = branches.loc[~branches.geometry.isna(), :]
 
@@ -258,7 +251,7 @@ def cleanup_branches(
             [p[:2] for p in x.coords]  # simply line geometry by removing Z coodinates
         )
     )
-    logger.debug(f"Exploding branches.")
+    logger.debug("Exploding branches.")
 
     # remove duplicated geometry
     G = _branches["geometry"].apply(lambda geom: geom.wkb)
@@ -321,21 +314,21 @@ def cleanup_branches(
     branches = reduce_gdf_precision(
         branches, rounding_precision=6  # branches_ini["global"]["rounding_precision"]
     )  # recommned to be larger than e-8
-    logger.debug(f"Reducing precision of the GeoDataFrame. Rounding precision (e-6) .")
+    logger.debug("Reducing precision of the GeoDataFrame. Rounding precision (e-6) .")
 
     # snap branches
     if allow_intersection_snapping is True:
         # snap points no matter it is at intersection or ends
         branches = snap_branch_ends(branches, offset=snap_offset)
         logger.debug(
-            f"Performing snapping at all branch ends, including intersections (To avoid messy results, please use a lower snap_offset)."
+            "Performing snapping at all branch ends, including intersections (To avoid messy results, please use a lower snap_offset)."
         )
 
     else:
         # snap points at ends only
         branches = snap_branch_ends(branches, offset=snap_offset, max_points=2)
         logger.debug(
-            f"Performing snapping at all branch ends, excluding intersections (To avoid messy results, please use a lower snap_offset).."
+            "Performing snapping at all branch ends, excluding intersections (To avoid messy results, please use a lower snap_offset).."
         )
 
     # Drop count column
@@ -368,7 +361,6 @@ def space_branches(
     gpd.GeoDataFrame
         The split branches.
     """
-
     # split branches based on spacing
     branches_ = split_branches(
         branches, spacing_col=spacing_col, smooth_branches=smooth_branches
@@ -402,7 +394,6 @@ def generate_branchnodes(
     gpd.GeoDataFrame
         The branch nodes.
     """
-
     # generate node up and downstream
     nodes = pd.DataFrame(
         [Point(l.coords[0]) for li, l in branches["geometry"].items()]
@@ -429,7 +420,7 @@ def generate_branchnodes(
     # remove duplicated geometry
     _nodes = nodes.copy()
     G = _nodes["geometry"].apply(lambda geom: geom.wkb)
-    n = len(G) - len(G.drop_duplicates().index)
+    len(G) - len(G.drop_duplicates().index)
     nodes = _nodes[_nodes.index.isin(G.drop_duplicates().index)]
     nodes = gpd.GeoDataFrame(nodes)
     nodes.crs = branches.crs
@@ -459,7 +450,7 @@ def validate_branches(
     else:
         logger.error(
             f"Branches {branches.index[branches.geometry.length <= 0]} have length of 0 meter. "
-            + f"Issue might have been caused by using a snap_offset that is too large. Please revise or modify the branches data layer. "
+            + "Issue might have been caused by using a snap_offset that is too large. Please revise or modify the branches data layer. "
         )
 
 
@@ -495,7 +486,6 @@ def split_branches(
     split_branches : gpd.GeoDataFrame
         Branches after split, new ids will be overwritten for the branch index. Old ids are stored in "OLD_" + index.
     """
-
     id_col = branches.index.name
     if spacing_col is None:
         logger.info(f"Splitting branches with spacing of {spacing_const} [m]")
@@ -558,7 +548,6 @@ def _split_branches_by_spacing_const(
     split_branches : gpd.GeoDataFrame
         Branches after split, new ids will be stored in id_col. Original ids are stored in "ORIG_" + id_col.
     """
-
     if spacing_const == float("inf"):
         branches[f"ORIG_{id_col}"] = branches[id_col]
         branches.index = branches[id_col]
@@ -728,7 +717,6 @@ def snap_branch_ends(
     branches : gpd.GeoDataFrame
         Branches updated with snapped geometry.
     """
-
     # Collect endpoints
     _endpoints = []
     for branch in branches.itertuples():
@@ -794,7 +782,6 @@ def possibly_intersecting(
     dataframebounds : numpy.array
     geometry : shapely.geometry.Polygon
     """
-
     geobounds = geometry.bounds
     idx = (
         (dataframebounds[0] - buffer < geobounds[2])
@@ -916,9 +903,9 @@ def snap_newbranches_to_branches_at_snapnodes(
     branches: gpd.GeoDataFrame,
     snapnodes: gpd.GeoDataFrame,
 ):
-    """function to snap new_branches to branches at snapnodes.
+    """Function to snap new_branches to branches at snapnodes.
     snapnodes are located at branches. new branches will be snapped, and branches will be splitted.
-    # NOTE: no interpolation of crosssection is needed because inter branch interpolation is turned on using branchorder
+    # NOTE: no interpolation of crosssection is needed because inter branch interpolation is turned on using branchorder.
 
     Parameters
     ----------
@@ -936,7 +923,6 @@ def snap_newbranches_to_branches_at_snapnodes(
     branches_snapped : geopandas.GeoDataFrame
         Geodataframe of branches splitted at snapnodes to allow connection with the new_branches_snapped.
     """
-
     new_branches.index = new_branches.branchid
     branches.index = branches.branchid
 

@@ -4,11 +4,10 @@ import logging
 from typing import List, Union
 
 import numpy as np
-from shapely.geometry import LineString, MultiLineString, Polygon, MultiPolygon, box
-from shapely.wkt import loads, dumps
-
 from hydrolib.core.dflowfm import Branch, Network
 from meshkernel import GeometryList
+from shapely.geometry import LineString, MultiLineString, MultiPolygon, Polygon, box
+from shapely.wkt import dumps, loads
 
 logger = logging.getLogger(__name__)
 
@@ -39,9 +38,10 @@ def mesh1d_add_branch(
         branches (Union[ LineString, MultiLineString, List[Union[LineString, MultiLineString]] ]): Geometry object(s) for which the branch is created
         node_distance (Union[float, int]): Preferred node distance between branch nodes
         branch_names (Union[str, list[str]]): Branch names to be used in the mesh1d object
-        branch_orders (Union[float, int, list[Union[float, int]]]): Branch orders to be used in the mesh1d object
+        branch_orders (Union[float, int, list[Union[float, int]]]): Branch orders to be used in the mesh1d object.
 
-    Returns:
+    Returns
+    -------
         List[str]: List of names of added branches
     """
     if node_distance == np.inf:
@@ -75,6 +75,7 @@ def mesh1d_add_branch(
 def round_geometry(geometry, rounding_precision: int = 6):
     """
     Round the coordinates of the geometry object to the provided precision.
+
     Parameters
     ----------
     geometry
@@ -82,6 +83,7 @@ def round_geometry(geometry, rounding_precision: int = 6):
     rounding_preicision: int, optional
         Round coordinates to the specified number of digits.
         Defaults to 6.
+
     Returns
     -------
     A shapely geometry object.
@@ -198,7 +200,8 @@ def links1d2d_add_links_1d_to_2d_include_boundary(
         within (Union[Polygon, MultiPolygon], optional): Area within which connections are made. Defaults to None.
         max_length (float, optional): Max edge length. Defaults to None.
 
-    See also:
+    See Also
+    --------
         links1d2d_add_links_1d_to_2d
     """
     # Load 1d and 2d in meshkernel
@@ -381,7 +384,6 @@ def links1d2d_add_links_2d_to_1d_lateral(
         within (Union[Polygon, MultiPolygon], optional): Clipping polygon for 2d mesh that is. Defaults to None.
         max_length (float, optional): Max edge length. Defaults to None.
     """
-
     # Load 1d and 2d in meshkernel
     network._mesh1d._set_mesh1d()
     network._mesh2d._set_mesh2d()

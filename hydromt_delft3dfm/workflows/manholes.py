@@ -157,7 +157,7 @@ def generate_manholes_on_branches(
 
 
 def _update_pipes_from_manholes(manholes: gpd.GeoDataFrame, pipes: gpd.GeoDataFrame):
-    """assign manholes 'manholeid' to pipes ['manhole_up', 'manhole_dn'] based on geometry"""
+    """Assign manholes 'manholeid' to pipes ['manhole_up', 'manhole_dn'] based on geometry."""
     manholes_dict = {
         (m.geometry.x, m.geometry.y): manholes.loc[mi, "manholeid"]
         for mi, m in manholes.iterrows()
@@ -182,10 +182,10 @@ def _update_pipes_from_manholes(manholes: gpd.GeoDataFrame, pipes: gpd.GeoDataFr
 def _get_pipe_stats_for_manholes(
     manholes: gpd.GeoDataFrame, pipes_col: str, stats_col: str, method: str
 ):
-    """get the stats from all pipes connecting a single manholes
+    """Get the stats from all pipes connecting a single manholes.
 
-    parameters
-    --------------------
+    Parameters
+    ----------
     pipes_col: used to identify pipes connected to the manhole (multiple rows of pipes for a single manhole), e.g. BRANCH_ID.
     stats_col: the column used to obtain the stats, e.g. DIAMETER
     method: method used to obtain the stats: e.g. max

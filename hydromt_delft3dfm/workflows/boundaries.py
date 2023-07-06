@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import configparser
 import logging
 from pathlib import Path
 
@@ -8,11 +7,8 @@ import geopandas as gpd
 import hydromt.io
 import numpy as np
 import pandas as pd
-import shapely
 import xarray as xr
-from hydromt import config
-from scipy.spatial import distance
-from shapely.geometry import LineString, Point
+from shapely.geometry import Point
 
 from .graphs import gpd_to_digraph
 
@@ -46,7 +42,6 @@ def generate_boundaries_from_branches(
     gpd.GeoDataFrame
         A data frame containing all the upstream and downstream end nodes of the branches
     """
-
     # convert branches to graph
     G = gpd_to_digraph(branches)
 
@@ -105,7 +100,6 @@ def select_boundary_type(
 
     Parameters
     ----------
-
     boundaries : gpd.GeoDataFrame
         The boundaries.
     branch_type : {'river', 'pipe'}
@@ -123,7 +117,6 @@ def select_boundary_type(
     pd.DataFrame
         A data frame containing the boundary location per branch type and boundary type.
     """
-
     boundaries_branch_type = boundaries.loc[boundaries["branchtype"] == branch_type, :]
     if branch_type == "river":
         if boundary_type == "waterlevel":
@@ -172,7 +165,6 @@ def validate_boundaries(boundaries: gpd.GeoDataFrame, branch_type: str = "river"
         The branch type.
 
     """
-
     if branch_type == "river":  # TODO add other open system branch_type
         for _, bnd in boundaries.iterrows():
             # TODO extended
@@ -200,7 +192,7 @@ def compute_boundary_values(
     logger=logger,
 ):
     """
-    Compute 1d boundary values
+    Compute 1d boundary values.
 
     Parameters
     ----------
@@ -230,7 +222,6 @@ def compute_boundary_values(
     logger
         Logger to log messages.
     """
-    nodata_ids = []
     # Timeseries boundary values
     if da_bnd is not None:
         logger.info(f"Preparing 1D {boundary_type} boundaries from timeseries.")
@@ -363,7 +354,6 @@ def compute_2dboundary_values(
     ValueError:
         if no boundary to compute.
     """
-
     # Timeseries boundary values
     if boundaries is None or len(boundaries) == 0:
         raise ValueError("No boundary to compute.")
@@ -442,12 +432,11 @@ def compute_2dboundary_values(
 
 
 def gpd_to_pli(gdf: gpd.GeoDataFrame, output_dir: Path):
-    """function to convert geopandas GeoDataFrame (gdf) into pli files at 'output_dir' directory.
+    """Function to convert geopandas GeoDataFrame (gdf) into pli files at 'output_dir' directory.
     the geodataframe must has index as stations and geometry of the stations.
     each row of the geodataframe will be converted into a single pli file.
     the file name and the station name will be the index of that row.
     """
-
     for _, g in gdf.iterrows():
         pli_name = g.index
         pli_coords = g.geometry.coords[:]
@@ -466,7 +455,7 @@ def df_to_bc(
     unit="m3/s",
     freq="H",
 ):
-    """function to convert pandas timeseires 'df' into bc file at 'output_dir'/'output_filename'.bc
+    """Function to convert pandas timeseires 'df' into bc file at 'output_dir'/'output_filename'.bc
     the time series must has time as index, columns names as stations.
     the time series will be first converted into a equidistance timeseries with frequency specified in 'freq'. support [D, H,M,S]
     each columns-wise array will be converted into one bc timeseries.
@@ -479,21 +468,21 @@ def df_to_bc(
     stations = df.columns
 
     with open(output_dir.joinpath(f"{output_filename}.bc"), "w") as f:
-        f.write(f"[General]\n")
-        f.write(f"\tfileVersion = 1.01\n")
-        f.write(f"\tfileType = boundConds\n")
+        f.write("[General]\n")
+        f.write("\tfileVersion = 1.01\n")
+        f.write("\tfileType = boundConds\n")
         for s in stations:
             d = df[s]
-            f.write(f"\n")
-            f.write(f"[forcing]\n")
+            f.write("\n")
+            f.write("[forcing]\n")
             f.write(f"\tName = {d.name}\n")
-            f.write(f"\tfunction = timeSeries\n")
-            f.write(f"\ttimeInterpolation = linear\n")
+            f.write("\tfunction = timeSeries\n")
+            f.write("\ttimeInterpolation = linear\n")
             f.write(f"\tquantity = {quantity}\n")
             f.write(f"\tunit = {unit}\n")
-            f.write(f"\tquantity = time\n")
+            f.write("\tquantity = time\n")
             f.write(f"\tunit = {time_unit[freq]} since {time[0].date()}\n")
-            f.write(f"\t0 0\n")
+            f.write("\t0 0\n")
             for i, di in enumerate(d.values):
                 f.write(f"\t{i} {di}\n")
 
@@ -506,7 +495,7 @@ def compute_meteo_forcings(
     logger=logger,
 ) -> xr.DataArray:
     """
-    Compute meteo forcings
+    Compute meteo forcings.
 
     Parameters
     ----------
@@ -543,7 +532,7 @@ def compute_meteo_forcings(
 
     # Timeseries boundary values
 
-    logger.info(f"Preparing global (spatially uniform) timeseries.")
+    logger.info("Preparing global (spatially uniform) timeseries.")
     # get data freq in seconds
     _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
     dt = df_meteo.time[1] - df_meteo.time[0]

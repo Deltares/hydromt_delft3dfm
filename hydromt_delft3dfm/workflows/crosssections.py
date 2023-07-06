@@ -1,21 +1,16 @@
 # -*- coding: utf-8 -*-
 
-import configparser
 import logging
 
 import geopandas as gpd
-import hydromt.io
 import numpy as np
 import pandas as pd
-import shapely
-from hydromt import config
-from scipy.spatial import distance
 from shapely.geometry import LineString, Point
 
 from .branches import find_nearest_branch
 
 # from delft3dfmpy.core import geometry
-from .helper import check_gpd_attributes, split_lines
+from .helper import check_gpd_attributes
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +85,7 @@ def set_branch_crosssections(
                     ),
                     axis=1,
                 )
-                valid_attributes = check_gpd_attributes(
+                check_gpd_attributes(
                     rectangle_crs,
                     required_columns=[
                         "branch_id",
@@ -118,7 +113,7 @@ def set_branch_crosssections(
                     ),
                     axis=1,
                 )
-                valid_attributes = check_gpd_attributes(
+                check_gpd_attributes(
                     trapezoid_crs,
                     required_columns=[
                         "branch_id",
@@ -189,7 +184,7 @@ def set_branch_crosssections(
                     lambda x: "circ_d{:,.3f}_{:s}".format(x["diameter"], "branch"),
                     axis=1,
                 )  # note diameter is reserved keywords in geopandas
-                valid_attributes = check_gpd_attributes(
+                check_gpd_attributes(
                     circle_crs,
                     required_columns=[
                         "branch_id",
@@ -359,7 +354,7 @@ def set_point_crosssections(
 ):
     """
     Function to set regular cross-sections from point.
-    only support rectangle, trapezoid, circle and yz
+    only support rectangle, trapezoid, circle and yz.
 
     Parameters
     ----------
@@ -377,15 +372,14 @@ def set_point_crosssections(
     gpd.GeoDataFrame
         The cross sections.
     """
-
     # check if crs mismatch
     if crosssections.crs != branches.crs:
-        logger.error(f"mismatch crs between cross-sections and branches")
+        logger.error("mismatch crs between cross-sections and branches")
 
     # remove duplicated geometries
     _nodes = crosssections.copy()
     G = _nodes["geometry"].apply(lambda geom: geom.wkb)
-    n = len(G) - len(G.drop_duplicates().index)
+    len(G) - len(G.drop_duplicates().index)
     crosssections = _nodes[_nodes.index.isin(G.drop_duplicates().index)]
 
     # snap to branch
@@ -435,7 +429,7 @@ def set_point_crosssections(
                 lambda x: "circ_d{:,.3f}_{:s}".format(x["diameter"], "point"),
                 axis=1,
             )
-            valid_attributes = check_gpd_attributes(
+            check_gpd_attributes(
                 circle_crs,
                 required_columns=[
                     "branch_id",
@@ -459,7 +453,7 @@ def set_point_crosssections(
                 ),
                 axis=1,
             )
-            valid_attributes = check_gpd_attributes(
+            check_gpd_attributes(
                 rectangle_crs,
                 required_columns=[
                     "branch_id",
@@ -487,7 +481,7 @@ def set_point_crosssections(
                 ),
                 axis=1,
             )
-            valid_attributes = check_gpd_attributes(
+            check_gpd_attributes(
                 trapezoid_crs,
                 required_columns=[
                     "branch_id",
@@ -506,7 +500,7 @@ def set_point_crosssections(
             )
         elif shape == "zw":
             zw_crs = crosssections.loc[crosssections["shape"] == shape, :]
-            valid_attributes = check_gpd_attributes(
+            check_gpd_attributes(
                 trapezoid_crs,
                 required_columns=[
                     "branch_id",
@@ -524,7 +518,7 @@ def set_point_crosssections(
             crosssections_ = pd.concat([crosssections_, _set_zw_crs(zw_crs)])
         elif shape == "yz":
             yz_crs = crosssections.loc[crosssections["shape"] == shape, :]
-            valid_attributes = check_gpd_attributes(
+            check_gpd_attributes(
                 trapezoid_crs,
                 required_columns=[
                     "branch_id",
@@ -556,8 +550,7 @@ def set_point_crosssections(
 
 
 def _set_circle_crs(crosssections: gpd.GeoDataFrame):
-    """circle crossection"""
-
+    """Circle crossection."""
     crsdefs = []
     crslocs = []
     for c in crosssections.itertuples():
@@ -598,8 +591,7 @@ def _set_circle_crs(crosssections: gpd.GeoDataFrame):
 
 
 def _set_rectangle_crs(crosssections: gpd.GeoDataFrame):
-    """rectangle crossection"""
-
+    """Rectangle crossection."""
     crsdefs = []
     crslocs = []
     for c in crosssections.itertuples():
@@ -641,8 +633,7 @@ def _set_rectangle_crs(crosssections: gpd.GeoDataFrame):
 
 
 def _set_trapezoid_crs(crosssections: gpd.GeoDataFrame):
-    """trapezoid need to be converted into zw type"""
-
+    """Trapezoid need to be converted into zw type."""
     # check for non-valid trapezoid crs
     if (
         (crosssections["width"] <= 0).any()
@@ -698,8 +689,7 @@ def _set_trapezoid_crs(crosssections: gpd.GeoDataFrame):
 
 
 def _set_zw_crs(crosssections: gpd.GeoDataFrame):
-    """set zw profile"""
-
+    """Set zw profile."""
     crsdefs = []
     crslocs = []
     for c in crosssections.itertuples():
@@ -742,8 +732,7 @@ def _set_zw_crs(crosssections: gpd.GeoDataFrame):
 
 
 def _set_yz_crs(crosssections: gpd.GeoDataFrame):
-    """set yz profile"""
-
+    """Set yz profile."""
     crsdefs = []
     crslocs = []
     for c in crosssections.itertuples():
@@ -893,7 +882,6 @@ def xyzp2xyzl(xyz: pd.DataFrame, sort_by: list = ["x", "y"]):
     gpd.GeoSeries
         The xyz lines.
     """
-
     sort_by = [s.lower() for s in sort_by]
 
     if xyz is not None:

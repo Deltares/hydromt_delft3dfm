@@ -1,15 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import configparser
 import logging
 
 import geopandas as gpd
-import hydromt.io
 import networkx as nx
-import numpy as np
-import pandas as pd
-import shapely
-from hydromt import config
 
 logger = logging.getLogger(__name__)
 

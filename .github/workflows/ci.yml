@@ -1,10 +1,11 @@
+---
 name: ci
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
@@ -19,27 +20,27 @@ jobs:
         os: ["windows-latest"]
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: conda-incubator/setup-miniconda@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-        miniforge-variant: Mambaforge
-        channels: conda-forge
-        channel-priority: strict
-        environment-file: envs/hydromt-delft3dfm.yml
-        activate-environment: hydromt-delft3dfm
+      - uses: actions/checkout@v3
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          miniforge-variant: Mambaforge
+          channels: conda-forge
+          channel-priority: strict
+          environment-file: envs/hydromt-delft3dfm.yml
+          activate-environment: hydromt-delft3dfm
 
-    - name: Conda info
-      run: |
-       conda info
-       conda list
-     
-    - name: Install hydromt_delft3dfm
-      run: |
-        flit install --pth-file
-        hydromt --models
-        
-    - name: Test with pytest
-      run: |
-        python -m pytest --cov=hydromt_delft3dfm --cov-report xml --cov-report term
-    - uses: codecov/codecov-action@v1
+      - name: Conda info
+        run: |
+          conda info
+          conda list
+
+      - name: Install hydromt_delft3dfm
+        run: |
+          flit install --pth-file
+          hydromt --models
+
+      - name: Test with pytest
+        run: |
+          python -m pytest --cov=hydromt_delft3dfm --cov-report xml --cov-report term
+      - uses: codecov/codecov-action@v1

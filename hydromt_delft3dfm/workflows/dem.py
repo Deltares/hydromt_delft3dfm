@@ -7,7 +7,6 @@ import geopandas as gpd
 import numpy as np
 import pyflwdir
 import xarray as xr
-from hydromt.flw import d8_from_dem, flwdir_from_da
 from hydromt.gis_utils import nearest, nearest_merge, spread2d
 from hydromt.workflows import rivers
 from scipy import ndimage
@@ -27,8 +26,8 @@ def invert_levels_from_dem(
 
     Invert levels are computed as DEM - depth - pipe diameter/height.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     gdf: gpd.GeoDataFrame
         Pipes gdf.
 
@@ -83,6 +82,7 @@ def get_rivbank_dz(
     (HAND) values adjecent to river cells. For each feature in `gdf_riv` the nearest
     river bank cells are identified and the bank heigth is estimated based on a quantile
     value `q`.
+
     Parameters
     ----------
     gdf_riv : gpd.GeoDataFrame
@@ -100,7 +100,7 @@ def get_rivbank_dz(
     rivbank_dz: np.ndarray
         riverbank elevations for each segment in `gdf_riv`
     da_riv_mask, da_bnk_mask: xr.DataArray:
-        River and river-bank masks
+        River and river-bank masks.
     """
     # rasterize streams
     gdf_riv = gdf_riv.copy()
@@ -165,6 +165,7 @@ def get_river_bathymetry(
     """Estimate river bedlevel zb using gradually varying flow (gvf), manning's equation
     (manning) or a power-law relation (powlaw) rivdph_method. The river is based on flow
     directions with and minimum upstream area threshold.
+
     Parameters
     ----------
     ds : xr.Dataset
@@ -209,7 +210,7 @@ def get_river_bathymetry(
     gdf_riv: gpd.GeoDataFrame
         River segments with bed level (zb) estimates
     da_msk: xr.DataArray:
-        River mask
+        River mask.
     """
     raster_kwargs = dict(coords=ds.raster.coords, dims=ds.raster.dims)
     da_elv = ds[elevtn_name]

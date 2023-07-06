@@ -1,3 +1,4 @@
+---
 # note that these are the developer dependencies
 name: hydromt-delft3dfm
 
@@ -15,7 +16,7 @@ dependencies:
   - pandas
   - pip
   - pre-commit # linting
-  - pydata-sphinx-theme  # docs
+  - pydata-sphinx-theme # docs
   - pygeos
   - pyproj
   - pytest # tests
@@ -28,11 +29,9 @@ dependencies:
   - shapely>=2.0.0
   - sphinx # docs
   - sphinx-design # docs
-  - xarray 
+  - xarray
   - xugrid
   - networkx
   - pip:
-    - hydrolib-core
-    - meshkernel
-
-
+      - hydrolib-core
+      - meshkernel
