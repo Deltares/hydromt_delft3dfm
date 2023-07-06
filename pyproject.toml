@@ -43,6 +43,12 @@ classifiers = [
 dynamic = ['version', 'description']
 
 [project.optional-dependencies]
+dev = [
+    "black",       # linting
+    "ruff",        # linting
+    "pre-commit",  # linting
+    "pip>=23.1.2", # needed for recursive dependencies
+]
 test = ["pytest>=2.7.3", "pytest-cov", "black"]
 doc = [
 	"nbsphinx",
@@ -62,6 +68,17 @@ dflowfm = "hydromt_delft3dfm.dflowfm:DFlowFMModel"
 [tool.black]
 line-length = 88
 target-version = ['py39']
+
+[tool.ruff]
+line-length = 88
+# enable pydocstyle (E), pyflake (F) and isort (I), pytest-style (PT)
+select = ["E", "F", "I", "PT", "D"]
+ignore-init-module-imports = true
+ignore = ["D211", "D213", "E741", "D105", "E712"]
+exclude = ["docs"]
+
+[tool.ruff.pydocstyle]
+convention = "numpy"
 
 [tool.flit.sdist]
 include = ["hydromt_delft3dfm"]
