@@ -5,7 +5,7 @@ channels:
   - conda-forge
 
 dependencies:
-  - black
+  - black # linting
   - flit>=3.4
   - hydromt>=0.7.0
   - jupyter # to run examples
@@ -14,7 +14,7 @@ dependencies:
   - numpy
   - pandas
   - pip
-  - pre-commit
+  - pre-commit # linting
   - pydata-sphinx-theme  # docs
   - pygeos
   - pyproj
@@ -24,7 +24,7 @@ dependencies:
   - pytest-timeout # test
   - python=3.9.*
   - responses # tests
-  - ruff
+  - ruff # linting
   - shapely>=2.0.0
   - sphinx # docs
   - sphinx-design # docs
