@@ -2,7 +2,6 @@
 name: Documentation Improvement
 description: Report wrong or missing documentation
 labels: [documentation]
-projects: [HydroMT-Delft3D FM]
 
 body:
   - type: checkboxes
