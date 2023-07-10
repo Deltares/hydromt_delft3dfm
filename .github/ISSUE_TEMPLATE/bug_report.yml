@@ -1,7 +1,7 @@
 ---
 name: Bug Report
 description: Report incorrect behavior
-labels: [Bug, Needs refinement]
+labels: [bug]
 
 body:
   - type: checkboxes
