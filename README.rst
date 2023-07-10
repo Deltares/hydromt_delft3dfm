@@ -11,7 +11,7 @@ What is the HydroMT-Delft3D FM plugin
 HydroMT_ (Hydro Model Tools) is an open-source Python package that facilitates the process of
 building and analyzing spatial geoscientific models with a focus on water system models.
 It does so by automating the workflow to go from raw data to a complete model instance which
-is ready to run and to analyze model results once the simulation has finished. 
+is ready to run and to analyze model results once the simulation has finished.
 This plugin provides an implementation of the model API for the Delft3D FM_ model.
 
 Why HydroMT-Delft3D FM?
@@ -69,4 +69,3 @@ happy to discuss how it can be implemented for your model.
 
 .. |sonarcloud| image:: https://sonarcloud.io/api/project_badges/measure?project=Deltares_hydromt_delft3dfm&metric=alert_status
     :alt: Quality Gate Status
-    

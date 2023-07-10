@@ -3,7 +3,7 @@
 Building a model
 ================
 
-This plugin allows to build a complete model from available data. Once the configuration and 
+This plugin allows to build a complete model from available data. Once the configuration and
 data libraries are set, you can build a model by using:
 
 .. code-block:: console
@@ -60,5 +60,5 @@ are three ways for the user to select which data libraries to use:
 
 .. toctree::
     :hidden:
-    
+
     Example: Build Wflow model <../_examples/build_model.ipynb>

@@ -232,7 +232,13 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, "hydromt_delft3dfm", "HydroMT Delft3D FM plugin Documentation", [authors], 1)
+    (
+        master_doc,
+        "hydromt_delft3dfm",
+        "HydroMT Delft3D FM plugin Documentation",
+        [authors],
+        1,
+    )
 ]
 
 
@@ -273,10 +279,10 @@ intersphinx_mapping = {
 
 # This is processed by Jinja2 and inserted before each notebook
 # FIXME: change the binder below to delft3dfm
-#nbsphinx_prolog = r"""
-#{% set docname = env.doc2path(env.docname, base=None).split('\\')[-1].split('/')[-1] %}
+# nbsphinx_prolog = r"""
+# {% set docname = env.doc2path(env.docname, base=None).split('\\')[-1].split('/')[-1] %}
 #
-#.. TIP::
+# .. TIP::
 #
 #    .. raw:: html
 #
@@ -284,4 +290,4 @@ intersphinx_mapping = {
 #            For an interactive online version click here:
 #            <a href="https://mybinder.org/v2/gh/Deltares/hydromt_wflow/main?urlpath=lab/tree/examples/{{ docname|e }}" target="_blank" rel="noopener noreferrer"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg"></a>
 #        </div>
-#"""
+# """
