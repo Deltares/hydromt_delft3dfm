@@ -4,7 +4,7 @@ import itertools
 import logging
 import os
 from datetime import datetime, timedelta
-from os.path import basename, dirname, isdir, isfile, join
+from os.path import basename, dirname, isfile, join
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -111,7 +111,7 @@ class DFlowFMModel(MeshModel):
         },
     }
     _FOLDERS = ["dflowfm", "geoms", "mesh", "maps"]
-    _CLI_ARGS = {"region": "setup_region", "res": "setup_mesh2d"}
+    _CLI_ARGS = {}  # "region": "setup_region", "res": "setup_mesh2d"}
     _CATALOGS = join(_DATADIR, "parameters_data.yml")
 
     def __init__(
@@ -120,6 +120,7 @@ class DFlowFMModel(MeshModel):
         mode: str = "w",
         config_fn: str = None,  # hydromt config contain glob section, anything needed can be added here as args
         data_libs: List[str] = [],  # yml
+        crs: int = 4326,
         dimr_fn: str = None,
         network_snap_offset=25,
         snap_newbranches_to_branches_at_snapnodes=True,
@@ -155,6 +156,7 @@ class DFlowFMModel(MeshModel):
             logger=logger,
         )
         # model specific
+        self._crs = CRS.from_user_input(crs)
         self._branches = None
         self._dimr = None
         self._dimr_fn = "dimr_config.xml" if dimr_fn is None else dimr_fn
@@ -1904,85 +1906,88 @@ class DFlowFMModel(MeshModel):
 
     def setup_mesh2d(
         self,
-        mesh2d_fn: Optional[str] = None,
-        geom_fn: Optional[str] = None,
-        bbox: Optional[list] = None,
-        res: float = 100.0,
-    ):
-        """Creates an 2D unstructured mesh or prepares an existing 2D mesh according UGRID conventions.
+        region: dict,
+        res: Optional[float] = None,
+    ) -> xu.UgridDataset:
+        """Create an 2D unstructured mesh or reads an existing 2D mesh according UGRID conventions.
 
-        An 2D unstructured mesh is created as 2D rectangular grid from a geometry (geom_fn) or bbox. If an existing
-        2D mesh is given, then no new mesh is generated
+        Grids are read according to UGRID conventions. An 2D unstructured mesh
+        will be created as 2D rectangular grid from a geometry (geom_fn) or bbox.
+        If an existing 2D mesh is given, then no new mesh will be generated
 
-        2D mesh contains mesh2d nfaces, x-coordinate of mesh2d nodes, y-coordinate of mesh2d nodes,
-        mesh2d face nodes, x-coordinates of face, y-coordinate of face and global atrributes (conventions and
-        coordinates).
-
-        Note that:
-        (1) Refinement of the mesh is a seperate setup function, however an existing grid with refinement (mesh_fn)
-        can already be read.
-        (2) If no geometry, bbox or existing grid is specified for this setup function, then the self.region is used as
-         mesh extent to generate the unstructured mesh.
-        (3) At mesh border, cells that intersect with geometry border will be kept.
-        (4) Validation checks have been added to check if the mesh extent is within model region.
-        (5) Only existing meshed with only 2D grid can be read.
-        (6) 1D2D network files are not supported as mesh2d_fn.
+        Note Only existing meshed with only 2D grid can be read.
+        #FIXME: read existing 1D2D network file and extract 2D part.
 
         Adds/Updates model layers:
 
-        * **1D2D links** geom: By any changes in 2D grid
+        * **grid_name** mesh topology: add grid_name 2D topology to mesh object
 
         Parameters
         ----------
-        mesh2D_fn : str Path, optional
-            Name of data source for an existing unstructured 2D mesh
-        geom_fn : str Path, optional
-            Path to a polygon used to generate unstructured 2D mesh
-        bbox: list, optional
-            Describing the mesh extent of interest [xmin, ymin, xmax, ymax]. Please specify it in the model coordinate
-            system.
-        res: float, optional
-            Resolution used to generate 2D mesh. By default a value of 100 m is applied.
+        region : dict
+            Dictionary describing region of interest, e.g.:
 
-        Raises
-        ------
-        IndexError
-            If the grid of the spatial domain contains 0 x-coordinates or 0 y-coordinates.
+            * {'bbox': [xmin, ymin, xmax, ymax]}
 
-        See Also
-        --------
+            * {'geom': 'path/to/polygon_geometry'}
 
-        """
-        # Function moved to MeshModel in hydromt core
-        # Recreate region dict for core function
-        if mesh2d_fn is not None:
-            region = {"mesh": mesh2d_fn}
-        elif geom_fn is not None:
-            region = {"geom": str(geom_fn)}
-        elif bbox is not None:
-            bbox = [float(v) for v in bbox]  # needs to be str in config file
-            region = {"bbox": bbox}
-        else:  # use model region
-            self.logger.warning("Mesh2d is generated for model region.")
-            region = {"geom": self.region}
+            * {'mesh': 'path/to/2dmesh_file'}
+        res: float
+            Resolution used to generate 2D mesh [unit of the CRS], required if region
+            is not based on 'mesh'.
 
-        # reserve existing mesh
-        # _mesh = self._mesh
+        Returns
+        -------
+        mesh2d : xu.UgridDataset
+            Generated mesh2d.
+
+        """  # noqa: E501
+        # TODO maybe merge some part of the old docstrings back above
+        # An 2D unstructured mesh is created as 2D rectangular grid from a geometry (geom_fn) or bbox. If an existing
+        # 2D mesh is given, then no new mesh is generated
+
+        # 2D mesh contains mesh2d nfaces, x-coordinate of mesh2d nodes, y-coordinate of mesh2d nodes,
+        # mesh2d face nodes, x-coordinates of face, y-coordinate of face and global atrributes (conventions and
+        # coordinates).
+
+        # Note that:
+        # (1) Refinement of the mesh is a seperate setup function, however an existing grid with refinement (mesh_fn)
+        # can already be read.
+        # (2) If no geometry, bbox or existing grid is specified for this setup function, then the self.region is used as
+        #  mesh extent to generate the unstructured mesh.
+        # (3) At mesh border, cells that intersect with geometry border will be kept.
+        # (4) Validation checks have been added to check if the mesh extent is within model region.
+        # (5) Only existing meshed with only 2D grid can be read.
+        # (6) 1D2D network files are not supported as mesh2d_fn.
+
+        # Adds/Updates model layers:
+
+        # * **1D2D links** geom: By any changes in 2D grid
+
+        # Raises
+        # ------
+        # IndexError
+        #     If the grid of the spatial domain contains 0 x-coordinates or 0 y-coordinates.
+
+        # See Also
+        # --------
+        # Check that self.crs is not None
+        if self.crs is None:
+            raise ValueError(
+                "CRS is not defined. Please define the CRS in the [global] init attributes before setting up the mesh."
+            )
 
         # Get and set the 2dmesh
-        mesh2d = super().setup_mesh(region=region, crs=self.crs, res=res)
-        # TODO: if we do not want to clip mesh 2d comment the following line
-        # Check if intersects with region
-        xmin, ymin, xmax, ymax = self.bounds
-        subset = mesh2d.ugrid.sel(y=slice(ymin, ymax), x=slice(xmin, xmax))
-        err = "RasterDataset: No data within model region."
-        subset = subset.ugrid.assign_node_coords()
-        if subset.ugrid.grid.node_x.size == 0 or subset.ugrid.grid.node_y.size == 0:
-            raise IndexError(err)
-        self._mesh = subset  # reinitialise mesh2d grid (set_mesh is used in super)
+        _ = super().setup_mesh2d(
+            region=region,
+            res=res,
+            crs=self.crs,
+            grid_name="mesh2d",
+        )
 
         # add to hydrolib-core net object
-        self.set_mesh2d()
+        # TODO check if we still need set_mesh2d method
+        # self.set_mesh2d()
 
         # update the 2dmesh to self._mesh
         # if _mesh is not None:
@@ -1992,6 +1997,8 @@ class DFlowFMModel(MeshModel):
 
         # update res
         self._res = res
+
+        # TODO check for 1D2D links and send warning
 
     # FIXME: use the below function as a workflow in setup_mesh2d would be better - to be discussed
     def setup_mesh2d_refine(
@@ -2752,7 +2759,7 @@ class DFlowFMModel(MeshModel):
             self.write_maps()
         if self._geoms:
             self.write_geoms()
-        if self._mesh or not self.branches.empty:
+        if self._mesh is not None or not self.branches.empty:
             self.write_mesh()
         if self._forcing:
             self.write_forcing()
@@ -3184,34 +3191,34 @@ class DFlowFMModel(MeshModel):
         """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc> in model ready format."""
         self._assert_write_mode
         savedir = dirname(join(self.root, self._config_fn))
+        mesh_filename = "fm_net.nc"
 
         # write mesh
         # hydromt convention
-        # super().write_mesh(fn="mesh/fm_net.nc")
-        if self._mesh:
-            fn = "mesh/fm_net.nc"
-            _fn = join(self.root, fn)
-            if not isdir(dirname(_fn)):
-                os.makedirs(dirname(_fn))
-            ds_out = xr.Dataset()
-            for grid in self._mesh.ugrid.grids:
-                ds_out = ds_out.merge(grid.to_dataset())
-            if grid.crs is not None:
-                # save crs to spatial_ref coordinate
-                ds_out = ds_out.rio.write_crs(grid.crs)
-            ds_out.to_netcdf(_fn, mode="w")
+        super().write_mesh(fn=join(savedir, mesh_filename))
+        # if self._mesh:
+        #     fn = "mesh/fm_net.nc"
+        #     _fn = join(self.root, fn)
+        #     if not isdir(dirname(_fn)):
+        #         os.makedirs(dirname(_fn))
+        #     ds_out = xr.Dataset()
+        #     for grid in self._mesh.ugrid.grids:
+        #         ds_out = ds_out.merge(grid.to_dataset())
+        #     if grid.crs is not None:
+        #         # save crs to spatial_ref coordinate
+        #         ds_out = ds_out.rio.write_crs(grid.crs)
+        #     ds_out.to_netcdf(_fn, mode="w")
 
         # hydrolib-core convention (meshkernel)
-        mesh_filename = "fm_net.nc"
-        self.logger.info(f"Writing mesh to {join(savedir, mesh_filename)}")
-        self.dfmmodel.geometry.netfile.save(
-            join(savedir, mesh_filename),
-            recurse=False,
-        )
+        # self.logger.info(f"Writing mesh to {join(savedir, mesh_filename)}")
+        # self.dfmmodel.geometry.netfile.save(
+        #     join(savedir, mesh_filename),
+        #     recurse=False,
+        # )
         # save relative path to mdu
         self.set_config("geometry.netfile", mesh_filename)
 
-        # other mesh1d related geometry
+        # other mesh1d related geometry TODO update
         if not self.mesh1d.is_empty() and write_gui:
             self.logger.info("Writting branches.gui file")
             if "manholes" in self.geoms:
@@ -3241,7 +3248,10 @@ class DFlowFMModel(MeshModel):
     @property
     def crs(self):
         # return pyproj.CRS.from_epsg(self.get_config("global.epsg", fallback=4326))
-        return self.region.crs
+        if self._crs is None:
+            # try to read it from mesh usingMeshModel method
+            self._crs = super.crs()
+        return self._crs
 
     @property
     def bounds(self) -> Tuple:
@@ -3819,6 +3829,42 @@ class DFlowFMModel(MeshModel):
         "Resolution of the mesh2d."
         if self._res is not None:
             return self._res
+
+    def set_mesh(
+        self,
+        data: Union[xu.UgridDataArray, xu.UgridDataset],
+        name: Optional[str] = None,
+        grid_name: Optional[str] = None,
+        overwrite_grid: Optional[bool] = False,
+    ) -> None:
+        """Add data to mesh.
+
+        All layers of mesh have identical spatial coordinates in Ugrid conventions.
+
+        Parameters
+        ----------
+        data: xugrid.UgridDataArray or xugrid.UgridDataset
+            new layer to add to mesh, TODO support one grid only or multiple grids?
+        name: str, optional
+            Name of new object layer, this is used to overwrite the name of
+            a UgridDataArray.
+        grid_name: str, optional
+            Name of the mesh grid to add data to. If None, inferred from data.
+            Can be used for renaming the grid.
+        overwrite_grid: bool, optional
+            If True, overwrite the grid with the same name as the grid in self.mesh.
+        """
+        # First call super method to add mesh data
+        super().set_mesh(
+            data=data,
+            name=name,
+            grid_name=grid_name,
+            overwrite_grid=overwrite_grid,
+        )
+
+        # if grid_name is mesh1d also creates / updates network 1d
+
+        # if grid_name is ?? also creates / updates 1D2D links??
 
     @property
     def mesh2d(self):
