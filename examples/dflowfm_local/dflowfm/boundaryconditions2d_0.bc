@@ -1,0 +1,870 @@
+# written by HYDROLIB-core 0.5.2
+
+[General]
+fileVersion = 1.01
+fileType    = boundConds
+
+[Forcing]
+name              = 0_0001
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0002
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0003
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0004
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0005
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0006
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0007
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0008
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0009
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0010
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0011
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0012
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0013
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0014
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0015
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0016
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0017
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0018
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0019
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0020
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0021
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0022
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0023
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+
+[Forcing]
+name              = 0_0024
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = hours since 2020-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0   -1.0
+1.0   -1.0
+2.0   -1.0
+3.0   -1.0
+4.0   -1.0
+5.0   -1.0
+6.0   -1.0
+7.0   -1.0
+8.0   -1.0
+9.0   -1.0
+10.0  -1.0
+11.0  -1.0
+12.0  -1.0
+13.0  -1.0
+14.0  -1.0
+15.0  -1.0
+16.0  -1.0
+17.0  -1.0
+18.0  -1.0
+19.0  -1.0
+20.0  -1.0
+21.0  -1.0
+22.0  -1.0
+23.0  -1.0
+24.0  -1.0
+

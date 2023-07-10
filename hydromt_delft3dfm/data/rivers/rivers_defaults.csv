@@ -1,0 +1,2 @@
+﻿branchtype,branchorder,spacing,friction_type,friction_value,shape,width,t_width,height,bedlev,closed
+river,1,inf,Manning,0.023,rectangle,10,20,10,-10,no

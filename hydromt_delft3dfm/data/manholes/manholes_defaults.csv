@@ -1,0 +1,3 @@
+﻿branchtype,shape,diameter,width,area,streetlevel,streetstoragearea,storagetype
+pipe,,,,0.64,0,500,reservoir
+tunnel,,,,2,0,0,closed

@@ -1,0 +1,90 @@
+[build-system]
+requires = ["flit_core >=3.4.0,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "hydromt_delft3dfm"
+authors = [
+	{ name = "Rinske Hutten", email = "rinske.hutten@deltares.nl" },
+	{ name = "Xiaohan Li", email = "xiaohan.li@deltares.nl" },
+	{ name = "Hélène Boisgontier", email = "helene.boisgontier@deltares.nl" },
+]
+dependencies = [
+	"hydromt >=0.7.0",
+	"dask",
+	"geopandas >=0.10",
+	"numpy",
+	"pandas",
+	"xarray",
+	"hydrolib-core",
+	"pygeos", # remove dependancy after new xugrid releases
+	"xugrid",
+	"meshkernel",
+	"pyproj",
+	"shapely >=0.2.0",
+	"scipy",
+	"pyflwdir >=0.5.4",
+	"networkx",
+]
+requires-python = ">=3.9,<3.11" # support 3.11 after new meshkernelpy releases
+readme = "README.rst"
+classifiers = [
+	# https://pypi.python.org/pypi?%3Aaction=list_classifiers
+	"Development Status :: 2 - Pre-Alpha",
+	"Intended Audience :: Developers",
+	"Intended Audience :: Science/Research",
+	"Topic :: Scientific/Engineering :: Hydrology",
+	"License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+	"Programming Language :: Python :: 3",
+	"Programming Language :: Python :: 3.9",
+	"Programming Language :: Python :: 3.10",
+	"Programming Language :: Python :: 3.11",
+]
+dynamic = ['version', 'description']
+
+[project.optional-dependencies]
+dev = [
+    "black",       # linting
+    "ruff",        # linting
+    "pre-commit",  # linting
+    "pip>=23.1.2", # needed for recursive dependencies
+]
+test = ["pytest>=2.7.3", "pytest-cov", "black"]
+doc = [
+	"nbsphinx",
+	"sphinx",
+	"sphinx_design",
+	"pydata-sphinx-theme",
+	"sphinx_autosummary_accessors",
+]
+
+[project.urls]
+Documentation = "http://deltares.github.io/hydromt_delft3dfm/latest/"
+Source = "https://github.com/Deltares/hydromt_delft3dfm"
+
+[project.entry-points."hydromt.models"]
+dflowfm = "hydromt_delft3dfm.dflowfm:DFlowFMModel"
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+
+[tool.ruff]
+line-length = 88
+# enable pydocstyle (E), pyflake (F) and isort (I), pytest-style (PT)
+select = ["E", "F", "I", "PT", "D"]
+ignore-init-module-imports = true
+ignore = ["D211", "D213", "E741", "D105", "E712"]
+exclude = ["examples", "tests", "docs"]
+
+[tool.ruff.pydocstyle]
+convention = "numpy"
+
+[tool.flit.sdist]
+include = ["hydromt_delft3dfm"]
+exclude = ["docs", "examples", "envs", "tests", ".github"]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+	"ignore:distutils Version classes are deprecated:DeprecationWarning",
+]

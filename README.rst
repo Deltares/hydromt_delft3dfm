@@ -4,7 +4,7 @@
 HydroMT-Delft3D FM: Delft3D FM plugin for HydroMT
 =================================================
 
-|docs_latest| |codecov| |license|
+|ci| |codecov| |black| |docs_latest|  |license| |sonarcloud|
 
 What is the HydroMT-Delft3D FM plugin
 -------------------------------------
@@ -48,8 +48,16 @@ happy to discuss how it can be implemented for your model.
 .. _Hydromt: https://deltares.github.io/hydromt/latest/
 .. _FM: https://oss.deltares.nl/web/delft3dfm
 
+.. |ci| image:: https://github.com/Deltares/hydromt_delft3dfm/actions/workflows/ci.yml/badge.svg?branch=main
+    :alt: ci
+    :target: https://github.com/Deltares/hydromt_delft3dfm/actions/workflows/ci.yml
+
 .. |codecov| image:: https://codecov.io/gh/Deltares/hydromt_delft3dfm/branch/main/graph/badge.svg?token=ss3EgmwHhH
     :target: https://codecov.io/gh/Deltares/hydromt_delft3dfm
+
+.. |black|  image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :alt: Formatter
+    :target: https://github.com/psf/black
 
 .. |docs_latest| image:: https://img.shields.io/badge/docs-latest-brightgreen.svg
     :target: https://deltares.github.io/hydromt_delft3dfm/latest
@@ -58,3 +66,7 @@ happy to discuss how it can be implemented for your model.
 .. |license| image:: https://img.shields.io/github/license/Deltares/hydromt_delft3dfm
     :alt: License
     :target: https://github.com/Deltares/hydromt_delft3dfm/blob/main/LICENSE
+
+.. |sonarcloud| image:: https://sonarcloud.io/api/project_badges/measure?project=Deltares_hydromt_delft3dfm&metric=alert_status
+    :alt: Quality Gate Status
+    

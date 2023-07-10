@@ -1,0 +1,37 @@
+---
+# note that these are the developer dependencies
+name: hydromt-delft3dfm
+
+channels:
+  - conda-forge
+
+dependencies:
+  - black # linting
+  - flit>=3.4
+  - hydromt>=0.7.0
+  - jupyter # to run examples
+  - matplotlib # to run examples
+  - nbsphinx # docs notebook examples
+  - numpy
+  - pandas
+  - pip
+  - pre-commit # linting
+  - pydata-sphinx-theme # docs
+  - pygeos
+  - pyproj
+  - pytest # tests
+  - pytest-cov # tests
+  - pytest-mock # tests
+  - pytest-timeout # test
+  - python=3.9.*
+  - responses # tests
+  - ruff # linting
+  - shapely>=2.0.0
+  - sphinx # docs
+  - sphinx-design # docs
+  - xarray
+  - xugrid
+  - networkx
+  - pip:
+      - hydrolib-core
+      - meshkernel
