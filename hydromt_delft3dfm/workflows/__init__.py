@@ -8,4 +8,5 @@ from .graphs import *
 from .helper import *
 from .manholes import *
 from .mesh import *
+from .region import *
 from .roughness import *

@@ -178,54 +178,16 @@ class DFlowFMModel(MeshModel):
 
     def setup_region(
         self,
-        region: dict,
-        crs: int = None,
     ):
-        """Define the 1D model region.
-
-        Adds model layer:
-
-        * **region** geom: model region
-
-        Parameters
-        ----------
-        region : dict
-            Dictionary describing region of interest, e.g. {'bbox': [xmin, ymin, xmax, ymax]}.
-            See :py:meth:`~hydromt.workflows.parse_region()` for all options.
-        crs : int, optional
-            Coordinate system (EPSG number) of the model. If not provided, equal to the region crs
-            if "grid" or "geom" option are used, and to 4326 if "bbox" is used, i.e. specified crs will be ignored.
-
-        Raises
-        ------
-        ValueError
-            If the region kind in `region` is not supported for D-Flow FM.
-            Supported regions are: "bbox", "grid" and "geom".
-        """
-        kind, region = hydromt.workflows.parse_region(region, logger=self.logger)
-        if kind == "bbox":
-            geom = gpd.GeoDataFrame(geometry=[box(*region["bbox"])], crs=4326)
-        elif kind == "grid":
-            geom = region["grid"].raster.box
-        elif kind == "geom":
-            geom = region["geom"]
-        else:
-            raise ValueError(
-                f"Unknown region kind {kind} for DFlowFM, expected one of ['bbox', 'grid', 'geom']."
-            )
-
-        if crs:
-            geom = geom.to_crs(crs)
-        elif geom.crs is None:
-            raise AttributeError("region crs can not be None. ")
-        else:
-            self.logger.info(f"Model region is set to crs: {geom.crs.to_epsg()}")
-
-        # Set the model region geometry (to be accessed through the shortcut self.region).
-        self.set_geoms(geom, "region")
+        """HYDROMT CORE METHOD NOT USED FOR DFM."""
+        raise ValueError(
+            "setup_region() method not implemented DFlowFMModel."
+            "The region will be set in the methods [setup_mesh2d, setup_rivers, setup_rivers_from_dem, setup_channels, setup_pipes]"
+        )
 
     def _setup_branches(
         self,
+        region: dict,
         br_fn: Union[str, Path, gpd.GeoDataFrame],
         defaults_fn: Union[str, Path, pd.DataFrame],
         br_type: str,
@@ -244,34 +206,40 @@ class DFlowFMModel(MeshModel):
 
         Parameters
         ----------
-         br_fn : str, gpd.GeoDataFrame
-             Either data source in data catalogue or Path for branches file or branches gpd.GeoDataFrame directly.
-         defaults_fn : str Path
-             Either data source in data catalogue or path to a csv file containing all defaults values per "branchtype" or defaults pd.DataFRame directly.
-         br_type : str
-             branches type. Either "river", "channel", "pipe".
-         friction_type : str
-             Type of friction to use. One of ["Manning", "Chezy", "wallLawNikuradse", "WhiteColebrook", "StricklerNikuradse", "Strickler", "deBosBijkerk"].
-         friction_value : float
-             Value corresponding to ''friction_type''. Units are ["Chézy C [m 1/2 /s]", "Manning n [s/m 1/3 ]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Strickler k_s [m 1/3 /s]", "De Bos-Bijkerk γ [1/s]"]
-         crosssections_shape : str, optional
-             Shape of branch crosssections to overwrite defaults. Either "circle" or "rectangle".
-         crosssections_value : float or list of float, optional
-             Crosssections parameter value to overwrite defaults.
-             If ``crosssections_shape`` = "circle", expects a diameter [m], used for br_type == "pipe"
-             If ``crosssections_shape`` = "rectangle", expects a list with [width, height] (e.g. [1.0, 1.0]) [m]. used for br_type == "river" or "channel".
-         spacing: float, optional
-             Spacing value in meters to split the long pipelines lines into shorter pipes. By default inf - no splitting is applied.
+        region : dict, optional
+            Dictionary describing region of interest for extracting 1D branches, e.g.:
+
+            * {'bbox': [xmin, ymin, xmax, ymax]}
+
+            * {'geom': 'path/to/polygon_geometry'}
+        br_fn : str, gpd.GeoDataFrame
+            Either data source in data catalogue or Path for branches file or branches gpd.GeoDataFrame directly.
+        defaults_fn : str Path
+            Either data source in data catalogue or path to a csv file containing all defaults values per "branchtype" or defaults pd.DataFRame directly.
+        br_type : str
+            branches type. Either "river", "channel", "pipe".
+        friction_type : str
+            Type of friction to use. One of ["Manning", "Chezy", "wallLawNikuradse", "WhiteColebrook", "StricklerNikuradse", "Strickler", "deBosBijkerk"].
+        friction_value : float
+            Value corresponding to ''friction_type''. Units are ["Chézy C [m 1/2 /s]", "Manning n [s/m 1/3 ]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Strickler k_s [m 1/3 /s]", "De Bos-Bijkerk γ [1/s]"]
+        crosssections_shape : str, optional
+            Shape of branch crosssections to overwrite defaults. Either "circle" or "rectangle".
+        crosssections_value : float or list of float, optional
+            Crosssections parameter value to overwrite defaults.
+            If ``crosssections_shape`` = "circle", expects a diameter [m], used for br_type == "pipe"
+            If ``crosssections_shape`` = "rectangle", expects a list with [width, height] (e.g. [1.0, 1.0]) [m]. used for br_type == "river" or "channel".
+        spacing: float, optional
+            Spacing value in meters to split the long pipelines lines into shorter pipes. By default inf - no splitting is applied.
         snap_offset: float, optional
-             Snapping tolerance to automatically connecting branches. Tolerance must be smaller than the shortest pipe length.
-             By default 0.0, no snapping is applied.
-         allow_intersection_snapping: bool, optional
-             Switch to choose whether snapping of multiple branch ends are allowed when ``snap_offset`` is used.
-             By default True.
-         allowed_columns: list, optional
-             List of columns to filter in branches GeoDataFrame
-         filter: str, optional
-             Keyword in branchtype column of br_fn used to filter lines. If None all lines in br_fn are used (default).
+            Snapping tolerance to automatically connecting branches. Tolerance must be smaller than the shortest pipe length.
+            By default 0.0, no snapping is applied.
+        allow_intersection_snapping: bool, optional
+            Switch to choose whether snapping of multiple branch ends are allowed when ``snap_offset`` is used.
+            By default True.
+        allowed_columns: list, optional
+            List of columns to filter in branches GeoDataFrame
+        filter: str, optional
+            Keyword in branchtype column of br_fn used to filter lines. If None all lines in br_fn are used (default).
 
 
         See Also
@@ -280,10 +248,14 @@ class DFlowFMModel(MeshModel):
          dflowfm.setup_pipes
         """
         # 1. Read data and filter within region
+        # parse region argument
+        self._check_crs()
+        region = workflows.parse_region_geometry(region, self.crs)
+
         # If needed read the branches GeoDataFrame
         if isinstance(br_fn, str) or isinstance(br_fn, Path):
             gdf_br = self.data_catalog.get_geodataframe(
-                br_fn, geom=self.region, buffer=0, predicate="intersects"
+                br_fn, geom=region, buffer=0, predicate="intersects"
             )
         else:
             gdf_br = br_fn
@@ -401,6 +373,7 @@ class DFlowFMModel(MeshModel):
 
     def setup_channels(
         self,
+        region: dict,
         channels_fn: str,
         channels_defaults_fn: str = None,
         channel_filter: str = None,
@@ -421,6 +394,12 @@ class DFlowFMModel(MeshModel):
 
         Parameters
         ----------
+        region : dict, optional
+            Dictionary describing region of interest for extracting 1D channels, e.g.:
+
+            * {'bbox': [xmin, ymin, xmax, ymax]}
+
+            * {'geom': 'path/to/polygon_geometry'}
         channels_fn : str
             Name of data source for channelsparameters, see data/data_sources.yml.
             Note only the lines that are intersects with the region polygon will be used.
@@ -479,6 +458,7 @@ class DFlowFMModel(MeshModel):
 
         # Build the channels branches and nodes and fill with attributes and spacing
         channels, channel_nodes = self._setup_branches(
+            region=region,
             br_fn=channels_fn,
             defaults_fn=channels_defaults_fn,
             br_type="channel",
@@ -519,6 +499,7 @@ class DFlowFMModel(MeshModel):
 
     def setup_rivers_from_dem(
         self,
+        region: dict,
         hydrography_fn: str,
         river_geom_fn: str = None,
         rivers_defaults_fn: str = None,
@@ -573,6 +554,12 @@ class DFlowFMModel(MeshModel):
 
         Parameters
         ----------
+        region : dict, optional
+            Dictionary describing region of interest for extracting 1D rivers, e.g.:
+
+            * {'bbox': [xmin, ymin, xmax, ymax]}
+
+            * {'geom': 'path/to/polygon_geometry'}
         hydrography_fn : str
             Hydrography data to derive river shape and characteristics from.
             * Required variables: ['elevtn']
@@ -621,11 +608,19 @@ class DFlowFMModel(MeshModel):
         --------
         workflows.get_river_bathymetry
 
+        Raises
+        ------
+        ValueError
+
         """
         self.logger.info("Preparing river shape from hydrography data.")
+        # parse region argument
+        self._check_crs()
+        region = workflows.parse_region_geometry(region, self.crs)
+
         # read data
         ds_hydro = self.data_catalog.get_rasterdataset(
-            hydrography_fn, geom=self.region, buffer=10
+            hydrography_fn, geom=region, buffer=10
         )
         if isinstance(ds_hydro, xr.DataArray):
             ds_hydro = ds_hydro.to_dataset()
@@ -753,6 +748,7 @@ class DFlowFMModel(MeshModel):
 
     def setup_rivers(
         self,
+        region: dict,
         rivers_fn: str,
         rivers_defaults_fn: str = None,
         river_filter: str = None,
@@ -788,6 +784,12 @@ class DFlowFMModel(MeshModel):
 
         Parameters
         ----------
+        region : dict, optional
+            Dictionary describing region of interest for extracting 1D rivers, e.g.:
+
+            * {'bbox': [xmin, ymin, xmax, ymax]}
+
+            * {'geom': 'path/to/polygon_geometry'}
         rivers_fn : str
             Name of data source for rivers parameters, see data/data_sources.yml.
             Note only the lines that are intersects with the region polygon will be used.
@@ -847,6 +849,7 @@ class DFlowFMModel(MeshModel):
 
         # Build the rivers branches and nodes and fill with attributes and spacing
         rivers, river_nodes = self._setup_branches(
+            region=region,
             br_fn=rivers_fn,
             defaults_fn=rivers_defaults_fn,
             br_type="river",
@@ -907,6 +910,7 @@ class DFlowFMModel(MeshModel):
 
     def setup_pipes(
         self,
+        region: dict,
         pipes_fn: str,
         pipes_defaults_fn: Union[str, None] = None,
         pipe_filter: Union[str, None] = None,
@@ -946,6 +950,12 @@ class DFlowFMModel(MeshModel):
 
         Parameters
         ----------
+        region : dict, optional
+            Dictionary describing region of interest for extracting 1D pipes, e.g.:
+
+            * {'bbox': [xmin, ymin, xmax, ymax]}
+
+            * {'geom': 'path/to/polygon_geometry'}
         pipes_fn : str
             Name of data source for pipes parameters, see data/data_sources.yml.
             Note only the lines that are within the region polygon will be used.
@@ -1010,6 +1020,7 @@ class DFlowFMModel(MeshModel):
 
         # Build the rivers branches and nodes and fill with attributes and spacing
         pipes, pipe_nodes = self._setup_branches(
+            region=region,
             br_fn=pipes_fn,
             defaults_fn=pipes_defaults_fn,
             br_type="pipe",
@@ -1972,10 +1983,7 @@ class DFlowFMModel(MeshModel):
         # See Also
         # --------
         # Check that self.crs is not None
-        if self.crs is None:
-            raise ValueError(
-                "CRS is not defined. Please define the CRS in the [global] init attributes before setting up the mesh."
-            )
+        self._check_crs()
 
         # Get and set the 2dmesh
         _ = super().setup_mesh2d(
@@ -3519,12 +3527,14 @@ class DFlowFMModel(MeshModel):
         return gdf
 
     @property
-    def mesh1d(self):
+    def mesh1d(self) -> Mesh1d:
         """Returns the mesh1d (hydrolib-core Mesh1d object) representing the 1D mesh."""
-        return self.dfmmodel.geometry.netfile.network._mesh1d
+        meshkernel1d = self.mesh_grids["mesh1d"].ugrid.grid.meshkernel
+        mesh1d = Mesh1d(meshkernel=meshkernel1d)
+        return mesh1d
 
     @property
-    def mesh1d_nodes(self):
+    def mesh1d_nodes(self) -> gpd.GeoDataFrame:
         """Returns the nodes of mesh 1D as geodataframe."""
         mesh1d_nodes = gpd.points_from_xy(
             x=self.mesh1d.mesh1d_node_x,
@@ -3890,16 +3900,21 @@ class DFlowFMModel(MeshModel):
         """Returns the network (hydrolib-core Network object) representing the entire network file."""
         return self.dfmmodel.geometry.netfile.network
 
-    @property
     def _model_has_2d(self):
         if not self.mesh2d.is_empty():
             return True
         else:
             return False
 
-    @property
     def _model_has_1d(self):
         if not self.mesh1d.is_empty():
             return True
         else:
             return False
+
+    def _check_crs(self):
+        """"""
+        if self.crs is None:
+            raise ValueError(
+                "CRS is not defined. Please define the CRS in the [global] init attributes before setting up the mesh."
+            )
