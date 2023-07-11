@@ -69,3 +69,4 @@ happy to discuss how it can be implemented for your model.
 
 .. |sonarcloud| image:: https://sonarcloud.io/api/project_badges/measure?project=Deltares_hydromt_delft3dfm&metric=alert_status
     :alt: Quality Gate Status
+    :target: https://sonarcloud.io/summary/new_code?id=Deltares_hydromt_delft3dfm
