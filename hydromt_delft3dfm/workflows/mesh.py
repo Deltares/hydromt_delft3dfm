@@ -4,7 +4,8 @@ import logging
 from typing import List, Union
 
 import numpy as np
-from hydrolib.core.dflowfm import Branch, Network
+import xugrid as xu
+from hydrolib.core.dflowfm import Branch, Network, Mesh1d
 from meshkernel import GeometryList
 from shapely.geometry import LineString, MultiLineString, MultiPolygon, Polygon, box
 from shapely.wkt import dumps, loads
@@ -42,6 +43,7 @@ def mesh1d_add_branch(
 
     Returns
     -------
+        Network: Network with added branches
         List[str]: List of names of added branches
     """
     if node_distance == np.inf:
@@ -69,7 +71,7 @@ def mesh1d_add_branch(
         )
         branchids.append(branchid)
 
-    return branchids
+    return network, branchids
 
 
 def round_geometry(geometry, rounding_precision: int = 6):

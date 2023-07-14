@@ -3,6 +3,7 @@ import logging
 import geopandas as gpd
 from hydromt.workflows import parse_region
 from shapely.geometry import box
+from pyproj.crs import CRS
 
 __all__ = [
     "parse_region_geometry",
@@ -34,4 +35,4 @@ def parse_region_geometry(
     if geom.crs != crs:
         geom = geom.to_crs(crs)
 
-    return region
+    return geom

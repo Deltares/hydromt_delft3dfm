@@ -128,7 +128,11 @@ def write_branches_gui(
     #TODO: branches.gui is written with a [general] section which is not recongnised by GUI. Improvement of the GUI is needed.
     #TODO: branches.gui has a column is custumised length written as bool, which is not recongnised by GUI. improvement of the hydrolib-core writer is needed.
     """
-    if not gdf["branchtype"].isin(["pipe", "tunnel"]).any():
+    # if not gdf["branchtype"].isin(["pipe", "tunnel"]).any():
+    # TODO: @xldeltares: can you check the change below is correct?
+    # usecase: setup_pipes was run but not setup_manholes so the previous if would throw an error
+    # if setup_manholes should always be run with setup_pipes we have to come up with better docs/warnings
+    if not all([col in gdf.columns for col in ["manhole_up", "manhole_dn"]]):
         gdf[["manhole_up", "manhole_dn"]] = ""
 
     branches = gdf[["branchid", "branchtype", "manhole_up", "manhole_dn"]]
