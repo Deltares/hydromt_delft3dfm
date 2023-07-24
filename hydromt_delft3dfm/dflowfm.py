@@ -41,7 +41,7 @@ class DFlowFMModel(MeshModel):
         "region": gpd.GeoDataFrame,
         "geoms": Dict[str, gpd.GeoDataFrame],
         "maps": Dict[str, Union[xr.DataArray, xr.Dataset]],
-        "mesh": Union[xr.DataArray, xr.Dataset],
+        "mesh": Union[xu.UgridDataArray, xu.UgridDataset],
         "forcing": Dict[str, Union[xr.DataArray, xr.Dataset]],
         "results": Dict[str, Union[xr.DataArray, xr.Dataset]],
         "states": Dict[str, Union[xr.DataArray, xr.Dataset]],
@@ -478,6 +478,7 @@ class DFlowFMModel(MeshModel):
         assert {crosssections_type}.issubset({"xyzpoints", "branch"})
         crosssections = self._setup_crosssections(
             branches=channels,
+            region=workflows.parse_region_geometry(region, self.crs),
             crosssections_fn=crosssections_fn,
             crosssections_type=crosssections_type,
         )
@@ -639,7 +640,7 @@ class DFlowFMModel(MeshModel):
         gdf_riv = None
         if river_geom_fn is not None:
             gdf_riv = self.data_catalog.get_geodataframe(
-                river_geom_fn, geom=self.region
+                river_geom_fn, geom=region
             ).to_crs(ds_hydro.raster.crs)
 
         # check if flwdir and uparea in ds_hydro
@@ -900,6 +901,7 @@ class DFlowFMModel(MeshModel):
             assert {crs_type}.issubset({"xyz", "point", "branch"})
             crosssections = self._setup_crosssections(
                 branches=rivers,
+                region=workflows.parse_region_geometry(region, self.crs),
                 crosssections_fn=crs_fn,
                 crosssections_type=crs_type,
             )
@@ -1146,6 +1148,7 @@ class DFlowFMModel(MeshModel):
     def _setup_crosssections(
         self,
         branches,
+        region: gpd.GeoDataFrame = None,
         crosssections_fn: str = None,
         crosssections_type: str = "branch",
         midpoint=True,
@@ -1175,6 +1178,8 @@ class DFlowFMModel(MeshModel):
                 if shape = 'rectangle': 'width', 'height', 'closed'
                 if shape = 'trapezoid': 'width', 't_width', 'height', 'closed'
             * Optional variables: [material, friction_type, friction_value]
+        region : gpd.GeoDataFrame, optional
+            geodataframe of the region of interest for extracting crosssections_fn, by default None
         crosssections_fn : str Path, optional
             Name of data source for crosssections, see data/data_sources.yml.
             Note that for point crossections, only ones within the snap_network_offset will be used.
@@ -1217,7 +1222,7 @@ class DFlowFMModel(MeshModel):
             # Read the crosssection data
             gdf_cs = self.data_catalog.get_geodataframe(
                 crosssections_fn,
-                geom=self.region,
+                geom=region,
                 buffer=1000,
                 predicate="contains",
             )
@@ -1253,7 +1258,7 @@ class DFlowFMModel(MeshModel):
             # Read the crosssection data
             gdf_cs = self.data_catalog.get_geodataframe(
                 crosssections_fn,
-                geom=self.region,
+                geom=region,
                 buffer=100,
                 predicate="contains",
             )
@@ -2209,9 +2214,12 @@ class DFlowFMModel(MeshModel):
             self.logger.error(f"link_direction {link_direction} is not recognised.")
 
         # Add link1d2d to xu Ugrid mesh
-        self.set_link1d2d(link1d2d)
+        if len(link1d2d["link1d2d"]) == 0:
+            self.logger.warning("No 1d2d links were generated.")
+        else:
+            self.set_link1d2d(link1d2d)
 
-    def setup_maps_from_raster(
+    def setup_maps_from_rasterdataset(
         self,
         raster_fn: str,
         variables: Optional[list] = None,
@@ -2263,7 +2271,7 @@ class DFlowFMModel(MeshModel):
             self.logger.error("name must be specified when split_dataset = False")
 
         # Call super method
-        variables = super().setup_maps_from_raster(
+        variables = super().setup_maps_from_rasterdataset(
             raster_fn=raster_fn,
             variables=variables,
             fill_method=fill_method,
@@ -3136,27 +3144,13 @@ class DFlowFMModel(MeshModel):
         mesh_filename = "fm_net.nc"
 
         # write mesh
-        # hydromt convention
-        super().write_mesh(fn=join(savedir, mesh_filename))
-        # if self._mesh:
-        #     fn = "mesh/fm_net.nc"
-        #     _fn = join(self.root, fn)
-        #     if not isdir(dirname(_fn)):
-        #         os.makedirs(dirname(_fn))
-        #     ds_out = xr.Dataset()
-        #     for grid in self._mesh.ugrid.grids:
-        #         ds_out = ds_out.merge(grid.to_dataset())
-        #     if grid.crs is not None:
-        #         # save crs to spatial_ref coordinate
-        #         ds_out = ds_out.rio.write_crs(grid.crs)
-        #     ds_out.to_netcdf(_fn, mode="w")
+        # hydromt convention - FIXME hydrolib does not seem to read the 1D and links part of the mesh
+        # super().write_mesh(fn=join(savedir, mesh_filename))
 
-        # hydrolib-core convention (meshkernel)
-        # self.logger.info(f"Writing mesh to {join(savedir, mesh_filename)}")
-        # self.dfmmodel.geometry.netfile.save(
-        #     join(savedir, mesh_filename),
-        #     recurse=False,
-        # )
+        # write with hydrolib-core
+        network = mesh_utils.hydrolib_network_from_mesh(self.mesh)
+        network.to_file(Path(join(savedir, mesh_filename)))
+
         # save relative path to mdu
         self.set_config("geometry.netfile", mesh_filename)
 
@@ -3211,12 +3205,12 @@ class DFlowFMModel(MeshModel):
             if self.mesh is not None:
                 bounds = self.mesh.ugrid.total_bounds
                 crs = self.crs
-            elif self.branches is not None:
+            elif not self.branches.empty:
                 bounds = self.branches.total_bounds
                 crs = self.branches.crs
             else:
                 # Finally raise error assuming model is empty
-                self.logger.error(
+                raise ValueError(
                     "Could not derive region from geoms, or mesh. Model may be empty."
                 )
             region = gpd.GeoDataFrame(geometry=[box(*bounds)], crs=crs)
@@ -3309,7 +3303,7 @@ class DFlowFMModel(MeshModel):
         """
         if self._branches is None and self._read:
             self.read_mesh()
-        elif self._branches is None:
+        if self._branches is None:
             self._branches = gpd.GeoDataFrame()
         return self._branches
 

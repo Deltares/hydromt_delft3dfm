@@ -56,16 +56,16 @@ def hydrolib_network_from_mesh(
     if "mesh1d" in grids:
         # set hydrolib Mesh1d atribute one by one and then add to network
         # mesh1d and network1d variables
-        mesh1d_network1d_dict = {
+        mesh1d_dict = {
             "mesh1d_node_id": "mesh1d_node_id",
             "mesh1d_node_long_name": "mesh1d_node_long_name",
-            # "mesh1d_node_x": "",
-            # "mesh1d_node_y": "",
+            "mesh1d_node_x": "mesh1d_node_x",
+            "mesh1d_node_y": "mesh1d_node_y",
             "mesh1d_node_branch_id": "mesh1d_node_branch",
             "mesh1d_node_branch_offset": "mesh1d_node_offset",
             "mesh1d_edge_nodes": "mesh1d_edge_nodes",
-            # "mesh1d_edge_x": "",
-            # "mesh1d_edge_y": "",
+            "mesh1d_edge_x": "mesh1d_edge_x",
+            "mesh1d_edge_y": "mesh1d_edge_y",
             "mesh1d_edge_branch_id": "mesh1d_edge_branch",
             "mesh1d_edge_branch_offset": "mesh1d_edge_offset",
             "network1d_node_id": "network1d_node_id",
@@ -76,13 +76,28 @@ def hydrolib_network_from_mesh(
             "network1d_branch_long_name": "network1d_branch_long_name",
             "network1d_branch_length": "network1d_edge_length",
             "network1d_branch_order": "network1d_branch_order",
+            "network1d_edge_nodes": "network1d_edge_nodes",
             "network1d_part_node_count": "network1d_geom_node_count",
             "network1d_geom_x": "network1d_geom_x",
             "network1d_geom_y": "network1d_geom_y",
         }
-        for hydrolibkey, meshkey in mesh1d_network1d_dict.items():
+        for hydrolibkey, meshkey in mesh1d_dict.items():
+            # Key in the UgridDataset
             if meshkey in mesh:
                 setattr(dfm_network._mesh1d, hydrolibkey, mesh[meshkey].values)
+            # Key in Ugrid1D
+            elif meshkey in grids["mesh1d"].to_dataset():
+                setattr(
+                    dfm_network._mesh1d,
+                    hydrolibkey,
+                    grids["mesh1d"].to_dataset()[meshkey].values,
+                )
+            elif meshkey in grids["network1d"].to_dataset():
+                setattr(
+                    dfm_network._mesh1d,
+                    hydrolibkey,
+                    grids["network1d"].to_dataset()[meshkey].values,
+                )
 
         # process
         dfm_network._mesh1d._process_network1d()
@@ -90,16 +105,14 @@ def hydrolib_network_from_mesh(
     # add 1d2dlinks
     if "link1d2d" in mesh:
         link1d2d_dict = {
-            "link1d2d": "mesh1d_node_id",
-            "link1d2d_ids": "link1d2d_id",
-            "link1d2d_long_names": "link1d2d_long_name",
+            "link1d2d": "link1d2d",
+            "link1d2d_id": "link1d2d_ids",
+            "link1d2d_long_name": "link1d2d_long_names",
             "link1d2d_contact_type": "link1d2d_contact_type",
         }
         for hydrolibkey, meshkey in link1d2d_dict.items():
             if meshkey in mesh:
                 setattr(dfm_network._link1d2d, hydrolibkey, mesh[meshkey].values)
-        # process
-        dfm_network._link1d2d._process()
 
     return dfm_network
 
@@ -129,8 +142,11 @@ def mesh1d_network1d_from_hydrolib_network(
     mesh1d = network._mesh1d
 
     if not mesh1d.is_empty():
-        uds_mesh1d = xu.ugrid.ugrid1d.Ugrid1d.from_meshkernel(
-            mesh1d._get_mesh1d(),
+        uds_mesh1d = xu.Ugrid1d(
+            node_x=mesh1d.mesh1d_node_x,
+            node_y=mesh1d.mesh1d_node_y,
+            fill_value=-1,
+            edge_node_connectivity=mesh1d.mesh1d_edge_nodes,
             name="mesh1d",
             projected=crs.is_projected,
             crs=crs,
@@ -271,20 +287,24 @@ def mesh_from_hydrolib_network(
 
     # Mesh2d
     if not network._mesh2d.is_empty():
-        network._mesh2d._set_mesh2d()
-        mesh2d = network._mesh2d.get_mesh2d()
+        # network._mesh2d._set_mesh2d()
+        mesh2d = network._mesh2d
 
         # meshkernel to xugrid Ugrid2D
-        mesh2d = xu.ugrid.ugrid2d.Ugrid2d.from_meshkernel(
-            mesh2d,
+        uds_mesh2d = xu.Ugrid2d(
+            node_x=mesh2d.mesh2d_node_x,
+            node_y=mesh2d.mesh2d_node_y,
+            fill_value=-1,
+            face_node_connectivity=mesh2d.mesh2d_face_nodes,
+            edge_node_connectivity=mesh2d.mesh2d_edge_nodes,
             name="mesh2d",
             projected=crs.is_projected,
             crs=crs,
         )
         # Convert to UgridDataset
-        mesh2d = xu.UgridDataset(mesh2d.to_dataset())
-        mesh2d = mesh2d.ugrid.assign_face_coords()
-        mesh2d.ugrid.set_crs(crs)
+        uds_mesh2d = xu.UgridDataset(uds_mesh2d.to_dataset())
+        uds_mesh2d = uds_mesh2d.ugrid.assign_face_coords()
+        uds_mesh2d.ugrid.set_crs(crs)
 
         if mesh is None:
             mesh = uds_mesh2d
@@ -371,7 +391,7 @@ def network1d_nodes_geodataframe(
     )
     network1d_nodes = gpd.GeoDataFrame(
         data={
-            "nodeid": uds_network1d[uds_network1d.ugrid.grid.node_dimension].values,
+            "nodeid": uds_network1d["network1d_node_id"],
             "geometry": network1d_nodes,
         }
     )
