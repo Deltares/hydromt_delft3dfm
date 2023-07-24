@@ -34,4 +34,4 @@ dependencies:
   - networkx
   - pip:
       - hydrolib-core
-      - meshkernel
+      - meshkernel=2.0.2 # temp pin because of hydrolib-core
