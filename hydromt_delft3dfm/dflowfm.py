@@ -3086,12 +3086,12 @@ class DFlowFMModel(MeshModel):
             self.set_config("external_forcing.extforcefilenew", ext_fn)
 
     def read_mesh(self):
-        """Read network file with Hydrolib-core and extract 2D mesh/branches info."""
+        """Read network file with Hydrolib-core and extract mesh/branches info."""
         self._assert_read_mode
 
         # Read mesh
         # hydrolib-core convention
-        net = self.dfmmodel.geometry.netfile.network
+        network = self.dfmmodel.geometry.netfile.network
         # FIXME: crs info is not available in dfmmodel, so get it from region.geojson
         # Cannot use read_geoms yet because for some some geoms (crosssections, manholes) mesh needs to be read first...
         region_fn = join(self.root, "geoms", "region.geojson")
@@ -3099,46 +3099,20 @@ class DFlowFMModel(MeshModel):
             crs = gpd.read_file(region_fn).crs
         else:
             crs = None
-        # add mesh2d to self.mesh
-        if not net._mesh2d.is_empty():
-            net._mesh2d._set_mesh2d()
-            mesh2d = net._mesh2d.get_mesh2d()
-            # Create Ugrid2d object
-            grid = xu.Ugrid2d.from_meshkernel(mesh2d)
-            # n_max_node = mesh2d.nodes_per_face.max()
-            # grid = xu.Ugrid2d(
-            #     node_x=mesh2d.node_x,
-            #     node_y=mesh2d.node_y,
-            #     fill_value=-1,
-            #     face_node_connectivity=mesh2d.face_nodes.reshape((-1, n_max_node)),
-            #     crs=crs,
-            # )
-            # grid._mesh = mesh2d
-            # Create UgridDataset
-            da = xr.DataArray(
-                data=np.arange(grid.n_face),
-                dims=[grid.face_dimension],
-            )
-            uda = xu.UgridDataArray(da, grid)
-            uds = uda.to_dataset(name="index")
-            uds = uds.assign_coords(
-                coords={
-                    "mesh2d_node_x": ("mesh2d_nNodes", grid.node_x),
-                    "mesh2d_node_y": ("mesh2d_nNodes", grid.node_y),
-                }
-            )
-            uds.ugrid.grid.set_crs(crs)
-            self.set_mesh(uds)
+
+        # convert to xugrid
+        mesh = mesh_utils.mesh_from_hydrolib_network(network, crs=crs)
+        # set mesh
+        self._mesh = mesh
+
+        # update resolution
+        if not network._mesh2d.is_empty():
             if self._res is None:
-                np.diff(grid.node_x)
+                np.diff(self.mesh_grids["mesh2d"].node_x)
 
-        # add mesh1d to self.mesh # TODO: for now self.mesh is 2D only
-        # if not net._mesh1d.is_empty():
-        #    self._add_mesh1d(net._mesh1d)
-
-        # Read mesh1d related geometry (branches)
-        if not net._mesh1d.is_empty():
-            mesh1d = self.mesh1d
+        # creates branches geometry from network
+        if not network._mesh1d.is_empty():
+            mesh1d = network._mesh1d
             branch_id = mesh1d.network1d_branch_id
             # Create the GeoDataFrame
             branches = gpd.GeoDataFrame(
@@ -3152,7 +3126,7 @@ class DFlowFMModel(MeshModel):
             self.logger.info("Reading branches GUI file")
             branches = utils.read_branches_gui(branches, self.dfmmodel)
 
-            # Add branches
+            # Set branches
             self._branches = branches
 
     def write_mesh(self, write_gui=True):

@@ -87,7 +87,19 @@ def hydrolib_network_from_mesh(
         # process
         dfm_network._mesh1d._process_network1d()
 
-    # TODO: add 1d2dlinks
+    # add 1d2dlinks
+    if "link1d2d" in mesh:
+        link1d2d_dict = {
+            "link1d2d": "mesh1d_node_id",
+            "link1d2d_ids": "link1d2d_id",
+            "link1d2d_long_names": "link1d2d_long_name",
+            "link1d2d_contact_type": "link1d2d_contact_type",
+        }
+        for hydrolibkey, meshkey in link1d2d_dict.items():
+            if meshkey in mesh:
+                setattr(dfm_network._link1d2d, hydrolibkey, mesh[meshkey].values)
+        # process
+        dfm_network._link1d2d._process()
 
     return dfm_network
 
@@ -262,23 +274,17 @@ def mesh_from_hydrolib_network(
         network._mesh2d._set_mesh2d()
         mesh2d = network._mesh2d.get_mesh2d()
 
-        # Create Ugrid2d object
-        grid = xu.Ugrid2d.from_meshkernel(mesh2d)
-
-        # Create UgridDataset
-        da = xr.DataArray(
-            data=np.arange(grid.n_face),
-            dims=[grid.face_dimension],
+        # meshkernel to xugrid Ugrid2D
+        mesh2d = xu.ugrid.ugrid2d.Ugrid2d.from_meshkernel(
+            mesh2d,
+            name="mesh2d",
+            projected=crs.is_projected,
+            crs=crs,
         )
-        uda = xu.UgridDataArray(da, grid)
-        uds_mesh2d = uda.to_dataset(name="index")
-        uds_mesh2d = uds_mesh2d.assign_coords(
-            coords={
-                "mesh2d_node_x": ("mesh2d_nNodes", grid.node_x),
-                "mesh2d_node_y": ("mesh2d_nNodes", grid.node_y),
-            }
-        )
-        uds_mesh2d.ugrid.grid.set_crs(crs)
+        # Convert to UgridDataset
+        mesh2d = xu.UgridDataset(mesh2d.to_dataset())
+        mesh2d = mesh2d.ugrid.assign_face_coords()
+        mesh2d.ugrid.set_crs(crs)
 
         if mesh is None:
             mesh = uds_mesh2d
