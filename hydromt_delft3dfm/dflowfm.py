@@ -10,22 +10,19 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 import geopandas as gpd
 import hydromt
-import meshkernel as mk
 import numpy as np
 import pandas as pd
 import xarray as xr
 import xugrid as xu
-from hydrolib.core.dflowfm import FMModel, IniFieldModel, Mesh1d, Mesh2d, Network
+from hydrolib.core.dflowfm import FMModel, IniFieldModel
 from hydrolib.core.dimr import DIMR, FMComponent, Start
 from hydromt.models import MeshModel
 from hydromt.workflows import create_mesh2d
 
-# from hydrolib.dhydamo.geometry import mesh
-from meshkernel import GeometryList
 from pyproj import CRS
 from shapely.geometry import LineString, box
 
-from . import DATADIR, utils, workflows
+from . import DATADIR, utils, mesh_utils, workflows
 
 __all__ = ["DFlowFMModel"]
 logger = logging.getLogger(__name__)
@@ -498,7 +495,6 @@ class DFlowFMModel(MeshModel):
         self.add_branches(
             channels,
             branchtype="channel",
-            # node_distance=self._openwater_computation_node_distance,
         )
 
         # update mesh
@@ -1429,8 +1425,11 @@ class DFlowFMModel(MeshModel):
         self.logger.debug("dropping duplicated manholeid")
         manholes.drop_duplicates(subset="manholeid")
         # add nodeid to manholes
+        network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
+            self.mesh_datasets["network1d"]
+        )
         manholes = hydromt.gis_utils.nearest_merge(
-            manholes, self.network1d_nodes, max_dist=0.1, overwrite=False
+            manholes, network1d_nodes, max_dist=0.1, overwrite=False
         )
         # add additional required columns
         manholes["id"] = manholes[
@@ -2945,7 +2944,10 @@ class DFlowFMModel(MeshModel):
         # Read manholes
         if self.dfmmodel.geometry.storagenodefile is not None:
             self.logger.info("Reading manholes file")
-            manholes = utils.read_manholes(self.network1d_nodes, self.dfmmodel)
+            network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
+                self.mesh_datasets["network1d"]
+            )
+            manholes = utils.read_manholes(network1d_nodes, self.dfmmodel)
             self.set_geoms(manholes, "manholes")
 
         # Read structures
@@ -3032,8 +3034,11 @@ class DFlowFMModel(MeshModel):
                         # Get the dataframe corresponding to the current variable
                         df = df_ext_1d[df_ext_1d.quantity == name]
                         # Get the corresponding nodes gdf
-                        node_geoms = self.network1d_nodes[
-                            np.isin(self.network1d_nodes["nodeid"], df.nodeid.values)
+                        network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
+                            self.mesh_datasets["network1d"]
+                        )
+                        node_geoms = network1d_nodes[
+                            np.isin(network1d_nodes["nodeid"], df.nodeid.values)
                         ]
                         da_out = utils.read_1dboundary(
                             df, quantity=name, nodes=node_geoms
@@ -3388,7 +3393,12 @@ class DFlowFMModel(MeshModel):
                 )  # only connect both ends to existing network
 
             # get possible connection points (allow connection only at mesh nodes) from existing open system
-            mesh1d_nodes = self.mesh1d_nodes.copy()
+            if "mesh1d" in self.mesh_names:
+                mesh1d_nodes = mesh_utils.mesh1d_nodes_geodataframe(
+                    self.mesh_datasets["mesh1d"], self.branches
+                )
+            else:
+                mesh1d_nodes = gpd.GeoDataFrame()
             mesh1d_nodes_open = mesh1d_nodes.loc[
                 mesh1d_nodes.branch_name.isin(self.opensystem.branchid.tolist())
             ]
@@ -3554,8 +3564,11 @@ class DFlowFMModel(MeshModel):
         )
 
         # get networkids to complete the boundaries
+        network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
+            self.mesh_datasets["network1d"]
+        )
         boundaries = hydromt.gis_utils.nearest_merge(
-            _boundaries, self.network1d_nodes, max_dist=0.1, overwrite=False
+            _boundaries, network1d_nodes, max_dist=0.1, overwrite=False
         )
         return boundaries
 
@@ -3685,52 +3698,3 @@ class DFlowFMModel(MeshModel):
             raise ValueError(
                 "CRS is not defined. Please define the CRS in the [global] init attributes before setting up the mesh."
             )
-
-    @property
-    def network1d_nodes(self):
-        """Get network1d nodes as gdp."""
-        if "network1d" in self.mesh_names:
-            # get networkids to complete the boundaries
-            network1d_nodes = gpd.points_from_xy(
-                x=self.mesh_grids["network1d"].node_x,
-                y=self.mesh_grids["network1d"].node_y,
-                crs=self.crs,
-            )
-            network1d_nodes = gpd.GeoDataFrame(
-                data={
-                    "nodeid": self.mesh[
-                        self.mesh_grids["network1d"].node_dimension
-                    ].values,
-                    "geometry": network1d_nodes,
-                }
-            )
-        else:
-            network1d_nodes = gpd.GeoDataFrame()
-
-        return network1d_nodes
-
-    @property
-    def mesh1d_nodes(self) -> gpd.GeoDataFrame:
-        """Returns the nodes of mesh 1D as geodataframe."""
-        if "mesh1d" in self.mesh_names:
-            mesh1d = self.mesh_datasets["mesh1d"]
-            mesh1d_nodes = gpd.points_from_xy(
-                x=mesh1d.ugrid.grid.node_x,
-                y=mesh1d.ugrid.grid.node_y,
-                crs=self.crs,
-            )
-            mesh1d_nodes = gpd.GeoDataFrame(
-                data={
-                    "branch_id": mesh1d["mesh1d_node_branch"],
-                    "branch_name": [
-                        self.branches.branchid[i]
-                        for i in mesh1d["mesh1d_node_branch"].values
-                    ],
-                    "branch_chainage": mesh1d["mesh1d_node_offset"],
-                    "geometry": mesh1d_nodes,
-                }
-            )
-        else:
-            mesh1d_nodes = gpd.GeoDataFrame()
-
-        return mesh1d_nodes
