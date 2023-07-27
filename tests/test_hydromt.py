@@ -18,7 +18,6 @@ _models = {
         "ini": "dflowfm_build.yml",
         "model": DFlowFMModel,
         "data": "artifact_data",
-        # "region": {"bbox": [12.4331, 46.4661, 12.5212, 46.5369]},
         "snap_offset": 25,
         "crs": 3857,
     },
@@ -27,7 +26,6 @@ _models = {
         "ini": "dflowfm_build_local.yml",
         "model": DFlowFMModel,
         "data": join(TESTDATADIR, "test_data.yaml"),
-        # "region": {"geom": f"{join(TESTDATADIR, 'local_data','1D_extent.geojson')}"},
         "snap_offset": 25,
         "crs": 32647,
     },
@@ -64,7 +62,6 @@ def test_model_build(tmpdir, model):
         logger=logger,
     )
     # Build method options
-    # region = _model["region"]
     config = join(TESTDATADIR, _model["ini"])
     opt = parse_config(config)
     # Build model

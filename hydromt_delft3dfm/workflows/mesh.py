@@ -60,7 +60,6 @@ def mesh1d_network1d_from_branches(
     # create network
     dfm_network = Network(is_geographic=crs.is_geographic)
     # add open system mesh1d
-    opensystem = opensystem
     node_distance = openwater_computation_node_distance
     dfm_network, _ = mesh1d_add_branch(
         dfm_network,
@@ -70,7 +69,6 @@ def mesh1d_network1d_from_branches(
         branch_orders=opensystem.branchorder.to_list(),
     )
     # add closed system mesh1d
-    closedsystem = closedsystem
     node_distance = np.inf
     dfm_network, _ = mesh1d_add_branch(
         dfm_network,
