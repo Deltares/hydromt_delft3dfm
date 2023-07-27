@@ -17,7 +17,7 @@ def parse_region_geometry(
     crs: CRS,
     logger: logging.Logger = logger,
 ):
-    """ """
+    """Parse hydromt stype region argument into region geometry."""
     kind, region = parse_region(region, logger=logger)
     if kind == "bbox":
         bbox = region["bbox"]

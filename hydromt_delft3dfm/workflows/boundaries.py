@@ -10,7 +10,7 @@ import pandas as pd
 import xarray as xr
 from shapely.geometry import Point
 
-from .graphs import gpd_to_digraph
+from hydromt_delft3dfm import graph_utils
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ def generate_boundaries_from_branches(
         A data frame containing all the upstream and downstream end nodes of the branches
     """
     # convert branches to graph
-    G = gpd_to_digraph(branches)
+    G = graph_utils.gpd_to_digraph(branches)
 
     # get boundary locations at where
     if where == "downstream":

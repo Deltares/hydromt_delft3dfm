@@ -1,3 +1,5 @@
+global:
+  crs : 3857
 setup_rivers_from_dem:
   region: 
     bbox: [12.4331, 46.4661, 12.5212, 46.5369]

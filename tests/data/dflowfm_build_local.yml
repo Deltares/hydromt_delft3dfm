@@ -1,3 +1,5 @@
+global:
+  crs : 32647
 setup_rivers:
   region:
     geom: "local_data/1D_extent.geojson"
@@ -42,31 +44,31 @@ setup_1dboundary:
   boundary_unit: m
   boundary_locs: both
 
-setup_mesh2d:
-  region:
-    geom: "local_data/1D_extent.geojson"
-  res: 100
+# setup_mesh2d:
+#   region:
+#     geom: "local_data/1D_extent.geojson"
+#   res: 100
 
-#setup_mesh2d_refine:
-# sample_fn: citycenter
+# #setup_mesh2d_refine:
+# # sample_fn: citycenter
 
-setup_maps_from_rasterdataset:
-  raster_fn: dem
-  variables: ["elevtn"]
-  fill_method: nearest
-  interpolation_method: nearestNb
-  split_dataset: True
+# setup_maps_from_rasterdataset:
+#   raster_fn: dem
+#   variables: ["elevtn"]
+#   fill_method: nearest
+#   interpolation_method: nearestNb
+#   split_dataset: True
 
-setup_2dboundary:
-  boundaries_fn: 2D_boundary
-  boundaries_timeseries_fn: 2D_boundary_timeseries
-  boundary_type: waterlevel
-  boundary_value: -999
+# setup_2dboundary:
+#   boundaries_fn: 2D_boundary
+#   boundaries_timeseries_fn: 2D_boundary_timeseries
+#   boundary_type: waterlevel
+#   boundary_value: -999
 
-setup_rainfall_from_uniform_timeseries:
-  meteo_timeseries_fn: meteo_timeseries_T2
-  fill_value: 0
-  is_rate: True
+# setup_rainfall_from_uniform_timeseries:
+#   meteo_timeseries_fn: meteo_timeseries_T2
+#   fill_value: 0
+#   is_rate: True
 
-setup_link1d2d:
-  link_direction: 1d_to_2d
+# setup_link1d2d:
+#   link_direction: 1d_to_2d
