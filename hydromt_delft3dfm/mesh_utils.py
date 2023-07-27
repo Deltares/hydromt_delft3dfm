@@ -317,12 +317,14 @@ def mesh_from_hydrolib_network(
     if not network._link1d2d.is_empty():
         link1d2d = links1d2d_from_hydrolib_network(network)
         # Add to mesh (links should only exist if mesh1d and mesh2d exist)
-        for v in link1d2d.data_vars:
-            mesh[v] = link1d2d[v]
+        if mesh is not None:
+            for v in link1d2d.data_vars:
+                mesh[v] = link1d2d[v]
 
     # Set crs
-    for grid in mesh.ugrid.grids:
-        grid.set_crs(crs)
+    if mesh is not None:
+        for grid in mesh.ugrid.grids:
+            grid.set_crs(crs)
 
     return mesh
 
