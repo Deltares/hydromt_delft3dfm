@@ -142,6 +142,18 @@ class DFlowFMModel(MeshModel):
             Default is None.
         crs : EPSG code, int, optional
             EPSG code of the model. By default 4326.
+        dimr_fn: str, optional
+            Path to the dimr configuration file. If None, default dimr configuration file is used.
+            Default is None.
+        network_snap_offset: float, optional
+            Global option for generation of the mesh1d network. Snapping tolerance to automatically connecting branches.
+            By default 25 m.
+        snap_newbranches_to_branches_at_snapnodes: bool, optional
+            Global option for generation of the mesh1d network.
+            By default True.
+        openwater_computation_node_distance: float, optional
+            Global option for generation of the mesh1d network. Distance to generate mesh1d nodes for open water
+            system (rivers, channels). By default 40 m.
         logger
             The logger used to log messages.
         """
