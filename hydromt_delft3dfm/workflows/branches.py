@@ -6,12 +6,13 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import shapely
+from hydromt import gis_utils
 from scipy.spatial import distance
 from shapely.geometry import LineString, MultiLineString, Point
 
+from hydromt_delft3dfm import graph_utils, mesh_utils
+
 from .helper import cut_pieces, split_lines
-from hydromt_delft3dfm import mesh_utils, graph_utils
-from hydromt import gis_utils
 
 logger = logging.getLogger(__name__)
 
@@ -34,8 +35,7 @@ def add_branches(
     snap_newbranches_to_branches_at_snapnodes,
     snap_offset,
 ):
-    """Add branches to exisitng open system branches at mesh1d node locations"""
-
+    """Add branches to exisitng open system branches at mesh1d node locations."""
     if not snap_newbranches_to_branches_at_snapnodes or mesh1d is None:
         # do not perform snap or no mesh nodes to perform snap
         branches = gpd.GeoDataFrame(

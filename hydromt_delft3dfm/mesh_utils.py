@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from typing import List, Union, Tuple
+from typing import Tuple
 
-import numpy as np
-import xarray as xr
 import geopandas as gpd
+import xarray as xr
 import xugrid as xu
-from hydrolib.core.dflowfm import Branch, Network
-import meshkernel as mk
+from hydrolib.core.dflowfm import Network
 from pyproj import CRS
 
 logger = logging.getLogger(__name__)

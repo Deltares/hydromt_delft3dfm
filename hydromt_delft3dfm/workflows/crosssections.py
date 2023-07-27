@@ -2,6 +2,7 @@
 
 import logging
 from typing import Tuple, Union
+
 import geopandas as gpd
 import numpy as np
 import pandas as pd

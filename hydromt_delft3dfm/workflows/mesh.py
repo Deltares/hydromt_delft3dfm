@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from typing import List, Union, Tuple
+from typing import List, Tuple, Union
 
+import geopandas as gpd
+import meshkernel as mk
 import numpy as np
 import xarray as xr
-import geopandas as gpd
 import xugrid as xu
 from hydrolib.core.dflowfm import Branch, Network
-import meshkernel as mk
 from meshkernel import GeometryList
 from shapely.geometry import LineString, MultiLineString, MultiPolygon, Polygon, box
 from shapely.wkt import dumps, loads
-from pyproj import CRS
 
 from .. import mesh_utils as mutils
 
@@ -515,7 +514,7 @@ def links1d2d_add_links_2d_to_1d_embedded(
     within this buffered geometry. 4) Check for each of the corresponding faces if it crossed the
     branches.
 
-    Parameters:
+    Parameters
     ----------
     mesh: xu.UgridDataset
         Network in which the connections are made

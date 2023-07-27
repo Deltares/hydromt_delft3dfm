@@ -2,8 +2,8 @@ import logging
 
 import geopandas as gpd
 from hydromt.workflows import parse_region
-from shapely.geometry import box
 from pyproj.crs import CRS
+from shapely.geometry import box
 
 __all__ = [
     "parse_region_geometry",

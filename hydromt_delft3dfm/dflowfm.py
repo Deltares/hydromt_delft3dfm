@@ -18,11 +18,10 @@ from hydrolib.core.dflowfm import FMModel, IniFieldModel
 from hydrolib.core.dimr import DIMR, FMComponent, Start
 from hydromt.models import MeshModel
 from hydromt.workflows import create_mesh2d
-
 from pyproj import CRS
 from shapely.geometry import LineString, box
 
-from . import DATADIR, utils, mesh_utils, workflows
+from . import DATADIR, mesh_utils, utils, workflows
 
 __all__ = ["DFlowFMModel"]
 logger = logging.getLogger(__name__)
@@ -2046,7 +2045,6 @@ class DFlowFMModel(MeshModel):
             Generated mesh2d.
 
         """  # noqa: E501
-
         # Create the 2dmesh
         mesh2d = create_mesh2d(
             region=region,
