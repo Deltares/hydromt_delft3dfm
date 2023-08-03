@@ -1568,7 +1568,10 @@ class DFlowFMModel(MeshModel):
             By default 0.1, a small snapping is applied to avoid precision errors.
         """
         self.logger.info(f"Preparing 1D {boundary_type} boundaries for {branch_type}.")
-        boundaries = self.boundaries.copy()
+        boundaries = workflows.get_boundaries_with_nodeid(
+            self.branches,
+            mesh_utils.network1d_nodes_geodataframe(self.mesh_datasets["network1d"]),
+        )
         refdate, tstart, tstop = self.get_model_time()  # time slice
 
         # 1. get potential boundary locations based on branch_type and boundary_type
@@ -3422,47 +3425,6 @@ class DFlowFMModel(MeshModel):
             gdf = gpd.GeoDataFrame()
         return gdf
 
-    @property
-    def boundaries(self) -> gpd.GeoDataFrame:
-        """Quick accessor to boundaries geoms."""
-        if "boundaries" in self.geoms:
-            gdf = self.geoms["boundaries"]
-        else:
-            gdf = self.get_boundaries()
-        return gdf
-
-    def get_boundaries(self) -> gpd.GeoDataFrame:
-        """Get all boundary locations from the network
-        branch ends are possible locations for boundaries
-        for open system, both upstream and downstream ends are allowed to have boundaries
-        for closed system, only downstream ends are allowed to have boundaries.
-        """
-        # generate all possible and allowed boundary locations
-        _boundaries = workflows.generate_boundaries_from_branches(
-            self.branches, where="both"
-        )
-
-        # get networkids to complete the boundaries
-        network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
-            self.mesh_datasets["network1d"]
-        )
-        boundaries = hydromt.gis_utils.nearest_merge(
-            _boundaries, network1d_nodes, max_dist=0.1, overwrite=False
-        )
-        return boundaries
-
-    def set_boundaries(self, boundaries: gpd.GeoDataFrame):
-        """Updates boundaries in geoms with new ones."""
-        if len(self.boundaries) > 0:
-
-            def task_last(s1, s2):
-                return s2
-
-            boundaries = self.boundaries.combine(
-                boundaries, func=task_last, overwrite=True
-            )
-        self.set_geoms(boundaries, name="boundaries")
-
     def get_model_time(self):
         """Return (refdate, tstart, tstop) tuple with parsed model reference datem start and end time."""
         refdate = datetime.strptime(str(self.get_config("time.refdate")), "%Y%m%d")
@@ -3528,7 +3490,15 @@ class DFlowFMModel(MeshModel):
         if overwrite_grid or new_grid:
             # 1D boundaries
             if grid_name == "mesh1d":
-                self.set_geoms(self.get_boundaries(), "boundaries")
+                self.set_geoms(
+                    workflows.get_boundaries_with_nodeid(
+                        self.branches,
+                        mesh_utils.network1d_nodes_geodataframe(
+                            self.mesh_datasets["network1d"]
+                        ),
+                    ),
+                    "boundaries",
+                )
 
     def set_link1d2d(
         self,
