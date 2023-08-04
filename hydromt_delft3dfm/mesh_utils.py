@@ -108,6 +108,7 @@ def mesh1d_network1d_from_hydrolib_network(
     mesh1d = network._mesh1d
 
     if not mesh1d.is_empty():
+        # FIXME because naming is hamonized with hydrolib-core, check if below can be simplified using __getattributes__
         _mesh1d_attrs = [k for k in mesh1d.__dict__.keys() if k.startswith("mesh1d")]
         _network1d_attrs = [
             k for k in mesh1d.__dict__.keys() if k.startswith("network1d")
@@ -160,7 +161,6 @@ def mesh1d_network1d_from_hydrolib_network(
 
         # get data
         ds_network = xr.Dataset()
-        # FIXME because naming is hamonized with hydrolib-core, check if below can be simplified using __getattributes__
         ds_network["network1d_node_id"] = (network_node_dim, mesh1d.network1d_node_id)
         ds_network["network1d_node_long_name"] = (
             network_node_dim,
