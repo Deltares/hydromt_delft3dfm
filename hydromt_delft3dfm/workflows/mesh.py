@@ -54,6 +54,10 @@ def mesh1d_network1d_from_branches(
         Mesh1d UgridDataset.
     uds_network1d : xu.UgridDataset
         Network1d UgridDataset.
+        Note that it is part of the Deltares-0.11 conventions.
+        These newly proposed conventions should currently be seen as an extension
+        on top of the regular CF-conventions (≥1.8) and, in particular, on top of the UGRID (1.0)
+        conventions.
     """
     crs = opensystem.crs
 

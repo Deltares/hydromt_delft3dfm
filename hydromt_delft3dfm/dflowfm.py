@@ -3163,21 +3163,18 @@ class DFlowFMModel(MeshModel):
         self._mesh = mesh
 
         # update resolution
-        if not network._mesh2d.is_empty():
+        if "mesh2d" in self.mesh_names:
             if self._res is None:
-                np.diff(self.mesh_grids["mesh2d"].node_x)
+                self._res = np.max(np.diff(self.mesh_grids["mesh2d"].node_x))
 
-        # creates branches geometry from network
-        if not network._mesh1d.is_empty():
-            mesh1d = network._mesh1d
-            branch_id = mesh1d.network1d_branch_id
-            # Create the GeoDataFrame
-            branches = gpd.GeoDataFrame(
-                geometry=[LineString(mesh1d.branches[i].geometry) for i in branch_id],
-                crs=crs,
-            )
-            branches["branchid"] = branch_id
-            branches["branchorder"] = mesh1d.network1d_branch_order
+        # creates branches geometry from network1d
+        if "network1d" in self.mesh_names:
+            network1d = self.mesh_gdf["network1d"]
+            # Create the branches GeoDataFrame
+            branches = network1d[["geometry"]]
+            branches["branchid"] = network1d["network1d_branch_id"]
+            branches["branchorder"] = network1d["network1d_branch_order"]
+            # branches["branchtype"] = network1d["network1d_branch_type"] # might support in the future https://github.com/Deltares/HYDROLIB-core/issues/561
 
             # Add branchtype, properties from branches.gui file
             self.logger.info("Reading branches GUI file")
@@ -3195,8 +3192,12 @@ class DFlowFMModel(MeshModel):
         # write mesh
         # hydromt convention - FIXME hydrolib does not seem to read the 1D and links part of the mesh
         # super().write_mesh(fn=join(savedir, mesh_filename))
+        # FIXME crs cannot be write/read correctly by xugrid https://github.com/Deltares/xugrid/issues/138
 
         # write with hydrolib-core
+        # Note: hydrolib-core writes more information including attributes and converts some variables using start_index
+        # FIXME: does not write crs. check https://github.com/Deltares/dfm_tools/blob/main/dfm_tools/meshkernel_helpers.py#L82
+        # FIXME: question: Do we always need to read and write the mesh? there are updates that are related to geometry changes and not related geometry changes. The latter might not need a read/write.
         network = mesh_utils.hydrolib_network_from_mesh(self.mesh)
         network.to_file(Path(join(savedir, mesh_filename)))
 
@@ -3208,6 +3209,7 @@ class DFlowFMModel(MeshModel):
             self.logger.info("Writting branches.gui file")
             if "manholes" in self.geoms:
                 self.geoms["manholes"]
+            # might not needed in the future if branch_type can be supported in the mesh https://github.com/Deltares/HYDROLIB-core/issues/561
             _ = utils.write_branches_gui(self.branches, savedir)
 
     def read_states(self):

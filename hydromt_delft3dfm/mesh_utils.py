@@ -45,63 +45,31 @@ def hydrolib_network_from_mesh(
 
     # create network
     dfm_network = Network(is_geographic=mesh.ugrid.grids[0].crs.is_geographic)
+    _mesh1d_attrs = dfm_network._mesh1d.__dict__.keys()
 
     # add mesh2d
     if "mesh2d" in grids:
-        dfm_network._mesh2d._process(grids["mesh2d"].mesh)
+        dfm_network._mesh2d._process(
+            grids["mesh2d"].mesh
+        )  # FIXME: test what if the mesh had bedlevel variable
 
-    # add mesh1d and networkd1d
+    # add mesh1d (including mesh1d and networkd1d)
     if "mesh1d" in grids:
-        # set hydrolib Mesh1d atribute one by one and then add to network
-        # mesh1d and network1d variables
-        mesh1d_dict = {
-            "mesh1d_node_id": "mesh1d_node_id",
-            "mesh1d_node_long_name": "mesh1d_node_long_name",
-            "mesh1d_node_x": "mesh1d_node_x",
-            "mesh1d_node_y": "mesh1d_node_y",
-            "mesh1d_node_branch_id": "mesh1d_node_branch",
-            "mesh1d_node_branch_offset": "mesh1d_node_offset",
-            "mesh1d_edge_nodes": "mesh1d_edge_nodes",
-            "mesh1d_edge_x": "mesh1d_edge_x",
-            "mesh1d_edge_y": "mesh1d_edge_y",
-            "mesh1d_edge_branch_id": "mesh1d_edge_branch",
-            "mesh1d_edge_branch_offset": "mesh1d_edge_offset",
-            "network1d_node_id": "network1d_node_id",
-            "network1d_node_long_name": "network1d_node_long_name",
-            "network1d_node_x": "network1d_node_x",
-            "network1d_node_y": "network1d_node_y",
-            "network1d_branch_id": "network1d_branch_id",
-            "network1d_branch_long_name": "network1d_branch_long_name",
-            "network1d_branch_length": "network1d_edge_length",
-            "network1d_branch_order": "network1d_branch_order",
-            "network1d_edge_nodes": "network1d_edge_nodes",
-            "network1d_part_node_count": "network1d_geom_node_count",
-            "network1d_geom_x": "network1d_geom_x",
-            "network1d_geom_y": "network1d_geom_y",
-        }
-        for hydrolibkey, meshkey in mesh1d_dict.items():
-            # Key in the UgridDataset
-            if meshkey in mesh:
-                setattr(dfm_network._mesh1d, hydrolibkey, mesh[meshkey].values)
-            # Key in Ugrid1D
-            elif meshkey in grids["mesh1d"].to_dataset():
-                setattr(
-                    dfm_network._mesh1d,
-                    hydrolibkey,
-                    grids["mesh1d"].to_dataset()[meshkey].values,
-                )
-            elif meshkey in grids["network1d"].to_dataset():
-                setattr(
-                    dfm_network._mesh1d,
-                    hydrolibkey,
-                    grids["network1d"].to_dataset()[meshkey].values,
-                )
+        mesh1d = mesh.ugrid.to_dataset(
+            optional_attributes=True
+        )  # optional_attributes includes edge_x and edge_y
+        for var, val in mesh1d.variables.items():
+            if var in _mesh1d_attrs:
+                # use hydrolib-core conventions as it does harmonization when reading.
+                # check conventions at https://github.com/Deltares/HYDROLIB-core/blob/main/hydrolib/core/dflowfm/net/ugrid_conventions.json
 
+                setattr(dfm_network._mesh1d, var, val.values)
         # process
         dfm_network._mesh1d._process_network1d()
+        dfm_network._mesh1d._set_mesh1d()
 
     # add 1d2dlinks
-    if "link1d2d" in mesh:
+    if "link1d2d" in mesh:  # FIXME remove renaming
         link1d2d_dict = {
             "link1d2d": "link1d2d",
             "link1d2d_id": "link1d2d_ids",
@@ -140,7 +108,13 @@ def mesh1d_network1d_from_hydrolib_network(
     mesh1d = network._mesh1d
 
     if not mesh1d.is_empty():
-        uds_mesh1d = xu.Ugrid1d(
+        _mesh1d_attrs = [k for k in mesh1d.__dict__.keys() if k.startswith("mesh1d")]
+        _network1d_attrs = [
+            k for k in mesh1d.__dict__.keys() if k.startswith("network1d")
+        ]
+
+        # get grid
+        grid_mesh1d = xu.Ugrid1d(
             node_x=mesh1d.mesh1d_node_x,
             node_y=mesh1d.mesh1d_node_y,
             fill_value=-1,
@@ -149,21 +123,29 @@ def mesh1d_network1d_from_hydrolib_network(
             projected=crs.is_projected,
             crs=crs,
         )
-        # Convert to UgridDataset
-        uds_mesh1d = xu.UgridDataset(uds_mesh1d.to_dataset()).ugrid.assign_edge_coords()
-        uds_mesh1d.ugrid.set_crs(crs)
-        # Add extra properties
-        edge_dim = uds_mesh1d.ugrid.grid.edge_dimension
-        node_dim = uds_mesh1d.ugrid.grid.node_dimension
-        uds_mesh1d["mesh1d_node_id"] = (node_dim, mesh1d.mesh1d_node_id)
-        uds_mesh1d["mesh1d_node_long_name"] = (node_dim, mesh1d.mesh1d_node_long_name)
-        uds_mesh1d["mesh1d_node_branch"] = (node_dim, mesh1d.mesh1d_node_branch_id)
-        uds_mesh1d["mesh1d_node_offset"] = (node_dim, mesh1d.mesh1d_node_branch_offset)
-        uds_mesh1d["mesh1d_edge_branch"] = (edge_dim, mesh1d.mesh1d_edge_branch_id)
-        uds_mesh1d["mesh1d_edge_offset"] = (edge_dim, mesh1d.mesh1d_edge_branch_offset)
+        grid_mesh1d.set_crs(crs)
+        edge_dim = grid_mesh1d.edge_dimension
+        node_dim = grid_mesh1d.node_dimension
+
+        # get data
+        ds = xr.Dataset()
+        ds["mesh1d_node_id"] = (node_dim, mesh1d.mesh1d_node_id)
+        ds["mesh1d_node_long_name"] = (node_dim, mesh1d.mesh1d_node_long_name)
+        ds["mesh1d_node_branch_id"] = (node_dim, mesh1d.mesh1d_node_branch_id)
+        ds["mesh1d_node_branch_offset"] = (node_dim, mesh1d.mesh1d_node_branch_offset)
+        ds["mesh1d_edge_branch_id"] = (edge_dim, mesh1d.mesh1d_edge_branch_id)
+        ds["mesh1d_edge_branch_offset"] = (edge_dim, mesh1d.mesh1d_edge_branch_offset)
+
+        # get ugrid dataset
+        uds_mesh1d = xu.UgridDataset(ds, grids=grid_mesh1d)
 
         # derive network1d
-        uds_network1d = xu.Ugrid1d(
+        # The 1D network topology serves as the coordinate space in which a 1D mesh discretization
+        # will later be defined. The network is largely based on the UGRID conventions for its topology
+        # (i.e., nodes and edges) and additionally uses an optional edge_geometry to define the
+        # precise network branch geometries (more about this in the next Section).
+
+        grid_network1d = xu.Ugrid1d(
             node_x=mesh1d.network1d_node_x,
             node_y=mesh1d.network1d_node_y,
             fill_value=-1,
@@ -172,44 +154,55 @@ def mesh1d_network1d_from_hydrolib_network(
             projected=crs.is_projected,
             crs=crs,
         )
-        # Convert to UgridDataset
-        uds_network1d = xu.UgridDataset(
-            uds_network1d.to_dataset()
-        ).ugrid.assign_edge_coords()
-        uds_network1d.ugrid.set_crs(crs)
-        # Add extra properties
-        edge_dim = uds_network1d.ugrid.grid.edge_dimension
-        node_dim = uds_network1d.ugrid.grid.node_dimension
-        uds_network1d["network1d_node_id"] = (node_dim, mesh1d.network1d_node_id)
-        uds_network1d["network1d_node_long_name"] = (
-            node_dim,
+        grid_network1d.set_crs(crs)
+        network_edge_dim = grid_network1d.edge_dimension
+        network_node_dim = grid_network1d.node_dimension
+
+        # get data
+        ds_network = xr.Dataset()
+        # FIXME because naming is hamonized with hydrolib-core, check if below can be simplified using __getattributes__
+        ds_network["network1d_node_id"] = (network_node_dim, mesh1d.network1d_node_id)
+        ds_network["network1d_node_long_name"] = (
+            network_node_dim,
             mesh1d.network1d_node_long_name,
         )
-        uds_network1d["network1d_branch_id"] = (edge_dim, mesh1d.network1d_branch_id)
-        uds_network1d["network1d_branch_long_name"] = (
-            edge_dim,
+        ds_network["network1d_branch_id"] = (
+            network_edge_dim,
+            mesh1d.network1d_branch_id,
+        )
+        ds_network["network1d_branch_long_name"] = (
+            network_edge_dim,
             mesh1d.network1d_branch_long_name,
         )
-        uds_network1d["network1d_edge_length"] = (
-            edge_dim,
-            mesh1d.network1d_branch_length,
+        ds_network["network1d_branch_length"] = (
+            network_edge_dim,
+            mesh1d.network1d_branch_length,  # real length of the branches
         )
-        uds_network1d["network1d_branch_order"] = (
-            edge_dim,
-            mesh1d.network1d_branch_order,
-        )
-        uds_network1d["network1d_geom_node_count"] = (
-            edge_dim,
+        # network1d_geometry related
+        ds_network["network1d_part_node_count"] = (
+            network_edge_dim,
             mesh1d.network1d_part_node_count,
         )
-        uds_network1d["network1d_geom_x"] = (
+        ds_network["network1d_geom_x"] = (
             "network1d_nGeometryNodes",
             mesh1d.network1d_geom_x,
         )
-        uds_network1d["network1d_geom_y"] = (
+        ds_network["network1d_geom_y"] = (
             "network1d_nGeometryNodes",
             mesh1d.network1d_geom_y,
         )
+        ds_network["network1d_branch_order"] = (
+            network_edge_dim,
+            mesh1d.network1d_branch_order,
+        )
+        # might be supported in the future https://github.com/Deltares/HYDROLIB-core/issues/561
+        # ds["network1d_branch_type"] = (
+        #     edge_dim,
+        #     mesh1d.network1d_branch_type,
+        # )
+
+        # get ugrid dataset
+        uds_network1d = xu.UgridDataset(ds, grids=grid_network1d)
 
     else:
         uds_mesh1d = None
@@ -352,14 +345,14 @@ def mesh1d_nodes_geodataframe(
         y=uds_mesh1d.ugrid.grid.node_y,
         crs=uds_mesh1d.ugrid.grid.crs,
     )
-    # Creates gdf with some extra data
+    # Creates gdf with some extra data (using hydrolib-core convention)
     mesh1d_nodes = gpd.GeoDataFrame(
         data={
-            "branch_id": uds_mesh1d["mesh1d_node_branch"],
+            "branch_id": uds_mesh1d["mesh1d_node_branch_id"],
             "branch_name": [
-                branches.branchid[i] for i in uds_mesh1d["mesh1d_node_branch"].values
+                branches.branchid[i] for i in uds_mesh1d["mesh1d_node_branch_id"].values
             ],
-            "branch_chainage": uds_mesh1d["mesh1d_node_offset"],
+            "branch_chainage": uds_mesh1d["mesh1d_node_branch_offset"],
             "geometry": mesh1d_nodes,
         }
     )
