@@ -1456,7 +1456,7 @@ class DFlowFMModel(MeshModel):
         if dem_fn is not None:
             self.logger.info("overwriting manholes street level from dem. ")
             dem = self.data_catalog.get_rasterdataset(
-                dem_fn, geom=self.region, variables=["elevtn"]
+                dem_fn, geom=self.region, variables=["elevtn"], buffer = self._network_snap_offset
             )
             # reproject of manholes is done in sample method
             manholes["_streetlevel_dem"] = dem.raster.sample(manholes).values
@@ -3194,7 +3194,7 @@ class DFlowFMModel(MeshModel):
 
         # write mesh
         # hydromt convention - FIXME hydrolib does not seem to read the 1D and links part of the mesh
-        super().write_mesh(fn=join(savedir, mesh_filename))
+        # super().write_mesh(fn=join(savedir, mesh_filename))
         # FIXME crs cannot be write/read correctly by xugrid https://github.com/Deltares/xugrid/issues/138
 
         # write with hydrolib-core
@@ -3204,7 +3204,7 @@ class DFlowFMModel(MeshModel):
         # FIXME: xugrid hydrolib-core hamonizarion discussion would be nice.
 
         network = mesh_utils.hydrolib_network_from_mesh(self.mesh)
-        # network.to_file(Path(join(savedir, mesh_filename)))
+        network.to_file(Path(join(savedir, mesh_filename)))
 
         # save relative path to mdu
         self.set_config("geometry.netfile", mesh_filename)
@@ -3271,7 +3271,7 @@ class DFlowFMModel(MeshModel):
                 )
             region = gpd.GeoDataFrame(
                 geometry=[box(*bounds)], crs=crs
-            )  # FIXME some buffering is needed --> add to get_rasterdataset method, default buffer + maybe use buffer kwargs that can be passed on by the user to the read data method.
+            )  
             self.set_geoms(region, "region")
 
         return region
