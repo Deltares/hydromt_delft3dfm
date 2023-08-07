@@ -2523,7 +2523,10 @@ class DFlowFMModel(MeshModel):
         if boundary_type == "discharge":
             boundary_unit = "m3/s"
 
-        _mesh_region = self._mesh.ugrid.to_geodataframe().unary_union
+        _mesh = self.mesh_grids["mesh2d"]
+        _mesh_region = gpd.GeoDataFrame(
+            geometry=_mesh.to_shapely(dim=_mesh.face_dimension)
+        ).unary_union
         _boundary_region = _mesh_region.buffer(tolerance * self.res).difference(
             _mesh_region
         )  # region where 2d boundary is allowed
@@ -3191,15 +3194,17 @@ class DFlowFMModel(MeshModel):
 
         # write mesh
         # hydromt convention - FIXME hydrolib does not seem to read the 1D and links part of the mesh
-        # super().write_mesh(fn=join(savedir, mesh_filename))
+        super().write_mesh(fn=join(savedir, mesh_filename))
         # FIXME crs cannot be write/read correctly by xugrid https://github.com/Deltares/xugrid/issues/138
 
         # write with hydrolib-core
         # Note: hydrolib-core writes more information including attributes and converts some variables using start_index
         # FIXME: does not write crs. check https://github.com/Deltares/dfm_tools/blob/main/dfm_tools/meshkernel_helpers.py#L82
         # FIXME: question: Do we always need to read and write the mesh? there are updates that are related to geometry changes and not related geometry changes. The latter might not need a read/write.
+        # FIXME: xugrid hydrolib-core hamonizarion discussion would be nice.
+
         network = mesh_utils.hydrolib_network_from_mesh(self.mesh)
-        network.to_file(Path(join(savedir, mesh_filename)))
+        # network.to_file(Path(join(savedir, mesh_filename)))
 
         # save relative path to mdu
         self.set_config("geometry.netfile", mesh_filename)
@@ -3266,7 +3271,7 @@ class DFlowFMModel(MeshModel):
                 )
             region = gpd.GeoDataFrame(
                 geometry=[box(*bounds)], crs=crs
-            )  # FIXME some buffering is needed
+            )  # FIXME some buffering is needed --> add to get_rasterdataset method, default buffer + maybe use buffer kwargs that can be passed on by the user to the read data method.
             self.set_geoms(region, "region")
 
         return region

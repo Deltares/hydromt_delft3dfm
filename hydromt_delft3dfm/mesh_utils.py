@@ -61,8 +61,7 @@ def hydrolib_network_from_mesh(
         for var, val in mesh1d.variables.items():
             if var in _mesh1d_attrs:
                 # use hydrolib-core conventions as it does harmonization when reading.
-                # check conventions at https://github.com/Deltares/HYDROLIB-core/blob/main/hydrolib/core/dflowfm/net/ugrid_conventions.json
-
+                # check conventions at hydrolib.core.dflowfm.net.ugrid_conventions.json
                 setattr(dfm_network._mesh1d, var, val.values)
         # process
         dfm_network._mesh1d._process_network1d()
@@ -108,12 +107,6 @@ def mesh1d_network1d_from_hydrolib_network(
     mesh1d = network._mesh1d
 
     if not mesh1d.is_empty():
-        # FIXME because naming is hamonized with hydrolib-core, check if below can be simplified using __getattributes__
-        _mesh1d_attrs = [k for k in mesh1d.__dict__.keys() if k.startswith("mesh1d")]
-        _network1d_attrs = [
-            k for k in mesh1d.__dict__.keys() if k.startswith("network1d")
-        ]
-
         # get grid
         grid_mesh1d = xu.Ugrid1d(
             node_x=mesh1d.mesh1d_node_x,
@@ -244,6 +237,47 @@ def links1d2d_from_hydrolib_network(
     return link1d2d
 
 
+def mesh2d_from_hydrolib_network(
+    network: Network,
+    crs: CRS,
+) -> xu.UgridDataset:
+    """
+    Creates xugrid mesh2d UgridDataset from hydrolib-core network object.
+
+    Parameters
+    ----------
+    network : Network
+        Network hydrolib-core object.
+    crs : pyproj.CRS
+        Coordinate reference system of the network.
+
+    Returns
+    -------
+    uds_mesh2d : xu.UgridDataset
+        Mesh2d UgridDataset.
+    """
+    mesh2d = network._mesh2d
+
+    # meshkernel to xugrid Ugrid2D
+    uds_mesh2d = xu.Ugrid2d(
+        node_x=mesh2d.mesh2d_node_x,
+        node_y=mesh2d.mesh2d_node_y,
+        fill_value=-1,
+        face_node_connectivity=mesh2d.mesh2d_face_nodes,
+        edge_node_connectivity=mesh2d.mesh2d_edge_nodes,
+        name="mesh2d",
+        projected=crs.is_projected,
+        crs=crs,
+    )
+    # Convert to UgridDataset
+    uds_mesh2d = xu.UgridDataset(uds_mesh2d.to_dataset())
+    uds_mesh2d = uds_mesh2d.ugrid.assign_face_coords()
+
+    # set crs
+    uds_mesh2d.ugrid.set_crs(crs)
+    return uds_mesh2d
+
+
 def mesh_from_hydrolib_network(
     network: Network,
     crs: CRS,
@@ -279,23 +313,7 @@ def mesh_from_hydrolib_network(
     # Mesh2d
     if not network._mesh2d.is_empty():
         # network._mesh2d._set_mesh2d()
-        mesh2d = network._mesh2d
-
-        # meshkernel to xugrid Ugrid2D
-        uds_mesh2d = xu.Ugrid2d(
-            node_x=mesh2d.mesh2d_node_x,
-            node_y=mesh2d.mesh2d_node_y,
-            fill_value=-1,
-            face_node_connectivity=mesh2d.mesh2d_face_nodes,
-            edge_node_connectivity=mesh2d.mesh2d_edge_nodes,
-            name="mesh2d",
-            projected=crs.is_projected,
-            crs=crs,
-        )
-        # Convert to UgridDataset
-        uds_mesh2d = xu.UgridDataset(uds_mesh2d.to_dataset())
-        uds_mesh2d = uds_mesh2d.ugrid.assign_face_coords()
-        uds_mesh2d.ugrid.set_crs(crs)
+        uds_mesh2d = mesh2d_from_hydrolib_network(network, crs)
 
         if mesh is None:
             mesh = uds_mesh2d
