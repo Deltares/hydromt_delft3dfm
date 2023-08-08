@@ -1456,7 +1456,10 @@ class DFlowFMModel(MeshModel):
         if dem_fn is not None:
             self.logger.info("overwriting manholes street level from dem. ")
             dem = self.data_catalog.get_rasterdataset(
-                dem_fn, geom=self.region, variables=["elevtn"], buffer = self._network_snap_offset
+                dem_fn,
+                geom=self.region,
+                variables=["elevtn"],
+                buffer=self._network_snap_offset,
             )
             # reproject of manholes is done in sample method
             manholes["_streetlevel_dem"] = dem.raster.sample(manholes).values
@@ -3185,6 +3188,7 @@ class DFlowFMModel(MeshModel):
 
             # Set branches
             self._branches = branches
+            self.set_geoms(branches, "branches")
 
     def write_mesh(self, write_gui=True):
         """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc> in model ready format."""
@@ -3269,9 +3273,7 @@ class DFlowFMModel(MeshModel):
                 raise ValueError(
                     "Could not derive region from geoms, or mesh. Model may be empty."
                 )
-            region = gpd.GeoDataFrame(
-                geometry=[box(*bounds)], crs=crs
-            )  
+            region = gpd.GeoDataFrame(geometry=[box(*bounds)], crs=crs)
             self.set_geoms(region, "region")
 
         return region
