@@ -71,8 +71,7 @@ Attributes
    DFlowFMModel.pipes
    DFlowFMModel.opensystem
    DFlowFMModel.closedsystem
-   DFlowFMModel.crosssections
-   DFlowFMModel.boundaries
+
 
 High level methods
 ------------------
@@ -128,13 +127,6 @@ General methods
    DFlowFMModel.read_dimr
    DFlowFMModel.write_dimr
 
-   DFlowFMModel.set_branches
-   DFlowFMModel.add_branches
-
-   DFlowFMModel.add_crosssections
-
-   DFlowFMModel.get_boundaries
-   DFlowFMModel.set_boundaries
 
    DFlowFMModel.get_model_time
 
