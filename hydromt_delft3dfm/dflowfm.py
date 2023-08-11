@@ -2209,10 +2209,11 @@ class DFlowFMModel(MeshModel):
             self.logger.error(
                 "cannot setup link1d2d: either mesh1d or mesh2d or both do not exist"
             )
+            return None
 
-        # if not self.link1d2d.is_empty():
-        #    self.logger.warning("adding to existing link1d2d: link1d2d already exists")
-        #    # FIXME: question - how to seperate if the user wants to update the entire 1d2d links object or simply wants to add another set of links?
+        # if "link1d2d" in self.mesh_names:
+        #     self.logger.warning("adding to existing link1d2d: link1d2d already exists")
+        #    # FIXME: question - how to seperate if the user wants to update the entire 1d2d links object or simply wants to add another set of links? #1
         #    # TODO: would be nice in hydrolib to allow clear of subset of 1d2d links for specific branches
 
         # check input
@@ -3175,12 +3176,13 @@ class DFlowFMModel(MeshModel):
 
         # creates branches geometry from network1d
         if "network1d" in self.mesh_names:
-            network1d = self.mesh_gdf["network1d"]
+            network1d_geometry = self.mesh_gdf["network1d"]
+            network1d_dataset = self.mesh_datasets["network1d"]
             # Create the branches GeoDataFrame
-            branches = network1d[["geometry"]]
-            branches["branchid"] = network1d["network1d_branch_id"]
-            branches["branchorder"] = network1d["network1d_branch_order"]
-            # branches["branchtype"] = network1d["network1d_branch_type"] # might support in the future https://github.com/Deltares/HYDROLIB-core/issues/561
+            branches = network1d_geometry
+            branches["branchid"] = network1d_dataset["network1d_branch_id"]
+            branches["branchorder"] = network1d_dataset["network1d_branch_order"]
+            # branches["branchtype"] = network1d_dataset["network1d_branch_type"] # might support in the future https://github.com/Deltares/HYDROLIB-core/issues/561
 
             # Add branchtype, properties from branches.gui file
             self.logger.info("Reading branches GUI file")
@@ -3203,7 +3205,7 @@ class DFlowFMModel(MeshModel):
 
         # write with hydrolib-core
         # Note: hydrolib-core writes more information including attributes and converts some variables using start_index
-        # FIXME: does not write crs. check https://github.com/Deltares/dfm_tools/blob/main/dfm_tools/meshkernel_helpers.py#L82
+        # FIXME: does not write crs that is recongnised by Delft3D FM GUI. check https://github.com/Deltares/dfm_tools/blob/main/dfm_tools/meshkernel_helpers.py#L82
         # FIXME: question: Do we always need to read and write the mesh? there are updates that are related to geometry changes and not related geometry changes. The latter might not need a read/write.
         # FIXME: xugrid hydrolib-core hamonizarion discussion would be nice.
 
@@ -3461,7 +3463,7 @@ class DFlowFMModel(MeshModel):
         Parameters
         ----------
         data: xugrid.UgridDataArray or xugrid.UgridDataset
-            new layer to add to mesh, TODO support one grid only or multiple grids?
+            new layer to add to mesh
         name: str, optional
             Name of new object layer, this is used to overwrite the name of
             a UgridDataArray.
@@ -3522,6 +3524,7 @@ class DFlowFMModel(MeshModel):
             link1d2d dataset with variables: [link1d2d, link1d2d_ids, link1d2d_long_names, link1d2d_contact_type]
         """
         # Check if link1d2d already in self.mesh
+        # FIXME current implementation of below does not support updating partial 1d2d links. Either document or adapt. #1
         if "link1d2d" in self.mesh.data_vars:
             self.logger.info("Overwriting existing link1d2d in self.mesh.")
             self._mesh = self._mesh.drop_vars(

@@ -153,38 +153,38 @@ def mesh1d_network1d_from_hydrolib_network(
         network_node_dim = grid_network1d.node_dimension
 
         # get data
-        ds_network = xr.Dataset()
-        ds_network["network1d_node_id"] = (network_node_dim, mesh1d.network1d_node_id)
-        ds_network["network1d_node_long_name"] = (
+        ds_network1d = xr.Dataset()
+        ds_network1d["network1d_node_id"] = (network_node_dim, mesh1d.network1d_node_id)
+        ds_network1d["network1d_node_long_name"] = (
             network_node_dim,
             mesh1d.network1d_node_long_name,
         )
-        ds_network["network1d_branch_id"] = (
+        ds_network1d["network1d_branch_id"] = (
             network_edge_dim,
             mesh1d.network1d_branch_id,
         )
-        ds_network["network1d_branch_long_name"] = (
+        ds_network1d["network1d_branch_long_name"] = (
             network_edge_dim,
             mesh1d.network1d_branch_long_name,
         )
-        ds_network["network1d_branch_length"] = (
+        ds_network1d["network1d_branch_length"] = (
             network_edge_dim,
             mesh1d.network1d_branch_length,  # real length of the branches
         )
         # network1d_geometry related
-        ds_network["network1d_part_node_count"] = (
+        ds_network1d["network1d_part_node_count"] = (
             network_edge_dim,
             mesh1d.network1d_part_node_count,
         )
-        ds_network["network1d_geom_x"] = (
+        ds_network1d["network1d_geom_x"] = (
             "network1d_nGeometryNodes",
             mesh1d.network1d_geom_x,
         )
-        ds_network["network1d_geom_y"] = (
+        ds_network1d["network1d_geom_y"] = (
             "network1d_nGeometryNodes",
             mesh1d.network1d_geom_y,
         )
-        ds_network["network1d_branch_order"] = (
+        ds_network1d["network1d_branch_order"] = (
             network_edge_dim,
             mesh1d.network1d_branch_order,
         )
@@ -195,7 +195,7 @@ def mesh1d_network1d_from_hydrolib_network(
         # )
 
         # get ugrid dataset
-        uds_network1d = xu.UgridDataset(ds, grids=grid_network1d)
+        uds_network1d = xu.UgridDataset(ds_network1d, grids=grid_network1d)
 
     else:
         uds_mesh1d = None
@@ -224,8 +224,8 @@ def links1d2d_from_hydrolib_network(
     link1d2d = xr.Dataset()
     link1d2d["link1d2d"] = (["nLink1D2D_edge", "Two"], network._link1d2d.link1d2d)
     # extra variables
-    link1d2d["link1d2d_ids"] = ("nLink1D2D_edge", network._link1d2d.link1d2d_id)
-    link1d2d["link1d2d_long_names"] = (
+    link1d2d["link1d2d_id"] = ("nLink1D2D_edge", network._link1d2d.link1d2d_id)
+    link1d2d["link1d2d_long_name"] = (
         "nLink1D2D_edge",
         network._link1d2d.link1d2d_long_name,
     )
@@ -301,8 +301,7 @@ def mesh_from_hydrolib_network(
     mesh = None
 
     # Mesh1d to mesh1d and network1d xugrid
-    mesh1d = network._mesh1d
-    if not mesh1d.is_empty():
+    if not network._mesh1d.is_empty():
         uds_mesh1d, uds_network1d = mesh1d_network1d_from_hydrolib_network(network, crs)
 
         # add to mesh
@@ -319,7 +318,12 @@ def mesh_from_hydrolib_network(
             mesh = uds_mesh2d
         else:
             mesh = xu.UgridDataset(
-                xr.merge([mesh.ugrid.to_dataset(), uds_mesh2d.ugrid.to_dataset()])
+                xr.merge(
+                    [
+                        mesh.ugrid.to_dataset(optional_attributes=True),
+                        uds_mesh2d.ugrid.to_dataset(optional_attributes=True),
+                    ]
+                )
             )
 
     # 1d2dlinks
