@@ -19,7 +19,7 @@ _models = {
         "model": DFlowFMModel,
         "data": "artifact_data",
         "snap_offset": 25,
-        "crs": 3857,
+        "crs": 3857,  # global section needs to be passed to build as arguments
     },
     "local": {
         "example": "dflowfm_local",
@@ -27,7 +27,7 @@ _models = {
         "model": DFlowFMModel,
         "data": join(TESTDATADIR, "test_data.yaml"),
         "snap_offset": 25,
-        "crs": 32647,
+        "crs": 32647,  # global section needs to be passed to build as arguments
     },
 }
 

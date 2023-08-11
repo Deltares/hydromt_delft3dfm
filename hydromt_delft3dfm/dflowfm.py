@@ -1019,6 +1019,7 @@ class DFlowFMModel(MeshModel):
             * {'bbox': [xmin, ymin, xmax, ymax]}
 
             * {'geom': 'path/to/polygon_geometry'}
+            Note that only manholes within the region are kept.
         pipes_fn : str
             Name of data source for pipes parameters, see data/data_sources.yml.
             Note only the lines that are within the region polygon will be used.
@@ -1080,8 +1081,8 @@ class DFlowFMModel(MeshModel):
             "invlev_up",
             "inlev_dn",
         ]
-
-        # Build the rivers branches and nodes and fill with attributes and spacing
+        _region = workflows.parse_region_geometry(region, self.crs)
+        # Build the pipe branches and nodes and fill with attributes and spacing
         pipes, pipe_nodes = self._setup_branches(
             region=region,
             br_fn=pipes_fn,
@@ -1097,7 +1098,8 @@ class DFlowFMModel(MeshModel):
             allowed_columns=_allowed_columns,
             filter=pipe_filter,
         )
-
+        # filter extra time for geting clipped pipes within the region (better match)
+        pipes = gpd.sjoin(pipes, _region, predicate="within")
         # setup crosssections
         # setup invert levels
         # 1. check if invlev up and dn are fully filled in (nothing needs to be done)
@@ -1119,8 +1121,9 @@ class DFlowFMModel(MeshModel):
         if fill_invlev and dem_fn is not None:
             dem = self.data_catalog.get_rasterdataset(
                 dem_fn,
-                geom=self.region.buffer(1000),
-                variables=["elevtn"],  # FIXME Xiaohan: temporary fix
+                geom=_region,
+                buffer=self._network_snap_offset,
+                variables=["elevtn"],
             )
             pipes = workflows.invert_levels_from_dem(
                 gdf=pipes, dem=dem, depth=pipes_depth
@@ -1433,7 +1436,10 @@ class DFlowFMModel(MeshModel):
             self.logger.info(f"reading manholes street level from file {manholes_fn}. ")
             # read
             gdf_manhole = self.data_catalog.get_geodataframe(
-                manholes_fn, geom=self.region, buffer=0, predicate="contains"
+                manholes_fn,
+                geom=self.region,
+                buffer=self._network_snap_offset,
+                predicate="contains",
             )
             # reproject
             if gdf_manhole.crs != self.crs:

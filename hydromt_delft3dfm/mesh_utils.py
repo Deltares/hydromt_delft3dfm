@@ -68,16 +68,12 @@ def hydrolib_network_from_mesh(
         dfm_network._mesh1d._set_mesh1d()
 
     # add 1d2dlinks
-    if "link1d2d" in mesh:  # FIXME remove renaming
-        link1d2d_dict = {
-            "link1d2d": "link1d2d",
-            "link1d2d_id": "link1d2d_ids",
-            "link1d2d_long_name": "link1d2d_long_names",
-            "link1d2d_contact_type": "link1d2d_contact_type",
-        }
-        for hydrolibkey, meshkey in link1d2d_dict.items():
-            if meshkey in mesh:
-                setattr(dfm_network._link1d2d, hydrolibkey, mesh[meshkey].values)
+    _link1d2d_attrs = dfm_network._link1d2d.__dict__.keys()
+    if "link1d2d" in mesh:
+        for var, val in mesh.variables.items():
+            if var in _link1d2d_attrs:
+                # use hydrolib-core conventions as it does harmonization when reading.
+                setattr(dfm_network._link1d2d, var, val.values)
 
     return dfm_network
 
