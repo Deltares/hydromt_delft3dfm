@@ -1028,16 +1028,18 @@ def snap_newbranches_to_branches_at_snappednodes(
         new_branches_snapped.at[snapnode.branchid, "geometry"] = snapped_line
 
     # modify old branches
-    for branch_name in set(snappednodes.branch_name):
+    _branch_order_base = max(max(branches_snapped.branchorder), 1)
+    for branch_order, branch_name in enumerate(sorted(set(snappednodes.branch_name))):
         branch = branches.loc[branch_name]
+        branch_order = _branch_order_base + branch_order
         distances = snappednodes[
             snappednodes.branch_name == branch_name
         ].branch_chainage.to_list()
         snapped_line = MultiLineString(cut_pieces(branch.geometry, distances))
         branches_snapped.at[branch_name, "geometry"] = snapped_line
-        branches_snapped.at[branch_name, "branchorder"] = (
-            max(branches_snapped.branchorder) + 1
-        )  # allow interpolation on the snapped branch
+        branches_snapped.at[
+            branch_name, "branchorder"
+        ] = branch_order  # allow interpolation on the snapped branch
 
     # explode multilinestring after snapping
     branches_snapped = branches_snapped.explode(index_parts=False)
