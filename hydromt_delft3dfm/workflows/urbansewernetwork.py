@@ -1,21 +1,30 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from typing import List, Union
+from typing import List, Union, Tuple
 from pathlib import Path
+import tempfile
 
 import numpy as np
 import geopandas as gpd
+import osmnx
 import networkx as nx
 import pyproj
-from shapely.geometry import LineString, MultiLineString, MultiPolygon, Polygon, box
+
 from shapely.wkt import dumps, loads
+from hydromt_delft3dfm import workflows
+
+# TODO: ra2ce installation issue
+from ra2ce.graph.network_config_data.network_config_data import NetworkConfigData
+from ra2ce.graph.network_wrappers.osm_network_wrapper.osm_network_wrapper import (
+    OsmNetworkWrapper,
+)
 
 logger = logging.getLogger(__name__)
 
 
 __all__ = [
-    "setup_network_from_openstreetmap",
+    "setup_graph_from_openstreetmap",
     "setup_network_connections_based_on_flowdirections",
     "setup_network_parameters_from_rasters",
     "setup_network_topology_optimization",
@@ -23,49 +32,104 @@ __all__ = [
 ]
 
 
-def setup_network_from_openstreetmap(
-    polygon: gpd.GeoDataFrame, network_type: str, road_types: list[str], crs: pyproj.CRS
-) -> nx.graph:
+def setup_graph_from_openstreetmap(
+    region: gpd.GeoDataFrame,
+    network_type: str = "drive",
+    road_types: list[str] = None,
+) -> nx.MultiDiGraph:
     """
-    This method transforms Open Street Map (OSM) data into a graph network representing an urban drainage system.
-
-    The graph is an object that wraps around the NetworkX Graph (nx.Graph) class, providing additional functionality such as conversion methods and reading/writing capabilities.
+    This method transforms Open Street Map (OSM) data into a graph network representing the road network within region.
 
     The steps involved are:
-    1. Fetch vector lines from OSM data based on a provided query related to the specified network type and road types.
-    2. Clean up the retrieved lines to remove any irrelevant or erroneous data.
-    3. Compose the cleaned lines into a graph.
-    4. Extract a network from the graph, where the network corresponds to the graph edges.
+    1. Fetch vector lines from OSM data based on a provided query and perform cleaning to remove any irrelevant or erroneous data.
+    2. simplify the graph's topology by removing interstitial nodes
+    3. extract network edges and nodes from the graph (extract geometries from graph)
+    4. recreate graph using network edges and nodes (add geometries to graph)
 
     Parameters:
     -----------
-    polygon: GeoDataFrame
+    region: GeoDataFrame
         The region polygon to consider for fetching OSM data. This defines the geographical area of interest.
+        Must contain crs.
 
-    network_type: str
+    network_type: str {"all_private", "all", "bike", "drive", "drive_service", "walk"})
         The type of street network to consider. This helps filter the OSM data to include only relevant road types.
+        By default "drive"
 
-    road_types: list[str]
+    road_types: list[str], optional
         A list of road types to consider during the creation of the graph. This further refines the data that is included from the OSM dataset.
-
-    crs: pyproj.CRS
-        The Coordinate Reference System to use for the geospatial data.
+        A complete list can be found in: https://wiki.openstreetmap.org/wiki/Key:highway.
+        by default None.
 
     Returns:
     --------
-    nx.graph:
-        An instance of the nx.graph class, which is a wrapper around nx.Graph. The graph represents the urban drainage network with the following properties:
-        - Global property: 'crs'
-        - Edge property: 'edgeid', 'geometry'
-        - Node property: 'nodeid', 'geometry'
+    nx.MultiDiGraph:
+        An instance of the graph as a multi-digraph, with geometry information for edges and nodes.
+        - Global property: 'crs'.
+        - Edge property: ['edgeid', 'geometry', 'node_start', 'node_end','osmid', 'highway', 'oneway', 'reversed', 'length', 'rfid_c', , 'rfid']
+        - Node property: ['nodeid', 'geometry', 'y', 'x', 'street_count']
 
-    References:
+    See Also:
     -----------
-    - ra2ce.OsmNetworkWrapper.get_network: https://github.com/Deltares/ra2ce/blob/master/ra2ce/graph/network_wrappers/osm_network_wrapper/osm_network_wrapper.py
-    - osmnx.graph.graph_from_polygon: https://osmnx.readthedocs.io/en/latest/internals-reference.html
+    - ra2ce.OsmNetworkWrapper.get_clean_graph_from_osm
+    - osmnx.simplfy_graph
+    - workflows.graph_to_network
+    - workflows.network_to_graph
     """
     # method implementation goes here
-    pass
+
+    # this function use OsmNetworkWrapper from race to download OSM data into network
+
+    # get crs
+    crs = region.crs
+
+    # funcs to get temp paths
+    def _get_temp_polygon_path() -> Path:
+        # create a temporary file for region polygon in EPSG:4326
+        with tempfile.TemporaryFile(suffix=".geojson") as temp:
+            # dump the data to the file
+            region.to_crs(pyproj.CRS.from_user_input(4326)).geometry.reset_index(
+                drop=True
+            ).to_file(temp.name, driver="GeoJSON")
+        return Path(temp.name)
+
+    def _get_temp_output_graph_dir() -> Path:
+        # create a temporary directory
+        temp = tempfile.TemporaryDirectory()
+        return Path(temp.name)
+
+    # get graph from osm data
+    # create an emtpy wrapper
+    _network_config_data = NetworkConfigData()
+    _osm_network_wrapper = OsmNetworkWrapper(_network_config_data)
+    # configure wrapper properties
+    _osm_network_wrapper.is_directed = True
+    _osm_network_wrapper.network_type = network_type
+    _osm_network_wrapper.road_types = road_types
+    _osm_network_wrapper.polygon_path = _get_temp_polygon_path()
+    _osm_network_wrapper.output_graph_dir = _get_temp_output_graph_dir()
+    # download from osm and perform cleaning (drop_duplicates, add_missing_geoms_graph, snap_nodes_to_nodes)
+    _osm_graph = _osm_network_wrapper.get_clean_graph_from_osm()
+
+    # simplify the graph's topology by removing interstitial nodes
+    _osm_simplified_graph = osmnx.simplify_graph(_osm_graph)
+
+    # get edges and nodes from graph (momepy convention)
+    edges, nodes = workflows.graph_to_network(_osm_simplified_graph, crs=crs)
+
+    # get new graph with correct crs
+    graph = workflows.network_to_graph(
+        edges=edges, nodes=nodes, create_using=nx.MultiDiGraph
+    )
+
+    # unit test
+    # _edges, _nodes = workflows.graph_to_network(graph)
+    # _graph = workflows.network_to_graph(
+    #     edges=_edges, nodes=_nodes, create_using=nx.MultiDiGraph
+    # )
+    # nx.is_isomorphic(_graph, graph) -->  True
+
+    return graph
 
 
 def setup_network_connections_based_on_flowdirections(

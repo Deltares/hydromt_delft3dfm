@@ -33,6 +33,8 @@ dependencies:
   - xarray
   - xugrid
   - networkx
+  - osmnx
+  - momepy
   - pip:
       - hydrolib-core
       - meshkernel

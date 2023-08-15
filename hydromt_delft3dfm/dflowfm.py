@@ -905,6 +905,8 @@ class DFlowFMModel(MeshModel):
 
     def setup_urban_sewer_network_from_osm(
         self,
+        network_type: str = "drive",
+        road_types: list[str] = None,
         **kwargs,
     ) -> None:
         """
@@ -917,13 +919,24 @@ class DFlowFMModel(MeshModel):
             rainfall_data: Historical rainfall data provided by the user to update pipe dimensions.
 
         parameters
-        -------
+        ----------
+            network_type: str {"all_private", "all", "bike", "drive", "drive_service", "walk"})
+                The type of street network to consider. This helps filter the OSM data to include only relevant road types.
+                By default "drive"
+            road_types: list[str], optional
+                A list of road types to consider during the creation of the graph. This further refines the data that is included from the OSM dataset.
+                A complete list can be found in: https://wiki.openstreetmap.org/wiki/Key:highway.
+                by default None.
             kwargs: key word arguments.
 
         """
 
         # 1. Build the network from OpenStreetMap data
-        # workflows.setup_network_from_openstreetmap()
+        graph = workflows.setup_graph_from_openstreetmap(
+            region=self.region,  # TODO: switch to use region as function arguments when mesh branch is merged
+            network_type="drive",
+            road_types="motorway,motorway_link,trunk,trunk_link,primary,primary_link,secondary,secondary_link,tertiary,tertiary_link",
+        )
 
         # 2. Setup network connections based on flow directions from DEM
         # workflows.setup_network_connections_based_on_flowdirections()
@@ -936,6 +949,8 @@ class DFlowFMModel(MeshModel):
 
         # 5. Update pipe dimensions based on user-provided historical rainfall data
         # workflows.setup_network_dimentions_from_rainfallstats()
+
+        # TODO add geoms for network nodes and network edges
 
         # 6. any additional steps to add the network to delft3dfm model
         # _setup_branches
