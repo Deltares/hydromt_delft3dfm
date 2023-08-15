@@ -923,19 +923,19 @@ class DFlowFMModel(MeshModel):
         """
 
         # 1. Build the network from OpenStreetMap data
-        workflows.setup_network_from_openstreetmap()
+        # workflows.setup_network_from_openstreetmap()
 
         # 2. Setup network connections based on flow directions from DEM
-        workflows.setup_network_connections_based_on_flowdirections()
+        # workflows.setup_network_connections_based_on_flowdirections()
 
         # 3. Setup network physical parameters from raster datasets
-        workflows.setup_network_parameters_from_rasters()
+        # workflows.setup_network_parameters_from_rasters()
 
         # 4. Optimize the network topology
-        workflows.setup_network_topology_optimization()
+        # workflows.setup_network_topology_optimization()
 
         # 5. Update pipe dimensions based on user-provided historical rainfall data
-        workflows.setup_network_dimentions_from_rainfallstats()
+        # workflows.setup_network_dimentions_from_rainfallstats()
 
         # 6. any additional steps to add the network to delft3dfm model
         # _setup_branches

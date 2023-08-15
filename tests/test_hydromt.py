@@ -30,6 +30,14 @@ _models = {
         "region": {"geom": f"{join(TESTDATADIR, 'local_data','1D_extent.geojson')}"},
         "snap_offset": 25,
     },
+    "urbansewernetwork": {
+        "example": "dflowfm_urbansewernetwork",
+        "ini": "dflowfm_build_urbansewernetwork.ini",
+        "model": DFlowFMModel,
+        "data": join(TESTDATADIR, "test_data.yaml"),
+        "region": {"geom": f"{join(TESTDATADIR, 'local_data','1D_extent.geojson')}"},
+        "snap_offset": 25,
+    },
 }
 
 
