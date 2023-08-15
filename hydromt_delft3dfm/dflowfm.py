@@ -903,6 +903,49 @@ class DFlowFMModel(MeshModel):
             node_distance=self._openwater_computation_node_distance,
         )
 
+    def setup_urban_sewer_network_from_osm(
+        self,
+        **kwargs,
+    ) -> None:
+        """
+        This function builds, optimizes, and updates a network graph representing an urban drainage system.
+
+        requires:
+            osm_data: Input data from OpenStreetMap required to build the drainage network.
+            dem_data: Digital Elevation Model data for determining flow directions.
+            raster_data: Datasets representing various geographic and physical features.
+            rainfall_data: Historical rainfall data provided by the user to update pipe dimensions.
+
+        parameters
+        -------
+            kwargs: key word arguments.
+
+        """
+
+        # 1. Build the network from OpenStreetMap data
+        workflows.setup_network_from_openstreetmap()
+
+        # 2. Setup network connections based on flow directions from DEM
+        workflows.setup_network_connections_based_on_flowdirections()
+
+        # 3. Setup network physical parameters from raster datasets
+        workflows.setup_network_parameters_from_rasters()
+
+        # 4. Optimize the network topology
+        workflows.setup_network_topology_optimization()
+
+        # 5. Update pipe dimensions based on user-provided historical rainfall data
+        workflows.setup_network_dimentions_from_rainfallstats()
+
+        # 6. any additional steps to add the network to delft3dfm model
+        # _setup_branches
+        # _setup_crosssections
+        # add crosssections to exisiting ones and update geoms
+        # setup branches geoms
+        # add to branches
+
+        return None
+
     def setup_pipes(
         self,
         pipes_fn: str,

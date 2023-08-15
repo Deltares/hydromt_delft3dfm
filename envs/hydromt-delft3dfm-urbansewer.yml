@@ -1,6 +1,6 @@
 ---
 # note that these are the developer dependencies
-name: hydromt-delft3dfm
+name: hydromt-delft3dfm-urbansewer
 
 channels:
   - conda-forge
@@ -8,6 +8,7 @@ channels:
 dependencies:
   - black # linting
   - flit>=3.4
+  - gdal=3.5.1
   - hydromt>=0.7.0
   - jupyter # to run examples
   - matplotlib # to run examples
@@ -35,3 +36,4 @@ dependencies:
   - pip:
       - hydrolib-core
       - meshkernel
+      # - git+https://github.com/Deltares/ra2ce.git@v0.6.0 conflicts for gdal and shapely, use conda develop. 
