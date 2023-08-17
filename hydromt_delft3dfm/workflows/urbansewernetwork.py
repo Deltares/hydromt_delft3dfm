@@ -5,11 +5,13 @@ from typing import List, Union, Tuple
 from pathlib import Path
 import tempfile
 
+import xarray as xr
 import numpy as np
 import geopandas as gpd
 import osmnx
 import networkx as nx
 import pyproj
+from shapely.geometry import Point, LineString
 
 from shapely.wkt import dumps, loads
 from hydromt_delft3dfm import workflows
@@ -20,11 +22,16 @@ from ra2ce.graph.network_wrappers.osm_network_wrapper.osm_network_wrapper import
     OsmNetworkWrapper,
 )
 
+# hydromt
+from hydromt import DataCatalog, flw
+
+
 logger = logging.getLogger(__name__)
 
 
 __all__ = [
     "setup_graph_from_openstreetmap",
+    "setup_graph_from_hydrography",
     "setup_network_connections_based_on_flowdirections",
     "setup_network_parameters_from_rasters",
     "setup_network_topology_optimization",
@@ -83,7 +90,19 @@ def setup_graph_from_openstreetmap(
     # get crs
     crs = region.crs
 
-    # funcs to get temp paths
+    def _get_osm_wrapper() -> OsmNetworkWrapper:
+        # creates and configures a osm network wrapper
+        _network_config_data = NetworkConfigData()
+        _osm_network_wrapper = OsmNetworkWrapper(_network_config_data)
+        # configure wrapper properties
+        _osm_network_wrapper.is_directed = True
+        _osm_network_wrapper.network_type = network_type
+        _osm_network_wrapper.road_types = road_types
+        _osm_network_wrapper.polygon_path = _get_temp_polygon_path()
+        _osm_network_wrapper.output_graph_dir = _get_temp_output_graph_dir()
+        return _osm_network_wrapper
+
+    # TODO: replace funcs to get temp paths after ra2ce update
     def _get_temp_polygon_path() -> Path:
         # create a temporary file for region polygon in EPSG:4326
         with tempfile.TemporaryFile(suffix=".geojson") as temp:
@@ -98,29 +117,48 @@ def setup_graph_from_openstreetmap(
         temp = tempfile.TemporaryDirectory()
         return Path(temp.name)
 
-    # get graph from osm data
-    # create an emtpy wrapper
-    _network_config_data = NetworkConfigData()
-    _osm_network_wrapper = OsmNetworkWrapper(_network_config_data)
-    # configure wrapper properties
-    _osm_network_wrapper.is_directed = True
-    _osm_network_wrapper.network_type = network_type
-    _osm_network_wrapper.road_types = road_types
-    _osm_network_wrapper.polygon_path = _get_temp_polygon_path()
-    _osm_network_wrapper.output_graph_dir = _get_temp_output_graph_dir()
+    # TODO: func from ra2ce utils due to installation issue
+    def _add_missing_geoms_osmgraph(
+        graph: nx.Graph, geom_name: str = "geometry"
+    ) -> nx.Graph:
+        # Not all nodes have geometry attributed (some only x and y coordinates) so add a geometry columns
+        nodes_without_geom = [
+            n[0] for n in graph.nodes(data=True) if geom_name not in n[-1]
+        ]
+        for nd in nodes_without_geom:
+            graph.nodes[nd][geom_name] = Point(
+                graph.nodes[nd]["x"], graph.nodes[nd]["y"]
+            )
+
+        edges_without_geom = [
+            e for e in graph.edges.data(data=True) if geom_name not in e[-1]
+        ]
+        for ed in edges_without_geom:
+            graph[ed[0]][ed[1]][0][geom_name] = LineString(
+                [graph.nodes[ed[0]][geom_name], graph.nodes[ed[1]][geom_name]]
+            )
+
+        return graph
+
     # download from osm and perform cleaning (drop_duplicates, add_missing_geoms_graph, snap_nodes_to_nodes)
+    _osm_network_wrapper = _get_osm_wrapper()
     _osm_graph = _osm_network_wrapper.get_clean_graph_from_osm()
 
     # simplify the graph's topology by removing interstitial nodes
     _osm_simplified_graph = osmnx.simplify_graph(_osm_graph)
 
+    # preprocess to desired graph format
+    # add missing geoms using func customised for osm data
+    _graph = _add_missing_geoms_osmgraph(_osm_simplified_graph)
+    graph = workflows.preprocess_graph(_graph, to_crs=crs)
+
     # get edges and nodes from graph (momepy convention)
-    edges, nodes = workflows.graph_to_network(_osm_simplified_graph, crs=crs)
+    # edges, nodes = workflows.graph_to_network(_osm_simplified_graph, crs=crs)
 
     # get new graph with correct crs
-    graph = workflows.network_to_graph(
-        edges=edges, nodes=nodes, create_using=nx.MultiDiGraph
-    )
+    # graph = workflows.network_to_graph(
+    #     edges=edges, nodes=nodes, create_using=nx.MultiDiGraph
+    # )
 
     # unit test
     # _edges, _nodes = workflows.graph_to_network(graph)
@@ -128,6 +166,126 @@ def setup_graph_from_openstreetmap(
     #     edges=_edges, nodes=_nodes, create_using=nx.MultiDiGraph
     # )
     # nx.is_isomorphic(_graph, graph) -->  True
+
+    return graph
+
+
+def setup_graph_from_hydrography(
+    region: gpd.GeoDataFrame,
+    ds_hydro: xr.Dataset,
+    min_sto: int = 1,
+    **kwargs,
+) -> nx.Graph:
+    """Preprocess DEM to graph representing flow directions.
+
+    The steps involved are:
+    1. Obtain or derive D8 flow directions from a dem.
+    2. Get flow direction vectors as geodataframe based on a minumum stream order (`min_sto`)
+    3. convert the geodataframe into graph
+    4. recreate graph using network edges and nodes (add geometries to graph)
+
+    Parameters
+    ----------
+    region: gpd.GeoDataframe
+        Region geodataframe that provide model extent and crs.
+    ds_hydro : xr.Dataset
+        Hydrography data (or dem) to derive river shape and characteristics from.
+        * Required variables: ['elevtn']
+        * Optional variables: ['flwdir', 'uparea']
+    min_sto : int, optional
+        minimum stream order of subbasins, by default the stream order is set to
+        one under the global maximum stream order (slow).
+    **kwargs:
+        Other keyword arguments that may be required for specific implementations of the function.
+
+    Returns:
+    --------
+    nx.graph:
+        The processed `user_input_graph`, now an instance of nx.graph class, with any missing links and geometry filled in based on flow directions. The graph represents the urban drainage network.
+
+    """
+
+    crs = region.crs
+
+    # FIXME: discuss with Helene
+    # question regarding hydromt.flw.d8_from_dem:
+    # I am trying to use the function on a raster dataset resembling a "local dem"
+    # - raster data containing elevtn variable that is read from a tiff in datacatalog.
+    # The resulting raster has positive resolutions on both x,y direction: (0.0008, 0.0008).
+    # However, the `hydromt.flw.d8_from_dem`  requires the y resolution to be negative.
+    # hence the flipud()
+    # also the function does not allow no data as nan
+    # hence the set_nodata(-9999)
+    # But I also wonder if I should even support local data at all,
+    # considering the function is to derive that from global data
+
+    # extra fix of data if user provided tiff
+    elevtn = ds_hydro["elevtn"]
+    if elevtn.raster.res[1] > 0:
+        elevtn = elevtn.raster.flipud()
+    if np.isnan(elevtn.raster.nodata):
+        elevtn.raster.set_nodata(-9999.0)
+
+    # check if flwdir and uparea in ds_hydro
+    if "flwdir" not in ds_hydro.data_vars:
+        da_flw = flw.d8_from_dem(
+            elevtn,
+            max_depth=-1,  # no local pits
+            outlets="edge",
+            idxs_pit=None,
+        )
+    else:
+        da_flw = ds_hydro["flwdir"]
+
+    flwdir = flw.flwdir_from_da(da_flw, ftype="d8")
+    if min_sto > 1:
+        # will add stream order key "strord" to feat
+        feat = flwdir.streams(min_sto=min_sto)
+    else:
+        # add stream order key "strord" manually
+        feat = flwdir.streams(strord=flwdir.stream_order())
+
+    # get stream vector geodataframe
+    gdf = gpd.GeoDataFrame.from_features(feat, crs=ds_hydro.raster.crs)
+    # convert to local crs, because flwdir is performed on the raster crs
+    gdf = gdf.to_crs(crs)
+
+    # convert to graph
+    graph = workflows.gpd_to_digraph(gdf)
+    graph = workflows.preprocess_graph(graph, to_crs=crs)
+
+    # plot
+    # FIXME discuss the results with helene
+    # it seems like the flow is going upstream
+    # but nice basin delineation --> check how it compares with the bangkok model
+    # might indicate the challenges for getting flow directions for flat areas.
+
+    # import matplotlib.pyplot as plt
+
+    # fig = plt.figure(figsize=(8, 8))
+    # ax = fig.add_subplot()
+    # ds_hydro["elevtn"].plot(
+    #     ax=ax, zorder=1, cbar_kwargs=dict(aspect=30, shrink=0.5), alpha=0.5, **kwargs
+    # )
+    # gdf.to_crs(ds_hydro.raster.crs).plot(
+    #     ax=ax,
+    #     color="blue",
+    #     linewidth=gdf["strord"] / 3,
+    #     label="Original flow directions",
+    # )
+    # f = Path().joinpath("temp.geojson")
+    # gdf.to_file(f)
+
+    # FIXME do I need the below?
+    # if "uparea" not in ds_hydro.data_vars:
+    #     da_upa = xr.DataArray(
+    #         dims=ds_hydro["elevtn"].raster.dims,
+    #         coords=ds_hydro["elevtn"].raster.coords,
+    #         data=flwdir.upstream_area(unit="km2"),
+    #         name="uparea",
+    #     )
+    #     da_upa.raster.set_nodata(-9999)
+    #     ds_hydro["uparea"] = da_upa
 
     return graph
 
