@@ -101,7 +101,8 @@ def preprocess_graph(graph: nx.Graph, to_crs: CRS = None) -> nx.Graph:
 
 
 def assign_graph_geometry(graph: nx.Graph) -> nx.Graph:
-    """Add geometry to graph nodes and edges"""
+    """Add geometry to graph nodes and edges
+    Note that this function does not add missing geometries one by one"""
 
     _exist_node_geometry = any(nx.get_node_attributes(graph, "geometry"))
     _exist_edge_geometry = any(nx.get_edge_attributes(graph, "geometry"))
@@ -109,17 +110,22 @@ def assign_graph_geometry(graph: nx.Graph) -> nx.Graph:
     if _exist_node_geometry and _exist_edge_geometry:
         return graph
 
-    assert not graph.is_multigraph()  # TODO support multigraph
     if (not _exist_node_geometry) and _exist_edge_geometry:
-        # add node from egde geometry
-        geometry = {}
-        for s, t, e in graph.edges(data="geometry"):
-            geometry.update({s: Point(e.coords[0]), t: Point(e.coords[-1])})
-        nx.set_node_attributes(graph, geometry, name="geometry")
-        return graph
+        if any(nx.get_node_attributes(graph, "x")):
+            # use xy from nodes
+            geometry = {n: Point(a["x"], a["y"]) for n, a in graph.nodes(data=True)}
+            nx.set_node_attributes(graph, geometry, name="geometry")
+        else:
+            # add node from egde geometry
+            assert not graph.is_multigraph()  # FIXME support multigraph
+            geometry = {}
+            for s, t, e in graph.edges(data="geometry"):
+                geometry.update({s: Point(e.coords[0]), t: Point(e.coords[-1])})
+            nx.set_node_attributes(graph, geometry, name="geometry")
 
-    if _exist_node_geometry and (not _exist_edge_geometry):
+    elif _exist_node_geometry and (not _exist_edge_geometry):
         # add edge from node geometry
+        assert not graph.is_multigraph()  # FIXME support multigraph
         geometry = {}
         for s, t, e in graph.edges(data="geometry"):
             geometry.update(
@@ -130,14 +136,15 @@ def assign_graph_geometry(graph: nx.Graph) -> nx.Graph:
                 }
             )
         nx.set_edge_attributes(graph, geometry, name="geometry")
-        return graph
 
-    if not _exist_node_geometry or _exist_edge_geometry:
+    elif not (_exist_node_geometry or _exist_edge_geometry):
         # no geometry, check if the geometry can be derived from node tuple
+        assert not graph.is_multigraph()  # FIXME support multigraph
         assert len(list(graph.nodes)[0]) == 2  # must have tuple (x,y) as nodes
-        geometry = [Point(n[0], n[1]) for n in graph.nodes]
+        geometry = {n: Point(n[0], n[1]) for n in graph.nodes}
         nx.set_node_attributes(graph, geometry, name="geometry")
-        return graph
+
+    return graph
 
 
 def reproject_graph_geometry(graph: nx.Graph, crs_from: CRS, crs_to: CRS) -> nx.Graph:
@@ -208,29 +215,22 @@ def assign_graph_index(graph: nx.Graph) -> nx.Graph:
     # Assign edgeids
     if graph.is_multigraph():
         for u, v, key in graph.edges(keys=True):
-            edge_id = (
-                str(indexed_graph.nodes[u]["nodeid"])
-                + "_"
-                + str(indexed_graph.nodes[v]["nodeid"])
-            )
+            node_start = str(indexed_graph.nodes[u]["nodeid"])
+            node_end = str(indexed_graph.nodes[v]["nodeid"])
+            edge_id = node_start + "_" + node_end
             indexed_graph[u][v][key]["edgeid"] = edge_id
-            edge_id_multi = (
-                str(indexed_graph.nodes[u]["nodeid"])
-                + "_"
-                + str(indexed_graph.nodes[v]["nodeid"])
-                + "_"
-                + str(key)
-            )
+            indexed_graph[u][v][key]["node_start"] = node_start
+            indexed_graph[u][v][key]["node_end"] = node_end
+            edge_id_multi = node_start + "_" + node_end + "_" + str(key)
             indexed_graph[u][v][key]["edgeid_multi"] = edge_id_multi
     else:
         for u, v in graph.edges():
-            edge_id = (
-                str(indexed_graph.nodes[u]["nodeid"])
-                + "_"
-                + str(indexed_graph.nodes[v]["nodeid"])
-            )
+            node_start = str(indexed_graph.nodes[u]["nodeid"])
+            node_end = str(indexed_graph.nodes[v]["nodeid"])
+            edge_id = node_start + "_" + node_end
             indexed_graph[u][v]["edgeid"] = edge_id
-
+            indexed_graph[u][v]["node_start"] = node_start
+            indexed_graph[u][v]["node_end"] = node_end
     return indexed_graph
 
 
@@ -346,18 +346,18 @@ def validate_graph(graph: nx.Graph) -> bool:
     _correct_attribute = isinstance(graph.graph["crs"], int)
     assert _correct_attribute, "crs must be epsg int."
 
-    _exist_attribute = all(nx.get_node_attributes(graph, "nodeid"))
-    assert _exist_attribute, "Missing edgeid in nodes"
-    _exist_attribute = all(nx.get_node_attributes(graph, "geometry"))
+    _exist_attribute = any(nx.get_node_attributes(graph, "nodeid"))
+    assert _exist_attribute, "Missing nodeid in nodes"
+    _exist_attribute = any(nx.get_node_attributes(graph, "geometry"))
     assert _exist_attribute, "Missing geometries in nodes"
 
-    _exist_attribute = all(nx.get_edge_attributes(graph, "edgeid"))
+    _exist_attribute = any(nx.get_edge_attributes(graph, "edgeid"))
     assert _exist_attribute, "Missing edgeid in edges"
-    _exist_attribute = all(nx.get_node_attributes(graph, "node_start"))
+    _exist_attribute = any(nx.get_edge_attributes(graph, "node_start"))
     assert _exist_attribute, "Missing node_start in edges"
-    _exist_attribute = all(nx.get_node_attributes(graph, "node_end"))
+    _exist_attribute = any(nx.get_edge_attributes(graph, "node_end"))
     assert _exist_attribute, "Missing node_end in edges"
-    _exist_attribute = all(nx.get_edge_attributes(graph, "geometry"))
+    _exist_attribute = any(nx.get_edge_attributes(graph, "geometry"))
     assert _exist_attribute, "Missing geometries in edges"
 
 

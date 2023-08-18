@@ -16,7 +16,7 @@ from shapely.geometry import Point, LineString
 from shapely.wkt import dumps, loads
 from hydromt_delft3dfm import workflows
 
-# TODO: ra2ce installation issue
+# TODO #65: ra2ce installation issue
 from ra2ce.graph.network_config_data.network_config_data import NetworkConfigData
 from ra2ce.graph.network_wrappers.osm_network_wrapper.osm_network_wrapper import (
     OsmNetworkWrapper,
@@ -43,6 +43,7 @@ def setup_graph_from_openstreetmap(
     region: gpd.GeoDataFrame,
     network_type: str = "drive",
     road_types: list[str] = None,
+    logger: logging.Logger = logger,
 ) -> nx.MultiDiGraph:
     """
     This method transforms Open Street Map (OSM) data into a graph network representing the road network within region.
@@ -102,7 +103,7 @@ def setup_graph_from_openstreetmap(
         _osm_network_wrapper.output_graph_dir = _get_temp_output_graph_dir()
         return _osm_network_wrapper
 
-    # TODO: replace funcs to get temp paths after ra2ce update
+    # TODO #65: replace funcs to get temp paths after ra2ce update
     def _get_temp_polygon_path() -> Path:
         # create a temporary file for region polygon in EPSG:4326
         with tempfile.TemporaryFile(suffix=".geojson") as temp:
@@ -117,40 +118,22 @@ def setup_graph_from_openstreetmap(
         temp = tempfile.TemporaryDirectory()
         return Path(temp.name)
 
-    # TODO: func from ra2ce utils due to installation issue
-    def _add_missing_geoms_osmgraph(
-        graph: nx.Graph, geom_name: str = "geometry"
-    ) -> nx.Graph:
-        # Not all nodes have geometry attributed (some only x and y coordinates) so add a geometry columns
-        nodes_without_geom = [
-            n[0] for n in graph.nodes(data=True) if geom_name not in n[-1]
-        ]
-        for nd in nodes_without_geom:
-            graph.nodes[nd][geom_name] = Point(
-                graph.nodes[nd]["x"], graph.nodes[nd]["y"]
-            )
-
-        edges_without_geom = [
-            e for e in graph.edges.data(data=True) if geom_name not in e[-1]
-        ]
-        for ed in edges_without_geom:
-            graph[ed[0]][ed[1]][0][geom_name] = LineString(
-                [graph.nodes[ed[0]][geom_name], graph.nodes[ed[1]][geom_name]]
-            )
-
-        return graph
-
     # download from osm and perform cleaning (drop_duplicates, add_missing_geoms_graph, snap_nodes_to_nodes)
     _osm_network_wrapper = _get_osm_wrapper()
     _osm_graph = _osm_network_wrapper.get_clean_graph_from_osm()
+    logger.info("Get clean graph from osm.")
 
     # simplify the graph's topology by removing interstitial nodes
-    _osm_simplified_graph = osmnx.simplify_graph(_osm_graph)
+    _osm_simplified_graph = osmnx.simplify_graph(
+        _osm_graph
+    )  # TODO #64: needs testing, too longe/too short are not beneficial for dem based direction.
+    _osm_simplified_graph = _osm_network_wrapper.get_clean_graph(
+        _osm_simplified_graph
+    )  # clean again for the simplified graph
+    logger.info("Get simplified graph from osm.")
 
     # preprocess to desired graph format
-    # add missing geoms using func customised for osm data
-    _graph = _add_missing_geoms_osmgraph(_osm_simplified_graph)
-    graph = workflows.preprocess_graph(_graph, to_crs=crs)
+    graph = workflows.preprocess_graph(_osm_simplified_graph, to_crs=crs)
 
     # get edges and nodes from graph (momepy convention)
     # edges, nodes = workflows.graph_to_network(_osm_simplified_graph, crs=crs)
@@ -174,6 +157,7 @@ def setup_graph_from_hydrography(
     region: gpd.GeoDataFrame,
     ds_hydro: xr.Dataset,
     min_sto: int = 1,
+    logger: logging.Logger = logger,
     **kwargs,
 ) -> nx.Graph:
     """Preprocess DEM to graph representing flow directions.
@@ -206,18 +190,6 @@ def setup_graph_from_hydrography(
     """
 
     crs = region.crs
-
-    # FIXME: discuss with Helene
-    # question regarding hydromt.flw.d8_from_dem:
-    # I am trying to use the function on a raster dataset resembling a "local dem"
-    # - raster data containing elevtn variable that is read from a tiff in datacatalog.
-    # The resulting raster has positive resolutions on both x,y direction: (0.0008, 0.0008).
-    # However, the `hydromt.flw.d8_from_dem`  requires the y resolution to be negative.
-    # hence the flipud()
-    # also the function does not allow no data as nan
-    # hence the set_nodata(-9999)
-    # But I also wonder if I should even support local data at all,
-    # considering the function is to derive that from global data
 
     # extra fix of data if user provided tiff
     elevtn = ds_hydro["elevtn"]
@@ -254,12 +226,9 @@ def setup_graph_from_hydrography(
     graph = workflows.gpd_to_digraph(gdf)
     graph = workflows.preprocess_graph(graph, to_crs=crs)
 
-    # plot
-    # FIXME discuss the results with helene
-    # it seems like the flow is going upstream
-    # but nice basin delineation --> check how it compares with the bangkok model
-    # might indicate the challenges for getting flow directions for flat areas.
+    # TODO #63: test a few different scales and compare with real cases
 
+    # plot
     # import matplotlib.pyplot as plt
 
     # fig = plt.figure(figsize=(8, 8))
@@ -276,22 +245,14 @@ def setup_graph_from_hydrography(
     # f = Path().joinpath("temp.geojson")
     # gdf.to_file(f)
 
-    # FIXME do I need the below?
-    # if "uparea" not in ds_hydro.data_vars:
-    #     da_upa = xr.DataArray(
-    #         dims=ds_hydro["elevtn"].raster.dims,
-    #         coords=ds_hydro["elevtn"].raster.coords,
-    #         data=flwdir.upstream_area(unit="km2"),
-    #         name="uparea",
-    #     )
-    #     da_upa.raster.set_nodata(-9999)
-    #     ds_hydro["uparea"] = da_upa
-
     return graph
 
 
 def setup_network_connections_based_on_flowdirections(
-    user_input_graph: nx.graph, dem_fn: Union[str, Path], **kwargs
+    user_input_graph: nx.graph,
+    dem_fn: Union[str, Path],
+    logger: logging.Logger = logger,
+    **kwargs,
 ) -> nx.graph:
     """
     This method sets up connections in the urban drainage network graph based on flow directions derived from a Digital Elevation Model (DEM).
@@ -334,6 +295,7 @@ def setup_network_parameters_from_rasters(
     water_demand_fn,
     population_fn,
     building_footprint_fn,
+    logger: logging.Logger = logger,
     **kwargs,
 ) -> nx.graph:
     """
@@ -379,7 +341,7 @@ def setup_network_parameters_from_rasters(
 
 
 def setup_network_topology_optimization(
-    graph: nx.graph, method: str, **kwargs
+    graph: nx.graph, method: str, logger: logging.Logger = logger, **kwargs
 ) -> nx.graph:
     """
     This method optimizes the topology of the urban drainage network represented by the graph.
@@ -435,6 +397,7 @@ def setup_network_dimentions_from_rainfallstats(
     diameter_range=None,
     velocity_range=None,
     slope_range=None,
+    logger: logging.Logger = logger,
 ) -> nx.graph:
     """
     This method updates the dimensions of the pipes in the urban drainage network represented by the graph, using historical rainfall data.
