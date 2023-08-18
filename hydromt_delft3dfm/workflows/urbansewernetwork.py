@@ -14,7 +14,7 @@ import pyproj
 from shapely.geometry import Point, LineString
 
 from shapely.wkt import dumps, loads
-from hydromt_delft3dfm import workflows
+from hydromt_delft3dfm import graph_utils
 
 # TODO #65: ra2ce installation issue
 from ra2ce.graph.network_config_data.network_config_data import NetworkConfigData
@@ -82,8 +82,8 @@ def setup_graph_from_openstreetmap(
     -----------
     - ra2ce.OsmNetworkWrapper.get_clean_graph_from_osm
     - osmnx.simplfy_graph
-    - workflows.graph_to_network
-    - workflows.network_to_graph
+    - graph_utils.graph_to_network
+    - graph_utils.network_to_graph
     """
     # method implementation goes here
 
@@ -134,19 +134,19 @@ def setup_graph_from_openstreetmap(
     logger.info("Get simplified graph from osm.")
 
     # preprocess to desired graph format
-    graph = workflows.preprocess_graph(_osm_simplified_graph, to_crs=crs)
+    graph = graph_utils.preprocess_graph(_osm_simplified_graph, to_crs=crs)
 
     # get edges and nodes from graph (momepy convention)
-    # edges, nodes = workflows.graph_to_network(_osm_simplified_graph, crs=crs)
+    # edges, nodes = graph_utils.graph_to_network(_osm_simplified_graph, crs=crs)
 
     # get new graph with correct crs
-    # graph = workflows.network_to_graph(
+    # graph = graph_utils.network_to_graph(
     #     edges=edges, nodes=nodes, create_using=nx.MultiDiGraph
     # )
 
     # unit test
-    # _edges, _nodes = workflows.graph_to_network(graph)
-    # _graph = workflows.network_to_graph(
+    # _edges, _nodes = graph_utils.graph_to_network(graph)
+    # _graph = graph_utils.network_to_graph(
     #     edges=_edges, nodes=_nodes, create_using=nx.MultiDiGraph
     # )
     # nx.is_isomorphic(_graph, graph) -->  True
@@ -224,8 +224,8 @@ def setup_graph_from_hydrography(
     gdf = gdf.to_crs(crs)
 
     # convert to graph
-    graph = workflows.gpd_to_digraph(gdf)
-    graph = workflows.preprocess_graph(graph, to_crs=crs)
+    graph = graph_utils.gpd_to_digraph(gdf)
+    graph = graph_utils.preprocess_graph(graph, to_crs=crs)
 
     # TODO #63: test a few different scales and compare with real cases
 
