@@ -41,7 +41,7 @@ __all__ = [
 
 def setup_graph_from_openstreetmap(
     region: gpd.GeoDataFrame,
-    network_type: str = "drive",
+    network_type: str = None,
     road_types: list[str] = None,
     logger: logging.Logger = logger,
 ) -> nx.MultiDiGraph:
@@ -62,7 +62,8 @@ def setup_graph_from_openstreetmap(
 
     network_type: str {"all_private", "all", "bike", "drive", "drive_service", "walk"})
         The type of street network to consider. This helps filter the OSM data to include only relevant road types.
-        By default "drive"
+        If None, use road_types to filter features.
+        By default None.
 
     road_types: list[str], optional
         A list of road types to consider during the creation of the graph. This further refines the data that is included from the OSM dataset.
