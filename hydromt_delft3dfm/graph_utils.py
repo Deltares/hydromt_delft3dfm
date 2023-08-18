@@ -1,20 +1,19 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from typing import Tuple, Union
-import geopandas as gpd
-import networkx as nx
-import momepy
+import pickle
 from pathlib import Path
-from pyproj.crs import CRS
+from typing import Tuple, Union
+
+import geopandas as gpd
+import momepy
+import networkx as nx
+from pyproj import CRS, Transformer
 from shapely.geometry import (
     LineString,
     Point,
 )
-import pickle
-from pyproj import CRS, Transformer
 from shapely.ops import transform
-
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +30,9 @@ __all__ = [
 
 
 def gpd_to_digraph(data: gpd.GeoDataFrame) -> nx.DiGraph():
-    """Convert a `gpd.GeoDataFrame` to a `nx.DiGraph` by taking the first and last coordinate in a row as source and target, respectively.
+    """Convert a `gpd.GeoDataFrame` to a `nx.DiGraph`.
+
+    This is done by taking the first and last coordinate in a row as source and target.
 
     Parameters
     ----------
@@ -63,22 +64,23 @@ def gpd_to_digraph(data: gpd.GeoDataFrame) -> nx.DiGraph():
 
 def preprocess_graph(graph: nx.Graph, to_crs: CRS = None) -> nx.Graph:
     """
-    Prepares the graph by reprojecting its geometry and assigning unique indexes to nodes and edges.
+    Preprocess graph geometry and indexes.
 
     Parameters
     ----------
-        graph: nx.Graph
-            The input graph. Must provide crs in global properties
-        to_crs: CRS
-            The desired CRS for the graph's geometry (if reprojecting is desired).
+    graph: nx.Graph
+        The input graph. Must provide crs in global properties
+    to_crs: CRS
+        The desired CRS for the graph's geometry (if reprojecting is desired).
 
     Returns
     -------
+    nx.Graph
         The prepared graph.
-        Includes global properties ('crs'),  edge properties (such as 'edgeid', 'geometry',
-        'node_start', and 'node_end') and node properties ('nodeid', 'geometry')
+        Includes global properties ['crs']
+        edge properties ['edgeid', 'geometry','node_start', and 'node_end']
+        node properties ['nodeid', 'geometry']
     """
-
     crs = graph.graph.get("crs")
     if not crs:
         raise ValueError("must provide crs in graph.")
@@ -101,9 +103,10 @@ def preprocess_graph(graph: nx.Graph, to_crs: CRS = None) -> nx.Graph:
 
 
 def assign_graph_geometry(graph: nx.Graph) -> nx.Graph:
-    """Add geometry to graph nodes and edges
-    Note that this function does not add missing geometries one by one"""
+    """Add geometry to graph nodes and edges.
 
+    Note that this function does not add missing geometries one by one.
+    """
     _exist_node_geometry = any(nx.get_node_attributes(graph, "geometry"))
     _exist_edge_geometry = any(nx.get_edge_attributes(graph, "geometry"))
 
@@ -122,8 +125,9 @@ def assign_graph_geometry(graph: nx.Graph) -> nx.Graph:
             for s, t, e in graph.edges(data="geometry"):
                 geometry.update({s: Point(e.coords[0]), t: Point(e.coords[-1])})
             nx.set_node_attributes(graph, geometry, name="geometry")
+        return graph
 
-    elif _exist_node_geometry and (not _exist_edge_geometry):
+    if _exist_node_geometry and (not _exist_edge_geometry):
         # add edge from node geometry
         assert not graph.is_multigraph()  # FIXME support multigraph
         geometry = {}
@@ -136,30 +140,35 @@ def assign_graph_geometry(graph: nx.Graph) -> nx.Graph:
                 }
             )
         nx.set_edge_attributes(graph, geometry, name="geometry")
+        return graph
 
-    elif not (_exist_node_geometry or _exist_edge_geometry):
+    if not (_exist_node_geometry or _exist_edge_geometry):
         # no geometry, check if the geometry can be derived from node tuple
         assert not graph.is_multigraph()  # FIXME support multigraph
         assert len(list(graph.nodes)[0]) == 2  # must have tuple (x,y) as nodes
         geometry = {n: Point(n[0], n[1]) for n in graph.nodes}
         nx.set_node_attributes(graph, geometry, name="geometry")
-
-    return graph
+        return graph
 
 
 def reproject_graph_geometry(graph: nx.Graph, crs_from: CRS, crs_to: CRS) -> nx.Graph:
     """
     Reprojects the geometry attributes of the nodes and edges of the graph.
 
-    Parameters:
-    - graph: The input graph with geometry attributes.
-    - crs_from: The current CRS of the graph's geometry.
-    - crs_to: The desired CRS for the graph's geometry.
+    Parameters
+    ----------
+    graph: nx.Graph
+        The input graph with geometry attributes.
+    crs_from: CRS
+        The current CRS of the graph's geometry.
+    crs_to: CRS
+        The desired CRS for the graph's geometry.
 
-    Returns:
-    - A new graph with reprojected geometry attributes.
+    Returns
+    -------
+    nx.Graph
+        A new graph with reprojected geometry attributes.
     """
-
     # Create a new graph instance to avoid modifying the original graph
     reprojected_graph = graph.copy()
 
@@ -196,15 +205,20 @@ def reproject_graph_geometry(graph: nx.Graph, crs_from: CRS, crs_to: CRS) -> nx.
 
 def assign_graph_index(graph: nx.Graph) -> nx.Graph:
     """
-    Assigns unique indexes to the nodes and edges of the graph.
+    Assign unique indexes to the nodes and edges of the graph.
 
-    Parameters:
-    - graph: The input graph.
+    Parameters
+    ----------
+    graph: nx.Graph
+        The input graph.
 
-    Returns:
-    - The graph with added nodeid and edgeid attributes.
+    Returns
+    -------
+    nx.Graph
+        The prepared graph.
+        edge properties ['edgeid', 'geometry','node_start', and 'node_end']
+        node properties ['nodeid', 'geometry']
     """
-
     # Create a new graph instance to avoid modifying the original graph
     indexed_graph = graph.copy()
 
@@ -240,13 +254,10 @@ def network_to_graph(
     create_using=nx.DiGraph,
 ) -> nx.Graph:
     """
-    Converts the network (edges and nodes) to a graph.
+    Convert the network edges and/or nodes to a graph.
 
-    The resulting graph includes global properties ('crs'),  edge properties (such as 'edgeid', 'geometry',
-    'node_start', and 'node_end') and node properties ('nodeid', 'geometry')
-
-    Parameters:
-    -----------
+    Parameters
+    ----------
     edges: gpd.GeoDataFrame
         The network lines.
     nodes: gpd.GeoDataFrame or None
@@ -254,13 +265,15 @@ def network_to_graph(
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
 
-
-    Returns:
-    --------
+    Returns
+    -------
     nx.Graph
+        The prepared graph.
+        global properties ['crs']
+        edge properties ['edgeid', 'geometry','node_start', and 'node_end']
+        node properties ['nodeid', 'geometry']
     """
-
-    # use memopy convention but not momepy.gdf_to_nx because it does not create nodes using nodeID
+    # use memopy convention but not momepy.gdf_to_nx
     # create graph from edges
     graph = nx.from_pandas_edgelist(
         edges,
@@ -283,10 +296,7 @@ def graph_to_network(
     graph: nx.Graph, crs: CRS = None
 ) -> Tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
     """
-    Converts the graph to a network representation (edges and nodes).
-
-    The resulting network is composed of edges (with properties 'edgeid', 'geometry',
-    'node_start', and 'node_end') and nodes (with properties of 'nodeid', 'geometry').
+    Convert the graph to network edges and nodes.
 
     Parameters
     ----------
@@ -304,8 +314,12 @@ def graph_to_network(
     Returns
     -------
     Tuple
-        gpd.GeoDataFrame: edges of the graph. Contains attributes ['edgeid', 'geometry', node_start', 'node_end']
-        gpd.GeoDataFrame: nodes of the graph. Contains attributes ['nodeid', 'geometry']
+        gpd.GeoDataFrame
+            edges of the graph.
+            Contains attributes ['edgeid', 'geometry', node_start', 'node_end']
+        gpd.GeoDataFrame
+            nodes of the graph.
+            Contains attributes ['nodeid', 'geometry']
 
     See Also
     --------
@@ -333,14 +347,12 @@ def graph_to_network(
     return edges, nodes
 
 
-def validate_graph(graph: nx.Graph) -> bool:
+def validate_graph(graph: nx.Graph) -> None:
     """
-    Validates the graph.
+    Validate the graph.
 
     The method checks that the graph has the required attribtues
-
     """
-
     _exist_attribute = "crs" in graph.graph
     assert _exist_attribute, "CRS does not exist in graph."
     _correct_attribute = isinstance(graph.graph["crs"], int)
@@ -363,18 +375,18 @@ def validate_graph(graph: nx.Graph) -> bool:
 
 def read_graph(graph_fn: str) -> nx.Graph:
     """
-    Reads the graph from a file.
+    Read the graph from a file.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     graph_fn: str or Path
         The path to the file where the graph is stored.
+        Supported extentions: gml, graphml, gpickle, geojson
 
-    Returns:
-    --------
+    Returns
+    -------
     nx.Graph
     """
-
     filepath = Path(graph_fn)
     extension = filepath.suffix.lower()
 
@@ -432,10 +444,10 @@ def _pop_list_from_graph(graph: nx.Graph) -> nx.Graph:
 
 def write_graph(graph: nx.Graph, graph_fn: str) -> None:
     """
-    Writes the graph to a file.
+    Write the graph to a file.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     graph: nx.Graph
         The graph to be written.
     graph_fn: str or Path
@@ -446,11 +458,10 @@ def write_graph(graph: nx.Graph, graph_fn: str) -> None:
         To write graph without geometry and any lists, use graphml.
         To write graph with geometry and index only, use geojson.
 
-    Returns:
-    --------
+    Returns
+    -------
     None
     """
-
     filepath = Path(graph_fn)
     extension = filepath.suffix.lower()
 
