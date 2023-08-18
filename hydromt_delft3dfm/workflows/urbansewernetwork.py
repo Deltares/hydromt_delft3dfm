@@ -1,21 +1,34 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from typing import List, Union
+import tempfile
 from pathlib import Path
+from typing import Union
 
-import numpy as np
 import geopandas as gpd
 import networkx as nx
+import numpy as np
+import osmnx
 import pyproj
-from shapely.geometry import LineString, MultiLineString, MultiPolygon, Polygon, box
-from shapely.wkt import dumps, loads
+import xarray as xr
+
+# hydromt
+from hydromt import flw
+
+# TODO #65: ra2ce installation issue
+from ra2ce.graph.network_config_data.network_config_data import NetworkConfigData
+from ra2ce.graph.network_wrappers.osm_network_wrapper.osm_network_wrapper import (
+    OsmNetworkWrapper,
+)
+
+from hydromt_delft3dfm import graph_utils
 
 logger = logging.getLogger(__name__)
 
 
 __all__ = [
-    "setup_network_from_openstreetmap",
+    "setup_graph_from_openstreetmap",
+    "setup_graph_from_hydrography",
     "setup_network_connections_based_on_flowdirections",
     "setup_network_parameters_from_rasters",
     "setup_network_topology_optimization",
@@ -23,53 +36,221 @@ __all__ = [
 ]
 
 
-def setup_network_from_openstreetmap(
-    polygon: gpd.GeoDataFrame, network_type: str, road_types: list[str], crs: pyproj.CRS
-) -> nx.graph:
+def setup_graph_from_openstreetmap(
+    region: gpd.GeoDataFrame,
+    network_type: str = None,
+    road_types: list[str] = None,
+    logger: logging.Logger = logger,
+) -> nx.MultiDiGraph:
     """
-    This method transforms Open Street Map (OSM) data into a graph network representing an urban drainage system.
-
-    The graph is an object that wraps around the NetworkX Graph (nx.Graph) class, providing additional functionality such as conversion methods and reading/writing capabilities.
+    Download and process Open Street Map (OSM) data within region into a graph network.
 
     The steps involved are:
-    1. Fetch vector lines from OSM data based on a provided query related to the specified network type and road types.
-    2. Clean up the retrieved lines to remove any irrelevant or erroneous data.
-    3. Compose the cleaned lines into a graph.
-    4. Extract a network from the graph, where the network corresponds to the graph edges.
+    1. Fetch vector lines from OSM data based on a provided query and perform cleaning.
+    2. simplify the graph's topology by removing interstitial nodes
+    3. extract network edges and nodes from the graph (extract geometries from graph)
+    4. recreate graph using network edges and nodes (add geometries to graph)
 
-    Parameters:
-    -----------
-    polygon: GeoDataFrame
-        The region polygon to consider for fetching OSM data. This defines the geographical area of interest.
+    Parameters
+    ----------
+    region: GeoDataFrame
+        The region polygon to consider for fetching OSM data.
+        Must contain crs.
 
-    network_type: str
-        The type of street network to consider. This helps filter the OSM data to include only relevant road types.
+    network_type: str {"all_private", "all", "bike", "drive", "drive_service", "walk"})
+        The type of street network to consider. This helps filter the OSM data.
+        If None, use road_types to filter features.
+        By default None.
 
-    road_types: list[str]
-        A list of road types to consider during the creation of the graph. This further refines the data that is included from the OSM dataset.
+    road_types: list[str], optional
+        A list of road types to consider during the creation of the graph.
+        This is a refined filter to get data that is included from the OSM dataset.
+        A complete list can be found in: https://wiki.openstreetmap.org/wiki/Key:highway.
+        by default None.
 
-    crs: pyproj.CRS
-        The Coordinate Reference System to use for the geospatial data.
+    Returns
+    -------
+    nx.MultiDiGraph:
+        An instance of the graph as a multi-digraph, with geometry information for edges
+        and nodes.
+        - Global property: 'crs'.
+        - Edge property: ['edgeid', 'geometry', 'node_start', 'node_end','osmid',
+                          'highway', 'oneway', 'reversed', 'length', 'rfid_c', , 'rfid']
+        - Node property: ['nodeid', 'geometry', 'y', 'x', 'street_count']
 
-    Returns:
+    See Also
     --------
-    nx.graph:
-        An instance of the nx.graph class, which is a wrapper around nx.Graph. The graph represents the urban drainage network with the following properties:
-        - Global property: 'crs'
-        - Edge property: 'edgeid', 'geometry'
-        - Node property: 'nodeid', 'geometry'
-
-    References:
-    -----------
-    - ra2ce.OsmNetworkWrapper.get_network: https://github.com/Deltares/ra2ce/blob/master/ra2ce/graph/network_wrappers/osm_network_wrapper/osm_network_wrapper.py
-    - osmnx.graph.graph_from_polygon: https://osmnx.readthedocs.io/en/latest/internals-reference.html
+    - ra2ce.OsmNetworkWrapper.get_clean_graph_from_osm
+    - osmnx.simplfy_graph
+    - ra2ce.OsmNetworkWrapper.get_clean_graph
+    - graph_utils.preprocess_graph
     """
     # method implementation goes here
-    pass
+
+    # this function use OsmNetworkWrapper from race to download OSM data into network
+
+    # get crs
+    crs = region.crs
+
+    def _get_osm_wrapper() -> OsmNetworkWrapper:
+        # creates and configures a osm network wrapper
+        _network_config_data = NetworkConfigData()
+        _osm_network_wrapper = OsmNetworkWrapper(_network_config_data)
+        # configure wrapper properties
+        _osm_network_wrapper.is_directed = True
+        _osm_network_wrapper.network_type = network_type
+        _osm_network_wrapper.road_types = road_types
+        _osm_network_wrapper.polygon_path = _get_temp_polygon_path()
+        _osm_network_wrapper.output_graph_dir = _get_temp_output_graph_dir()
+        return _osm_network_wrapper
+
+    # TODO #65: replace funcs to get temp paths after ra2ce update
+    def _get_temp_polygon_path() -> Path:
+        # create a temporary file for region polygon in EPSG:4326
+        with tempfile.TemporaryFile(suffix=".geojson") as temp:
+            # dump the data to the file
+            region.to_crs(pyproj.CRS.from_user_input(4326)).geometry.reset_index(
+                drop=True
+            ).to_file(temp.name, driver="GeoJSON")
+        return Path(temp.name)
+
+    def _get_temp_output_graph_dir() -> Path:
+        # create a temporary directory
+        temp = tempfile.TemporaryDirectory()
+        return Path(temp.name)
+
+    # download from osm and perform cleaning (drop_duplicates, add_missing_geoms_graph, snap_nodes_to_nodes)
+    _osm_network_wrapper = _get_osm_wrapper()
+    _osm_graph = _osm_network_wrapper.get_clean_graph_from_osm()
+    logger.info("Get clean graph from osm.")
+
+    # simplify the graph's topology by removing interstitial nodes
+    _osm_simplified_graph = osmnx.simplify_graph(
+        _osm_graph
+    )  # TODO #64: needs testing, too longe/too short are not beneficial for dem based direction.
+    _osm_simplified_graph = _osm_network_wrapper.get_clean_graph(
+        _osm_simplified_graph
+    )  # clean again for the simplified graph
+    logger.info("Get simplified graph from osm.")
+
+    # preprocess to desired graph format
+    graph = graph_utils.preprocess_graph(_osm_simplified_graph, to_crs=crs)
+
+    # get edges and nodes from graph (momepy convention)
+    # edges, nodes = graph_utils.graph_to_network(_osm_simplified_graph, crs=crs)
+
+    # get new graph with correct crs
+    # graph = graph_utils.network_to_graph(
+    #     edges=edges, nodes=nodes, create_using=nx.MultiDiGraph
+    # )
+
+    # unit test
+    # _edges, _nodes = graph_utils.graph_to_network(graph)
+    # _graph = graph_utils.network_to_graph(
+    #     edges=_edges, nodes=_nodes, create_using=nx.MultiDiGraph
+    # )
+    # nx.is_isomorphic(_graph, graph) -->  True
+
+    return graph
+
+
+def setup_graph_from_hydrography(
+    region: gpd.GeoDataFrame,
+    ds_hydro: xr.Dataset,
+    min_sto: int = 1,
+    logger: logging.Logger = logger,
+) -> nx.Graph:
+    """Preprocess DEM to graph representing flow directions.
+
+    The steps involved are:
+    1. Obtain or derive D8 flow directions from a dem.
+    2. Get flow direction vectors as geodataframe based on a minumum stream order.
+    3. convert the geodataframe into graph.
+
+    Parameters
+    ----------
+    region: gpd.GeoDataframe
+        Region geodataframe that provide model extent and crs.
+    ds_hydro : xr.Dataset
+        Hydrography data (or dem) to derive river shape and characteristics from.
+        * Required variables: ['elevtn']
+        * Optional variables: ['flwdir', 'uparea']
+    min_sto : int, optional
+        minimum stream order of subbasins, by default the stream order is set to
+        one under the global maximum stream order (slow).
+
+    Returns
+    -------
+    nx.DiGraph:
+        The processed flow direction as a graph.
+
+    """
+    crs = region.crs
+
+    # extra fix of data if user provided tiff
+    elevtn = ds_hydro["elevtn"]
+    if elevtn.raster.res[1] > 0:
+        elevtn = elevtn.raster.flipud()
+    if np.isnan(elevtn.raster.nodata):
+        elevtn.raster.set_nodata(-9999.0)
+        logger.debug("Missing nodata value, setting to -9999.0")
+
+    # check if flwdir and uparea in ds_hydro
+    if "flwdir" not in ds_hydro.data_vars:
+        da_flw = flw.d8_from_dem(
+            elevtn,
+            max_depth=-1,  # no local pits
+            outlets="edge",
+            idxs_pit=None,
+        )
+        logger.info("flwdir computed from elevtn")
+    else:
+        da_flw = ds_hydro["flwdir"]
+
+    flwdir = flw.flwdir_from_da(da_flw, ftype="d8")
+    if min_sto > 1:
+        # will add stream order key "strord" to feat
+        feat = flwdir.streams(min_sto=min_sto)
+    else:
+        # add stream order key "strord" manually
+        feat = flwdir.streams(strord=flwdir.stream_order())
+    logger.info("Obtain stream vectors")
+
+    # get stream vector geodataframe
+    gdf = gpd.GeoDataFrame.from_features(feat, crs=ds_hydro.raster.crs)
+    # convert to local crs, because flwdir is performed on the raster crs
+    gdf = gdf.to_crs(crs)
+
+    # convert to graph
+    graph = graph_utils.gpd_to_digraph(gdf)
+    graph = graph_utils.preprocess_graph(graph, to_crs=crs)
+
+    # TODO #63: test a few different scales and compare with real cases
+
+    # plot
+    # import matplotlib.pyplot as plt
+    # fig = plt.figure(figsize=(8, 8))
+    # ax = fig.add_subplot()
+    # ds_hydro["elevtn"].plot(
+    #     ax=ax, zorder=1, cbar_kwargs=dict(aspect=30, shrink=0.5), alpha=0.5, **kwargs
+    # )
+    # gdf.to_crs(ds_hydro.raster.crs).plot(
+    #     ax=ax,
+    #     color="blue",
+    #     linewidth=gdf["strord"] / 3,
+    #     label="Original flow directions",
+    # )
+    # f = Path().joinpath("temp.geojson")
+    # gdf.to_file(f)
+
+    return graph
 
 
 def setup_network_connections_based_on_flowdirections(
-    user_input_graph: nx.graph, dem_fn: Union[str, Path], **kwargs
+    user_input_graph: nx.graph,
+    dem_fn: Union[str, Path],
+    logger: logging.Logger = logger,
+    **kwargs,
 ) -> nx.graph:
     """
     This method sets up connections in the urban drainage network graph based on flow directions derived from a Digital Elevation Model (DEM).
@@ -81,8 +262,8 @@ def setup_network_connections_based_on_flowdirections(
     4. Identifies and fills in any missing links in the `user_input_graph`, ensuring a fully connected network.
     5. Fills in any missing geometry in the `user_input_graph` and converts it into a network.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     user_input_graph: nx.graph
         The initial graph provided by the user, which will be updated to align with the flow direction network.
 
@@ -92,13 +273,13 @@ def setup_network_connections_based_on_flowdirections(
     **kwargs:
         Other keyword arguments that may be required for specific implementations of the function.
 
-    Returns:
-    --------
+    Returns
+    -------
     nx.graph:
         The processed `user_input_graph`, now an instance of nx.graph class, with any missing links and geometry filled in based on flow directions. The graph represents the urban drainage network.
 
-    Notes:
-    ------
+    Notes
+    -----
     The function reprojects the DEM-derived flow network to the local CRS (Coordinate Reference System) of the `user_input_graph` to ensure that all spatial data aligns correctly.
     """
     # method implementation goes here
@@ -112,6 +293,7 @@ def setup_network_parameters_from_rasters(
     water_demand_fn,
     population_fn,
     building_footprint_fn,
+    logger: logging.Logger = logger,
     **kwargs,
 ) -> nx.graph:
     """
@@ -124,8 +306,8 @@ def setup_network_parameters_from_rasters(
     4. Approximates the size of the network based on the street size/type using data from the graph itself. --> use as weight for the next step.
     5. Approximates the slope of the network based on upstream and downstream street levels, the depths, and the length of the edge geometry in the graph. --> use as weight for the next step.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     graph: nx.graph
         The network graph to be filled with physical parameters. This is an instance of the nx.graph class, which wraps around the NetworkX Graph class.
 
@@ -147,8 +329,8 @@ def setup_network_parameters_from_rasters(
     **kwargs:
          Additional keyword arguments for more specific implementations of the function.
 
-    Returns:
-    --------
+    Returns
+    -------
     nx.graph:
         The updated graph, an instance of nx.graph class, representing the urban drainage network with physical parameters filled in.
     """
@@ -157,7 +339,7 @@ def setup_network_parameters_from_rasters(
 
 
 def setup_network_topology_optimization(
-    graph: nx.graph, method: str, **kwargs
+    graph: nx.graph, method: str, logger: logging.Logger = logger, **kwargs
 ) -> nx.graph:
     """
     This method optimizes the topology of the urban drainage network represented by the graph.
@@ -167,8 +349,8 @@ def setup_network_topology_optimization(
     2. Removes unnecessary links based on the computed graph metric.
     3. Iterates the above steps as needed until the network is optimized.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     graph: nx.graph
         The network graph to be optimized. This is an instance of the nx.graph class, which wraps around the NetworkX Graph class.
 
@@ -178,13 +360,13 @@ def setup_network_topology_optimization(
     **kwargs:
         Additional keyword arguments for more specific implementations of the function.
 
-    Returns:
-    --------
+    Returns
+    -------
     nx.graph:
         The optimized graph, an instance of nx.graph class, representing the urban drainage network.
 
-    Notes:
-    ------
+    Notes
+    -----
     The betweenness centrality of a node in a graph is a measure of how often it appears on the shortest paths between nodes. Nodes with high betweenness centrality can be considered 'hubs' in the network. By removing links with low betweenness centrality, we can potentially simplify the network topology without significantly impacting the overall connectivity.
 
     The optimal way to optimize network topology will highly depend on the specific characteristics of the network, which are often determined by previous steps in the network analysis process.
@@ -196,8 +378,8 @@ def setup_network_topology_optimization(
 
     If the network's weights have physical meanings, shortest path or maximum flow methods can also be considered for optimization. These methods, such as the Ford-Fulkerson or Edmonds-Karp algorithm, can be used to identify critical paths in the network. This can be particularly useful for identifying vulnerabilities in the network or for identifying potential areas for network enhancement.
 
-    See Also:
-    ----------
+    See Also
+    --------
     https://github.com/xldeltares/hydrolib-nowcasting/tree/master
 
     """
@@ -213,6 +395,7 @@ def setup_network_dimentions_from_rainfallstats(
     diameter_range=None,
     velocity_range=None,
     slope_range=None,
+    logger: logging.Logger = logger,
 ) -> nx.graph:
     """
     This method updates the dimensions of the pipes in the urban drainage network represented by the graph, using historical rainfall data.
@@ -221,8 +404,8 @@ def setup_network_dimentions_from_rainfallstats(
 
     The dimensions of the pipe (such as diameter) are then approximated based on the edge weights used for network optimization, subject to reasonable ranges for diameter, velocity, and slope.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     graph: nx.graph
         The network graph to be updated with new pipe dimensions. This is an instance of the nx.graph class, which wraps around the NetworkX Graph class.
 
@@ -244,13 +427,13 @@ def setup_network_dimentions_from_rainfallstats(
     slope_range: tuple, optional
         A tuple specifying the minimum and maximum feasible pipe slopes. Used to constrain the approximation of pipe dimensions.
 
-    Returns:
-    --------
+    Returns
+    -------
     nx.graph:
         The updated graph, an instance of nx.graph class, representing the urban drainage network with new pipe dimensions.
 
-    References:
-    -----------
+    References
+    ----------
     - hydromt.stats.extremes: Function used to derive statistics from historical rainfall data.
     """
     # method implementation goes here

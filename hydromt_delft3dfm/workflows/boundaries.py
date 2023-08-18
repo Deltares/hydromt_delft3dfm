@@ -10,7 +10,7 @@ import pandas as pd
 import xarray as xr
 from shapely.geometry import Point
 
-from .graphs import gpd_to_digraph
+from ..graph_utils import gpd_to_digraph
 
 logger = logging.getLogger(__name__)
 

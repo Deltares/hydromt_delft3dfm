@@ -110,7 +110,7 @@ class DFlowFMModel(MeshModel):
             "frictype": 3,
         },
     }
-    _FOLDERS = ["dflowfm", "geoms", "mesh", "maps"]
+    _FOLDERS = ["dflowfm", "geoms", "mesh", "maps", "graphs"]
     _CLI_ARGS = {"region": "setup_region", "res": "setup_mesh2d"}
     _CATALOGS = join(_DATADIR, "parameters_data.yml")
 
@@ -905,6 +905,9 @@ class DFlowFMModel(MeshModel):
 
     def setup_urban_sewer_network_from_osm(
         self,
+        network_type: str = "drive",
+        road_types: list[str] = None,
+        hydrography_fn: Union[str, Path] = None,
         **kwargs,
     ) -> None:
         """
@@ -917,16 +920,55 @@ class DFlowFMModel(MeshModel):
             rainfall_data: Historical rainfall data provided by the user to update pipe dimensions.
 
         parameters
-        -------
+        ----------
+            network_type: str {"all_private", "all", "bike", "drive", "drive_service", "walk"})
+                The type of street network to consider. This helps filter the OSM data to include only relevant road types.
+                By default "drive"
+            road_types: list[str], optional
+                A list of road types to consider during the creation of the graph. This further refines the data that is included from the OSM dataset.
+                A complete list can be found in: https://wiki.openstreetmap.org/wiki/Key:highway.
+                by default None.
+            hydrography_fn : str
+                Hydrography data (or dem) to derive river shape and characteristics from.
+                * Required variables: ['elevtn']
+                * Optional variables: ['flwdir', 'uparea']
             kwargs: key word arguments.
 
         """
+        self.logger.info("Preparing urban sewer network.")
 
         # 1. Build the network from OpenStreetMap data
-        # workflows.setup_network_from_openstreetmap()
+        graph_osm = workflows.setup_graph_from_openstreetmap(
+            region=self.region,  # TODO: switch to use region as function arguments when mesh branch is merged
+            network_type=network_type,
+            road_types=road_types,
+        )
+        workflows.write_graph(
+            graph_osm, graph_fn=Path(self.root).joinpath("graphs/graph_osm.gml")
+        )
+        workflows.write_graph(
+            graph_osm, graph_fn=Path(self.root).joinpath("graphs/graph_osm.geojson")
+        )
 
         # 2. Setup network connections based on flow directions from DEM
-        # workflows.setup_network_connections_based_on_flowdirections()
+        # read data
+        ds_hydro = self.data_catalog.get_rasterdataset(
+            hydrography_fn, geom=self.region, buffer=10
+        )
+        if isinstance(ds_hydro, xr.DataArray):
+            ds_hydro = ds_hydro.to_dataset()
+        graph_flwdir = workflows.setup_graph_from_hydrography(
+            region=self.region,
+            ds_hydro=ds_hydro,
+            min_sto=1,  # all stream that starts with stream order = 1
+        )
+        workflows.write_graph(
+            graph_osm, graph_fn=Path(self.root).joinpath("graphs/graph_flwdir.gml")
+        )
+        workflows.write_graph(
+            graph_osm, graph_fn=Path(self.root).joinpath("graphs/graph_flwdir.geojson")
+        )
+        # workflows.setup_network_connections_based_on_flowdirections(graph_osm, graph_flwdir)
 
         # 3. Setup network physical parameters from raster datasets
         # workflows.setup_network_parameters_from_rasters()
@@ -936,6 +978,8 @@ class DFlowFMModel(MeshModel):
 
         # 5. Update pipe dimensions based on user-provided historical rainfall data
         # workflows.setup_network_dimentions_from_rainfallstats()
+
+        # TODO add geoms for network nodes and network edges
 
         # 6. any additional steps to add the network to delft3dfm model
         # _setup_branches
