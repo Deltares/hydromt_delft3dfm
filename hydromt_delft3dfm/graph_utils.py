@@ -9,24 +9,44 @@ import geopandas as gpd
 import momepy
 import networkx as nx
 from pyproj import CRS, Transformer
-from shapely.geometry import (
-    LineString,
-    Point,
-)
+from shapely.geometry import LineString, Point, box
 from shapely.ops import transform
 
 logger = logging.getLogger(__name__)
 
 
 __all__ = [
+    # creat
+    "preprocess_graph",
+    "validate_graph",
+    # convert
     "gpd_to_digraph",
     "network_to_graph",
     "graph_to_network",
-    "preprocess_graph",
-    "validate_graph",
+    # io
     "read_graph",
     "write_graph",
+    # property
+    "graph_region",
+    "graph_utils.graph_edges",
+    "graph_nodes",
 ]
+
+
+"""
+graph: nx.Graph
+    graph property ["crs"]
+    edge property ["id", "geometry", "node_start", "node_end"]
+    node property ["id", "geometry"]
+    
+graph_edges: gpd.GeoDataFrame
+    columns: ["id", "geometry", "node_start", "node_end"]
+
+graph_nodes: gpd.GeoDataFrame
+    columns: ["id", "geometry"]
+    
+graph_region: gpd.GeoDataFrame
+"""
 
 
 def gpd_to_digraph(data: gpd.GeoDataFrame) -> nx.DiGraph():
@@ -44,6 +64,8 @@ def gpd_to_digraph(data: gpd.GeoDataFrame) -> nx.DiGraph():
     nx.DiGraph
         The converted directed graph.
     """
+    DeprecationWarning("will be replaced by network_to_graph")
+
     _ = data.copy()
 
     _["from_node"] = [row.geometry.coords[0] for index, row in _.iterrows()]
@@ -78,8 +100,8 @@ def preprocess_graph(graph: nx.Graph, to_crs: CRS = None) -> nx.Graph:
     nx.Graph
         The prepared graph.
         Includes global properties ['crs']
-        edge properties ['edgeid', 'geometry','node_start', and 'node_end']
-        node properties ['nodeid', 'geometry']
+        edge properties ['id', 'geometry','node_start', and 'node_end']
+        node properties ['id', 'geometry']
     """
     crs = graph.graph.get("crs")
     if not crs:
@@ -102,6 +124,26 @@ def preprocess_graph(graph: nx.Graph, to_crs: CRS = None) -> nx.Graph:
     return graph
 
 
+# adapted from ra2ce funcs
+def _add_missing_geoms_one_by_one(
+    graph: nx.Graph, geom_name: str = "geometry"
+) -> nx.Graph:
+    # Not all nodes have geometry attributed (some only x and y coordinates) so add a geometry columns
+    nodes_without_geom = [n[0] for n in graph.nodes(data=geom_name) if n[1] is None]
+    for nd in nodes_without_geom:
+        graph.nodes[nd][geom_name] = Point(graph.nodes[nd]["x"], graph.nodes[nd]["y"])
+
+    edges_without_geom = [
+        e for e in graph.edges.data(data=True) if geom_name not in e[-1]
+    ]
+    for ed in edges_without_geom:
+        graph[ed[0]][ed[1]][0][geom_name] = LineString(
+            [graph.nodes[ed[0]][geom_name], graph.nodes[ed[1]][geom_name]]
+        )
+
+    return graph
+
+
 def assign_graph_geometry(graph: nx.Graph) -> nx.Graph:
     """Add geometry to graph nodes and edges.
 
@@ -111,6 +153,7 @@ def assign_graph_geometry(graph: nx.Graph) -> nx.Graph:
     _exist_edge_geometry = any(nx.get_edge_attributes(graph, "geometry"))
 
     if _exist_node_geometry and _exist_edge_geometry:
+        graph = _add_missing_geoms_one_by_one(graph)
         return graph
 
     if (not _exist_node_geometry) and _exist_edge_geometry:
@@ -181,7 +224,7 @@ def reproject_graph_geometry(graph: nx.Graph, crs_from: CRS, crs_to: CRS) -> nx.
             reprojected_geometry = transform(
                 transformer.transform, attributes["geometry"]
             )
-            reprojected_graph.nodes[node]["geometry"] = reprojected_geometry
+            reprojected_graph.nodes[node].update({"geometry": reprojected_geometry})
 
     # Reproject the edges
     if graph.is_multigraph():
@@ -189,14 +232,14 @@ def reproject_graph_geometry(graph: nx.Graph, crs_from: CRS, crs_to: CRS) -> nx.
             reprojected_geometry = transform(
                 transformer.transform, attributes["geometry"]
             )
-            reprojected_graph[u][v][key]["geometry"] = reprojected_geometry
+            reprojected_graph[u][v][key].update({"geometry": reprojected_geometry})
     else:
         for u, v, attributes in graph.edges(data=True):
             if "geometry" in attributes:
                 reprojected_geometry = transform(
                     transformer.transform, attributes["geometry"]
                 )
-                reprojected_graph[u][v]["geometry"] = reprojected_geometry
+                reprojected_graph[u][v].update({"geometry": reprojected_geometry})
 
     reprojected_graph.graph["crs"] = crs_to
 
@@ -216,33 +259,31 @@ def assign_graph_index(graph: nx.Graph) -> nx.Graph:
     -------
     nx.Graph
         The prepared graph.
-        edge properties ['edgeid', 'geometry','node_start', and 'node_end']
-        node properties ['nodeid', 'geometry']
+        edge properties ['id', 'geometry','node_start', and 'node_end']
+        node properties ['id', 'geometry']
     """
     # Create a new graph instance to avoid modifying the original graph
     indexed_graph = graph.copy()
 
-    # Assign nodeids
+    # Assign ids
     for index, node in enumerate(graph.nodes()):
-        indexed_graph.nodes[node]["nodeid"] = index
+        indexed_graph.nodes[node]["id"] = index
 
-    # Assign edgeids
+    # Assign ids
     if graph.is_multigraph():
         for u, v, key in graph.edges(keys=True):
-            node_start = str(indexed_graph.nodes[u]["nodeid"])
-            node_end = str(indexed_graph.nodes[v]["nodeid"])
-            edge_id = node_start + "_" + node_end
-            indexed_graph[u][v][key]["edgeid"] = edge_id
+            node_start = str(indexed_graph.nodes[u]["id"])
+            node_end = str(indexed_graph.nodes[v]["id"])
+            edge_id = node_start + "_" + node_end + "_" + str(key)
+            indexed_graph[u][v][key]["id"] = edge_id
             indexed_graph[u][v][key]["node_start"] = node_start
             indexed_graph[u][v][key]["node_end"] = node_end
-            edge_id_multi = node_start + "_" + node_end + "_" + str(key)
-            indexed_graph[u][v][key]["edgeid_multi"] = edge_id_multi
     else:
         for u, v in graph.edges():
-            node_start = str(indexed_graph.nodes[u]["nodeid"])
-            node_end = str(indexed_graph.nodes[v]["nodeid"])
+            node_start = str(indexed_graph.nodes[u]["id"])
+            node_end = str(indexed_graph.nodes[v]["id"])
             edge_id = node_start + "_" + node_end
-            indexed_graph[u][v]["edgeid"] = edge_id
+            indexed_graph[u][v]["id"] = edge_id
             indexed_graph[u][v]["node_start"] = node_start
             indexed_graph[u][v]["node_end"] = node_end
     return indexed_graph
@@ -270,8 +311,8 @@ def network_to_graph(
     nx.Graph
         The prepared graph.
         global properties ['crs']
-        edge properties ['edgeid', 'geometry','node_start', and 'node_end']
-        node properties ['nodeid', 'geometry']
+        edge properties ['id', 'geometry','node_start', and 'node_end']
+        node properties ['id', 'geometry']
     """
     # use memopy convention but not momepy.gdf_to_nx
     # create graph from edges
@@ -285,8 +326,8 @@ def network_to_graph(
 
     # add node attribtues
     if nodes is not None:
-        nx.set_node_attributes(graph, {nid: {"nodeid": nid} for nid in nodes["nodeid"]})
-        nx.set_node_attributes(graph, nodes.set_index("nodeid").to_dict("index"))
+        nx.set_node_attributes(graph, {nid: {"id": nid} for nid in nodes["id"]})
+        nx.set_node_attributes(graph, nodes.set_index("id").to_dict("index"))
 
     graph.graph["crs"] = edges.crs
     return graph
@@ -316,15 +357,18 @@ def graph_to_network(
     Tuple
         gpd.GeoDataFrame
             edges of the graph.
-            Contains attributes ['edgeid', 'geometry', node_start', 'node_end']
+            Contains attributes ['id', 'geometry', node_start', 'node_end', '_graph_edge_index']
         gpd.GeoDataFrame
             nodes of the graph.
-            Contains attributes ['nodeid', 'geometry']
+            Contains attributes ['id', 'geometry', '_graph_node_index']
 
     See Also
     --------
     momepy.nx_to_gdf
     """
+    # valida graph
+    validate_graph(graph)
+
     # get crs
     crs = crs if crs is not None else graph.graph.get("crs")
     if not crs:
@@ -333,16 +377,18 @@ def graph_to_network(
     # assign geometry
     graph = assign_graph_geometry(graph)
 
-    # assign ids
-    nodes, edges = momepy.nx_to_gdf(graph, nodeID="nodeid")
-    edges["edgeid"] = (
-        edges["node_start"].astype(str) + "_" + edges["node_end"].astype(str)
-    )
+    # convert to geodataframe
+    edges = gpd.GeoDataFrame(nx.to_pandas_edgelist(graph))
+    nodes = gpd.GeoDataFrame(data=[attrs for _, attrs in graph.nodes(data=True)])
 
     # assign crs
     crs = CRS.from_user_input(crs)
-    edges = edges.to_crs(crs)
-    nodes = nodes.to_crs(crs)
+    if not edges.crs:
+        edges = edges.set_crs(crs)
+        nodes = nodes.set_crs(crs)
+    else:
+        edges = edges.to_crs(crs)
+        nodes = nodes.to_crs(crs)
 
     return edges, nodes
 
@@ -358,13 +404,13 @@ def validate_graph(graph: nx.Graph) -> None:
     _correct_attribute = isinstance(graph.graph["crs"], int)
     assert _correct_attribute, "crs must be epsg int."
 
-    _exist_attribute = any(nx.get_node_attributes(graph, "nodeid"))
-    assert _exist_attribute, "Missing nodeid in nodes"
+    _exist_attribute = any(nx.get_node_attributes(graph, "id"))
+    assert _exist_attribute, "Missing id in nodes"
     _exist_attribute = any(nx.get_node_attributes(graph, "geometry"))
     assert _exist_attribute, "Missing geometries in nodes"
 
-    _exist_attribute = any(nx.get_edge_attributes(graph, "edgeid"))
-    assert _exist_attribute, "Missing edgeid in edges"
+    _exist_attribute = any(nx.get_edge_attributes(graph, "id"))
+    assert _exist_attribute, "Missing id in edges"
     _exist_attribute = any(nx.get_edge_attributes(graph, "node_start"))
     assert _exist_attribute, "Missing node_start in edges"
     _exist_attribute = any(nx.get_edge_attributes(graph, "node_end"))
@@ -476,7 +522,24 @@ def write_graph(graph: nx.Graph, graph_fn: str) -> None:
             pickle.dump(graph, f, pickle.HIGHEST_PROTOCOL)
     elif extension == ".geojson":
         edges, _ = graph_to_network(graph)
-        edges = edges[["edgeid", "node_start", "node_end", "geometry"]]
+        edges = edges[["id", "node_start", "node_end", "geometry"]]
         edges.to_file(filepath, driver="GeoJSON")
     else:
         raise ValueError(f"Unsupported file format: {extension}")
+
+
+def graph_edges(graph: nx.Graph) -> gpd.GeoDataFrame:
+    """Get graph edges as geodataframe"""
+    return graph_to_network(graph)[0]
+
+
+def graph_nodes(graph: nx.Graph) -> gpd.GeoDataFrame:
+    """Get graph nodes as geodataframe"""
+    return graph_to_network(graph)[1]
+
+
+def graph_region(graph: nx.Graph) -> gpd.GeoDataFrame:
+    """Get graph region as geodataframe"""
+    edges = graph_to_network(graph)[0]
+    region = gpd.GeoDataFrame(geometry=[box(*edges.total_bounds)], crs=edges.crs)
+    return region
