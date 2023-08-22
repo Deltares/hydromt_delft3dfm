@@ -3,8 +3,9 @@
 import logging
 import tempfile
 from pathlib import Path
-from typing import Union
+from typing import Union, Optional, List, Dict
 
+import pandas as pd
 import geopandas as gpd
 import networkx as nx
 import numpy as np
@@ -14,6 +15,7 @@ import xarray as xr
 
 # hydromt
 from hydromt import flw
+from hydromt import DataCatalog
 
 # TODO #65: ra2ce installation issue
 from ra2ce.graph.network_config_data.network_config_data import NetworkConfigData
@@ -27,15 +29,23 @@ logger = logging.getLogger(__name__)
 
 
 __all__ = [
+    # graph creations
     "setup_graph_from_openstreetmap",
     "setup_graph_from_hydrography",
+    # graph update
+    "update_graph_from_dem",
+    # TODO to be categorized
     "setup_network_connections_based_on_flowdirections",
     "setup_network_parameters_from_rasters",
     "setup_network_topology_optimization",
     "setup_network_dimentions_from_rainfallstats",
+    # graph manipulations
+    "setup_graph_from_rasterdataset",
 ]
 
 
+# FIXME maybe rename to create*
+# TODO remove the non-main component outside of region polygon.
 def setup_graph_from_openstreetmap(
     region: gpd.GeoDataFrame,
     network_type: str = None,
@@ -154,6 +164,7 @@ def setup_graph_from_openstreetmap(
     return graph
 
 
+# FIXME maybe rename to create*
 def setup_graph_from_hydrography(
     region: gpd.GeoDataFrame,
     ds_hydro: xr.Dataset,
@@ -243,6 +254,84 @@ def setup_graph_from_hydrography(
     # f = Path().joinpath("temp.geojson")
     # gdf.to_file(f)
 
+    return graph
+
+
+def _compute_gradient_from_elevtn(graph):
+    """
+    Compute the gradient for each edge in the graph based on node elevations and edge length.
+
+    Gradient is calculated as:
+    gradient = (elevation of source node - elevation of target node) / edge length
+
+    Modifies the input graph in place.
+    """
+    for e in graph.edges:
+        graph.edges[e].update(
+            {
+                "gradient": (
+                    (graph.nodes[e[0]]["elevtn"] - graph.nodes[e[1]]["elevtn"])
+                    / graph.edges[e]["length"]
+                )
+            }
+        )
+    return graph
+
+
+def update_graph_from_dem(
+    graph: nx.Graph,  # TODO replace by self.graphs
+    data_catalog: DataCatalog,  # TODO replace by self.data_catalog
+    dem_fn: Union[str, Path, xr.DataArray, xr.Dataset],
+    fill_method: Optional[str] = None,
+    logger: logging.Logger = logger,
+):
+    """
+    Update the graph with elevation data from a DEM, compute gradient for edges,
+    and reverse the direction of edges with negative gradient.
+
+    The function samples elevation data from the provided DEM to the nodes of the graph.
+    It then computes the gradient of edges based on the elevation difference between the nodes
+    and the edge length. If the computed gradient is negative, the direction of the edge is reversed.
+
+    Parameters
+    ----------
+    graph : nx.Graph
+        Input graph to be updated.
+    data_catalog : DataCatalog
+        Data catalog to read and process raster data.
+    dem_fn : Union[str, Path, xr.DataArray, xr.Dataset]
+        Data catalog key, path to DEM file or DEM xarray data object.
+    fill_method : str, optional
+        If specified, fills no data values using fill_nodata method.
+        Available methods are {'linear', 'nearest', 'cubic', 'rio_idw'}.
+    logger : logging.Logger, optional
+        Logger object to log messages. Default is the global logger.
+
+    Returns
+    -------
+    nx.Graph
+        Graph with updated node elevations, edge gradients, and potentially reversed edge directions.
+    """
+    logger.info(
+        "Update the graph with elevation data from a DEM and compute gradient for edges"
+    )
+
+    # Sample DEM
+    # TODO replaced by super method
+    graph = setup_graph_from_rasterdataset(
+        graph=graph,
+        data_catalog=data_catalog,
+        raster_fn=dem_fn,
+        fill_method=fill_method,
+        graph_component="nodes",
+        logger=logger,
+    )
+
+    logger.info("compute gradient from elevtn")
+    graph = _compute_gradient_from_elevtn(graph)
+
+    logger.info("update graph direction")
+    graph = reverse_edges_on_negative_weight(graph, weight="gradient")
     return graph
 
 
@@ -438,3 +527,231 @@ def setup_network_dimentions_from_rainfallstats(
     """
     # method implementation goes here
     pass
+
+
+# graph workflows
+
+
+def setup_graph_from_rasterdataset(
+    graph: nx.Graph,  # TODO replace by self.graphs
+    data_catalog: DataCatalog,  # TODO replace by self.data_catalog
+    raster_fn: Union[str, Path, xr.DataArray, xr.Dataset],
+    variables: Optional[List[str]] = None,
+    fill_method: Optional[str] = None,
+    resampling_method: Optional[str] = "mean",
+    all_touched: Optional[bool] = True,
+    rename: Optional[Dict[str, str]] = dict(),
+    graph_component: Optional[str] = "both",
+    logger: logging.Logger = logger,
+) -> nx.graph:
+    """Add data variable(s) from ``raster_fn`` to attribute(s) in graph object.
+
+    Raster data is sampled to the graph edges and nodes using the ``resampling_method``.
+    If raster is a dataset, all variables will be added unless ``variables`` list
+    is specified.
+
+    Parameters
+    ----------
+    raster_fn: str, Path, xr.DataArray, xr.Dataset
+        Data catalog key, path to raster file or raster xarray data object.
+    variables: list, optional
+        List of variables to add to mesh from raster_fn. By default all.
+    fill_method : str, optional
+        If specified, fills no data values using fill_nodata method.
+        Available methods are {'linear', 'nearest', 'cubic', 'rio_idw'}.
+    rename: dict, optional
+        Dictionary to rename variable names in raster_fn before adding to mesh
+        {'name_in_raster_fn': 'name_in_mesh'}. By default empty.
+    graph_component: str, optional
+        Specifies which component of the graph to process. Can be one of the following:
+        * "edges" - Only processes and updates the edges of the graph.
+        * "nodes" - Only processes and updates the nodes of the graph.
+        * "both" - Processes and updates both nodes and edges of the graph.
+        By default, it processes both nodes and edges ("both").
+    resampling_method: str, optional
+        Method to sample from raster data to mesh. By default mean. Options include
+        {'count', 'min', 'max', 'sum', 'mean', 'std', 'median', 'q##'}.
+        Only used when ``graph_component`` is "edges" or "both".
+    all_touched : bool, optional
+        If True, all pixels touched by geometries will used to define the sample.
+        If False, only pixels whose center is within the geometry or that are
+        selected by Bresenham's line algorithm will be used. By default True.
+        Only used when ``graph_component`` is "edges" or "both".
+    Returns
+    -------
+    list
+        List of variables added to mesh.
+    """  # noqa: E501
+
+    assert graph_component in [
+        "edges",
+        "nodes",
+        "both",
+    ], "Invalid graph_component value."
+
+    logger.info(f"Preparing graph data from raster source {raster_fn}")
+    region = graph_utils.graph_region(graph)
+
+    # Read raster data, select variables, and interpolate na if needed
+    ds = data_catalog.get_rasterdataset(
+        raster_fn, region=region, buffer=1000, variables=variables
+    )
+    if isinstance(ds, xr.DataArray):
+        ds = ds.to_dataset()
+    if fill_method is not None:
+        ds = ds.raster.interpolate_na(method=fill_method)
+
+    # Sample raster data
+    # Rename variables
+    rm_dict = {f"{var}_{resampling_method}": var for var in ds.data_vars}
+    # get sample at edges
+    if graph_component in ["edges", "both"]:
+        edges = graph_utils.graph_edges(graph)
+        ds_sample = ds.raster.zonal_stats(
+            gdf=edges,
+            stats=resampling_method,
+            all_touched=all_touched,
+        )
+        ds_sample = ds_sample.rename(rm_dict).rename(rename)
+        ds_sample_df = ds_sample.to_dataframe().set_index(edges["id"])
+        graph = update_edges_attributes(graph, ds_sample_df, id_col="id")
+    # get sample at nodes
+    if graph_component in ["nodes", "both"]:
+        nodes = graph_utils.graph_nodes(graph)
+        ds_sample = ds.raster.sample(
+            nodes
+        )  # FIXME dem for sample data too small, need to add nodedata value and correct crs
+        ds_sample = ds_sample.rename(rename)
+        ds_sample_df = ds_sample.to_dataframe().set_index(nodes["id"])
+        graph = update_nodes_attributes(graph, ds_sample_df)
+
+    # TODO Convert to UgridDataset
+    # uds_sample = xu.UgridDataset(ds_sample, grids=self.mesh_grids[grid_name])
+
+    return graph
+
+
+# func from hybridurb
+def update_edges_attributes(
+    graph: nx.Graph,
+    edges: gpd.GeoDataFrame,
+    id_col: str = "id",
+) -> nx.Graph():
+    """This function updates the graph by adding new edges attributes specified in edges"""
+
+    # graph df
+    _graph_df = nx.to_pandas_edgelist(graph).set_index("id")
+    _graph_df["_graph_edge_tuple"] = list(graph.edges)
+
+    # check if edges id in attribute df
+    if edges.index.name == id_col:
+        edges.index.name = "id"
+    elif id_col in edges.columns:
+        edges = edges.set_index(id_col)
+        edges.index.name = "id"
+    else:
+        raise ValueError(
+            "attributes could not be updated to graph: could not perform join"
+        )
+
+    # last item that isnt NA
+    graph_df = _graph_df.reindex(
+        columns=_graph_df.columns.union(edges.columns, sort=False)
+    )
+    graph_df.update(edges)
+
+    # add each attribute
+    for c in edges.columns:
+        dict = {row._graph_edge_tuple: row[c] for i, row in graph_df.iterrows()}
+        nx.set_node_attributes(graph, dict, c)
+
+    return graph
+
+
+# func from hybridurb
+def update_nodes_attributes(
+    graph: nx.Graph,
+    nodes: gpd.GeoDataFrame,
+    id_col: str = "id",
+) -> nx.Graph():
+    """This function updates the graph by adding new edges attributes specified in edges"""
+
+    # graph df
+    _graph_df = pd.DataFrame(graph.nodes(data="id"), columns=["tuple", "id"]).set_index(
+        "id"
+    )
+
+    # check if edges id in attribute df
+    if nodes.index.name == id_col:
+        nodes.index.name = "id"
+    elif id_col in nodes.columns:
+        nodes = nodes.set_index(id_col)
+        nodes.index.name = "id"
+    else:
+        raise ValueError(
+            "attributes could not be updated to graph: could not perform join"
+        )
+
+    # last item that isnt NA
+    _graph_df = _graph_df.reindex(
+        columns=_graph_df.columns.union(nodes.columns, sort=False)
+    )
+    graph_df = pd.concat([_graph_df, nodes]).groupby(level=0).last()
+    graph_df = graph_df.loc[_graph_df.index]
+
+    # add each attribute
+    for c in nodes.columns:
+        dict = {row.tuple: row[c] for i, row in graph_df.iterrows()}
+        nx.set_node_attributes(graph, dict, c)
+
+    return graph
+
+
+def reverse_edges_on_negative_weight(
+    graph: Union[nx.MultiDiGraph, nx.DiGraph], weight: str = "gradient"
+) -> Union[nx.MultiDiGraph, nx.DiGraph]:
+    """Reverse graph edges based on a negative weight attribute.
+
+    Parameters:
+    -----------
+    graph : Union[nx.DiGraph,nx.MultiDiGraph]
+        Input graph.
+    weight : str
+        Name of the edge attribute to check. Default is 'gradient'.
+
+    Returns:
+    --------
+    Union[nx.DiGraph,nx.MultiDiGraph]
+        The function modifies the graph in-place and returns it.
+    """
+
+    if isinstance(graph, nx.MultiDiGraph):
+        # Collect edges that need to be reversed for MultiDiGraph
+        edges_to_reverse = [
+            (u, v, key, data)
+            for u, v, key, data in graph.edges(keys=True, data=True)
+            if data.get(weight, 0) < 0
+        ]
+        for u, v, key, data in edges_to_reverse:
+            # Remove original edge
+            graph.remove_edge(u, v, key=key)
+            # Add reversed edge with preserved attributes
+            graph.add_edge(v, u, key=key, **data)
+
+    elif isinstance(graph, nx.DiGraph):
+        # Collect edges that need to be reversed for DiGraph
+        edges_to_reverse = [
+            (u, v, data)
+            for u, v, data in graph.edges(data=True)
+            if data.get(weight, 0) < 0
+        ]
+        for u, v, data in edges_to_reverse:
+            # Remove original edge
+            graph.remove_edge(u, v)
+            # Add reversed edge with preserved attributes
+            graph.add_edge(v, u, **data)
+
+    else:
+        raise ValueError("The graph should be either a DiGraph or a MultiDiGraph.")
+
+    return graph

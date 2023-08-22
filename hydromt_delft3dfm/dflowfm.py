@@ -18,6 +18,7 @@ import xugrid as xu
 from hydrolib.core.dflowfm import FMModel, IniFieldModel, Mesh1d
 from hydrolib.core.dimr import DIMR, FMComponent, Start
 from hydromt.models import MeshModel
+from hydromt_delft3dfm import graph_utils
 
 # from hydrolib.dhydamo.geometry import mesh
 from meshkernel import GeometryList
@@ -942,12 +943,29 @@ class DFlowFMModel(MeshModel):
             region=self.region,  # TODO: switch to use region as function arguments when mesh branch is merged
             network_type=network_type,
             road_types=road_types,
+            logger=self.logger,
         )
-        workflows.write_graph(
+        graph_utils.write_graph(
             graph_osm, graph_fn=Path(self.root).joinpath("graphs/graph_osm.gml")
         )
-        workflows.write_graph(
+        graph_utils.write_graph(
             graph_osm, graph_fn=Path(self.root).joinpath("graphs/graph_osm.geojson")
+        )
+
+        # compute gradient from elevtn
+        graph_osm = workflows.update_graph_from_dem(
+            graph_osm,
+            self.data_catalog,
+            dem_fn=hydrography_fn,
+            logger=self.logger,
+        )
+        graph_utils.write_graph(
+            graph_osm,
+            graph_fn=Path(self.root).joinpath("graphs/graph_osm_demcorrected.gml"),
+        )
+        graph_utils.write_graph(
+            graph_osm,
+            graph_fn=Path(self.root).joinpath("graphs/graph_osm_demcorrected.geojson"),
         )
 
         # 2. Setup network connections based on flow directions from DEM
@@ -962,10 +980,10 @@ class DFlowFMModel(MeshModel):
             ds_hydro=ds_hydro,
             min_sto=1,  # all stream that starts with stream order = 1
         )
-        workflows.write_graph(
+        graph_utils.write_graph(
             graph_osm, graph_fn=Path(self.root).joinpath("graphs/graph_flwdir.gml")
         )
-        workflows.write_graph(
+        graph_utils.write_graph(
             graph_osm, graph_fn=Path(self.root).joinpath("graphs/graph_flwdir.geojson")
         )
         # workflows.setup_network_connections_based_on_flowdirections(graph_osm, graph_flwdir)
