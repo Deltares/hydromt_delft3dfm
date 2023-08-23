@@ -108,7 +108,7 @@ class DFlowFMModel(MeshModel):
         },
     }
     _FOLDERS = ["dflowfm", "geoms", "mesh", "maps"]
-    _CLI_ARGS = {"region": None}  # "region": "setup_region", "res": "setup_mesh2d"}
+    _CLI_ARGS = {"region": "setup_region"}
     _CATALOGS = join(_DATADIR, "parameters_data.yml")
 
     def __init__(
@@ -167,11 +167,6 @@ class DFlowFMModel(MeshModel):
             logger=logger,
         )
 
-        # crs
-        self._crs = CRS.from_user_input(crs) if crs else None
-        if mode.startswith("w"):
-            self._check_crs()  # check crs before initialise config
-
         # model specific
         self._branches = None
         self._dimr = None
@@ -192,6 +187,10 @@ class DFlowFMModel(MeshModel):
         self._openwater_computation_node_distance = openwater_computation_node_distance
         self._res = None
 
+        # crs
+        self._crs = CRS.from_user_input(crs) if crs else None
+        self._check_crs()
+
     def setup_region(
         self,
     ):
@@ -200,6 +199,7 @@ class DFlowFMModel(MeshModel):
             "setup_region() method not implemented for DFlowFMModel."
             "The region will be set in the methods preparing the mesh: "
             "[setup_mesh2d, setup_rivers, setup_rivers_from_dem, setup_channels, setup_pipes]"
+            "Pass the region argument to these methods directly and not in the command line."
         )
 
     def _setup_branches(
@@ -3207,13 +3207,10 @@ class DFlowFMModel(MeshModel):
         # write mesh
         # hydromt convention - FIXME hydrolib does not seem to read the 1D and links part of the mesh
         # super().write_mesh(fn=join(savedir, mesh_filename))
-        # FIXME crs cannot be write/read correctly by xugrid https://github.com/Deltares/xugrid/issues/138
 
         # write with hydrolib-core
         # Note: hydrolib-core writes more information including attributes and converts some variables using start_index
         # FIXME: does not write crs that is recongnised by Delft3D FM GUI. check https://github.com/Deltares/dfm_tools/blob/main/dfm_tools/meshkernel_helpers.py#L82
-        # FIXME: question: Do we always need to read and write the mesh? there are updates that are related to geometry changes and not related geometry changes. The latter might not need a read/write.
-        # FIXME: xugrid hydrolib-core hamonizarion discussion would be nice.
 
         network = mesh_utils.hydrolib_network_from_mesh(self.mesh)
         network.to_file(Path(join(savedir, mesh_filename)))
@@ -3562,9 +3559,14 @@ class DFlowFMModel(MeshModel):
     def _check_crs(self):
         """"""
         if self.crs is None:
-            raise ValueError(
-                "CRS is not defined. Please define the CRS in the [global] init attributes before setting up the model."
-                + "e.g. use crs : 4326 for global data."
-            )
+            if self._read:
+                self.logger.warning(
+                    "Could not derive CRS from reading the mesh file."
+                    "Please define the CRS in the [global] init attributes before setting up the model."
+                )
+            else:
+                raise ValueError(
+                    "CRS is not defined. Please define the CRS in the [global] init attributes before setting up the model."
+                )
         else:
             self.logger.info(f"project crs: {self.crs.to_epsg()}")
