@@ -2875,7 +2875,8 @@ class DFlowFMModel(MeshModel):
                     # Check if name in self._MAPS to update properties
                     if name in rm_dict:
                         # update all keywords
-                        inidict.__dict__.pop("comments")
+                        if "comments" in inidict.__dict__:
+                            inidict.__dict__.pop("comments")
                         self._MAPS[rm_dict[name]].update(inidict)
                         # Update default interpolation method
                         if inidict.interpolationmethod == "averaging":

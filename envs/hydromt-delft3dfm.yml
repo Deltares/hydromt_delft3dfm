@@ -8,7 +8,6 @@ channels:
 dependencies:
   - black # linting
   - flit>=3.4
-  - hydromt>=0.7.0
   - jupyter # to run examples
   - matplotlib # to run examples
   - nbsphinx # docs notebook examples
@@ -32,6 +31,8 @@ dependencies:
   - xarray
   - xugrid
   - networkx
+  - llvmlite>=0.39.1 # hydrolib-core
   - pip:
-      - hydrolib-core
-      - meshkernel=2.0.2 # temp pin because of hydrolib-core
+      - git+https://github.com/Deltares/hydromt.git
+      - hydrolib-core==0.5.2
+      - meshkernel==2.0.2 # temp pin because of hydrolib-core
