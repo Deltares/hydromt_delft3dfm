@@ -4,27 +4,24 @@ import itertools
 import logging
 import os
 from datetime import datetime, timedelta
-from os.path import basename, dirname, isdir, isfile, join
+from os.path import basename, dirname, isfile, join
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import geopandas as gpd
 import hydromt
-import meshkernel as mk
 import numpy as np
 import pandas as pd
 import xarray as xr
 import xugrid as xu
-from hydrolib.core.dflowfm import FMModel, IniFieldModel, Mesh1d
+from hydrolib.core.dflowfm import FMModel, IniFieldModel
 from hydrolib.core.dimr import DIMR, FMComponent, Start
 from hydromt.models import MeshModel
-
-# from hydrolib.dhydamo.geometry import mesh
-from meshkernel import GeometryList
+from hydromt.workflows import create_mesh2d
 from pyproj import CRS
 from shapely.geometry import LineString, box
 
-from . import DATADIR, utils, workflows
+from . import DATADIR, mesh_utils, utils, workflows
 
 __all__ = ["DFlowFMModel"]
 logger = logging.getLogger(__name__)
@@ -43,7 +40,7 @@ class DFlowFMModel(MeshModel):
         "region": gpd.GeoDataFrame,
         "geoms": Dict[str, gpd.GeoDataFrame],
         "maps": Dict[str, Union[xr.DataArray, xr.Dataset]],
-        "mesh": Union[xr.DataArray, xr.Dataset],
+        "mesh": Union[xu.UgridDataArray, xu.UgridDataset],
         "forcing": Dict[str, Union[xr.DataArray, xr.Dataset]],
         "results": Dict[str, Union[xr.DataArray, xr.Dataset]],
         "states": Dict[str, Union[xr.DataArray, xr.Dataset]],
@@ -111,15 +108,16 @@ class DFlowFMModel(MeshModel):
         },
     }
     _FOLDERS = ["dflowfm", "geoms", "mesh", "maps"]
-    _CLI_ARGS = {"region": "setup_region", "res": "setup_mesh2d"}
+    _CLI_ARGS = {"region": "setup_region"}
     _CATALOGS = join(_DATADIR, "parameters_data.yml")
 
     def __init__(
         self,
-        root: Union[str, Path] = None,
+        root: Union[str, Path],
         mode: str = "w",
         config_fn: str = None,  # hydromt config contain glob section, anything needed can be added here as args
         data_libs: List[str] = [],  # yml
+        crs: Union[int, str] = None,
         dimr_fn: str = None,
         network_snap_offset=25,
         snap_newbranches_to_branches_at_snapnodes=True,
@@ -141,6 +139,20 @@ class DFlowFMModel(MeshModel):
         data_libs : list of str, optional
             List of data catalog yaml files.
             Default is None.
+        crs : EPSG code, int
+            EPSG code of the model.
+        dimr_fn: str, optional
+            Path to the dimr configuration file. If None, default dimr configuration file is used.
+            Default is None.
+        network_snap_offset: float, optional
+            Global option for generation of the mesh1d network. Snapping tolerance to automatically connecting branches.
+            By default 25 m.
+        snap_newbranches_to_branches_at_snapnodes: bool, optional
+            Global option for generation of the mesh1d network.
+            By default True.
+        openwater_computation_node_distance: float, optional
+            Global option for generation of the mesh1d network. Distance to generate mesh1d nodes for open water
+            system (rivers, channels). By default 40 m.
         logger
             The logger used to log messages.
         """
@@ -154,6 +166,7 @@ class DFlowFMModel(MeshModel):
             data_libs=data_libs,
             logger=logger,
         )
+
         # model specific
         self._branches = None
         self._dimr = None
@@ -161,7 +174,7 @@ class DFlowFMModel(MeshModel):
         self._dfmmodel = None
         self._config_fn = (
             join("dflowfm", self._CONF) if config_fn is None else config_fn
-        )
+        )  # FIXME Xiaohan config needs to be derived from dimr_fn if dimr_fn exsit
         self.data_catalog.from_yml(self._CATALOGS)
 
         self.config
@@ -174,53 +187,20 @@ class DFlowFMModel(MeshModel):
         self._openwater_computation_node_distance = openwater_computation_node_distance
         self._res = None
 
+        # crs
+        self._crs = CRS.from_user_input(crs) if crs else None
+        self._check_crs()
+
     def setup_region(
         self,
-        region: dict,
-        crs: int = None,
     ):
-        """Define the 1D model region.
-
-        Adds model layer:
-
-        * **region** geom: model region
-
-        Parameters
-        ----------
-        region : dict
-            Dictionary describing region of interest, e.g. {'bbox': [xmin, ymin, xmax, ymax]}.
-            See :py:meth:`~hydromt.workflows.parse_region()` for all options.
-        crs : int, optional
-            Coordinate system (EPSG number) of the model. If not provided, equal to the region crs
-            if "grid" or "geom" option are used, and to 4326 if "bbox" is used, i.e. specified crs will be ignored.
-
-        Raises
-        ------
-        ValueError
-            If the region kind in `region` is not supported for D-Flow FM.
-            Supported regions are: "bbox", "grid" and "geom".
-        """
-        kind, region = hydromt.workflows.parse_region(region, logger=self.logger)
-        if kind == "bbox":
-            geom = gpd.GeoDataFrame(geometry=[box(*region["bbox"])], crs=4326)
-        elif kind == "grid":
-            geom = region["grid"].raster.box
-        elif kind == "geom":
-            geom = region["geom"]
-        else:
-            raise ValueError(
-                f"Unknown region kind {kind} for DFlowFM, expected one of ['bbox', 'grid', 'geom']."
-            )
-
-        if crs:
-            geom = geom.to_crs(crs)
-        elif geom.crs is None:
-            raise AttributeError("region crs can not be None. ")
-        else:
-            self.logger.info(f"Model region is set to crs: {geom.crs.to_epsg()}")
-
-        # Set the model region geometry (to be accessed through the shortcut self.region).
-        self.set_geoms(geom, "region")
+        """HYDROMT CORE METHOD NOT USED FOR DFlowFMModel."""
+        raise ValueError(
+            "setup_region() method not implemented for DFlowFMModel."
+            "The region will be set in the methods preparing the mesh: "
+            "[setup_mesh2d, setup_rivers, setup_rivers_from_dem, setup_channels, setup_pipes]"
+            "Pass the region argument to these methods directly and not in the command line."
+        )
 
     def _setup_branches(
         self,
@@ -229,6 +209,7 @@ class DFlowFMModel(MeshModel):
         br_type: str,
         friction_type: str,
         friction_value: float,
+        region: dict = None,
         crosssections_shape: str = None,
         crosssections_value: Union[List[float], float] = None,
         spacing: pd.DataFrame = None,
@@ -242,46 +223,56 @@ class DFlowFMModel(MeshModel):
 
         Parameters
         ----------
-         br_fn : str, gpd.GeoDataFrame
-             Either data source in data catalogue or Path for branches file or branches gpd.GeoDataFrame directly.
-         defaults_fn : str Path
-             Either data source in data catalogue or path to a csv file containing all defaults values per "branchtype" or defaults pd.DataFRame directly.
-         br_type : str
-             branches type. Either "river", "channel", "pipe".
-         friction_type : str
-             Type of friction to use. One of ["Manning", "Chezy", "wallLawNikuradse", "WhiteColebrook", "StricklerNikuradse", "Strickler", "deBosBijkerk"].
-         friction_value : float
-             Value corresponding to ''friction_type''. Units are ["Chézy C [m 1/2 /s]", "Manning n [s/m 1/3 ]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Strickler k_s [m 1/3 /s]", "De Bos-Bijkerk γ [1/s]"]
-         crosssections_shape : str, optional
-             Shape of branch crosssections to overwrite defaults. Either "circle" or "rectangle".
-         crosssections_value : float or list of float, optional
-             Crosssections parameter value to overwrite defaults.
-             If ``crosssections_shape`` = "circle", expects a diameter [m], used for br_type == "pipe"
-             If ``crosssections_shape`` = "rectangle", expects a list with [width, height] (e.g. [1.0, 1.0]) [m]. used for br_type == "river" or "channel".
-         spacing: float, optional
-             Spacing value in meters to split the long pipelines lines into shorter pipes. By default inf - no splitting is applied.
+        br_fn : str, gpd.GeoDataFrame
+            Either data source in data catalogue or Path for branches file or branches gpd.GeoDataFrame directly.
+        defaults_fn : str Path
+            Either data source in data catalogue or path to a csv file containing all defaults values per "branchtype" or defaults pd.DataFRame directly.
+        br_type : str
+            branches type. Either "river", "channel", "pipe".
+        friction_type : str
+            Type of friction to use. One of ["Manning", "Chezy", "wallLawNikuradse", "WhiteColebrook", "StricklerNikuradse", "Strickler", "deBosBijkerk"].
+        friction_value : float
+            Value corresponding to ''friction_type''. Units are ["Chézy C [m 1/2 /s]", "Manning n [s/m 1/3 ]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Strickler k_s [m 1/3 /s]", "De Bos-Bijkerk γ [1/s]"]
+        region : dict, optional
+            Dictionary describing region of interest for extracting 1D branches, e.g.:
+
+            * {'bbox': [xmin, ymin, xmax, ymax]}
+
+            * {'geom': 'path/to/polygon_geometry'}
+            Note that only crs=4326 is supported for 'bbox'.
+        crosssections_shape : str, optional
+            Shape of branch crosssections to overwrite defaults. Either "circle" or "rectangle".
+        crosssections_value : float or list of float, optional
+            Crosssections parameter value to overwrite defaults.
+            If ``crosssections_shape`` = "circle", expects a diameter [m], used for br_type == "pipe"
+            If ``crosssections_shape`` = "rectangle", expects a list with [width, height] (e.g. [1.0, 1.0]) [m]. used for br_type == "river" or "channel".
+        spacing: float, optional
+            Spacing value in meters to split the long pipelines lines into shorter pipes. By default inf - no splitting is applied.
         snap_offset: float, optional
-             Snapping tolerance to automatically connecting branches. Tolerance must be smaller than the shortest pipe length.
-             By default 0.0, no snapping is applied.
-         allow_intersection_snapping: bool, optional
-             Switch to choose whether snapping of multiple branch ends are allowed when ``snap_offset`` is used.
-             By default True.
-         allowed_columns: list, optional
-             List of columns to filter in branches GeoDataFrame
-         filter: str, optional
-             Keyword in branchtype column of br_fn used to filter lines. If None all lines in br_fn are used (default).
+            Snapping tolerance to automatically connecting branches. Tolerance must be smaller than the shortest pipe length.
+            By default 0.0, no snapping is applied.
+        allow_intersection_snapping: bool, optional
+            Switch to choose whether snapping of multiple branch ends are allowed when ``snap_offset`` is used.
+            By default True.
+        allowed_columns: list, optional
+            List of columns to filter in branches GeoDataFrame
+        filter: str, optional
+            Keyword in branchtype column of br_fn used to filter lines. If None all lines in br_fn are used (default).
 
 
         See Also
         --------
          dflowfm.setup_rivers
          dflowfm.setup_pipes
-        """
+        """  # noqa: D205
         # 1. Read data and filter within region
+
         # If needed read the branches GeoDataFrame
         if isinstance(br_fn, str) or isinstance(br_fn, Path):
+            # parse region argument
+            region = workflows.parse_region_geometry(region, self.crs)
             gdf_br = self.data_catalog.get_geodataframe(
-                br_fn, geom=self.region, buffer=0, predicate="intersects"
+                br_fn, geom=region, buffer=0, predicate="intersects"
             )
         else:
             gdf_br = br_fn
@@ -399,6 +390,7 @@ class DFlowFMModel(MeshModel):
 
     def setup_channels(
         self,
+        region: dict,
         channels_fn: str,
         channels_defaults_fn: str = None,
         channel_filter: str = None,
@@ -419,6 +411,13 @@ class DFlowFMModel(MeshModel):
 
         Parameters
         ----------
+        region : dict, optional
+            Dictionary describing region of interest for extracting 1D channels, e.g.:
+
+            * {'bbox': [xmin, ymin, xmax, ymax]}
+
+            * {'geom': 'path/to/polygon_geometry'}
+            Note that only crs=4326 is supported for 'bbox'.
         channels_fn : str
             Name of data source for channelsparameters, see data/data_sources.yml.
             Note only the lines that are intersects with the region polygon will be used.
@@ -477,6 +476,7 @@ class DFlowFMModel(MeshModel):
 
         # Build the channels branches and nodes and fill with attributes and spacing
         channels, channel_nodes = self._setup_branches(
+            region=region,
             br_fn=channels_fn,
             defaults_fn=channels_defaults_fn,
             br_type="channel",
@@ -495,28 +495,47 @@ class DFlowFMModel(MeshModel):
         assert {crosssections_type}.issubset({"xyzpoints", "branch"})
         crosssections = self._setup_crosssections(
             branches=channels,
+            region=workflows.parse_region_geometry(region, self.crs),
             crosssections_fn=crosssections_fn,
             crosssections_type=crosssections_type,
         )
 
         # add crosssections to exisiting ones and update geoms
         self.logger.debug("Adding crosssections vector to geoms.")
-        self.add_crosssections(crosssections)
+        crosssections = workflows.add_crosssections(
+            self.geoms.get("crosssections"), crosssections
+        )
+        self.set_geoms(crosssections, "crosssections")
 
         # setup geoms
         self.logger.debug("Adding branches and branch_nodes vector to geoms.")
         self.set_geoms(channels, "channels")
         self.set_geoms(channel_nodes, "channel_nodes")
 
-        # add to branches
-        self.add_branches(
+        # add to branches geoms
+        branches = workflows.add_branches(
+            self.mesh_datasets.get("mesh1d"),
+            self.branches,
             channels,
-            branchtype="channel",
-            node_distance=self._openwater_computation_node_distance,
+            self._snap_newbranches_to_branches_at_snapnodes,
+            self._network_snap_offset,
         )
+        workflows.validate_branches(branches)
+        self.set_branches(branches)
+
+        # update mesh
+        # Convert self.branches to xugrid
+        mesh1d, network1d = workflows.mesh1d_network1d_from_branches(
+            self.opensystem,
+            self.closedsystem,
+            self._openwater_computation_node_distance,
+        )
+        self.set_mesh(network1d, grid_name="network1d", overwrite_grid=True)
+        self.set_mesh(mesh1d, grid_name="mesh1d", overwrite_grid=True)
 
     def setup_rivers_from_dem(
         self,
+        region: dict,
         hydrography_fn: str,
         river_geom_fn: str = None,
         rivers_defaults_fn: str = None,
@@ -571,6 +590,12 @@ class DFlowFMModel(MeshModel):
 
         Parameters
         ----------
+        region : dict, optional
+            Dictionary describing region of interest for extracting 1D rivers, e.g.:
+
+            * {'bbox': [xmin, ymin, xmax, ymax]}
+
+            * {'geom': 'path/to/polygon_geometry'}
         hydrography_fn : str
             Hydrography data to derive river shape and characteristics from.
             * Required variables: ['elevtn']
@@ -619,11 +644,18 @@ class DFlowFMModel(MeshModel):
         --------
         workflows.get_river_bathymetry
 
+        Raises
+        ------
+        ValueError
+
         """
         self.logger.info("Preparing river shape from hydrography data.")
+        # parse region argument
+        region = workflows.parse_region_geometry(region, self.crs)
+
         # read data
         ds_hydro = self.data_catalog.get_rasterdataset(
-            hydrography_fn, geom=self.region, buffer=10
+            hydrography_fn, geom=region, buffer=10
         )
         if isinstance(ds_hydro, xr.DataArray):
             ds_hydro = ds_hydro.to_dataset()
@@ -632,7 +664,7 @@ class DFlowFMModel(MeshModel):
         gdf_riv = None
         if river_geom_fn is not None:
             gdf_riv = self.data_catalog.get_geodataframe(
-                river_geom_fn, geom=self.region
+                river_geom_fn, geom=region
             ).to_crs(ds_hydro.raster.crs)
 
         # check if flwdir and uparea in ds_hydro
@@ -735,22 +767,40 @@ class DFlowFMModel(MeshModel):
 
         # add crosssections to exisiting ones and update geoms
         self.logger.debug("Adding crosssections vector to geoms.")
-        self.add_crosssections(crosssections)
+        crosssections = workflows.add_crosssections(
+            self.geoms.get("crosssections"), crosssections
+        )
+        self.set_geoms(crosssections, "crosssections")
 
         # setup geoms #TODO do we still need channels?
         self.logger.debug("Adding rivers and river_nodes vector to geoms.")
         self.set_geoms(rivers, "rivers")
         self.set_geoms(river_nodes, "rivers_nodes")
 
-        # add to branches
-        self.add_branches(
+        # add to branches geoms
+        branches = workflows.add_branches(
+            self.mesh_datasets.get("mesh1d"),
+            self.branches,
             rivers,
-            branchtype="river",
-            node_distance=self._openwater_computation_node_distance,
+            self._snap_newbranches_to_branches_at_snapnodes,
+            self._network_snap_offset,
         )
+        workflows.validate_branches(branches)
+        self.set_branches(branches)
+
+        # update mesh
+        # Convert self.branches to xugrid
+        mesh1d, network1d = workflows.mesh1d_network1d_from_branches(
+            self.opensystem,
+            self.closedsystem,
+            self._openwater_computation_node_distance,
+        )
+        self.set_mesh(network1d, grid_name="network1d", overwrite_grid=True)
+        self.set_mesh(mesh1d, grid_name="mesh1d", overwrite_grid=True)
 
     def setup_rivers(
         self,
+        region: dict,
         rivers_fn: str,
         rivers_defaults_fn: str = None,
         river_filter: str = None,
@@ -786,6 +836,12 @@ class DFlowFMModel(MeshModel):
 
         Parameters
         ----------
+        region : dict, optional
+            Dictionary describing region of interest for extracting 1D rivers, e.g.:
+
+            * {'bbox': [xmin, ymin, xmax, ymax]}
+
+            * {'geom': 'path/to/polygon_geometry'}
         rivers_fn : str
             Name of data source for rivers parameters, see data/data_sources.yml.
             Note only the lines that are intersects with the region polygon will be used.
@@ -845,6 +901,7 @@ class DFlowFMModel(MeshModel):
 
         # Build the rivers branches and nodes and fill with attributes and spacing
         rivers, river_nodes = self._setup_branches(
+            region=region,
             br_fn=rivers_fn,
             defaults_fn=rivers_defaults_fn,
             br_type="river",
@@ -858,53 +915,64 @@ class DFlowFMModel(MeshModel):
         )
 
         # setup crosssections
-        if crosssections_type is None:
-            crosssections_type = []
-            crosssections_fn = []
-        elif isinstance(crosssections_type, str):
-            crosssections_type = [crosssections_type]
-            crosssections_fn = [crosssections_fn]
-        elif isinstance(crosssections_type, list):
-            assert len(crosssections_type) == len(crosssections_fn)
-        # inser branch as default
-        if "branch" not in crosssections_type:
-            crosssections_type.insert(0, "branch")
-            crosssections_fn.insert(0, None)
-
+        crosssections_type, crosssections_fn = workflows.init_crosssections_options(
+            crosssections_type, crosssections_fn
+        )
         for crs_fn, crs_type in zip(crosssections_fn, crosssections_type):
-            assert {crs_type}.issubset({"xyz", "point", "branch"})
             crosssections = self._setup_crosssections(
                 branches=rivers,
+                region=workflows.parse_region_geometry(region, self.crs),
                 crosssections_fn=crs_fn,
                 crosssections_type=crs_type,
             )
-            self.add_crosssections(crosssections)
+            crosssections = workflows.add_crosssections(
+                self.geoms.get("crosssections"), crosssections
+            )
+            # setup geoms for crosssections
+            self.set_geoms(crosssections, "crosssections")
 
         # setup branch orders
         # for crossection type yz or xyz, always use branchorder = -1, because no interpolation can be applied.
         # TODO: change to lower case is needed
-        _overwrite_branchorder = self.crosssections[
-            self.crosssections["crsdef_type"].str.contains("yz")
+        _overwrite_branchorder = self.geoms["crosssections"][
+            self.geoms["crosssections"]["crsdef_type"].str.contains("yz")
         ]["crsdef_branchid"].tolist()
         if len(_overwrite_branchorder) > 0:
             rivers.loc[
                 rivers["branchid"].isin(_overwrite_branchorder), "branchorder"
             ] = -1
 
-        # setup geoms
+        # setup geoms for rivers and river_nodes
         self.logger.debug("Adding rivers and river_nodes vector to geoms.")
         self.set_geoms(rivers, "rivers")
         self.set_geoms(river_nodes, "rivers_nodes")
 
-        # add to branches
-        self.add_branches(
+        # setup branches
+        branches = workflows.add_branches(
+            self.mesh_datasets.get(
+                "mesh1d"
+            ),  # FIXME Xiaohan self.get_mesh("mesh1d") gives an error, is that desired?
+            self.branches,
             rivers,
-            branchtype="river",
-            node_distance=self._openwater_computation_node_distance,
+            self._snap_newbranches_to_branches_at_snapnodes,
+            self._network_snap_offset,
         )
+        workflows.validate_branches(branches)
+        self.set_branches(branches)
+
+        # update mesh
+        # Convert self.branches to xugrid
+        mesh1d, network1d = workflows.mesh1d_network1d_from_branches(
+            self.opensystem,
+            self.closedsystem,
+            self._openwater_computation_node_distance,
+        )
+        self.set_mesh(network1d, grid_name="network1d", overwrite_grid=True)
+        self.set_mesh(mesh1d, grid_name="mesh1d", overwrite_grid=True)
 
     def setup_pipes(
         self,
+        region: dict,
         pipes_fn: str,
         pipes_defaults_fn: Union[str, None] = None,
         pipe_filter: Union[str, None] = None,
@@ -920,6 +988,7 @@ class DFlowFMModel(MeshModel):
         allow_intersection_snapping: bool = True,
     ):
         """Prepares the 1D pipes and adds to 1D branches.
+        Note that 1D manholes must also be set-up  when setting up 1D pipes.
 
         1D pipes must contain valid geometry, friction and crosssections.
 
@@ -944,6 +1013,13 @@ class DFlowFMModel(MeshModel):
 
         Parameters
         ----------
+        region : dict, optional
+            Dictionary describing region of interest for extracting 1D pipes, e.g.:
+
+            * {'bbox': [xmin, ymin, xmax, ymax]}
+
+            * {'geom': 'path/to/polygon_geometry'}
+            Note that only manholes within the region are kept.
         pipes_fn : str
             Name of data source for pipes parameters, see data/data_sources.yml.
             Note only the lines that are within the region polygon will be used.
@@ -1005,9 +1081,10 @@ class DFlowFMModel(MeshModel):
             "invlev_up",
             "inlev_dn",
         ]
-
-        # Build the rivers branches and nodes and fill with attributes and spacing
+        _region = workflows.parse_region_geometry(region, self.crs)
+        # Build the pipe branches and nodes and fill with attributes and spacing
         pipes, pipe_nodes = self._setup_branches(
+            region=region,
             br_fn=pipes_fn,
             defaults_fn=pipes_defaults_fn,
             br_type="pipe",
@@ -1021,7 +1098,8 @@ class DFlowFMModel(MeshModel):
             allowed_columns=_allowed_columns,
             filter=pipe_filter,
         )
-
+        # filter extra time for geting clipped pipes within the region (better match)
+        pipes = gpd.sjoin(pipes, _region, predicate="within")
         # setup crosssections
         # setup invert levels
         # 1. check if invlev up and dn are fully filled in (nothing needs to be done)
@@ -1042,7 +1120,10 @@ class DFlowFMModel(MeshModel):
         # 2. filling use dem_fn + pipe_depth
         if fill_invlev and dem_fn is not None:
             dem = self.data_catalog.get_rasterdataset(
-                dem_fn, geom=self.region, variables=["elevtn"]
+                dem_fn,
+                geom=_region,
+                buffer=self._network_snap_offset,
+                variables=["elevtn"],
             )
             pipes = workflows.invert_levels_from_dem(
                 gdf=pipes, dem=dem, depth=pipes_depth
@@ -1077,7 +1158,10 @@ class DFlowFMModel(MeshModel):
         )
         # add crosssections to exisiting ones and update geoms
         self.logger.debug("Adding crosssections vector to geoms.")
-        self.add_crosssections(crosssections)
+        crosssections = workflows.add_crosssections(
+            self.geoms.get("crosssections"), crosssections
+        )
+        self.set_geoms(crosssections, "crosssections")
 
         # setup geoms
         self.logger.debug("Adding pipes and pipe_nodes vector to geoms.")
@@ -1085,13 +1169,30 @@ class DFlowFMModel(MeshModel):
         self.set_geoms(pipe_nodes, "pipe_nodes")  # TODO: for manholes
 
         # add to branches
-        self.add_branches(
-            pipes, branchtype="pipe", node_distance=np.inf
-        )  # use node_distance to generate computational nodes at pipe ends only
+        branches = workflows.add_branches(
+            self.mesh_datasets.get("mesh1d"),
+            self.branches,
+            pipes,
+            self._snap_newbranches_to_branches_at_snapnodes,
+            self._network_snap_offset,
+        )
+        workflows.validate_branches(branches)
+        self.set_branches(branches)
+
+        # update mesh
+        # Convert self.branches to xugrid
+        mesh1d, network1d = workflows.mesh1d_network1d_from_branches(
+            self.opensystem,
+            self.closedsystem,
+            self._openwater_computation_node_distance,
+        )
+        self.set_mesh(network1d, grid_name="network1d", overwrite_grid=True)
+        self.set_mesh(mesh1d, grid_name="mesh1d", overwrite_grid=True)
 
     def _setup_crosssections(
         self,
         branches,
+        region: gpd.GeoDataFrame = None,
         crosssections_fn: str = None,
         crosssections_type: str = "branch",
         midpoint=True,
@@ -1121,6 +1222,8 @@ class DFlowFMModel(MeshModel):
                 if shape = 'rectangle': 'width', 'height', 'closed'
                 if shape = 'trapezoid': 'width', 't_width', 'height', 'closed'
             * Optional variables: [material, friction_type, friction_value]
+        region : gpd.GeoDataFrame, optional
+            geodataframe of the region of interest for extracting crosssections_fn, by default None
         crosssections_fn : str Path, optional
             Name of data source for crosssections, see data/data_sources.yml.
             Note that for point crossections, only ones within the snap_network_offset will be used.
@@ -1163,7 +1266,7 @@ class DFlowFMModel(MeshModel):
             # Read the crosssection data
             gdf_cs = self.data_catalog.get_geodataframe(
                 crosssections_fn,
-                geom=self.region,
+                geom=region,
                 buffer=1000,
                 predicate="contains",
             )
@@ -1199,7 +1302,7 @@ class DFlowFMModel(MeshModel):
             # Read the crosssection data
             gdf_cs = self.data_catalog.get_geodataframe(
                 crosssections_fn,
-                geom=self.region,
+                geom=region,
                 buffer=100,
                 predicate="contains",
             )
@@ -1333,7 +1436,10 @@ class DFlowFMModel(MeshModel):
             self.logger.info(f"reading manholes street level from file {manholes_fn}. ")
             # read
             gdf_manhole = self.data_catalog.get_geodataframe(
-                manholes_fn, geom=self.region, buffer=0, predicate="contains"
+                manholes_fn,
+                geom=self.region,
+                buffer=self._network_snap_offset,
+                predicate="contains",
             )
             # reproject
             if gdf_manhole.crs != self.crs:
@@ -1356,9 +1462,12 @@ class DFlowFMModel(MeshModel):
         if dem_fn is not None:
             self.logger.info("overwriting manholes street level from dem. ")
             dem = self.data_catalog.get_rasterdataset(
-                dem_fn, geom=self.region, variables=["elevtn"]
+                dem_fn,
+                geom=self.region,
+                variables=["elevtn"],
+                buffer=self._network_snap_offset,
             )
-            # reproject of dem is done in sample method
+            # reproject of manholes is done in sample method
             manholes["_streetlevel_dem"] = dem.raster.sample(manholes).values
             manholes["_streetlevel_dem"].fillna(manholes["streetlevel"], inplace=True)
             manholes["streetlevel"] = manholes["_streetlevel_dem"]
@@ -1371,8 +1480,11 @@ class DFlowFMModel(MeshModel):
         self.logger.debug("dropping duplicated manholeid")
         manholes.drop_duplicates(subset="manholeid")
         # add nodeid to manholes
+        network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
+            self.mesh_datasets["network1d"]
+        )
         manholes = hydromt.gis_utils.nearest_merge(
-            manholes, self.network1d_nodes, max_dist=0.1, overwrite=False
+            manholes, network1d_nodes, max_dist=0.1, overwrite=False
         )
         # add additional required columns
         manholes["id"] = manholes[
@@ -1465,7 +1577,10 @@ class DFlowFMModel(MeshModel):
             By default 0.1, a small snapping is applied to avoid precision errors.
         """
         self.logger.info(f"Preparing 1D {boundary_type} boundaries for {branch_type}.")
-        boundaries = self.boundaries.copy()
+        boundaries = workflows.get_boundaries_with_nodeid(
+            self.branches,
+            mesh_utils.network1d_nodes_geodataframe(self.mesh_datasets["network1d"]),
+        )
         refdate, tstart, tstop = self.get_model_time()  # time slice
 
         # 1. get potential boundary locations based on branch_type and boundary_type
@@ -1767,9 +1882,11 @@ class DFlowFMModel(MeshModel):
         )
 
         # setup crossection definitions
-        self.add_crosssections(
-            bridges[[c for c in bridges.columns if c.startswith("crsdef")]]
+        crosssections = bridges[[c for c in bridges.columns if c.startswith("crsdef")]]
+        crosssections = workflows.add_crosssections(
+            self.geoms.get("crosssections"), crosssections
         )
+        self.set_geoms(crosssections, "crosssections")
 
         # setup bridges
         bridges.columns = bridges.columns.str.lower()
@@ -1878,9 +1995,13 @@ class DFlowFMModel(MeshModel):
         )
 
         # setup crossection definitions
-        self.add_crosssections(
-            culverts[[c for c in culverts.columns if c.startswith("crsdef")]]
+        crosssections = culverts[
+            [c for c in culverts.columns if c.startswith("crsdef")]
+        ]
+        crosssections = workflows.add_crosssections(
+            self.geoms.get("crosssections"), crosssections
         )
+        self.set_geoms(crosssections, "crosssections")
 
         # setup culverts
         culverts.columns = culverts.columns.str.lower()
@@ -1904,101 +2025,66 @@ class DFlowFMModel(MeshModel):
 
     def setup_mesh2d(
         self,
-        mesh2d_fn: Optional[str] = None,
-        geom_fn: Optional[str] = None,
-        bbox: Optional[list] = None,
-        res: float = 100.0,
-    ):
-        """Creates an 2D unstructured mesh or prepares an existing 2D mesh according UGRID conventions.
+        region: dict,
+        res: Optional[float] = None,
+    ) -> xu.UgridDataset:
+        """Create an 2D unstructured mesh or reads an existing 2D mesh according UGRID conventions.
 
-        An 2D unstructured mesh is created as 2D rectangular grid from a geometry (geom_fn) or bbox. If an existing
-        2D mesh is given, then no new mesh is generated
+        Grids are read according to UGRID conventions. An 2D unstructured mesh
+        will be created as 2D rectangular grid from a geometry (geom_fn) or bbox.
+        If an existing 2D mesh is given, then no new mesh will be generated but an extent
+        can be extracted using the `bounds` argument of region.
 
-        2D mesh contains mesh2d nfaces, x-coordinate of mesh2d nodes, y-coordinate of mesh2d nodes,
-        mesh2d face nodes, x-coordinates of face, y-coordinate of face and global atrributes (conventions and
-        coordinates).
-
-        Note that:
-        (1) Refinement of the mesh is a seperate setup function, however an existing grid with refinement (mesh_fn)
-        can already be read.
-        (2) If no geometry, bbox or existing grid is specified for this setup function, then the self.region is used as
-         mesh extent to generate the unstructured mesh.
-        (3) At mesh border, cells that intersect with geometry border will be kept.
-        (4) Validation checks have been added to check if the mesh extent is within model region.
-        (5) Only existing meshed with only 2D grid can be read.
-        (6) 1D2D network files are not supported as mesh2d_fn.
+        # Note that:
+        # (1) Refinement of the mesh is a seperate setup function, however an existing grid with refinement (mesh_fn)
+        # can already be read.
+        # (2) If mesh also has 1D, 1D2Dlinks are created in a separate setup function.
+        # (3) At mesh border, cells that intersect with geometry border will be kept.
+        # (4) Only existing mesh with only 2D grid can be read. So 1D2D network files are not supported as mesh2d_fn.
 
         Adds/Updates model layers:
 
-        * **1D2D links** geom: By any changes in 2D grid
+        * **grid_name** mesh topology: add grid_name 2D topology to mesh object
 
         Parameters
         ----------
-        mesh2D_fn : str Path, optional
-            Name of data source for an existing unstructured 2D mesh
-        geom_fn : str Path, optional
-            Path to a polygon used to generate unstructured 2D mesh
-        bbox: list, optional
-            Describing the mesh extent of interest [xmin, ymin, xmax, ymax]. Please specify it in the model coordinate
-            system.
-        res: float, optional
-            Resolution used to generate 2D mesh. By default a value of 100 m is applied.
+        region : dict
+            Dictionary describing region of interest, bounds can be provided for type 'mesh'.
+        CRS for 'bbox' and 'bounds' should be 4326; e.g.:
 
-        Raises
-        ------
-        IndexError
-            If the grid of the spatial domain contains 0 x-coordinates or 0 y-coordinates.
+            * {'bbox': [xmin, ymin, xmax, ymax]}
 
-        See Also
-        --------
+            * {'geom': 'path/to/polygon_geometry'}
 
-        """
-        # Function moved to MeshModel in hydromt core
-        # Recreate region dict for core function
-        if mesh2d_fn is not None:
-            region = {"mesh": mesh2d_fn}
-        elif geom_fn is not None:
-            region = {"geom": str(geom_fn)}
-        elif bbox is not None:
-            bbox = [float(v) for v in bbox]  # needs to be str in config file
-            region = {"bbox": bbox}
-        else:  # use model region
-            self.logger.warning("Mesh2d is generated for model region.")
-            region = {"geom": self.region}
+            * {'mesh': 'path/to/2dmesh_file'}
 
-        # reserve existing mesh
-        # _mesh = self._mesh
+            * {'mesh': 'path/to/2dmesh_file', 'bounds': [xmin, ymin, xmax, ymax]}
+        res: float
+            Resolution used to generate 2D mesh [unit of the CRS], required if region
+            is not based on 'mesh'.
 
-        # Get and set the 2dmesh
-        mesh2d = super().setup_mesh(region=region, crs=self.crs, res=res)
-        # TODO: if we do not want to clip mesh 2d comment the following line
-        # Check if intersects with region
-        xmin, ymin, xmax, ymax = self.bounds
-        subset = mesh2d.ugrid.sel(y=slice(ymin, ymax), x=slice(xmin, xmax))
-        err = "RasterDataset: No data within model region."
-        subset = subset.ugrid.assign_node_coords()
-        if subset.ugrid.grid.node_x.size == 0 or subset.ugrid.grid.node_y.size == 0:
-            raise IndexError(err)
-        self._mesh = subset  # reinitialise mesh2d grid (set_mesh is used in super)
+        Returns
+        -------
+        mesh2d : xu.UgridDataset
+            Generated mesh2d.
 
-        # add to hydrolib-core net object
-        self.set_mesh2d()
-
-        # update the 2dmesh to self._mesh
-        # if _mesh is not None:
-        #    _mesh = _mesh.drop_vars(set(_mesh.variables.keys()).intersection(subset.variables.keys()))
-        #    self._mesh = _mesh.merge(subset)
-        # else already set in setup_mesh
-
+        """  # noqa: E501
+        # Create the 2dmesh
+        mesh2d = create_mesh2d(
+            region=region,
+            res=res,
+            crs=self.crs,
+        )
+        # Add to self.mesh
+        self.set_mesh(mesh2d, grid_name="mesh2d", overwrite_grid=False)
         # update res
         self._res = res
 
-    # FIXME: use the below function as a workflow in setup_mesh2d would be better - to be discussed
     def setup_mesh2d_refine(
         self,
         polygon_fn: Optional[str] = None,
         sample_fn: Optional[str] = None,
-        steps: Optional[int] = None,
+        steps: Optional[int] = 1,
     ):
         """Refine the 2d mesh within the geometry based on polygon `polygon_fn` or raster samples `sample_fn`.
         The number of refinement is defined by `steps` if `polygon_fn` is used.
@@ -2009,7 +2095,6 @@ class DFlowFMModel(MeshModel):
         Adds/Updates model layers:
 
         * **2D mesh** geom: By any changes in 2D grid
-        * **1D2D links** geom: By any changes in 2D grid #TODO: check if this is needed, possible to issue an error if 1d2d links are present
 
         Parameters
         ----------
@@ -2026,11 +2111,13 @@ class DFlowFMModel(MeshModel):
             By default 1, i.e. no refinement is applied.
 
         """
-        if self.mesh2d is None:
-            logger.error("2d mesh is not available.")
+        if "mesh2d" not in self.mesh_names:
+            logger.error(
+                "2d mesh is not available, use setup_mesh2d before refinement."
+            )
             return
 
-        if polygon_fn is not None and steps is not None:
+        if polygon_fn is not None:
             self.logger.info(f"reading geometry from file {polygon_fn}. ")
             # read
             gdf = self.data_catalog.get_geodataframe(
@@ -2039,38 +2126,6 @@ class DFlowFMModel(MeshModel):
             # reproject
             if gdf.crs != self.crs:
                 gdf = gdf.to_crs(self.crs)
-            # refine
-            _old_size = len(self.mesh2d.mesh2d_face_x)
-
-            # Create a list of coordinate lists
-            polygon = gdf.geometry.unary_union
-            cls = GeometryList()
-            # Add exterior
-            x_ext, y_ext = np.array(polygon.exterior.coords[:]).T
-            x_crds = [x_ext]
-            y_crds = [y_ext]
-            # Add interiors, seperated by inner_outer_separator
-            for interior in polygon.interiors:
-                x_int, y_int = np.array(interior.coords[:]).T
-                x_crds.append([cls.inner_outer_separator])
-                x_crds.append(x_int)
-                y_crds.append([cls.inner_outer_separator])
-                y_crds.append(y_int)
-            gl = GeometryList(
-                x_coordinates=np.concatenate(x_crds),
-                y_coordinates=np.concatenate(y_crds),
-            )
-            self.network.mesh2d_refine(gl, steps)
-            _new_size = len(self.mesh2d.mesh2d_face_x)
-            # log
-            if _new_size != _old_size:
-                logger.info(
-                    f"2d mesh refined within polygon. Number of faces before: {_old_size} and after: {_new_size}"
-                )
-            else:
-                logger.warning("2d mesh unrefined.")
-            # update res # FIXME: might not be the best solution
-            self._res = self._res / 2**steps
 
         elif sample_fn is not None:
             self.logger.info(f"reading samples from file {sample_fn}. ")
@@ -2091,49 +2146,21 @@ class DFlowFMModel(MeshModel):
                     "Sample grid has a different resolution than model. Reprojecting with nearest but some information might be lost."
                 )
                 da = da.raster.reproject(self.crs, method="nearest")
-            # get sample point
-            xv, yv = np.meshgrid(da.x.values, da.y.values)
-            zv = da.values
-            mask = zv > 0
-            samples = GeometryList(
-                xv[mask].flatten(), yv[mask].flatten(), zv[mask].flatten()
-            )
-            # get steps
-            steps = int(zv.max())
-            # refine using mesh kernel
-            _old_size = len(self.mesh2d.mesh2d_face_x)
-            # refine parameters
-            parameters = mk.MeshRefinementParameters(
-                refinement_type=2,  # Enumerator describing the different refinement types (WaveCourant = 1, RefinementLevels = 2)
-                max_refinement_iterations=steps,  # Maximum number of refinement iterations, set to 1 if only one refinement is wanted (default 10)
-                min_face_size=self.res / 2**steps,  # calculate - Minimum cell size
-                account_for_samples_outside_face=False,  # default, not useful - Take samples outside face into account , 1 yes 0 no
-                connect_hanging_nodes=True,  # default, not useful - Connect hanging nodes at the end of the iteration, 1 yes or 0 no
-                refine_intersected=False,  # default, not useful - Whether to compute faces intersected by polygon (yes=1/no=0)
-                use_mass_center_when_refining=False,  # default, not useful - Whether to use the mass center when splitting a face in the refinement process (yes=1/no=0)
-            )
-            # refine assuming sample spacing is the same as end result resolution (hence relative_search_radius=1, minimum_num_samples=1 )
-            self.mesh2d.meshkernel.mesh2d_refine_based_on_samples(
-                samples,
-                relative_search_radius=1,
-                minimum_num_samples=1,
-                mesh_refinement_params=parameters,
-            )
-            self.set_mesh2d(
-                self.mesh2d.meshkernel.mesh2d_get()
-            )  # because the resulting mesh2d is only stored in the meshkernel object
-            _new_size = len(self.mesh2d.mesh2d_face_x)
-            # log
-            if _new_size != _old_size:
-                logger.info(
-                    f"2d mesh refined based on samples. Number of faces before: {_old_size} and after: {_new_size}"
-                )
-            else:
-                logger.warning("2d mesh unrefined.")
-            # update res # FIXME: might not be the best solution
-            self._res = self._res / 2**steps
-        else:
-            logger.warning("2d mesh unrefined.")
+
+        # refine
+        mesh2d, res = workflows.mesh2d_refine(
+            mesh2d=self.get_mesh("mesh2d"),
+            res=self._res,
+            gdf_polygon=gdf if polygon_fn is not None else None,
+            da_sample=da if sample_fn is not None else None,
+            steps=steps,
+            logger=self.logger,
+        )
+
+        # set mesh2d
+        self.set_mesh(mesh2d, grid_name="mesh2d", overwrite_grid=True)
+        # update res
+        self._res = res
 
     def setup_link1d2d(
         self,
@@ -2184,19 +2211,20 @@ class DFlowFMModel(MeshModel):
          workflows.links1d2d_add_links_2d_to_1d_lateral
         """
         # check existing network
-        if self.mesh1d.is_empty() or self.mesh2d.is_empty():
+        if "mesh1d" not in self.mesh_names or "mesh2d" not in self.mesh_names:
             self.logger.error(
                 "cannot setup link1d2d: either mesh1d or mesh2d or both do not exist"
             )
+            return None
 
-        if not self.link1d2d.is_empty():
-            self.logger.warning("adding to existing link1d2d: link1d2d already exists")
-            # FIXME: question - how to seperate if the user wants to update the entire 1d2d links object or simply wants to add another set of links?
-            # TODO: would be nice in hydrolib to allow clear of subset of 1d2d links for specific branches
+        # if "link1d2d" in self.mesh_names:
+        #     self.logger.warning("adding to existing link1d2d: link1d2d already exists")
+        #    # FIXME: question - how to seperate if the user wants to update the entire 1d2d links object or simply wants to add another set of links? #1
+        #    # TODO: would be nice in hydrolib to allow clear of subset of 1d2d links for specific branches
 
         # check input
         if polygon_fn is not None:
-            within = self.data_catalog.get_geodataframe(polygon_fn).gemetry
+            within = self.data_catalog.get_geodataframe(polygon_fn).geometry
             self.logger.info(f"adding 1d2d links only within polygon {polygon_fn}")
         else:
             within = None
@@ -2215,25 +2243,23 @@ class DFlowFMModel(MeshModel):
         # setup 1d2d links
         if link_direction == "1d_to_2d":
             self.logger.info("setting up 1d_to_2d links.")
-            # recompute max_length based on the diagnal distance of the max mesh area
-            max_length = np.sqrt(
-                self._mesh.ugrid.to_geodataframe().area.max()
-            ) * np.sqrt(2)
-            workflows.links1d2d_add_links_1d_to_2d(
-                self.network, branchids=branchids, within=within, max_length=max_length
+            # recompute max_length based on the diagonal distance of the max mesh area
+            max_length = np.sqrt(self.mesh_grids["mesh2d"].area.max()) * np.sqrt(2)
+            link1d2d = workflows.links1d2d_add_links_1d_to_2d(
+                self.mesh, branchids=branchids, within=within, max_length=max_length
             )
 
         elif link_direction == "2d_to_1d":
             if link_type == "embedded":
                 self.logger.info("setting up 2d_to_1d embedded links.")
 
-                workflows.links1d2d_add_links_2d_to_1d_embedded(
-                    self.network, branchids=branchids, within=within
+                link1d2d = workflows.links1d2d_add_links_2d_to_1d_embedded(
+                    self.mesh, branchids=branchids, within=within
                 )
             elif link_type == "lateral":
                 self.logger.info("setting up 2d_to_1d lateral links.")
-                workflows.links1d2d_add_links_2d_to_1d_lateral(
-                    self.network,
+                link1d2d = workflows.links1d2d_add_links_2d_to_1d_lateral(
+                    self.mesh,
                     branchids=branchids,
                     within=within,
                     max_length=max_length,
@@ -2245,9 +2271,13 @@ class DFlowFMModel(MeshModel):
         else:
             self.logger.error(f"link_direction {link_direction} is not recognised.")
 
-    # TODO: Create link1d2d mesh in xu Ugrid
+        # Add link1d2d to xu Ugrid mesh
+        if len(link1d2d["link1d2d"]) == 0:
+            self.logger.warning("No 1d2d links were generated.")
+        else:
+            self.set_link1d2d(link1d2d)
 
-    def setup_maps_from_raster(
+    def setup_maps_from_rasterdataset(
         self,
         raster_fn: str,
         variables: Optional[list] = None,
@@ -2299,7 +2329,7 @@ class DFlowFMModel(MeshModel):
             self.logger.error("name must be specified when split_dataset = False")
 
         # Call super method
-        variables = super().setup_maps_from_raster(
+        variables = super().setup_maps_from_rasterdataset(
             raster_fn=raster_fn,
             variables=variables,
             fill_method=fill_method,
@@ -2503,7 +2533,10 @@ class DFlowFMModel(MeshModel):
         if boundary_type == "discharge":
             boundary_unit = "m3/s"
 
-        _mesh_region = self._mesh.ugrid.to_geodataframe().unary_union
+        _mesh = self.mesh_grids["mesh2d"]
+        _mesh_region = gpd.GeoDataFrame(
+            geometry=_mesh.to_shapely(dim=_mesh.face_dimension)
+        ).unary_union
         _boundary_region = _mesh_region.buffer(tolerance * self.res).difference(
             _mesh_region
         )  # region where 2d boundary is allowed
@@ -2739,6 +2772,7 @@ class DFlowFMModel(MeshModel):
         self.read_maps()
         self.read_geoms()  # needs mesh so should be done after
         self.read_forcing()
+        self._check_crs()
 
     def write(self):  # complete model
         """Method to write the complete model schematization and configuration to file."""
@@ -2752,7 +2786,7 @@ class DFlowFMModel(MeshModel):
             self.write_maps()
         if self._geoms:
             self.write_geoms()
-        if self._mesh or not self.branches.empty:
+        if self._mesh is not None or not self.branches.empty:
             self.write_mesh()
         if self._forcing:
             self.write_forcing()
@@ -2841,7 +2875,8 @@ class DFlowFMModel(MeshModel):
                     # Check if name in self._MAPS to update properties
                     if name in rm_dict:
                         # update all keywords
-                        inidict.__dict__.pop("comments")
+                        if "comments" in inidict.__dict__:
+                            inidict.__dict__.pop("comments")
                         self._MAPS[rm_dict[name]].update(inidict)
                         # Update default interpolation method
                         if inidict.interpolationmethod == "averaging":
@@ -2980,7 +3015,10 @@ class DFlowFMModel(MeshModel):
         # Read manholes
         if self.dfmmodel.geometry.storagenodefile is not None:
             self.logger.info("Reading manholes file")
-            manholes = utils.read_manholes(self.network1d_nodes, self.dfmmodel)
+            network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
+                self.mesh_datasets["network1d"]
+            )
+            manholes = utils.read_manholes(network1d_nodes, self.dfmmodel)
             self.set_geoms(manholes, "manholes")
 
         # Read structures
@@ -2990,9 +3028,14 @@ class DFlowFMModel(MeshModel):
             for st_type in structures["type"].unique():
                 self.set_geoms(structures[structures["type"] == st_type], f"{st_type}s")
 
-    def write_geoms(self) -> None:
+    def write_geoms(self, write_mesh_gdf=True) -> None:
         """Write model geometries to a GeoJSON file at <root>/<geoms>."""
         self._assert_write_mode
+
+        # Optional: also write mesh_gdf object
+        if write_mesh_gdf:
+            for name, gdf in self.mesh_gdf.items():
+                self.set_geoms(gdf, name)
 
         # Write geojson equivalent of all objects. Note that these files are not directly used when updating the model
         super().write_geoms(fn="geoms/{name}.geojson")
@@ -3062,8 +3105,11 @@ class DFlowFMModel(MeshModel):
                         # Get the dataframe corresponding to the current variable
                         df = df_ext_1d[df_ext_1d.quantity == name]
                         # Get the corresponding nodes gdf
-                        node_geoms = self.network1d_nodes[
-                            np.isin(self.network1d_nodes["nodeid"], df.nodeid.values)
+                        network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
+                            self.mesh_datasets["network1d"]
+                        )
+                        node_geoms = network1d_nodes[
+                            np.isin(network1d_nodes["nodeid"], df.nodeid.values)
                         ]
                         da_out = utils.read_1dboundary(
                             df, quantity=name, nodes=node_geoms
@@ -3111,12 +3157,12 @@ class DFlowFMModel(MeshModel):
             self.set_config("external_forcing.extforcefilenew", ext_fn)
 
     def read_mesh(self):
-        """Read network file with Hydrolib-core and extract 2D mesh/branches info."""
+        """Read network file with Hydrolib-core and extract mesh/branches info."""
         self._assert_read_mode
 
         # Read mesh
         # hydrolib-core convention
-        net = self.dfmmodel.geometry.netfile.network
+        network = self.dfmmodel.geometry.netfile.network
         # FIXME: crs info is not available in dfmmodel, so get it from region.geojson
         # Cannot use read_geoms yet because for some some geoms (crosssections, manholes) mesh needs to be read first...
         region_fn = join(self.root, "geoms", "region.geojson")
@@ -3124,98 +3170,61 @@ class DFlowFMModel(MeshModel):
             crs = gpd.read_file(region_fn).crs
         else:
             crs = None
-        # add mesh2d to self.mesh
-        if not net._mesh2d.is_empty():
-            net._mesh2d._set_mesh2d()
-            mesh2d = net._mesh2d.get_mesh2d()
-            # Create Ugrid2d object
-            grid = xu.Ugrid2d.from_meshkernel(mesh2d)
-            # n_max_node = mesh2d.nodes_per_face.max()
-            # grid = xu.Ugrid2d(
-            #     node_x=mesh2d.node_x,
-            #     node_y=mesh2d.node_y,
-            #     fill_value=-1,
-            #     face_node_connectivity=mesh2d.face_nodes.reshape((-1, n_max_node)),
-            #     crs=crs,
-            # )
-            # grid._mesh = mesh2d
-            # Create UgridDataset
-            da = xr.DataArray(
-                data=np.arange(grid.n_face),
-                dims=[grid.face_dimension],
-            )
-            uda = xu.UgridDataArray(da, grid)
-            uds = uda.to_dataset(name="index")
-            uds = uds.assign_coords(
-                coords={
-                    "mesh2d_node_x": ("mesh2d_nNodes", grid.node_x),
-                    "mesh2d_node_y": ("mesh2d_nNodes", grid.node_y),
-                }
-            )
-            uds.ugrid.grid.set_crs(crs)
-            self.set_mesh(uds)
+
+        # convert to xugrid
+        mesh = mesh_utils.mesh_from_hydrolib_network(network, crs=crs)
+        # set mesh
+        self._mesh = mesh
+
+        # update resolution
+        if "mesh2d" in self.mesh_names:
             if self._res is None:
-                np.diff(grid.node_x)
+                self._res = np.max(np.diff(self.mesh_grids["mesh2d"].node_x))
 
-        # add mesh1d to self.mesh # TODO: for now self.mesh is 2D only
-        # if not net._mesh1d.is_empty():
-        #    self._add_mesh1d(net._mesh1d)
-
-        # Read mesh1d related geometry (branches)
-        if not net._mesh1d.is_empty():
-            mesh1d = self.mesh1d
-            branch_id = mesh1d.network1d_branch_id
-            # Create the GeoDataFrame
-            branches = gpd.GeoDataFrame(
-                geometry=[LineString(mesh1d.branches[i].geometry) for i in branch_id],
-                crs=crs,
-            )
-            branches["branchid"] = branch_id
-            branches["branchorder"] = mesh1d.network1d_branch_order
+        # creates branches geometry from network1d
+        if "network1d" in self.mesh_names:
+            network1d_geometry = self.mesh_gdf["network1d"]
+            network1d_dataset = self.mesh_datasets["network1d"]
+            # Create the branches GeoDataFrame
+            branches = network1d_geometry
+            branches["branchid"] = network1d_dataset["network1d_branch_id"]
+            branches["branchorder"] = network1d_dataset["network1d_branch_order"]
+            # branches["branchtype"] = network1d_dataset["network1d_branch_type"] # might support in the future https://github.com/Deltares/HYDROLIB-core/issues/561
 
             # Add branchtype, properties from branches.gui file
             self.logger.info("Reading branches GUI file")
             branches = utils.read_branches_gui(branches, self.dfmmodel)
 
-            # Add branches
+            # Set branches
             self._branches = branches
+            self.set_geoms(branches, "branches")
 
     def write_mesh(self, write_gui=True):
         """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc> in model ready format."""
         self._assert_write_mode
         savedir = dirname(join(self.root, self._config_fn))
+        mesh_filename = "fm_net.nc"
 
         # write mesh
-        # hydromt convention
-        # super().write_mesh(fn="mesh/fm_net.nc")
-        if self._mesh:
-            fn = "mesh/fm_net.nc"
-            _fn = join(self.root, fn)
-            if not isdir(dirname(_fn)):
-                os.makedirs(dirname(_fn))
-            ds_out = xr.Dataset()
-            for grid in self._mesh.ugrid.grids:
-                ds_out = ds_out.merge(grid.to_dataset())
-            if grid.crs is not None:
-                # save crs to spatial_ref coordinate
-                ds_out = ds_out.rio.write_crs(grid.crs)
-            ds_out.to_netcdf(_fn, mode="w")
+        # hydromt convention - FIXME hydrolib does not seem to read the 1D and links part of the mesh
+        # super().write_mesh(fn=join(savedir, mesh_filename))
 
-        # hydrolib-core convention (meshkernel)
-        mesh_filename = "fm_net.nc"
-        self.logger.info(f"Writing mesh to {join(savedir, mesh_filename)}")
-        self.dfmmodel.geometry.netfile.save(
-            join(savedir, mesh_filename),
-            recurse=False,
-        )
+        # write with hydrolib-core
+        # Note: hydrolib-core writes more information including attributes and converts some variables using start_index
+        # FIXME: does not write crs that is recongnised by Delft3D FM GUI. check https://github.com/Deltares/dfm_tools/blob/main/dfm_tools/meshkernel_helpers.py#L82
+
+        network = mesh_utils.hydrolib_network_from_mesh(self.mesh)
+        network.to_file(Path(join(savedir, mesh_filename)))
+
         # save relative path to mdu
         self.set_config("geometry.netfile", mesh_filename)
 
-        # other mesh1d related geometry
-        if not self.mesh1d.is_empty() and write_gui:
+        # other mesh1d related geometry TODO update
+        if "mesh1d" in self.mesh_names and write_gui:
             self.logger.info("Writting branches.gui file")
             if "manholes" in self.geoms:
                 self.geoms["manholes"]
+            # might not needed in the future if branch_type can be supported in the mesh https://github.com/Deltares/HYDROLIB-core/issues/561
             _ = utils.write_branches_gui(self.branches, savedir)
 
     def read_states(self):
@@ -3241,7 +3250,10 @@ class DFlowFMModel(MeshModel):
     @property
     def crs(self):
         # return pyproj.CRS.from_epsg(self.get_config("global.epsg", fallback=4326))
-        return self.region.crs
+        if self._crs is None:
+            # try to read it from mesh usingMeshModel method
+            self._crs = super().crs
+        return self._crs
 
     @property
     def bounds(self) -> Tuple:
@@ -3258,13 +3270,13 @@ class DFlowFMModel(MeshModel):
         else:
             if self.mesh is not None:
                 bounds = self.mesh.ugrid.total_bounds
-                crs = self.mesh.ugrid.grid.crs
-            elif self.branches is not None:
+                crs = self.crs
+            elif not self.branches.empty:
                 bounds = self.branches.total_bounds
                 crs = self.branches.crs
             else:
                 # Finally raise error assuming model is empty
-                self.logger.error(
+                raise ValueError(
                     "Could not derive region from geoms, or mesh. Model may be empty."
                 )
             region = gpd.GeoDataFrame(geometry=[box(*bounds)], crs=crs)
@@ -3357,7 +3369,7 @@ class DFlowFMModel(MeshModel):
         """
         if self._branches is None and self._read:
             self.read_mesh()
-        elif self._branches is None:
+        if self._branches is None:
             self._branches = gpd.GeoDataFrame()
         return self._branches
 
@@ -3380,87 +3392,7 @@ class DFlowFMModel(MeshModel):
         self.logger.debug("Adding branches vector to geoms.")
         self.set_geoms(branches, "branches")
 
-        # set hydrolib-core net object and update self._mesh
-        self.set_mesh1d()
-
-        # update boundaries
-        self.set_geoms(self.get_boundaries(), "boundaries")
-
         self.logger.debug("Updating branches in network.")
-
-    def add_branches(
-        self,
-        new_branches: gpd.GeoDataFrame,
-        branchtype: str,
-        node_distance: float = 40.0,
-    ):
-        """Add new branches of branchtype to the branches and mesh1d object."""
-        snap_newbranches_to_branches_at_snapnodes = (
-            self._snap_newbranches_to_branches_at_snapnodes
-        )
-
-        snap_offset = self._network_snap_offset
-
-        branches = self.branches.copy()
-
-        if (
-            snap_newbranches_to_branches_at_snapnodes is True
-            and len(self.opensystem) > 0
-        ):
-            self.logger.info(
-                f"snapping {branchtype} ends to existing network (opensystem only)"
-            )
-
-            # get possible connection points from new branches
-            if branchtype in ["pipe", "tunnel"]:
-                endnodes = workflows.generate_boundaries_from_branches(
-                    new_branches, where="downstream"
-                )  # only connect downstream ends to existing network
-            else:
-                endnodes = workflows.generate_boundaries_from_branches(
-                    new_branches, where="both"
-                )  # only connect both ends to existing network
-
-            # get possible connection points (allow connection only at mesh nodes) from existing open system
-            mesh1d_nodes = self.mesh1d_nodes.copy()
-            mesh1d_nodes_open = mesh1d_nodes.loc[
-                mesh1d_nodes.branch_name.isin(self.opensystem.branchid.tolist())
-            ]
-
-            # snap the new endnodes to existing mesh1d_nodes_open
-            snapnodes = hydromt.gis_utils.nearest_merge(
-                endnodes, mesh1d_nodes_open, max_dist=snap_offset, overwrite=False
-            )
-            snapnodes = snapnodes[snapnodes.index_right != -1]  # drop not snapped
-            snapnodes["geometry_left"] = snapnodes["geometry"]
-            snapnodes["geometry_right"] = [
-                mesh1d_nodes_open.at[i, "geometry"] for i in snapnodes["index_right"]
-            ]
-            logger.debug(f"snapped features: {len(snapnodes)}")
-            (
-                new_branches_snapped,
-                branches_snapped,
-            ) = workflows.snap_newbranches_to_branches_at_snapnodes(
-                new_branches, branches, snapnodes
-            )
-
-            # update the branches
-            branches = pd.concat(
-                [branches_snapped, new_branches_snapped], ignore_index=True
-            )
-        else:
-            # update the branches
-            branches = pd.concat([branches, new_branches], ignore_index=True)
-
-        if (
-            branches.crs is None
-        ):  # Cannot instantiate empty geodataframe with crs anymore
-            branches.crs = new_branches.crs
-
-        # Check if we need to do more check/process to make sure everything is well-connected
-        workflows.validate_branches(branches)
-        # set geom
-        self.set_branches(branches)
 
     def set_branches_component(self, name: str):
         gdf_comp = self.branches[self.branches["branchtype"] == name]
@@ -3508,281 +3440,6 @@ class DFlowFMModel(MeshModel):
             gdf = gpd.GeoDataFrame()
         return gdf
 
-    @property
-    def mesh1d(self):
-        """Returns the mesh1d (hydrolib-core Mesh1d object) representing the 1D mesh."""
-        return self.dfmmodel.geometry.netfile.network._mesh1d
-
-    @property
-    def mesh1d_nodes(self):
-        """Returns the nodes of mesh 1D as geodataframe."""
-        mesh1d_nodes = gpd.points_from_xy(
-            x=self.mesh1d.mesh1d_node_x,
-            y=self.mesh1d.mesh1d_node_y,
-            crs=self.crs,
-        )
-        mesh1d_nodes = gpd.GeoDataFrame(
-            data={
-                "branch_id": self.mesh1d.mesh1d_node_branch_id,
-                "branch_name": [
-                    list(self.mesh1d.branches.keys())[i]
-                    for i in self.mesh1d.mesh1d_node_branch_id
-                ],
-                "branch_chainage": self.mesh1d.mesh1d_node_branch_offset,
-                "geometry": mesh1d_nodes,
-            }
-        )
-        return mesh1d_nodes
-
-    def set_mesh1d(self):
-        """Update the mesh1d in hydrolib-core net object by overwrite and add to self._mesh."""
-        # reinitialise mesh1d (TODO: a clear() function in hydrolib-core could be handy)
-        self.dfmmodel.geometry.netfile.network._mesh1d = Mesh1d(
-            meshkernel=self.dfmmodel.geometry.netfile.network.meshkernel
-        )
-
-        # add open system mesh1d
-        opensystem = self.opensystem
-        node_distance = self._openwater_computation_node_distance
-        workflows.mesh1d_add_branch(
-            self._dfmmodel.geometry.netfile.network,
-            opensystem.geometry.to_list(),
-            node_distance=node_distance,
-            branch_names=opensystem.branchid.to_list(),
-            branch_orders=opensystem.branchorder.to_list(),
-        )
-
-        # add closed system mesh1d
-        closedsystem = self.closedsystem
-        node_distance = np.inf
-        workflows.mesh1d_add_branch(
-            self._dfmmodel.geometry.netfile.network,
-            closedsystem.geometry.to_list(),
-            node_distance=node_distance,
-            branch_names=closedsystem.branchid.to_list(),
-            branch_orders=closedsystem.branchorder.to_list(),
-        )
-
-        # set mesh1d
-        self._dfmmodel.geometry.netfile.network._mesh1d._set_mesh1d()
-
-        # add to self.mesh # TODO: for now self.mesh is 2D only
-        # self._add_mesh1d(self.mesh1d)
-
-    def _add_mesh1d(self, mesh1d: Mesh1d):
-        """Update the mesh1d in self.mesh object."""
-        # Create Ugrid1d object for mesh
-        # TODO: after release of xugrid use grid = xu.Ugrid1d.from_meshkernel(mesh1d)
-        grid = xu.Ugrid1d(
-            node_x=mesh1d.mesh1d_node_x,
-            node_y=mesh1d.mesh1d_node_y,
-            fill_value=-1,
-            edge_node_connectivity=mesh1d.mesh1d_edge_nodes,
-            name="mesh1d",
-            crs=self.crs,
-        )
-        # grid._mesh = mesh1d
-        # Create UgridDataset
-        ds = xr.Dataset(
-            data_vars={
-                "mesh1d_node_x": ("mesh1d_nNodes", mesh1d.mesh1d_node_x),
-                "mesh1d_node_y": ("mesh1d_nNodes", mesh1d.mesh1d_node_y),
-                "mesh1d_node_id": ("mesh1d_nNodes", mesh1d.mesh1d_node_id),
-                "mesh1d_node_long_name": (
-                    "mesh1d_nNodes",
-                    mesh1d.mesh1d_node_long_name,
-                ),
-                "mesh1d_node_branch_id": (
-                    "mesh1d_nNodes",
-                    mesh1d.mesh1d_node_branch_id,
-                ),
-                "mesh1d_node_branch_offset": (
-                    "mesh1d_nNodes",
-                    mesh1d.mesh1d_node_branch_offset,
-                ),
-                "mesh1d_edge_nodes": (
-                    ["mesh1d_nEdges", "two"],
-                    mesh1d.mesh1d_edge_nodes,
-                ),
-                "mesh1d_edge_x": ("mesh1d_nEdges", mesh1d.mesh1d_edge_x),
-                "mesh1d_edge_y": ("mesh1d_nEdges", mesh1d.mesh1d_edge_y),
-                "mesh1d_edge_branch_id": (
-                    "mesh1d_nEdges",
-                    mesh1d.mesh1d_edge_branch_id,
-                ),
-                "mesh1d_edge_branch_offset": (
-                    "mesh1d_nEdges",
-                    mesh1d.mesh1d_edge_branch_offset,
-                ),
-            }
-        )
-        uds = xu.UgridDataset(ds, grid)
-        uds.ugrid.grid.set_crs(grid.crs)
-        uds_mesh = uds.copy()
-
-        # Create Ugrid1d object for network
-        # TODO: after release of xugrid use grid = xu.Ugrid1d.from_meshkernel(mesh1d)
-        grid = xu.Ugrid1d(
-            node_x=mesh1d.network1d_node_x,
-            node_y=mesh1d.network1d_node_y,
-            fill_value=-1,
-            edge_node_connectivity=mesh1d.network1d_edge_nodes,
-            name="network1d",
-            crs=self.crs,
-        )
-        # grid._mesh = mesh1d
-        # Create UgridDataset
-        ds = xr.Dataset(
-            data_vars={
-                "network1d_node_x": ("network1d_nNodes", mesh1d.network1d_node_x),
-                "network1d_node_y": ("network1d_nNodes", mesh1d.network1d_node_y),
-                "network1d_node_id": ("network1d_nNodes", mesh1d.network1d_node_id),
-                "network1d_node_long_name": (
-                    "network1d_nNodes",
-                    mesh1d.network1d_node_long_name,
-                ),
-                "network1d_edge_nodes": (
-                    ["network1d_nEdges", "two"],
-                    mesh1d.network1d_edge_nodes,
-                ),
-                "network1d_geom_x": (
-                    "network1d_nGeometryNodes",
-                    mesh1d.network1d_geom_x,
-                ),
-                "network1d_geom_y": (
-                    "network1d_nGeometryNodes",
-                    mesh1d.network1d_geom_y,
-                ),
-                "network1d_branch_id": ("network1d_nEdges", mesh1d.network1d_branch_id),
-                "network1d_branch_length": (
-                    "network1d_nEdges",
-                    mesh1d.network1d_branch_length,
-                ),
-                "network1d_branch_long_name": (
-                    "network1d_nEdges",
-                    mesh1d.network1d_branch_long_name,
-                ),
-                "network1d_branch_order": (
-                    "network1d_nEdges",
-                    mesh1d.network1d_branch_order,
-                ),
-                "network1d_part_node_count": (
-                    "network1d_nEdges",
-                    mesh1d.network1d_part_node_count,
-                ),
-            },
-        )
-        uds = xu.UgridDataset(ds, grid)
-        uds.ugrid.grid.set_crs(grid.crs)
-        uds_network = uds.copy()
-
-        # combine
-        uds_1d = uds_mesh.merge(uds_network)
-
-        # set
-        if self._mesh is not None:
-            self._mesh = self._mesh.drop_vars(
-                set(self._mesh.variables.keys()).intersection(uds_1d.variables.keys())
-            )
-        self.set_mesh(uds_1d)
-
-    @property
-    def crosssections(self):
-        """Quick accessor to crosssections geoms."""
-        if "crosssections" in self.geoms:
-            gdf = self.geoms["crosssections"]
-        else:
-            gdf = gpd.GeoDataFrame()
-        return gdf
-
-    def add_crosssections(self, crosssections: gpd.GeoDataFrame):
-        """Updates crosssections in geoms with new ones."""
-        # TODO: sort out the crosssections, e.g. remove branch crosssections if point/xyz exist etc
-        # TODO: setup river crosssections, set contrains based on branch types
-        if len(self.crosssections) > 0:
-            # add new crossections
-            crosssections = gpd.GeoDataFrame(
-                pd.concat([self.crosssections, crosssections]), crs=self.crs
-            )
-            # drop duplicated locations, keep the first one
-            _crosssections_locations = crosssections[~crosssections.crsloc_id.isna()]
-            _crosssections_definitions = crosssections[
-                crosssections.crsloc_id.isna()
-            ]  # retain crs defs for nan locations - structures
-            _crosssections_locations["temp_id"] = _crosssections_locations.apply(
-                lambda x: f'{x["crsloc_branchid"]}_{x["crsloc_chainage"]:.2f}', axis=1
-            )
-            if _crosssections_locations["temp_id"].duplicated().any():
-                logger.warning(
-                    "Duplicate crosssections locations found, removing duplicates"
-                )
-                # Remove duplicates based on the branch_id, branch_offset column, keeping the first occurrence (with minimum branch_distance)
-                _crosssections_locations = _crosssections_locations.drop_duplicates(
-                    subset=["temp_id"], keep="first"
-                )
-            crosssections = pd.concat(
-                [_crosssections_locations, _crosssections_definitions]
-            )
-            # remove existing generated branch crosssections
-            crossections_branch = crosssections[
-                crosssections.crsdef_id.str.endswith("_branch")
-            ]
-            crossections_others = crosssections[
-                ~crosssections.crsdef_id.str.endswith("_branch")
-            ]
-            mask_to_remove = crossections_branch["crsloc_branchid"].isin(
-                crossections_others["crsloc_branchid"]
-            )
-            if mask_to_remove.sum() > 0:
-                self.logger.warning(
-                    "Overwrite branch crossections where user-defined crossections are used."
-                )
-                crosssections = gpd.GeoDataFrame(
-                    pd.concat(
-                        [crossections_branch[~mask_to_remove], crossections_others]
-                    ),
-                    crs=self.crs,
-                )
-        self.set_geoms(crosssections, name="crosssections")
-
-    @property
-    def boundaries(self) -> gpd.GeoDataFrame:
-        """Quick accessor to boundaries geoms."""
-        if "boundaries" in self.geoms:
-            gdf = self.geoms["boundaries"]
-        else:
-            gdf = self.get_boundaries()
-        return gdf
-
-    def get_boundaries(self) -> gpd.GeoDataFrame:
-        """Get all boundary locations from the network
-        branch ends are possible locations for boundaries
-        for open system, both upstream and downstream ends are allowed to have boundaries
-        for closed system, only downstream ends are allowed to have boundaries.
-        """
-        # generate all possible and allowed boundary locations
-        _boundaries = workflows.generate_boundaries_from_branches(
-            self.branches, where="both"
-        )
-
-        # get networkids to complete the boundaries
-        boundaries = hydromt.gis_utils.nearest_merge(
-            _boundaries, self.network1d_nodes, max_dist=0.1, overwrite=False
-        )
-        return boundaries
-
-    def set_boundaries(self, boundaries: gpd.GeoDataFrame):
-        """Updates boundaries in geoms with new ones."""
-        if len(self.boundaries) > 0:
-
-            def task_last(s1, s2):
-                return s2
-
-            boundaries = self.boundaries.combine(
-                boundaries, func=task_last, overwrite=True
-            )
-        self.set_geoms(boundaries, name="boundaries")
-
     def get_model_time(self):
         """Return (refdate, tstart, tstop) tuple with parsed model reference datem start and end time."""
         refdate = datetime.strptime(str(self.get_config("time.refdate")), "%Y%m%d")
@@ -3790,70 +3447,127 @@ class DFlowFMModel(MeshModel):
         tstop = refdate + timedelta(seconds=float(self.get_config("time.tstop")))
         return refdate, tstart, tstop
 
-    # @property
-    # def network(self):
-    #     """
-    #     Returns the network (hydrolib-core Network object) based on self.mesh content.
-    #     """
-    #     return self.dfmmodel.geometry.netfile.network
-
-    @property
-    def network1d_nodes(self):
-        """Get network1d nodes as gdp."""
-        # get networkids to complete the boundaries
-        _network1d_nodes = gpd.points_from_xy(
-            x=self.dfmmodel.geometry.netfile.network._mesh1d.network1d_node_x,
-            y=self.dfmmodel.geometry.netfile.network._mesh1d.network1d_node_y,
-            crs=self.crs,
-        )
-        _network1d_nodes = gpd.GeoDataFrame(
-            data={
-                "nodeid": self.dfmmodel.geometry.netfile.network._mesh1d.network1d_node_id,
-                "geometry": _network1d_nodes,
-            }
-        )
-        return _network1d_nodes
-
     @property
     def res(self):
         "Resolution of the mesh2d."
         if self._res is not None:
             return self._res
 
-    @property
-    def mesh2d(self):
-        """Returns the mesh2d (hydrolib-core Mesh2d object) representing the 2D mesh."""
-        return (
-            self.dfmmodel.geometry.netfile.network._mesh2d
-        )  # needed to setup 1d2d links
+    def set_mesh(
+        self,
+        data: Union[xu.UgridDataArray, xu.UgridDataset],
+        name: Optional[str] = None,
+        grid_name: Optional[str] = None,
+        overwrite_grid: Optional[bool] = False,
+    ) -> None:
+        """Add data to mesh.
 
-    def set_mesh2d(self, mesh2d: mk.py_structures.Mesh2d = None):
-        """Update the mesh2d in hydrolib-core net object by overwrite."""
-        # process mesh2d to net object
-        if mesh2d is None and self._mesh is not None:
-            mesh2d = self._mesh.ugrid.grid.mesh
-        self.dfmmodel.geometry.netfile.network._mesh2d._process(mesh2d)
+        All layers of mesh have identical spatial coordinates in Ugrid conventions.
 
-    @property
-    def link1d2d(self):
-        """Returns the link1d2d (hydrolib-core Link1d2d object) representing the 1d2d links."""
-        return self.dfmmodel.geometry.netfile.network._link1d2d
+        Parameters
+        ----------
+        data: xugrid.UgridDataArray or xugrid.UgridDataset
+            new layer to add to mesh
+        name: str, optional
+            Name of new object layer, this is used to overwrite the name of
+            a UgridDataArray.
+        grid_name: str, optional
+            Name of the mesh grid to add data to. If None, inferred from data.
+            Can be used for renaming the grid.
+        overwrite_grid: bool, optional
+            If True, overwrite the grid with the same name as the grid in self.mesh.
+        """
+        # Check if new grid_name
+        if grid_name not in self.mesh_names:
+            new_grid = True
+        else:
+            new_grid = False
 
-    @property
-    def network(self):
-        """Returns the network (hydrolib-core Network object) representing the entire network file."""
-        return self.dfmmodel.geometry.netfile.network
+        # First call super method to add mesh data
+        super().set_mesh(
+            data=data,
+            name=name,
+            grid_name=grid_name,
+            overwrite_grid=overwrite_grid,
+        )
 
-    @property
+        # check if 1D and 2D and and 1D2D links and overwrite then send warning that setup_link1d2d should be run again
+        if overwrite_grid and "link1d2d" in self.mesh.data_vars:
+            if grid_name == "mesh1d" or grid_name == "mesh2d":
+                # TODO check if warning is enough or if we should remove to be sure?
+                self.logger.warning(
+                    f"{grid_name} grid was updated in self.mesh. "
+                    "Re-run setup_link1d2d method to update the model 1D2D links."
+                )
+
+        # update related geoms if necessary: region - boundaries
+        # the region is done in hydromt core
+        if overwrite_grid or new_grid:
+            # 1D boundaries
+            if grid_name == "mesh1d":
+                self.set_geoms(
+                    workflows.get_boundaries_with_nodeid(
+                        self.branches,
+                        mesh_utils.network1d_nodes_geodataframe(
+                            self.mesh_datasets["network1d"]
+                        ),
+                    ),
+                    "boundaries",
+                )
+
+    def set_link1d2d(
+        self,
+        link1d2d: xr.Dataset(),
+    ):
+        """
+        Add or replace the link1d2d in the model mesh.
+
+        Parameters
+        ----------
+        link1d2d: xr.Dataset
+            link1d2d dataset with variables: [link1d2d, link1d2d_ids, link1d2d_long_names, link1d2d_contact_type]
+        """
+        # Check if link1d2d already in self.mesh
+        # FIXME current implementation of below does not support updating partial 1d2d links. Either document or adapt. #1
+        if "link1d2d" in self.mesh.data_vars:
+            self.logger.info("Overwriting existing link1d2d in self.mesh.")
+            self._mesh = self._mesh.drop_vars(
+                [
+                    "link1d2d",
+                    "link1d2d_ids",
+                    "link1d2d_long_names",
+                    "link1d2d_contact_type",
+                ]
+            )
+            # Remove unused dims nLink1D2D_edge and Two
+            self._mesh = self._mesh.drop_dims(["nLink1D2D_edge", "Two"])
+
+        # Add link1d2d to mesh
+        self._mesh = self._mesh.merge(link1d2d)
+
     def _model_has_2d(self):
-        if not self.mesh2d.is_empty():
+        if "mesh2d" in self.mesh_names:
             return True
         else:
             return False
 
-    @property
     def _model_has_1d(self):
-        if not self.mesh1d.is_empty():
+        if "mesh1d" in self.mesh_names:
             return True
         else:
             return False
+
+    def _check_crs(self):
+        """"""
+        if self.crs is None:
+            if self._read:
+                self.logger.warning(
+                    "Could not derive CRS from reading the mesh file."
+                    "Please define the CRS in the [global] init attributes before setting up the model."
+                )
+            else:
+                raise ValueError(
+                    "CRS is not defined. Please define the CRS in the [global] init attributes before setting up the model."
+                )
+        else:
+            self.logger.info(f"project crs: {self.crs.to_epsg()}")

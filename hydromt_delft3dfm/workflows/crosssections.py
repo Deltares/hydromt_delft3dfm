@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from typing import Tuple, Union
 
 import geopandas as gpd
 import numpy as np
@@ -16,10 +17,89 @@ logger = logging.getLogger(__name__)
 
 
 __all__ = [
+    "init_crosssections_options",
     "set_branch_crosssections",
     "set_xyz_crosssections",
     "set_point_crosssections",
+    "add_crosssections",
 ]  # , "process_crosssections", "validate_crosssections"]
+
+
+def init_crosssections_options(
+    crosssections_type: Union[str, list], crosssections_fn: Union[str, list]
+) -> Tuple[list, list]:
+    """Initialise crosssection options from user input."""
+    if crosssections_type is None:
+        crosssections_type = []
+        crosssections_fn = []
+    elif isinstance(crosssections_type, str):
+        crosssections_type = [crosssections_type]
+        crosssections_fn = [crosssections_fn]
+    elif isinstance(crosssections_type, list):
+        assert len(crosssections_type) == len(crosssections_fn)
+    # inser branch as default
+    if "branch" not in crosssections_type:
+        crosssections_type.insert(0, "branch")
+        crosssections_fn.insert(0, None)
+    return crosssections_type, crosssections_fn
+
+
+def add_crosssections(
+    crosssections: Union[gpd.GeoDataFrame, None], new_crosssections: gpd.GeoDataFrame
+) -> gpd.GeoDataFrame:
+    """Adds new_crossections to crosssections.
+
+    Besides adding, also removes duplicated crossections and overwrites generated with user specified.
+
+    """
+    # TODO: setup river crosssections, set contrains based on branch types
+    if crosssections is not None:
+        # add new crossections
+        new_crosssections = gpd.GeoDataFrame(
+            pd.concat([crosssections, new_crosssections]), crs=crosssections.crs
+        )
+        # seperate crossection locations (used by branches) and definitions (used by branches and structures)
+        _crosssections_locations = new_crosssections[
+            ~new_crosssections.crsloc_id.isna()
+        ]
+        _crosssections_definitions = new_crosssections[
+            new_crosssections.crsloc_id.isna()
+        ]
+        # remove duplicated locations based on branchid_chainage (not on xy)
+        _crosssections_locations["temp_id"] = _crosssections_locations.apply(
+            lambda x: f'{x["crsloc_branchid"]}_{x["crsloc_chainage"]:.2f}', axis=1
+        )
+        if _crosssections_locations["temp_id"].duplicated().any():
+            logger.warning(
+                "Duplicate crosssections locations found, removing duplicates"
+            )
+            # Remove duplicates based on the branch_id, branch_offset column, keeping the first occurrence (with minimum branch_distance)
+            _crosssections_locations = _crosssections_locations.drop_duplicates(
+                subset=["temp_id"], keep="first"
+            )
+        # combine them
+        new_crosssections = pd.concat(
+            [_crosssections_locations, _crosssections_definitions]
+        )
+        # remove existing generated branch crosssections
+        crossections_generated = new_crosssections[
+            new_crosssections.crsdef_id.str.endswith("_branch")
+        ]
+        crossections_others = new_crosssections[
+            ~new_crosssections.crsdef_id.str.endswith("_branch")
+        ]
+        mask_to_remove = crossections_generated["crsloc_branchid"].isin(
+            crossections_others["crsloc_branchid"]
+        )
+        if mask_to_remove.sum() > 0:
+            new_crosssections = gpd.GeoDataFrame(
+                pd.concat(
+                    [crossections_generated[~mask_to_remove], crossections_others]
+                ),
+                crs=crosssections.crs,
+            )
+
+    return new_crosssections
 
 
 def set_branch_crosssections(

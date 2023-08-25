@@ -127,7 +127,7 @@ meteo_timeseries_T5:
 dem:
   path: local_data/dem.tif
   data_type: RasterDataset
-  crs: 32647
+  crs: 4326
   rename:
     dem: elevtn
   meta:
