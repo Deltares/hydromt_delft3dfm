@@ -1758,7 +1758,7 @@ class DFlowFMModel(MeshModel):
 
         # 4. snap structures to branches
         # setup branch_id - snap structures to branch (inplace of structures, will add branch_id and branch_offset columns)
-        workflows.find_nearest_branch(
+        gdf_st = workflows.find_nearest_branch(
             branches=branches, geometries=gdf_st, maxdist=snap_offset
         )
         # setup failed - drop based on branch_offset that are not snapped to branch
