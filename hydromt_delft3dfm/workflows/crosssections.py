@@ -211,7 +211,7 @@ def set_branch_crosssections(
                     [crosssections_, _set_trapezoid_crs(trapezoid_crs)]
                 )
     # Else prepares crosssections at both upstream and dowsntream extremities
-    # FIXME: for now only support circle profile for pipes
+    # for now only support circle profile for pipes
     else:
         # Upstream
         ids = [f"{i}_up" for i in branches.index]
@@ -459,7 +459,7 @@ def set_point_crosssections(
     # remove duplicated geometries
     _nodes = crosssections.copy()
     G = _nodes["geometry"].apply(lambda geom: geom.wkb)
-    len(G) - len(G.drop_duplicates().index)
+    # check for diff in numbers: n = len(G) - len(G.drop_duplicates().index)
     crosssections = _nodes[_nodes.index.isin(G.drop_duplicates().index)]
 
     # snap to branch
@@ -723,8 +723,6 @@ def _set_trapezoid_crs(crosssections: gpd.GeoDataFrame):
         logger.error(
             "Invalid DataFrame: Found non-positive values in the 'width', 't_width', or 'height' columns."
         )
-    else:
-        pass
 
     crsdefs = []
     crslocs = []
@@ -901,6 +899,7 @@ def _set_yz_crs(crosssections: gpd.GeoDataFrame):
 #             # preliminary handling
 #             l = l.removeprefix(prefix)
 #             t = None
+#             table_dict = {}
 #             # parse zw profile
 #             if "lt lw\nTBLE" in l:
 #                 # the table contains height, total width en flowing width.
@@ -908,7 +907,6 @@ def _set_yz_crs(crosssections: gpd.GeoDataFrame):
 #                 levels, totalwidths, flowwidths = np.array(
 #                     [shlex.split(r, posix=False) for r in t.split("<")][:-1]
 #                 ).T  # last element is the suffix of tble
-#                 table_dict = {}
 #                 table_dict["numlevels"] = len(levels)
 #                 table_dict["levels"] = " ".join(str(n) for n in levels)
 #                 table_dict["totalwidths"] = " ".join(str(n) for n in totalwidths)

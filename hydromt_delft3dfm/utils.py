@@ -497,23 +497,24 @@ def read_manholes(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
     for b in manholes.storagenode:
         manholes_dict[b.id] = b.__dict__
     df_manholes = pd.DataFrame.from_dict(manholes_dict, orient="index")
+    # replace 0e to 0d # TODO: fix this when hydrolib-core fix issue https://github.com/Deltares/HYDROLIB-core/issues/559
+    df_manholes["id"] = df_manholes["id"].apply(
+        lambda x: "0D" + x[2:] if isinstance(x, str) and x.startswith("0e") else x
+    )
+    df_manholes["name"] = df_manholes["name"].apply(
+        lambda x: "0D" + x[2:] if isinstance(x, str) and x.startswith("0e") else x
+    )
+    df_manholes["manholeid"] = df_manholes["manholeid"].apply(
+        lambda x: "0D" + x[2:] if isinstance(x, str) and x.startswith("0e") else x
+    )
+    df_manholes["nodeid"] = df_manholes["nodeid"].apply(
+        lambda x: "0D" + x[2:] if isinstance(x, str) and x.startswith("0e") else x
+    )
 
     # Drop variables
     df_manholes = df_manholes.drop(
         ["comments"],
         axis=1,
-    )
-    # Rename case sensitive
-    df_manholes = df_manholes.rename(
-        columns={
-            "manholeid": "manholeid",
-            "nodeid": "nodeid",
-            "usetable": "usetable",
-            "bedlevel": "bedlevel",
-            "streetlevel": "streetlevel",
-            "streetstoragearea": "streetstoragearea",
-            "storagetype": "storagetype",
-        }
     )
 
     gdf_manholes = gpd.GeoDataFrame(
