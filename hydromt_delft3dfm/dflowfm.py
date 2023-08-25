@@ -3232,8 +3232,7 @@ class DFlowFMModel(MeshModel):
         if not self.mesh1d.is_empty() and write_gui:
             self.logger.info("Writting branches.gui file")
             if "manholes" in self.geoms:
-                manholes = self.geoms["manholes"]
-            _ = utils.write_branches_gui(self.branches, savedir)
+                utils.write_branches_gui(self.branches, savedir)
 
     def read_states(self):
         """Read states at <root/?/> and parse to dict of xr.DataArray"""

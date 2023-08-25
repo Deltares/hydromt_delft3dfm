@@ -136,7 +136,7 @@ def set_branch_crosssections(
                     [crosssections_, _set_trapezoid_crs(trapezoid_crs)]
                 )
     # Else prepares crosssections at both upstream and dowsntream extremities
-    # TODO: support more profiles in addition to circle
+    # for now only support circle profile for pipes
     else:
         # Upstream
         ids = [f"{i}_up" for i in branches.index]
