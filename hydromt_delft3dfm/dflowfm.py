@@ -2356,21 +2356,11 @@ class DFlowFMModel(MeshModel):
             raise ValueError(
                 f"Locationtype {locationtype} not allowed. Select from ['2d', '1d', 'all']"
             )
+
         for var in variables:
-            if var in self._MAPS:
-                self._MAPS[var]["locationtype"] = locationtype
-                self._MAPS[var]["interpolation"] = interpolation_method
-                if interpolation_method != "triangulation":
-                    # adjust relative search cell size for averaging methods
-                    if self.maps[var].raster.res[0] > self.res:
-                        relsize = np.round(
-                            np.abs(self.maps[var].raster.res[0]) / self.res * np.sqrt(2)
-                            + 0.05,
-                            2,
-                        )
-                    else:
-                        relsize = 1.01
-                    self._MAPS[var]["averagingrelsize"] = relsize
+            self.__set_map_parameters_based_on_variable(
+                var, locationtype, interpolation_method
+            )
 
     def setup_maps_from_raster_reclass(
         self,
@@ -2459,20 +2449,28 @@ class DFlowFMModel(MeshModel):
                 f"Locationtype {locationtype} not allowed. Select from ['2d', '1d', 'all']"
             )
         for var in reclass_variables:
-            if var in self._MAPS:
-                self._MAPS[var]["locationtype"] = locationtype
-                self._MAPS[var]["interpolation"] = interpolation_method
-                if interpolation_method != "triangulation":
-                    # increase relative search cell size if raster resolution is coarser than model resolution
-                    if self.maps[var].raster.res[0] > self.res:
-                        relsize = np.round(
-                            np.abs(self.maps[var].raster.res[0]) / self.res * np.sqrt(2)
-                            + 0.05,
-                            2,
-                        )
-                    else:
-                        relsize = 1.01
-                    self._MAPS[var]["averagingrelsize"] = relsize
+            self.__set_map_parameters_based_on_variable(
+                var, locationtype, interpolation_method
+            )
+
+    def __set_map_parameters_based_on_variable(
+        self, var: str, locationtype: str, interpolation_method: str
+    ) -> None:
+        """Set map parameters by updating user inputs to default self._MAP"""
+        if var in self._MAPS:
+            self._MAPS[var]["locationtype"] = locationtype
+            self._MAPS[var]["interpolation"] = interpolation_method
+            if interpolation_method != "triangulation":
+                # adjust relative search cell size for averaging methods
+                if self.maps[var].raster.res[0] > self.res:
+                    relsize = np.round(
+                        np.abs(self.maps[var].raster.res[0]) / self.res * np.sqrt(2)
+                        + 0.05,
+                        2,
+                    )
+                else:
+                    relsize = 1.01
+                self._MAPS[var]["averagingrelsize"] = relsize
 
     def setup_2dboundary(
         self,
