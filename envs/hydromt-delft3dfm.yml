@@ -16,7 +16,6 @@ dependencies:
   - pip
   - pre-commit # linting
   - pydata-sphinx-theme # docs
-  - pygeos
   - pyproj
   - pytest # tests
   - pytest-cov # tests
