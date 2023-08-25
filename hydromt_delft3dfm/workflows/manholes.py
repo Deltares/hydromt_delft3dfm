@@ -90,6 +90,9 @@ def generate_manholes_on_branches(
     _nodes_pipes["where"] = _nodes_pipes["geometry"].apply(lambda geom: geom.wkb)
 
     # get branch variables
+    use_branch_variables = list(
+        set(use_branch_variables).intersection(set(pipes.columns))
+    )
     nodes_pipes = (
         _nodes_pipes.set_index(pipes.index.name)
         .merge(
@@ -100,8 +103,12 @@ def generate_manholes_on_branches(
     )
 
     # summarize branch variables
-    nodes_pipes = _get_pipe_stats_for_manholes(nodes_pipes, "where", "diameter", "max")
-    nodes_pipes = _get_pipe_stats_for_manholes(nodes_pipes, "where", "width", "max")
+    if "diameter" in use_branch_variables:
+        nodes_pipes = _get_pipe_stats_for_manholes(
+            nodes_pipes, "where", "diameter", "max"
+        )
+    if "width" in use_branch_variables:
+        nodes_pipes = _get_pipe_stats_for_manholes(nodes_pipes, "where", "width", "max")
     nodes_pipes = _get_pipe_stats_for_manholes(
         nodes_pipes, "where", "branchid", ";".join
     )
@@ -127,12 +134,12 @@ def generate_manholes_on_branches(
         columns=["geometry", channels.index.name],
         crs=branches.crs,
     )
-
-    nodes_channels = gpd.GeoDataFrame(_nodes_channels, crs=branches.crs)
-    nodes_to_remove = gis_utils.nearest_merge(
-        nodes_pipes, nodes_channels, max_dist=0.001, overwrite=True
-    )
-    nodes_pipes = nodes_pipes.loc[nodes_to_remove.index_right == -1]
+    if len(_nodes_channels) > 0:
+        nodes_channels = gpd.GeoDataFrame(_nodes_channels, crs=branches.crs)
+        nodes_to_remove = gis_utils.nearest_merge(
+            nodes_pipes, nodes_channels, max_dist=0.001, overwrite=True
+        )
+        nodes_pipes = nodes_pipes.loc[nodes_to_remove.index_right == -1]
 
     # manhole generated
     manholes_generated = gpd.GeoDataFrame(
