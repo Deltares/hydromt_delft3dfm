@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,7 +6,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>HydroMT-Delft3D FM: Delft3D FM plugin for HydroMT &#8212; HydroMT Delft3D FM  documentation</title>
   
@@ -29,18 +28,18 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="_static/theme-deltares.css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="_static/theme-deltares.css?v=17060807" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
-    <script src="_static/design-tabs.js"></script>
+    <script src="_static/documentation_options.js?v=8a448e45"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/design-tabs.js?v=36754332"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -378,10 +377,10 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section id="hydromt-delft3d-fm-delft3d-fm-plugin-for-hydromt">
-<span id="readme"></span><h1>HydroMT-Delft3D FM: Delft3D FM plugin for HydroMT<a class="headerlink" href="#hydromt-delft3d-fm-delft3d-fm-plugin-for-hydromt" title="Permalink to this heading">#</a></h1>
+<span id="readme"></span><h1>HydroMT-Delft3D FM: Delft3D FM plugin for HydroMT<a class="headerlink" href="#hydromt-delft3d-fm-delft3d-fm-plugin-for-hydromt" title="Link to this heading">#</a></h1>
 <p><a class="reference external" href="https://github.com/Deltares/hydromt_delft3dfm/actions/workflows/ci.yml"><img alt="ci" src="https://github.com/Deltares/hydromt_delft3dfm/actions/workflows/ci.yml/badge.svg?branch=main" /></a> <a class="reference external" href="https://codecov.io/gh/Deltares/hydromt_delft3dfm"><img alt="codecov" src="https://codecov.io/gh/Deltares/hydromt_delft3dfm/branch/main/graph/badge.svg?token=ss3EgmwHhH" /></a> <a class="reference external" href="https://github.com/psf/black"><img alt="Formatter" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a> <a class="reference external" href="https://deltares.github.io/hydromt_delft3dfm/latest"><img alt="Latest developers docs" src="https://img.shields.io/badge/docs-latest-brightgreen.svg" /></a>  <a class="reference external" href="https://github.com/Deltares/hydromt_delft3dfm/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/Deltares/hydromt_delft3dfm" /></a> <a class="reference external" href="https://sonarcloud.io/summary/new_code?id=Deltares_hydromt_delft3dfm"><img alt="Quality Gate Status" src="https://sonarcloud.io/api/project_badges/measure?project=Deltares_hydromt_delft3dfm&amp;metric=alert_status" /></a></p>
 <section id="what-is-the-hydromt-delft3d-fm-plugin">
-<h2>What is the HydroMT-Delft3D FM plugin<a class="headerlink" href="#what-is-the-hydromt-delft3d-fm-plugin" title="Permalink to this heading">#</a></h2>
+<h2>What is the HydroMT-Delft3D FM plugin<a class="headerlink" href="#what-is-the-hydromt-delft3d-fm-plugin" title="Link to this heading">#</a></h2>
 <p><a class="reference external" href="https://deltares.github.io/hydromt/latest/">HydroMT</a> (Hydro Model Tools) is an open-source Python package that facilitates the process of
 building and analyzing spatial geoscientific models with a focus on water system models.
 It does so by automating the workflow to go from raw data to a complete model instance which
@@ -389,7 +388,7 @@ is ready to run and to analyze model results once the simulation has finished.
 This plugin provides an implementation of the model API for the Delft3D <a class="reference external" href="https://oss.deltares.nl/web/delft3dfm">FM</a> model.</p>
 </section>
 <section id="why-hydromt-delft3d-fm">
-<h2>Why HydroMT-Delft3D FM?<a class="headerlink" href="#why-hydromt-delft3d-fm" title="Permalink to this heading">#</a></h2>
+<h2>Why HydroMT-Delft3D FM?<a class="headerlink" href="#why-hydromt-delft3d-fm" title="Link to this heading">#</a></h2>
 <p>Setting up distributed hydrological models typically requires many (manual) steps
 to process input data and might therefore be time consuming and hard to reproduce.
 Especially improving models based on global-local geospatial datasets, which are
@@ -398,7 +397,7 @@ HydroMT-Delft3D FM aims to make the Delft3D FM model building and updating proce
 and to facilitate the analysis of the model results.</p>
 </section>
 <section id="how-to-use-hydromt-delft3d-fm">
-<h2>How to use HydroMT-Delft3D FM?<a class="headerlink" href="#how-to-use-hydromt-delft3d-fm" title="Permalink to this heading">#</a></h2>
+<h2>How to use HydroMT-Delft3D FM?<a class="headerlink" href="#how-to-use-hydromt-delft3d-fm" title="Link to this heading">#</a></h2>
 <p>The HydroMT-Delft3D FM plugin can be used as a <strong>command line</strong> application, which provides commands to <em>build</em>,
 and <em>update</em> a Delft3D FM model with a single line, or <strong>from python</strong> to exploit its rich interface.
 You can learn more about how to use HydroMT-Delft3D FM in its <a class="reference external" href="https://deltares.github.io/hydromt_delft3dfm/latest/getting_started/intro">online documentation.</a>
@@ -406,11 +405,11 @@ For a smooth installing experience we recommend installing HydroMT-Delft3D FM an
 from conda-forge in a clean environment, see <a class="reference external" href="https://deltares.github.io/hydromt_delft3dfm/latest/getting_started/installation">installation guide.</a></p>
 </section>
 <section id="how-to-cite">
-<h2>How to cite?<a class="headerlink" href="#how-to-cite" title="Permalink to this heading">#</a></h2>
+<h2>How to cite?<a class="headerlink" href="#how-to-cite" title="Link to this heading">#</a></h2>
 <p>For publications, please cite our work using the DOI provided in the Zenodo badge that points to the latest release.</p>
 </section>
 <section id="how-to-contribute">
-<h2>How to contribute?<a class="headerlink" href="#how-to-contribute" title="Permalink to this heading">#</a></h2>
+<h2>How to contribute?<a class="headerlink" href="#how-to-contribute" title="Link to this heading">#</a></h2>
 <p>If you find any issues in the code or documentation feel free to leave an issue on the <a class="reference external" href="https://github.com/Deltares/hydromt_delft3dfm/issues">github issue tracker.</a>
 You can find information about how to contribute to the HydroMT project at our <a class="reference external" href="https://deltares.github.io/hydromt/latest/dev/contributing">contributing page.</a></p>
 <p>HydroMT seeks active contribution from the (hydro) geoscientific community.
@@ -523,7 +522,7 @@ happy to discuss how it can be implemented for your model.</p>
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.3.
     <br/>
   </p>
 </div>
