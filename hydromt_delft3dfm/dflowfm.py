@@ -377,7 +377,7 @@ class DFlowFMModel(MeshModel):
         # Line smoothing for pipes
         smooth_branches = br_type == "pipe"
 
-        self.logger.info(f"Processing branches")
+        self.logger.info("Processing branches")
         branches, branches_nodes = workflows.process_branches(
             gdf_br,
             id_col="branchid",
@@ -387,7 +387,7 @@ class DFlowFMModel(MeshModel):
             logger=self.logger,
         )
 
-        self.logger.info(f"Validating branches")
+        self.logger.info("Validating branches")
         workflows.validate_branches(branches)
 
         # convert to model crs
@@ -462,7 +462,7 @@ class DFlowFMModel(MeshModel):
         ----------
         dflowfm._setup_branches
         """
-        self.logger.info(f"Preparing 1D channels.")
+        self.logger.info("Preparing 1D channels.")
 
         # filter for allowed columns
         _allowed_columns = [
@@ -507,11 +507,11 @@ class DFlowFMModel(MeshModel):
         )
 
         # add crosssections to exisiting ones and update geoms
-        self.logger.debug(f"Adding crosssections vector to geoms.")
+        self.logger.debug("Adding crosssections vector to geoms.")
         self.add_crosssections(crosssections)
 
         # setup geoms
-        self.logger.debug(f"Adding branches and branch_nodes vector to geoms.")
+        self.logger.debug("Adding branches and branch_nodes vector to geoms.")
         self.set_geoms(channels, "channels")
         self.set_geoms(channel_nodes, "channel_nodes")
 
@@ -627,7 +627,7 @@ class DFlowFMModel(MeshModel):
         workflows.get_river_bathymetry
 
         """
-        self.logger.info(f"Preparing river shape from hydrography data.")
+        self.logger.info("Preparing river shape from hydrography data.")
         # read data
         ds_hydro = self.data_catalog.get_rasterdataset(
             hydrography_fn, geom=self.region, buffer=10
@@ -741,11 +741,11 @@ class DFlowFMModel(MeshModel):
         )
 
         # add crosssections to exisiting ones and update geoms
-        self.logger.debug(f"Adding crosssections vector to geoms.")
+        self.logger.debug("Adding crosssections vector to geoms.")
         self.add_crosssections(crosssections)
 
         # setup geoms #TODO do we still need channels?
-        self.logger.debug(f"Adding rivers and river_nodes vector to geoms.")
+        self.logger.debug("Adding rivers and river_nodes vector to geoms.")
         self.set_geoms(rivers, "rivers")
         self.set_geoms(river_nodes, "rivers_nodes")
 
@@ -832,7 +832,7 @@ class DFlowFMModel(MeshModel):
         dflowfm._setup_branches
         dflowfm._setup_crosssections
         """
-        self.logger.info(f"Preparing 1D rivers.")
+        self.logger.info("Preparing 1D rivers.")
         # filter for allowed columns
         _allowed_columns = [
             "geometry",
@@ -899,7 +899,7 @@ class DFlowFMModel(MeshModel):
             ] = -1
 
         # setup geoms
-        self.logger.debug(f"Adding rivers and river_nodes vector to geoms.")
+        self.logger.debug("Adding rivers and river_nodes vector to geoms.")
         self.set_geoms(rivers, "rivers")
         self.set_geoms(river_nodes, "rivers_nodes")
 
@@ -993,7 +993,7 @@ class DFlowFMModel(MeshModel):
         dflowfm._setup_branches
         dflowfm._setup_crosssections
         """
-        self.logger.info(f"Preparing 1D pipes.")
+        self.logger.info("Preparing 1D pipes.")
 
         # filter for allowed columns
         _allowed_columns = [
@@ -1083,11 +1083,11 @@ class DFlowFMModel(MeshModel):
             midpoint=False,
         )
         # add crosssections to exisiting ones and update geoms
-        self.logger.debug(f"Adding crosssections vector to geoms.")
+        self.logger.debug("Adding crosssections vector to geoms.")
         self.add_crosssections(crosssections)
 
         # setup geoms
-        self.logger.debug(f"Adding pipes and pipe_nodes vector to geoms.")
+        self.logger.debug("Adding pipes and pipe_nodes vector to geoms.")
         self.set_geoms(pipes, "pipes")
         self.set_geoms(pipe_nodes, "pipe_nodes")  # TODO: for manholes
 
@@ -1164,7 +1164,7 @@ class DFlowFMModel(MeshModel):
             # TODO: set a seperate type for rivers because other branch types might require upstream/downstream
             # TODO: check for required columns
             # read crosssection from branches
-            self.logger.info(f"Preparing crossections from branch.")
+            self.logger.info("Preparing crossections from branch.")
             gdf_cs = workflows.set_branch_crosssections(branches, midpoint=midpoint)
 
         elif crosssections_type == "xyz":
@@ -1187,7 +1187,7 @@ class DFlowFMModel(MeshModel):
             )
             if not valid_attributes:
                 self.logger.error(
-                    f"Required attributes [crsid, order, z] in xyz crosssections do not exist"
+                    "Required attributes [crsid, order, z] in xyz crosssections do not exist"
                 )
                 return None
 
@@ -1223,7 +1223,7 @@ class DFlowFMModel(MeshModel):
             )
             if not valid_attributes:
                 self.logger.error(
-                    f"Required attributes [crsid, shape, shift] in point crosssections do not exist"
+                    "Required attributes [crsid, shape, shift] in point crosssections do not exist"
                 )
                 return None
 
@@ -1311,7 +1311,7 @@ class DFlowFMModel(MeshModel):
         ]
 
         # generate manhole locations and bedlevels
-        self.logger.info(f"generating manholes locations and bedlevels. ")
+        self.logger.info("generating manholes locations and bedlevels. ")
         manholes, branches = workflows.generate_manholes_on_branches(
             self.branches,
             bedlevel_shift=bedlevel_shift,
@@ -1355,14 +1355,14 @@ class DFlowFMModel(MeshModel):
                 gdf_manhole[list(allowed_columns)], crs=gdf_manhole.crs
             )
             # replace generated manhole using user manholes
-            self.logger.debug(f"overwriting generated manholes using user manholes.")
+            self.logger.debug("overwriting generated manholes using user manholes.")
             manholes = hydromt.gis_utils.nearest_merge(
                 manholes, gdf_manhole, max_dist=snap_offset, overwrite=True
             )
 
         # generate manhole streetlevels from dem
         if dem_fn is not None:
-            self.logger.info(f"overwriting manholes street level from dem. ")
+            self.logger.info("overwriting manholes street level from dem. ")
             dem = self.data_catalog.get_rasterdataset(
                 dem_fn, geom=self.region, variables=["elevtn"]
             )
@@ -1376,7 +1376,7 @@ class DFlowFMModel(MeshModel):
 
         # internal administration
         # drop duplicated manholeid
-        self.logger.debug(f"dropping duplicated manholeid")
+        self.logger.debug("dropping duplicated manholeid")
         manholes.drop_duplicates(subset="manholeid")
         # add nodeid to manholes
         manholes = hydromt.gis_utils.nearest_merge(
@@ -1396,7 +1396,7 @@ class DFlowFMModel(MeshModel):
             )
 
         # setup geoms
-        self.logger.debug(f"Adding manholes vector to geoms.")
+        self.logger.debug("Adding manholes vector to geoms.")
         self.set_geoms(manholes, "manholes")
 
     def setup_1dboundary(
@@ -1500,7 +1500,7 @@ class DFlowFMModel(MeshModel):
                 pass
             else:
                 self.logger.error(
-                    f"forcing has different start and end time. Please check the forcing file. support yyyy-mm-dd HH:MM:SS. "
+                    "forcing has different start and end time. Please check the forcing file. support yyyy-mm-dd HH:MM:SS. "
                 )
             # reproject if needed and convert to location
             if da_bnd.vector.crs != self.crs:
@@ -1987,7 +1987,7 @@ class DFlowFMModel(MeshModel):
         # Check if intersects with region
         xmin, ymin, xmax, ymax = self.bounds
         subset = mesh2d.ugrid.sel(y=slice(ymin, ymax), x=slice(xmin, xmax))
-        err = f"RasterDataset: No data within model region."
+        err = "RasterDataset: No data within model region."
         subset = subset.ugrid.assign_node_coords()
         if subset.ugrid.grid.node_x.size == 0 or subset.ugrid.grid.node_y.size == 0:
             raise IndexError(err)
@@ -2101,7 +2101,7 @@ class DFlowFMModel(MeshModel):
             # reproject
             if da.raster.crs != self.crs:
                 self.logger.warning(
-                    f"Sample grid has a different resolution than model. Reprojecting with nearest but some information might be lost."
+                    "Sample grid has a different resolution than model. Reprojecting with nearest but some information might be lost."
                 )
                 da = da.raster.reproject(self.crs, method="nearest")
             # get sample point
@@ -2223,7 +2223,7 @@ class DFlowFMModel(MeshModel):
         else:
             branchids = None  # use all branches
             self.logger.warning(
-                f"adding 1d2d links for all branches at non boundary locations."
+                "adding 1d2d links for all branches at non boundary locations."
             )
 
         # setup 1d2d links
@@ -2513,7 +2513,7 @@ class DFlowFMModel(MeshModel):
             if "boundary_id" in "boundaries_fn" does not match the columns of ``boundaries_timeseries_fn``.
 
         """
-        self.logger.info(f"Preparing 2D boundaries.")
+        self.logger.info("Preparing 2D boundaries.")
 
         if boundary_type == "waterlevel":
             boundary_unit = "m"
@@ -2621,7 +2621,7 @@ class DFlowFMModel(MeshModel):
         constant_value: float
             Constant value for the rainfall_rate timeseries in mm/day.
         """
-        self.logger.info(f"Preparing rainfall meteo forcing from uniform timeseries.")
+        self.logger.info("Preparing rainfall meteo forcing from uniform timeseries.")
 
         refdate, tstart, tstop = self.get_model_time()  # time slice
         meteo_location = (
@@ -2689,7 +2689,7 @@ class DFlowFMModel(MeshModel):
             By default True for "rainfall_rate". Note that Delft3DFM 1D2D Suite 2022.04 supports only "rainfall_rate".
 
         """
-        self.logger.info(f"Preparing rainfall meteo forcing from uniform timeseries.")
+        self.logger.info("Preparing rainfall meteo forcing from uniform timeseries.")
 
         refdate, tstart, tstop = self.get_model_time()  # time slice
         meteo_location = (
@@ -3033,7 +3033,7 @@ class DFlowFMModel(MeshModel):
         # Write structures
         # Manholes
         if "manholes" in self._geoms:
-            self.logger.info(f"Writting manholes file.")
+            self.logger.info("Writting manholes file.")
             storage_fn = utils.write_manholes(
                 self.geoms["manholes"],
                 savedir,
@@ -3050,7 +3050,7 @@ class DFlowFMModel(MeshModel):
             structures = list(itertools.chain.from_iterable(structures))
             structures = pd.DataFrame(structures).replace(np.nan, None)
             # write
-            self.logger.info(f"Writting structures file.")
+            self.logger.info("Writting structures file.")
             structures_fn = utils.write_structures(
                 structures,
                 savedir,
@@ -3231,7 +3231,6 @@ class DFlowFMModel(MeshModel):
         # other mesh1d related geometry
         if not self.mesh1d.is_empty() and write_gui:
             self.logger.info("Writting branches.gui file")
-            manholes = None
             if "manholes" in self.geoms:
                 manholes = self.geoms["manholes"]
             _ = utils.write_branches_gui(self.branches, savedir)
@@ -3395,7 +3394,7 @@ class DFlowFMModel(MeshModel):
         _ = self.set_branches_component(name="pipe")
 
         # update geom
-        self.logger.debug(f"Adding branches vector to geoms.")
+        self.logger.debug("Adding branches vector to geoms.")
         self.set_geoms(branches, "branches")
 
         # set hydrolib-core net object and update self._mesh
@@ -3404,7 +3403,7 @@ class DFlowFMModel(MeshModel):
         # update boundaries
         self.set_geoms(self.get_boundaries(), "boundaries")
 
-        self.logger.debug(f"Updating branches in network.")
+        self.logger.debug("Updating branches in network.")
 
     def add_branches(
         self,
@@ -3736,7 +3735,7 @@ class DFlowFMModel(MeshModel):
             )
             if _crosssections_locations["temp_id"].duplicated().any():
                 logger.warning(
-                    f"Duplicate crosssections locations found, removing duplicates"
+                    "Duplicate crosssections locations found, removing duplicates"
                 )
                 # Remove duplicates based on the branch_id, branch_offset column, keeping the first occurrence (with minimum branch_distance)
                 _crosssections_locations = _crosssections_locations.drop_duplicates(
@@ -3757,7 +3756,7 @@ class DFlowFMModel(MeshModel):
             )
             if mask_to_remove.sum() > 0:
                 self.logger.warning(
-                    f"Overwrite branch crossections where user-defined crossections are used."
+                    "Overwrite branch crossections where user-defined crossections are used."
                 )
                 crosssections = gpd.GeoDataFrame(
                     pd.concat(

@@ -788,7 +788,7 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
     # Else not implemented yet
     else:
         raise NotImplementedError(
-            f"ForcingFile with several function for a single variable not implemented yet. Skipping reading forcing."
+            "ForcingFile with several function for a single variable not implemented yet. Skipping reading forcing."
         )
 
     # Get coordinates

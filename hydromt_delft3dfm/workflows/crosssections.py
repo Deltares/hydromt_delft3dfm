@@ -90,7 +90,7 @@ def set_branch_crosssections(
                     ),
                     axis=1,
                 )
-                valid_attributes = check_gpd_attributes(
+                check_gpd_attributes(
                     rectangle_crs,
                     required_columns=[
                         "branch_id",
@@ -118,7 +118,7 @@ def set_branch_crosssections(
                     ),
                     axis=1,
                 )
-                valid_attributes = check_gpd_attributes(
+                check_gpd_attributes(
                     trapezoid_crs,
                     required_columns=[
                         "branch_id",
@@ -136,7 +136,7 @@ def set_branch_crosssections(
                     [crosssections_, _set_trapezoid_crs(trapezoid_crs)]
                 )
     # Else prepares crosssections at both upstream and dowsntream extremities
-    # FIXME: for now only support circle profile for pipes
+    # TODO: support more profiles in addition to circle
     else:
         # Upstream
         ids = [f"{i}_up" for i in branches.index]
@@ -189,7 +189,7 @@ def set_branch_crosssections(
                     lambda x: "circ_d{:,.3f}_{:s}".format(x["diameter"], "branch"),
                     axis=1,
                 )  # note diameter is reserved keywords in geopandas
-                valid_attributes = check_gpd_attributes(
+                check_gpd_attributes(
                     circle_crs,
                     required_columns=[
                         "branch_id",
@@ -380,12 +380,12 @@ def set_point_crosssections(
 
     # check if crs mismatch
     if crosssections.crs != branches.crs:
-        logger.error(f"mismatch crs between cross-sections and branches")
+        logger.error("mismatch crs between cross-sections and branches")
 
     # remove duplicated geometries
     _nodes = crosssections.copy()
     G = _nodes["geometry"].apply(lambda geom: geom.wkb)
-    n = len(G) - len(G.drop_duplicates().index)
+    # check for diff in numbers: n = len(G) - len(G.drop_duplicates().index)
     crosssections = _nodes[_nodes.index.isin(G.drop_duplicates().index)]
 
     # snap to branch
@@ -435,7 +435,7 @@ def set_point_crosssections(
                 lambda x: "circ_d{:,.3f}_{:s}".format(x["diameter"], "point"),
                 axis=1,
             )
-            valid_attributes = check_gpd_attributes(
+            check_gpd_attributes(
                 circle_crs,
                 required_columns=[
                     "branch_id",
@@ -459,7 +459,7 @@ def set_point_crosssections(
                 ),
                 axis=1,
             )
-            valid_attributes = check_gpd_attributes(
+            check_gpd_attributes(
                 rectangle_crs,
                 required_columns=[
                     "branch_id",
@@ -487,7 +487,7 @@ def set_point_crosssections(
                 ),
                 axis=1,
             )
-            valid_attributes = check_gpd_attributes(
+            check_gpd_attributes(
                 trapezoid_crs,
                 required_columns=[
                     "branch_id",
@@ -506,7 +506,7 @@ def set_point_crosssections(
             )
         elif shape == "zw":
             zw_crs = crosssections.loc[crosssections["shape"] == shape, :]
-            valid_attributes = check_gpd_attributes(
+            check_gpd_attributes(
                 trapezoid_crs,
                 required_columns=[
                     "branch_id",
@@ -524,7 +524,7 @@ def set_point_crosssections(
             crosssections_ = pd.concat([crosssections_, _set_zw_crs(zw_crs)])
         elif shape == "yz":
             yz_crs = crosssections.loc[crosssections["shape"] == shape, :]
-            valid_attributes = check_gpd_attributes(
+            check_gpd_attributes(
                 trapezoid_crs,
                 required_columns=[
                     "branch_id",
@@ -652,8 +652,6 @@ def _set_trapezoid_crs(crosssections: gpd.GeoDataFrame):
         logger.error(
             "Invalid DataFrame: Found non-positive values in the 'width', 't_width', or 'height' columns."
         )
-    else:
-        pass
 
     crsdefs = []
     crslocs = []
@@ -784,98 +782,98 @@ def _set_yz_crs(crosssections: gpd.GeoDataFrame):
     return crosssections_
 
 
-def parse_sobek_crs(filename, logger=logger):
-    """read sobek crosssection files as a dataframe. Include location and definition file.
-    #TODO: include parsing geometry as well
+# def parse_sobek_crs(filename, logger=logger):
+#     """read sobek crosssection files as a dataframe. Include location and definition file.
+#     #TODO: include parsing geometry as well
 
-    Parameters
-    ----------
-    filename : Path
-        Path to the sobek crosssection files. supported format: .DAT amd .DEF
-    logger : logger, Optional
+#     Parameters
+#     ----------
+#     filename : Path
+#         Path to the sobek crosssection files. supported format: .DAT amd .DEF
+#     logger : logger, Optional
 
-    Raise
-    -----
-    NotImplementedError
-        do not support other files than .dat and .def
+#     Raise
+#     -----
+#     NotImplementedError
+#         do not support other files than .dat and .def
 
-    Returns
-    -------
-    df.DataFrame
-        The data frame with each item as a row
-    """
-    import shlex
-    from pathlib import Path
+#     Returns
+#     -------
+#     df.DataFrame
+#         The data frame with each item as a row
+#     """
+#     import shlex
+#     from pathlib import Path
 
-    import numpy as np
-    import pandas as pd
+#     import numpy as np
+#     import pandas as pd
 
-    # check file
-    if Path(filename).name.lower().endswith(".def"):
-        logger.info("Parsing cross section definition")
-        prefix = "CRDS"
-        suffix = "crds"
-    elif Path(filename).name.lower().endswith(".dat"):
-        logger.info("Parsing cross section location")
-        prefix = "CRSN"
-        suffix = "crsn"
-    else:
-        raise NotImplementedError("do not support other files than .dat and .def")
+#     # check file
+#     if Path(filename).name.lower().endswith(".def"):
+#         logger.info("Parsing cross section definition")
+#         prefix = "CRDS"
+#         suffix = "crds"
+#     elif Path(filename).name.lower().endswith(".dat"):
+#         logger.info("Parsing cross section location")
+#         prefix = "CRSN"
+#         suffix = "crsn"
+#     else:
+#         raise NotImplementedError("do not support other files than .dat and .def")
 
-    with open(filename) as myFile:
-        text = myFile.read()
-        raw_lines = text.split(suffix + "\n")
+#     with open(filename) as myFile:
+#         text = myFile.read()
+#         raw_lines = text.split(suffix + "\n")
 
-    lines = []
-    for l in raw_lines:
-        if l.startswith(prefix):  # new item
-            # preliminary handling
-            l = l.removeprefix(prefix)
-            t = None
-            table_dict = {}
-            # parse zw profile
-            if "lt lw\nTBLE" in l:
-                # the table contains height, total width en flowing width.
-                l, t = l.split("lt lw\nTBLE")
-                levels, totalwidths, flowwidths = np.array(
-                    [shlex.split(r, posix=False) for r in t.split("<")][:-1]
-                ).T  # last element is the suffix of tble
-                table_dict["numlevels"] = len(levels)
-                table_dict["levels"] = " ".join(str(n) for n in levels)
-                table_dict["totalwidths"] = " ".join(str(n) for n in totalwidths)
-                table_dict["flowwidths"] = " ".join(str(n) for n in flowwidths)
-            # parse yz profile
-            if "lt yz\nTBLE" in l:
-                # Y horizontal distance increasing from the left to right,
-                # Z vertical distance increasing from bottom to top in m.
-                # In other words, use a coordinate system to define the Y-Z profile.
-                l, t = l.split("lt yz\nTBLE")
-                ycoordinates, zcoordinates = np.array(
-                    [shlex.split(r, posix=False) for r in t.split("<")][:-1]
-                ).T
-                table_dict["yzcount"] = len(ycoordinates)
-                table_dict["ycoordinates"] = " ".join(str(n) for n in ycoordinates)
-                table_dict["zcoordinates"] = " ".join(str(n) for n in zcoordinates)
-                # storage width on surface in m
-                if "lt sw 0" in l:
-                    l.replace("lt lw 0", "lt_lw_0")  # remove space
-                else:
-                    logger.error(
-                        "storage width function is not supported. Check lt sw field"
-                    )
-            # parse line
-            line = shlex.split(l, posix=False)
-            line_dict = {line[i]: line[i + 1] for i in range(0, len(line), 2)}
-            # add table
-            if t is not None:
-                line_dict.update(table_dict)
-            lines.append(line_dict)
+#     lines = []
+#     for l in raw_lines:
+#         if l.startswith(prefix):  # new item
+#             # preliminary handling
+#             l = l.removeprefix(prefix)
+#             t = None
+#             table_dict = {}
+#             # parse zw profile
+#             if "lt lw\nTBLE" in l:
+#                 # the table contains height, total width en flowing width.
+#                 l, t = l.split("lt lw\nTBLE")
+#                 levels, totalwidths, flowwidths = np.array(
+#                     [shlex.split(r, posix=False) for r in t.split("<")][:-1]
+#                 ).T  # last element is the suffix of tble
+#                 table_dict["numlevels"] = len(levels)
+#                 table_dict["levels"] = " ".join(str(n) for n in levels)
+#                 table_dict["totalwidths"] = " ".join(str(n) for n in totalwidths)
+#                 table_dict["flowwidths"] = " ".join(str(n) for n in flowwidths)
+#             # parse yz profile
+#             if "lt yz\nTBLE" in l:
+#                 # Y horizontal distance increasing from the left to right,
+#                 # Z vertical distance increasing from bottom to top in m.
+#                 # In other words, use a coordinate system to define the Y-Z profile.
+#                 l, t = l.split("lt yz\nTBLE")
+#                 ycoordinates, zcoordinates = np.array(
+#                     [shlex.split(r, posix=False) for r in t.split("<")][:-1]
+#                 ).T
+#                 table_dict["yzcount"] = len(ycoordinates)
+#                 table_dict["ycoordinates"] = " ".join(str(n) for n in ycoordinates)
+#                 table_dict["zcoordinates"] = " ".join(str(n) for n in zcoordinates)
+#                 # storage width on surface in m
+#                 if "lt sw 0" in l:
+#                     l.replace("lt lw 0", "lt_lw_0")  # remove space
+#                 else:
+#                     logger.error(
+#                         "storage width function is not supported. Check lt sw field"
+#                     )
+#             # parse line
+#             line = shlex.split(l, posix=False)
+#             line_dict = {line[i]: line[i + 1] for i in range(0, len(line), 2)}
+#             # add table
+#             if t is not None:
+#                 line_dict.update(table_dict)
+#             lines.append(line_dict)
 
-    df = pd.DataFrame.from_records(lines)
-    df["id"] = df["id"].str.strip("'")
-    df.set_index("id", inplace=True)
+#     df = pd.DataFrame.from_records(lines)
+#     df["id"] = df["id"].str.strip("'")
+#     df.set_index("id", inplace=True)
 
-    return df
+#     return df
 
 
 def xyzp2xyzl(xyz: pd.DataFrame, sort_by: list = ["x", "y"]):
