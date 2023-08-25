@@ -2798,18 +2798,11 @@ document.write(`
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Locationtype </span><span class="si">{</span><span class="n">locationtype</span><span class="si">}</span><span class="s2"> not allowed. Select from [&#39;2d&#39;, &#39;1d&#39;, &#39;all&#39;]&quot;</span>
             <span class="p">)</span>
+
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s2">&quot;locationtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">locationtype</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s2">&quot;interpolation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolation_method</span>
-                <span class="k">if</span> <span class="n">interpolation_method</span> <span class="o">!=</span> <span class="s2">&quot;triangulation&quot;</span><span class="p">:</span>
-                    <span class="c1"># adjust relative search cell size for averaging methods</span>
-                    <span class="n">relsize</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span>
-                        <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maps</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">raster</span><span class="o">.</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">res</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-                        <span class="o">+</span> <span class="mf">0.05</span><span class="p">,</span>
-                        <span class="mi">2</span><span class="p">,</span>
-                    <span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s2">&quot;averagingrelsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">relsize</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__set_map_parameters_based_on_variable</span><span class="p">(</span>
+                <span class="n">var</span><span class="p">,</span> <span class="n">locationtype</span><span class="p">,</span> <span class="n">interpolation_method</span>
+            <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DFlowFMModel.setup_maps_from_raster_reclass">
@@ -2901,21 +2894,29 @@ document.write(`
                 <span class="sa">f</span><span class="s2">&quot;Locationtype </span><span class="si">{</span><span class="n">locationtype</span><span class="si">}</span><span class="s2"> not allowed. Select from [&#39;2d&#39;, &#39;1d&#39;, &#39;all&#39;]&quot;</span>
             <span class="p">)</span>
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">reclass_variables</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s2">&quot;locationtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">locationtype</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s2">&quot;interpolation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolation_method</span>
-                <span class="k">if</span> <span class="n">interpolation_method</span> <span class="o">!=</span> <span class="s2">&quot;triangulation&quot;</span><span class="p">:</span>
-                    <span class="c1"># increase relative search cell size if raster resolution is coarser than model resolution</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">maps</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">raster</span><span class="o">.</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">res</span><span class="p">:</span>
-                        <span class="n">relsize</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span>
-                            <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maps</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">raster</span><span class="o">.</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">res</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-                            <span class="o">+</span> <span class="mf">0.05</span><span class="p">,</span>
-                            <span class="mi">2</span><span class="p">,</span>
-                        <span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">relsize</span> <span class="o">=</span> <span class="mf">1.01</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s2">&quot;averagingrelsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">relsize</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__set_map_parameters_based_on_variable</span><span class="p">(</span>
+                <span class="n">var</span><span class="p">,</span> <span class="n">locationtype</span><span class="p">,</span> <span class="n">interpolation_method</span>
+            <span class="p">)</span></div>
 
+
+    <span class="k">def</span> <span class="nf">__set_map_parameters_based_on_variable</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">locationtype</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">interpolation_method</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set map parameters by updating user inputs to default self._MAP&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s2">&quot;locationtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">locationtype</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s2">&quot;interpolation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolation_method</span>
+            <span class="k">if</span> <span class="n">interpolation_method</span> <span class="o">!=</span> <span class="s2">&quot;triangulation&quot;</span><span class="p">:</span>
+                <span class="c1"># adjust relative search cell size for averaging methods</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">maps</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">raster</span><span class="o">.</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">res</span><span class="p">:</span>
+                    <span class="n">relsize</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maps</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">raster</span><span class="o">.</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">res</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                        <span class="o">+</span> <span class="mf">0.05</span><span class="p">,</span>
+                        <span class="mi">2</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">relsize</span> <span class="o">=</span> <span class="mf">1.01</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s2">&quot;averagingrelsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">relsize</span>
 
 <div class="viewcode-block" id="DFlowFMModel.setup_2dboundary">
 <a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.setup_2dboundary.html#hydromt_delft3dfm.DFlowFMModel.setup_2dboundary">[docs]</a>
@@ -3713,9 +3714,7 @@ document.write(`
         <span class="k">if</span> <span class="s2">&quot;mesh1d&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_names</span> <span class="ow">and</span> <span class="n">write_gui</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Writting branches.gui file&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="s2">&quot;manholes&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geoms</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">geoms</span><span class="p">[</span><span class="s2">&quot;manholes&quot;</span><span class="p">]</span>
-            <span class="c1"># might not needed in the future if branch_type can be supported in the mesh https://github.com/Deltares/HYDROLIB-core/issues/561</span>
-            <span class="n">_</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">write_branches_gui</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">,</span> <span class="n">savedir</span><span class="p">)</span></div>
+                <span class="n">utils</span><span class="o">.</span><span class="n">write_branches_gui</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">,</span> <span class="n">savedir</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DFlowFMModel.read_states">
