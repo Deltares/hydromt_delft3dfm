@@ -5,19 +5,11 @@ import logging
 import pathlib
 
 import geopandas as gpd
-import hydromt.io
 import numpy as np
 import pandas as pd
-import shapely
-from hydromt import config
-from scipy.spatial import distance
 from shapely.geometry import (
     LineString,
-    MultiLineString,
-    MultiPoint,
     Point,
-    Polygon,
-    box,
 )
 from shapely.ops import snap, split
 
@@ -54,7 +46,6 @@ def isfloat(x):
     bool
         True if `x` is a float, otherwise False.
     """
-
     try:
         float(x)
         return True
@@ -172,10 +163,9 @@ def slice_geodataframe(
     gpd.GeoDataFrame
         The sliced geo data frame.
     """
-
     # check data
     if gdf is None or len(gdf) == 0:
-        logger.error(f"GeoDataFrame: no slicing is applied. data is None or empty.")
+        logger.error("GeoDataFrame: no slicing is applied. data is None or empty.")
         return gdf
     else:
         _data = gdf
@@ -187,7 +177,7 @@ def slice_geodataframe(
     # column wise slicing
     if required_columns is None:
         logger.debug(
-            f"GeoDataFrame: no column-wise slicing and retyping applied. required_columns is not specified"
+            "GeoDataFrame: no column-wise slicing and retyping applied. required_columns is not specified"
         )
         data = _data
 
@@ -219,20 +209,19 @@ def slice_geodataframe(
             logger.error(e)
     else:
         logger.debug(
-            f"GeoDataFrame: no row-wise slicing applied. required_query is not specified."
+            "GeoDataFrame: no row-wise slicing applied. required_query is not specified."
         )
 
     if len(data) == 0:
-        logger.error(f"GeoDataFrame: Zero items are left after slicing.")
+        logger.error("GeoDataFrame: Zero items are left after slicing.")
 
     return data
 
 
 def retype_geodataframe(gdf: gpd.GeoDataFrame, retype=None, logger=logger):
     """Retype a GeoDataFrame."""
-
     if retype is None or len(retype) == 0:
-        logger.debug(f"GeoDataFrame: no retyping is applied. retype is not specified.")
+        logger.debug("GeoDataFrame: no retyping is applied. retype is not specified.")
 
     else:
         cols = gdf.columns
@@ -290,7 +279,7 @@ def eval_funcs(gdf: gpd.GeoDataFrame, funcs: dict, logger=logger):
         The geo data frame with the updated columns.
     """
     if funcs is None or len(funcs) == 0:
-        logger.debug(f"GeoDataFrame: no funcs is applied. funcs is not specified.")
+        logger.debug("GeoDataFrame: no funcs is applied. funcs is not specified.")
         return gdf
 
     for k, v in funcs.items():
@@ -325,7 +314,6 @@ def write_shp(data: gpd.GeoDataFrame, filename: str, columns: list = None):
         If not specified, all the columns in the dataset will be written.
         Default to None.
     """
-
     if data is not None:
         # convert to numerical
         data = data.apply(pd.to_numeric, errors="ignore")
@@ -350,7 +338,7 @@ def append_data_columns_based_on_ini_query(
     keys: list = [],
     logger=logger,
 ):
-    """append key,val pair as data columns for the input GeoDataFrame based on ini [default] or [query] sections
+    """Append key,val pair as data columns for the input GeoDataFrame based on ini [default] or [query] sections.
 
     Parameters
     ----------
@@ -424,7 +412,6 @@ def check_geodataframe(gdf: gpd.GeoDataFrame):
     bool
         True if `gdf` is not None and has at least one entry; otherwise, False.
     """
-
     if gdf is None or len(gdf) == 0:
         check = False
         logger.warning("GeoDataFrame: do not have valid features. ")
@@ -435,7 +422,7 @@ def check_geodataframe(gdf: gpd.GeoDataFrame):
 
 ## geometry
 def cut_pieces(line, distances):
-    """cut a line into pieces based on distances"""
+    """Cut a line into pieces based on distances."""
     if distances[0] != 0:
         distances.insert(0, 0)
     if distances[-1] == line.length:
@@ -449,7 +436,8 @@ def cut_pieces(line, distances):
 
 def cut(line, distance):
     """Cuts a line in two at a distance from its starting point
-    ref: https://shapely.readthedocs.io/en/stable/manual.html"""
+    ref: https://shapely.readthedocs.io/en/stable/manual.html.
+    """
     if distance <= 0.0 or distance >= line.length:
         return [LineString(line)]
     coords = list(line.coords)
@@ -511,7 +499,7 @@ def split_lines(line, num_new_lines):
 def check_gpd_attributes(
     gdf: gpd.GeoDataFrame, required_columns: list, raise_error: bool = False
 ):
-    """check if the geodataframe contains all required columns
+    """Check if the geodataframe contains all required columns.
 
     Parameters
     ----------
@@ -542,7 +530,7 @@ def update_data_columns_attributes_based_on_filter(
     filter_value: str = None,
 ):
     """
-    Add or update columns in the geodataframe based on column and values in attributes dataframe
+    Add or update columns in the geodataframe based on column and values in attributes dataframe.
 
     If filter_column and filter_value is set, only update the attributes of the filtered geodataframe.
 
@@ -598,7 +586,7 @@ def get_gdf_from_branches(
     branches: gpd.GeoDataFrame, df: pd.DataFrame
 ) -> gpd.GeoDataFrame:
     """Get geodataframe from dataframe.
-    Based on interpolation of branches, using columns ["branchid", "chainage" in df]
+    Based on interpolation of branches, using columns ["branchid", "chainage" in df].
 
     Parameters
     ----------
