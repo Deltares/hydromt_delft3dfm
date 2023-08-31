@@ -3,7 +3,6 @@
 import pdb
 from os.path import abspath, dirname, join
 
-import numpy as np
 import pytest
 from hydromt.cli.cli_utils import parse_config
 from hydromt.log import setuplog
@@ -16,19 +15,19 @@ EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 _models = {
     "piave": {
         "example": "dflowfm_piave",
-        "ini": "dflowfm_build.ini",
+        "ini": "dflowfm_build.yml",
         "model": DFlowFMModel,
         "data": "artifact_data",
-        "region": {"bbox": [12.4331, 46.4661, 12.5212, 46.5369]},
         "snap_offset": 25,
+        "crs": 3857,  # global section needs to be passed to build as arguments
     },
     "local": {
         "example": "dflowfm_local",
-        "ini": "dflowfm_build_local.ini",
+        "ini": "dflowfm_build_local.yml",
         "model": DFlowFMModel,
         "data": join(TESTDATADIR, "test_data.yaml"),
-        "region": {"geom": f"{join(TESTDATADIR, 'local_data','1D_extent.geojson')}"},
         "snap_offset": 25,
+        "crs": 32647,  # global section needs to be passed to build as arguments
     },
     "urbansewernetwork": {
         "example": "dflowfm_urbansewernetwork",
@@ -66,15 +65,15 @@ def test_model_build(tmpdir, model):
         mode="w",
         data_libs=[_model["data"]],
         network_snap_offset=_model["snap_offset"],
+        crs=_model["crs"],
         openwater_computation_node_distance=40,
         logger=logger,
     )
     # Build method options
-    region = _model["region"]
     config = join(TESTDATADIR, _model["ini"])
     opt = parse_config(config)
     # Build model
-    mod1.build(region=region, opt=opt)
+    mod1.build(opt=opt)
     # Check if model is api compliant
     non_compliant_list = mod1._test_model_api()
     assert len(non_compliant_list) == 0
