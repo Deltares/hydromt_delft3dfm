@@ -973,6 +973,7 @@ class DFlowFMModel(MeshModel):
 
     def setup_urban_sewer_network_from_osm(
         self,
+        region: dict,
         network_type: str = "drive",
         road_types: list[str] = None,
         hydrography_fn: Union[str, Path] = None,
@@ -989,6 +990,13 @@ class DFlowFMModel(MeshModel):
 
         parameters
         ----------
+            region : dict
+                Dictionary describing region of interest for extracting 1D branches, e.g.:
+
+                * {'bbox': [xmin, ymin, xmax, ymax]}
+
+                * {'geom': 'path/to/polygon_geometry'}
+                Note that only crs=4326 is supported for 'bbox'.
             network_type: str {"all_private", "all", "bike", "drive", "drive_service", "walk"})
                 The type of street network to consider. This helps filter the OSM data to include only relevant road types.
                 By default "drive"
@@ -1004,10 +1012,11 @@ class DFlowFMModel(MeshModel):
 
         """
         self.logger.info("Preparing urban sewer network.")
+        region = workflows.parse_region_geometry(region, self.crs)
 
         # 1. Build the network from OpenStreetMap data
         graph_osm = workflows.setup_graph_from_openstreetmap(
-            region=self.region,  # TODO: switch to use region as function arguments when mesh branch is merged
+            region=region,  # TODO: switch to use region as function arguments when mesh branch is merged
             network_type=network_type,
             road_types=road_types,
             logger=self.logger,
@@ -1038,12 +1047,12 @@ class DFlowFMModel(MeshModel):
         # 2. Setup network connections based on flow directions from DEM
         # read data
         ds_hydro = self.data_catalog.get_rasterdataset(
-            hydrography_fn, geom=self.region, buffer=10
+            hydrography_fn, geom=region, buffer=10
         )
         if isinstance(ds_hydro, xr.DataArray):
             ds_hydro = ds_hydro.to_dataset()
         graph_flwdir = workflows.setup_graph_from_hydrography(
-            region=self.region,
+            region=region,
             ds_hydro=ds_hydro,
             min_sto=1,  # all stream that starts with stream order = 1
         )
