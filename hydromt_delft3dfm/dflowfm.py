@@ -974,8 +974,8 @@ class DFlowFMModel(MeshModel):
     def setup_urban_sewer_network_from_osm(
         self,
         region: dict,
-        network_type: str = "drive",
-        road_types: list[str] = None,
+        waterway_types: list[str] = None,
+        highway_types: list[str] = None,
         hydrography_fn: Union[str, Path] = None,
         **kwargs,
     ) -> None:
@@ -1014,18 +1014,85 @@ class DFlowFMModel(MeshModel):
         self.logger.info("Preparing urban sewer network.")
         region = workflows.parse_region_geometry(region, self.crs)
 
-        # 1. Build the network from OpenStreetMap data
-        graph_osm = workflows.setup_graph_from_openstreetmap(
-            region=region,  # TODO: switch to use region as function arguments when mesh branch is merged
-            network_type=network_type,
-            road_types=road_types,
+        # 1. Build the graph from OpenStreetMap data
+        # graph_osm_open = workflows.setup_graph_from_openstreetmap(
+        #     region=region,
+        #     buffer=1000,
+        #     osm_key="waterway",
+        #     osm_values=["river", "stream", "brook", "canal", "ditch"],
+        #     logger=self.logger,
+        # )
+        # graph_osm_closed = workflows.setup_graph_from_openstreetmap(
+        #     region=region,
+        #     buffer=500,
+        #     osm_key="highway",
+        #     osm_values=[
+        #         "motorway",
+        #         "motorway_link",
+        #         "primary",
+        #         "primary_link",
+        #         "secondary",
+        #         "secondary_link",
+        #         "tertiary",
+        #         "tertiary_link",
+        #         "residential",
+        #     ],
+        #     logger=self.logger,
+        # )
+        # # update the geometry of the open and closed system
+        # open_system, closed_system, intersection_points = workflows.intersect_lines(
+        #     graph_utils.graph_edges(graph_osm_open),
+        #     graph_utils.graph_edges(graph_osm_closed),
+        # )
+
+        # # recreate the graph
+        # graph = graph_utils.gpd_to_digraph(pd.concat([open_system, closed_system]))
+        # graph = graph_utils.preprocess_graph(graph)
+
+        # # add outlet
+        # graph_utils.add_nodes_to_graph(
+        #     graph, nodes=intersection_points, variable="nodetype"
+        # )
+        # intersection_points["nodetype"] = "outlet"
+        # graph_nodes = graph_utils.graph_nodes(graph)
+        # nodes_to_add = intersection_points
+        # from hydromt.gis_utils import nearest_merge
+
+        # graph_nodes = nearest_merge(
+        #     graph_nodes, nodes_to_add, columns=["nodetype"], max_dist=1.0
+        # )
+        # graph = graph_utils.network_to_graph(
+        #     graph_utils.graph_edges(graph), graph_nodes
+        # )
+
+        # graph_utils.network_to_graph(open_system)
+        graph_osm = workflows.setup_urban_sewer_network_topology_from_osm(
+            region,
+            waterway_types=waterway_types,
+            highway_types=highway_types,
             logger=self.logger,
         )
+
         graph_utils.write_graph(
             graph_osm, graph_fn=Path(self.root).joinpath("graphs/graph_osm.gml")
         )
         graph_utils.write_graph(
             graph_osm, graph_fn=Path(self.root).joinpath("graphs/graph_osm.geojson")
+        )
+
+        # setup graph from raster dataset
+        graph_osm = workflows.setup_graph_from_rasterdataset(
+            graph=graph_osm,
+            data_catalog=self.data_catalog,
+            raster_fn=hydrography_fn,
+            graph_component="nodes",
+            logger=self.logger,
+        )
+
+        # optimise graph directions
+        graph_osm = workflows.optimise_graph(
+            graph=graph_osm,
+            logger=self.logger,
         )
 
         # compute gradient from elevtn
@@ -1043,6 +1110,8 @@ class DFlowFMModel(MeshModel):
             graph_osm,
             graph_fn=Path(self.root).joinpath("graphs/graph_osm_demcorrected.geojson"),
         )
+
+        # optimise the graph
 
         # 2. Setup network connections based on flow directions from DEM
         # read data

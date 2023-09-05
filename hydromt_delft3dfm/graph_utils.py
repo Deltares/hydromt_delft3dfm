@@ -17,10 +17,10 @@ logger = logging.getLogger(__name__)
 
 __all__ = [
     # creat
+    "gpd_to_digraph",  # TODO make generic setup_edges
+    "gpd_to_digraph",  # TODO make generic setup_nodes
     "preprocess_graph",
-    "validate_graph",
     # convert
-    "gpd_to_digraph",
     "network_to_graph",
     "graph_to_network",
     # io
@@ -138,62 +138,46 @@ def _add_missing_geoms_one_by_one(
     edges_without_geom = [
         e for e in graph.edges.data(data=True) if geom_name not in e[-1]
     ]
-    for ed in edges_without_geom:
-        graph[ed[0]][ed[1]][0][geom_name] = LineString(
-            [graph.nodes[ed[0]][geom_name], graph.nodes[ed[1]][geom_name]]
-        )
-
+    if graph.is_multigraph():
+        for ed in edges_without_geom:
+            for key in graph[ed[0]][ed[1]]:
+                graph[ed[0]][ed[1]][key][geom_name] = LineString(
+                    [graph.nodes[ed[0]][geom_name], graph.nodes[ed[1]][geom_name]]
+                )
+    else:
+        for ed in edges_without_geom:
+            graph[ed[0]][ed[1]][geom_name] = LineString(
+                [graph.nodes[ed[0]][geom_name], graph.nodes[ed[1]][geom_name]]
+            )
     return graph
 
 
 def assign_graph_geometry(graph: nx.Graph) -> nx.Graph:
-    """Add geometry to graph nodes and edges.
-
-    Note that this function does not add missing geometries one by one.
-    """
+    """Add geometry to graph nodes and edges."""
     _exist_node_geometry = any(nx.get_node_attributes(graph, "geometry"))
     _exist_edge_geometry = any(nx.get_edge_attributes(graph, "geometry"))
 
-    if _exist_node_geometry and _exist_edge_geometry:
-        graph = _add_missing_geoms_one_by_one(graph)
-        return graph
-
-    if (not _exist_node_geometry) and _exist_edge_geometry:
+    if not _exist_node_geometry:
         if any(nx.get_node_attributes(graph, "x")):
             # use xy from nodes
             geometry = {n: Point(a["x"], a["y"]) for n, a in graph.nodes(data=True)}
             nx.set_node_attributes(graph, geometry, name="geometry")
-        else:
+        elif len(list(graph.nodes)[0]) == 2:
+            # use (x,y) from nodes
+            geometry = {n: Point(n[0], n[1]) for n in graph.nodes}
+            nx.set_node_attributes(graph, geometry, name="geometry")
+        elif _exist_edge_geometry:
             # add node from egde geometry
-            assert not graph.is_multigraph()  # FIXME support multigraph
+            assert not graph.is_multigraph()
             geometry = {}
             for s, t, e in graph.edges(data="geometry"):
                 geometry.update({s: Point(e.coords[0]), t: Point(e.coords[-1])})
             nx.set_node_attributes(graph, geometry, name="geometry")
-        return graph
 
-    if _exist_node_geometry and (not _exist_edge_geometry):
-        # add edge from node geometry
-        assert not graph.is_multigraph()  # FIXME support multigraph
-        geometry = {}
-        for s, t, e in graph.edges(data="geometry"):
-            geometry.update(
-                {
-                    (s, t): LineString(
-                        [graph.nodes[s]["geometry"], graph.nodes[t]["geometry"]]
-                    )
-                }
-            )
-        nx.set_edge_attributes(graph, geometry, name="geometry")
-        return graph
+    if not _exist_edge_geometry:
+        graph = _add_missing_geoms_one_by_one(graph)
 
-    if not (_exist_node_geometry or _exist_edge_geometry):
-        # no geometry, check if the geometry can be derived from node tuple
-        assert not graph.is_multigraph()  # FIXME support multigraph
-        assert len(list(graph.nodes)[0]) == 2  # must have tuple (x,y) as nodes
-        geometry = {n: Point(n[0], n[1]) for n in graph.nodes}
-        nx.set_node_attributes(graph, geometry, name="geometry")
-        return graph
+    return graph
 
 
 def reproject_graph_geometry(graph: nx.Graph, crs_from: CRS, crs_to: CRS) -> nx.Graph:
@@ -231,10 +215,11 @@ def reproject_graph_geometry(graph: nx.Graph, crs_from: CRS, crs_to: CRS) -> nx.
     # Reproject the edges
     if graph.is_multigraph():
         for u, v, key, attributes in graph.edges(keys=True, data=True):
-            reprojected_geometry = transform(
-                transformer.transform, attributes["geometry"]
-            )
-            reprojected_graph[u][v][key].update({"geometry": reprojected_geometry})
+            if "geometry" in attributes:
+                reprojected_geometry = transform(
+                    transformer.transform, attributes["geometry"]
+                )
+                reprojected_graph[u][v][key].update({"geometry": reprojected_geometry})
     else:
         for u, v, attributes in graph.edges(data=True):
             if "geometry" in attributes:
@@ -299,6 +284,8 @@ def network_to_graph(
     """
     Convert the network edges and/or nodes to a graph.
 
+    graph_to_network <-> network_to_graph
+
     Parameters
     ----------
     edges: gpd.GeoDataFrame
@@ -331,7 +318,9 @@ def network_to_graph(
         nx.set_node_attributes(graph, {nid: {"id": nid} for nid in nodes["id"]})
         nx.set_node_attributes(graph, nodes.set_index("id").to_dict("index"))
 
-    graph.graph["crs"] = edges.crs
+    graph.graph["crs"] = edges.crs.to_epsg()
+
+    validate_graph(graph)
     return graph
 
 
@@ -421,6 +410,7 @@ def validate_graph(graph: nx.Graph) -> None:
     assert _exist_attribute, "Missing geometries in edges"
 
 
+# IO
 def read_graph(graph_fn: str) -> nx.Graph:
     """
     Read the graph from a file.
@@ -530,6 +520,7 @@ def write_graph(graph: nx.Graph, graph_fn: str) -> None:
         raise ValueError(f"Unsupported file format: {extension}")
 
 
+# properties
 def graph_edges(graph: nx.Graph) -> gpd.GeoDataFrame:
     """Get graph edges as geodataframe"""
     return graph_to_network(graph)[0]
@@ -547,6 +538,7 @@ def graph_region(graph: nx.Graph) -> gpd.GeoDataFrame:
     return region
 
 
+# Others
 def get_endnodes_from_lines(
     lines: gpd.GeoDataFrame, where: str = "both"
 ) -> gpd.GeoDataFrame:
