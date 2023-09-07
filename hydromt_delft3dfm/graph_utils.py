@@ -16,22 +16,21 @@ logger = logging.getLogger(__name__)
 
 
 __all__ = [
-    # creat
+    # creat (topology change)
     "gpd_to_digraph",  # TODO make generic setup_edges
-    "gpd_to_digraph",  # TODO make generic setup_nodes
     "preprocess_graph",
-    # convert
+    # convert (no topology changes, allow attribute changes)
     "network_to_graph",
     "graph_to_network",
     # io
     "read_graph",
     "write_graph",
-    # property
+    # property (use after set graph)
     "graph_region",
-    "graph_utils.graph_edges",
+    "graph_edges",
     "graph_nodes",
     # utils
-    "get_endnodes_from_lines",
+    "get_endnodes_from_lines",  # TODO move this one
 ]
 
 
@@ -66,7 +65,6 @@ def gpd_to_digraph(data: gpd.GeoDataFrame) -> nx.DiGraph():
     nx.DiGraph
         The converted directed graph.
     """
-    DeprecationWarning("will be replaced by network_to_graph")
 
     _ = data.copy()
 
@@ -105,6 +103,8 @@ def preprocess_graph(graph: nx.Graph, to_crs: CRS = None) -> nx.Graph:
         edge properties ['id', 'geometry','node_start', and 'node_end']
         node properties ['id', 'geometry']
     """
+    # TODO Allow for more preprocessing steps, like cleaning up isolated nodes, adding weights to edges based on distance, etc.
+
     crs = graph.graph.get("crs")
     if not crs:
         raise ValueError("must provide crs in graph.")
@@ -303,19 +303,21 @@ def network_to_graph(
         edge properties ['id', 'geometry','node_start', and 'node_end']
         node properties ['id', 'geometry']
     """
-    # use memopy convention but not momepy.gdf_to_nx
+
     # create graph from edges
+    edges["source"] = edges["node_start"]
+    edges["target"] = edges["node_end"]
     graph = nx.from_pandas_edgelist(
         edges,
-        source="node_start",
-        target="node_end",
+        source="source",
+        target="target",
         create_using=create_using,
         edge_attr=True,
     )
-
     # add node attribtues
     if nodes is not None:
-        nx.set_node_attributes(graph, {nid: {"id": nid} for nid in nodes["id"]})
+        nodes["id"] = nodes["id"].astype(str)  # note that the node have id as str
+        nx.set_node_attributes(graph, {nid: nid for nid in nodes["id"]}, name="id")
         nx.set_node_attributes(graph, nodes.set_index("id").to_dict("index"))
 
     graph.graph["crs"] = edges.crs.to_epsg()
@@ -369,7 +371,9 @@ def graph_to_network(
     graph = assign_graph_geometry(graph)
 
     # convert to geodataframe
-    edges = gpd.GeoDataFrame(nx.to_pandas_edgelist(graph))
+    edges = gpd.GeoDataFrame(nx.to_pandas_edgelist(graph)).drop(
+        columns=["source", "target"]  # use node_start and node_end
+    )
     nodes = gpd.GeoDataFrame(data=[attrs for _, attrs in graph.nodes(data=True)])
 
     # assign crs

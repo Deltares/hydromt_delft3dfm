@@ -26,6 +26,7 @@ __all__ = [
     "update_data_columns_attribute_from_query",
     "snap_newbranches_to_branches_at_snappednodes",
     "intersect_lines",
+    "explode_and_deduplicate_geometries",
 ]
 
 
@@ -1084,7 +1085,7 @@ def intersect_lines(gdf1, gdf2):
         Part of gdf1 that intersects with gdf2.
     - gdf2_cleaned : geopandas.GeoDataFrame
         Part of gdf2 that intersects with gdf1.
-    - intersection_points : geopandas.GeoDataFrame
+    - points_cleaned : geopandas.GeoDataFrame
         The intersection points between gdf1 and gdf2.
     """
 
@@ -1132,5 +1133,27 @@ def intersect_lines(gdf1, gdf2):
     }
     gdf2_cleaned = gdf2_cleaned.rename(columns=columns_to_rename)
 
+    # Filter the exploded points
+    points_exploded["id"] = points_exploded.index
+    points_cleaned = points_exploded[["id", "geometry"]]
+
     # Return the intersected parts and the intersection points
-    return gdf1_cleaned, gdf2_cleaned, points_exploded
+    return gdf1_cleaned, gdf2_cleaned, points_cleaned
+
+
+def explode_and_deduplicate_geometries(gpd: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """Explodes and deduplicates geometries a GeoDataFrame.
+
+    Parameters:
+        gpd (gpd.GeoDataFrame): Input GeoDataFrame.
+
+    Returns:
+        gpd.GeoDataFrame: GeoDataFrame with exploded and deduplicated geometries.
+    """
+    gpd = gpd.explode()
+    gpd = gpd[
+        gpd.index.isin(
+            gpd.geometry.apply(lambda geom: geom.wkb).drop_duplicates().index
+        )
+    ]
+    return gpd

@@ -52,6 +52,13 @@ def setup_urban_sewer_network_topology_from_osm(
     Include data for waterways and highways for open and closed systems.
     The two systems are connected and outlets are added at intersection points.
 
+    Adds/Updates model layers:
+
+    * **rivers** geom: 1D rivers vector
+    * **pipes** geom: 1D pipes vector
+    * **branches** geom: 1D branches vector
+    * **outlets** geom: 1D outlets vector
+
     Parameters:
     - region : object
         The geographical region for which the sewer network is to be constructed.
@@ -70,6 +77,7 @@ def setup_urban_sewer_network_topology_from_osm(
         It integrates both the open and closed drainage systems and includes outlets at
         the intersection points.
     """
+    # input
     if waterway_types is None:
         waterway_types = ["river", "stream", "brook", "canal", "ditch"]
     if highway_types is None:
@@ -84,6 +92,9 @@ def setup_urban_sewer_network_topology_from_osm(
             "tertiary_link",
             "residential",
         ]
+    # output
+    _required_columns = None
+
     # 1. Build the graph for waterways (open system)
     graph_osm_open = workflows.create_graph_from_openstreetmap(
         region=region,
@@ -104,27 +115,38 @@ def setup_urban_sewer_network_topology_from_osm(
     )
     logger.info(f"Download highway {highway_types} form osm")
 
-    # 3. Intersect the lines of the open and closed systems
-    open_system, closed_system, intersection_points = workflows.intersect_lines(
+    # 3. obtain open and closed systems and outlets by intersecting
+    open_system, closed_system, outlets = workflows.intersect_lines(
         graph_utils.graph_to_network(graph_osm_open)[0],
         graph_utils.graph_to_network(graph_osm_closed)[0],
     )
+    # add attributes
+    open_system["branchid"] = open_system["id"]
+    open_system["branchtype"] = "river"
+    closed_system["branchid"] = closed_system["id"]
+    closed_system["branchtype"] = "pipe"
+    outlets["nodeid"] = outlets["id"]
+    outlets["nodetype"] = "outlet"
+
+    # TODO select required columns
 
     # 4. Recreate the graph from the complete system topology
     graph = workflows.create_graph_from_geodataframe(
         pd.concat([open_system, closed_system])
     )
+    branches = graph_utils.graph_to_network(graph)[0]
+
+    # TODO set branches
     # TODO set graph
 
-    # 5. Setup the graph using new nodes attributes
-    intersection_points["nodetype"] = "outlet"
+    # 5. Add outlets to graph
     graph = workflows.setup_graph_from_geodataframe(
-        graph,  # TODO replace by self.graphs
+        graph,
         data_catalog=None,  # TODO replace by self.data_catalog
-        vector_fn=intersection_points,
-        variables=["nodetype"],
+        vector_fn=outlets,
+        variables=["nodeid", "nodetype"],
         max_dist=1.0,
-        rename=dict(nodetype="nodetype"),
+        rename=dict(nodeid="nodeid", nodetype="nodetype"),
         graph_component="nodes",
         logger=logger,
     )

@@ -1,0 +1,9 @@
+global:
+  crs: 32647
+
+setup_urban_sewer_network_from_osm:
+  region:
+    geom: 
+      "urbansewer_data/region.geojson"
+  hydrography_fn: dem
+  
