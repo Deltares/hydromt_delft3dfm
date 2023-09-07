@@ -384,7 +384,7 @@ def setup_graph_from_geodataframe(
     rename: Optional[Dict[str, str]] = dict(),
     graph_component: Optional[str] = "both",
     logger: logging.Logger = logger,
-) -> nx.graph:
+) -> nx.Graph:
     """Add data variable(s) from ``vector_fn`` to attribute(s) in graph object using nearest_merge.
 
     Raster data is sampled to the graph edges and nodes using the ``resampling_method``.

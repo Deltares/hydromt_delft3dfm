@@ -45,7 +45,7 @@ def setup_urban_sewer_network_topology_from_osm(
     highway_types: list[str] = None,
     waterway_types: list[str] = None,
     logger: logging.Logger = logger,
-):
+) -> nx.MultiDiGraph:
     """
     Set up a complete urban sewer network topology OpenStreetMap.
 
@@ -72,7 +72,7 @@ def setup_urban_sewer_network_topology_from_osm(
         Useful for debugging and understanding the workflow steps.
 
     Returns:
-    - graph : networkx.Graph
+    - graph : nx.MultiDiGraph
         The final preprocessed graph representing the urban sewer network.
         It integrates both the open and closed drainage systems and includes outlets at
         the intersection points.
@@ -143,7 +143,7 @@ def setup_urban_sewer_network_topology_from_osm(
     # 5. Add outlets to graph
     # TODO replaced by super method
     graph = workflows.setup_graph_from_geodataframe(
-        graph,
+        graph,  # TODO replace by self.graph
         data_catalog=None,  # TODO replace by self.data_catalog
         vector_fn=outlets,
         variables=["nodeid", "nodetype"],
@@ -242,6 +242,8 @@ def _compute_gradient_from_elevtn(graph):
 
     Modifies the input graph in place.
     """
+    # TODO: check if need to convert into digraph first
+
     for e in graph.edges:
         graph.edges[e].update(
             {
@@ -449,73 +451,6 @@ def setup_network_dimentions_from_rainfallstats(
 
 
 # func from hybridurb
-
-
-def find_edge_ids_by_snapping(
-    G: nx.Graph,
-    edges: gpd.GeoDataFrame,
-    snap_offset: float = 1,
-    snap_method: str = "overall",
-) -> gpd.GeoDataFrame:
-    """This function adds "id" to edges GeoDataFrame"""
-
-    # graph
-    _ = gpd.GeoDataFrame(nx.to_pandas_edgelist(G).set_index("id"))
-
-    # wrapper to use delft3dfmpy function to find "branch_id"
-    _ = _.rename({"id": "branch_id"}).assign(branchType=None)
-    find_nearest_branch(
-        _,
-        edges,
-        method=snap_method,
-        maxdist=snap_offset,
-        move_geometries=True,
-    )
-
-    # rename "branch_id" to "edge_id"
-    edges_with_ids = edges.rename(columns={"branch_id": "_id"})
-
-    return edges_with_ids
-
-
-def find_node_ids_by_snapping(
-    G: nx.Graph,
-    nodes: gpd.GeoDataFrame,
-    snap_offset: float = 1,
-    snap_method: str = "overall",
-) -> gpd.GeoDataFrame:
-    """This function adds "id" to nodes GeoDataFrame"""
-
-    # graph
-    G_nodes = gpd.GeoDataFrame(
-        {
-            "geometry": [Point(p) for p in G.nodes],
-            "node_id": [f"{p[0]:.6f}_{p[1]:.6f}" for p in G.nodes],
-            "_id": G.nodes(data="id"),
-        }
-    ).set_index("node_id")
-
-    # nodes
-    nodes.loc[:, "node_id"] = [
-        f"{x:.6f}_{y:.6f}" for x, y in zip(nodes.geometry.x, nodes.geometry.y)
-    ]
-    nodes = nodes.set_index("node_id")
-
-    # map user nodes to derived nodes
-    if set(nodes.index).issubset(set(G_nodes.index)):
-        # check if 1-to-1 match
-        G_nodes_new = G_nodes.join(nodes.drop(columns="geometry"))
-    else:
-        # use snap_nodes_to_nodes function to find "node_id"
-        G_nodes_new = snap_nodes_to_nodes(nodes, G_nodes, snap_offset)
-        logger.debug("performing snap nodes to graph nodes")
-
-    # assign id from graph to nodes
-    nodes = nodes.join(G_nodes_new["_id"])
-
-    return nodes
-
-
 def update_edges_attributes(
     graph: nx.Graph,
     edges: gpd.GeoDataFrame,
@@ -624,6 +559,7 @@ def reverse_edges_on_negative_weight(
             # Remove original edge
             graph.remove_edge(u, v, key=key)
             # Add reversed edge with preserved attributes
+            data[weight] = data[weight] * -1.0
             graph.add_edge(v, u, key=key, **data)
 
     elif isinstance(graph, nx.DiGraph):
@@ -636,7 +572,8 @@ def reverse_edges_on_negative_weight(
         for u, v, data in edges_to_reverse:
             # Remove original edge
             graph.remove_edge(u, v)
-            # Add reversed edge with preserved attributes
+            # Add reversed edge with preserved attributes and reversed weights
+            data[weight] = data[weight] * -1.0
             graph.add_edge(v, u, **data)
 
     else:

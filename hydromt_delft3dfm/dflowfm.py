@@ -1024,6 +1024,8 @@ class DFlowFMModel(MeshModel):
 
         branches = graph_utils.graph_to_network(graph_osm)[0]  # use self.graph
         self.set_branches(branches)
+        branch_nodes = graph_utils.graph_to_network(graph_osm)[1]
+        self.set_geoms(branch_nodes, "branch_nodes")
 
         graph_utils.write_graph(
             graph_osm, graph_fn=Path(self.root).joinpath("graphs/graph_osm.gml")
@@ -1042,6 +1044,8 @@ class DFlowFMModel(MeshModel):
 
         branches = graph_utils.graph_to_network(graph_osm_bl)[0]  # use self.graph
         self.set_branches(branches)
+        branch_nodes = graph_utils.graph_to_network(graph_osm_bl)[1]
+        self.set_geoms(branch_nodes, "branch_nodes")
 
         graph_utils.write_graph(
             graph_osm_bl,
