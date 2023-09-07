@@ -18,7 +18,10 @@ from hydromt import flw
 from hydromt import DataCatalog
 
 from hydromt_delft3dfm import graph_utils
-from hydromt_delft3dfm.workflows import find_nearest_branch
+from hydromt_delft3dfm.workflows import (
+    find_nearest_branch,
+    explode_and_deduplicate_geometries,
+)
 from hydromt.gis_utils import nearest_merge
 
 logger = logging.getLogger(__name__)
@@ -33,13 +36,6 @@ __all__ = [
     "setup_graph_from_rasterdataset",
     "setup_graph_from_geodataframe",
 ]
-
-
-# TODO imcomplete
-def create_graph_from_geodataframe(gdf):
-    graph = graph_utils.gpd_to_digraph(gdf)
-    graph = graph_utils.preprocess_graph(graph)
-    return graph
 
 
 def create_graph_from_openstreetmap(
@@ -103,7 +99,7 @@ def create_graph_from_openstreetmap(
     # download osm data as graph
     logger.info("Download from osm.")
     _osm_graph = osmnx.graph_from_polygon(
-        polygon=region.buffer(1000)
+        polygon=region.buffer(buffer)
         .to_crs(pyproj.CRS.from_epsg(4326))
         .geometry.unary_union,
         custom_filter=f'["{osm_key}"~"{"|".join(osm_values)}"]',
@@ -218,6 +214,64 @@ def create_graph_from_hydrography(
     return graph
 
 
+# TODO imcomplete
+def create_graph_from_geodataframe(
+    gdf: gpd.GeoDataFrame, is_directed: bool = True, logger=logger
+) -> nx.Graph:
+    """
+    Convert a GeoDataFrame of line geometries into a graph.
+
+    This function first converts a GeoDataFrame into a DiGraph using the `gpd_to_digraph` function
+    which treats the first and last coordinates of each row's geometry as source and target, respectively.
+    Then, it preprocesses the graph using the `preprocess_graph` function which may involve geometry assignments,
+    reprojections based on CRS, and graph validations.
+    Finally, a digraph or a undirected graph will be returned based on `is_directed`.
+
+    Parameters
+    ----------
+    gdf : gpd.GeoDataFrame
+        The input GeoDataFrame that is to be converted into a DiGraph.
+    is_directed: bool, optional
+        Whether the output graph has directions.
+        By default, True
+
+    Returns
+    -------
+    nx.Graph
+        The converted and preprocessed graph.
+        Directed or undirected given `is_directed`
+
+    Raises
+    ------
+    ValueError
+        If the graph does not have a 'crs' attribute during preprocessing.
+
+    Examples
+    --------
+    >>> import geopandas as gpd
+    >>> import shapely.geometry as geom
+    >>> gdf = gpd.GeoDataFrame({'geometry': [geom.LineString([(0,0), (1,1)]), geom.LineString([(1,1), (2,2)])]})
+    >>> graph = create_graph_from_geodataframe(gdf)
+    >>> print(type(graph))
+    <class 'networkx.classes.digraph.DiGraph'>
+    """
+    logger.info("Preprocessing geodataframes")
+    gdf = explode_and_deduplicate_geometries(
+        gdf
+    )  # TODO more cleanup funcs might be needed
+
+    logger.info("Creating digraph")
+    graph = graph_utils.gpd_to_digraph(gdf)  # TODO allow different graph types
+
+    logger.info("Processing graph")
+    graph = graph_utils.preprocess_graph(graph)
+
+    if is_directed:
+        return graph
+    else:
+        return graph.to_undirected()
+
+
 def setup_graph_from_rasterdataset(
     graph: nx.Graph,  # TODO replace by self.graphs
     raster_fn: Union[str, Path, xr.DataArray, xr.Dataset],
@@ -279,7 +333,7 @@ def setup_graph_from_rasterdataset(
     region = graph_utils.graph_region(graph)
 
     # Read raster data, select variables, and interpolate na if needed
-    if raster_fn in [str, Path]:
+    if isinstance(raster_fn, str) or isinstance(raster_fn, Path):
         ds = data_catalog.get_rasterdataset(
             raster_fn, region=region, buffer=1000, variables=variables
         )
@@ -331,7 +385,7 @@ def setup_graph_from_geodataframe(
     graph_component: Optional[str] = "both",
     logger: logging.Logger = logger,
 ) -> nx.graph:
-    """Add data variable(s) from ``vector_fn`` to attribute(s) in graph object using nearest_join.
+    """Add data variable(s) from ``vector_fn`` to attribute(s) in graph object using nearest_merge.
 
     Raster data is sampled to the graph edges and nodes using the ``resampling_method``.
     If raster is a dataset, all variables will be added unless ``variables`` list
@@ -343,6 +397,9 @@ def setup_graph_from_geodataframe(
         Data catalog key, path to vector file or gpd.GeoDataFrame data object.
     variables: list, optional
         List of variables to add to graph from vector_fn. By default all.
+    max_dist: float
+        Maixmum distance within which the geodataframe would be used to setup graph.
+        By default, infinite.
     rename: dict, optional
         Dictionary to rename variable names in vector_fn before adding to graph
         {'name_in_vector_fn': 'name_in_graph'}. By default empty.
@@ -368,12 +425,12 @@ def setup_graph_from_geodataframe(
     region = graph_utils.graph_region(graph)
 
     # Read vector data, select variables
-    if vector_fn in [str, Path]:
+    if isinstance(vector_fn, gpd.GeoDataFrame):
+        gdf = vector_fn
+    else:
         gdf = data_catalog.get_geodataframe(
             vector_fn, region=region, buffer=1000, variables=variables
         )
-    else:
-        gdf = vector_fn
 
     # relate the geodataframe to graph using nearet join
     # get gdf attributes at edges

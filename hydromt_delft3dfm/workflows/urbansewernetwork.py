@@ -26,12 +26,12 @@ logger = logging.getLogger(__name__)
 
 __all__ = [
     "setup_urban_sewer_network_topology_from_osm",
+    "setup_urban_sewer_network_bedlevel_from_dem",
     # graph additions
     # "setup_graph_nodes",
     # "setup_graph_egdes",
     # graph workflows
     "optimize_graph",
-    "update_graph_from_dem",
     # TODO to be categorized
     "setup_network_connections_based_on_flowdirections",
     "setup_network_parameters_from_rasters",
@@ -96,6 +96,7 @@ def setup_urban_sewer_network_topology_from_osm(
     _required_columns = None
 
     # 1. Build the graph for waterways (open system)
+    logger.info(f"Download waterway {waterway_types} form osm")
     graph_osm_open = workflows.create_graph_from_openstreetmap(
         region=region,
         buffer=1000,
@@ -103,9 +104,9 @@ def setup_urban_sewer_network_topology_from_osm(
         osm_values=waterway_types,
         logger=logger,
     )
-    logger.info(f"Download waterway {waterway_types} form osm")
 
     # 2. Build the graph for highways (closed system)
+    logger.info(f"Download highway {highway_types} form osm")
     graph_osm_closed = workflows.create_graph_from_openstreetmap(
         region=region,
         buffer=500,
@@ -113,7 +114,6 @@ def setup_urban_sewer_network_topology_from_osm(
         osm_values=highway_types,
         logger=logger,
     )
-    logger.info(f"Download highway {highway_types} form osm")
 
     # 3. obtain open and closed systems and outlets by intersecting
     open_system, closed_system, outlets = workflows.intersect_lines(
@@ -131,15 +131,17 @@ def setup_urban_sewer_network_topology_from_osm(
     # TODO select required columns
 
     # 4. Recreate the graph from the complete system topology
+    logger.info(f"Create graph and update open system, closed system and outlets.")
     graph = workflows.create_graph_from_geodataframe(
-        pd.concat([open_system, closed_system])
+        pd.concat([open_system, closed_system]),
+        is_directed=False,
+        logger=logger,
     )
-    branches = graph_utils.graph_to_network(graph)[0]
 
-    # TODO set branches
     # TODO set graph
 
     # 5. Add outlets to graph
+    # TODO replaced by super method
     graph = workflows.setup_graph_from_geodataframe(
         graph,
         data_catalog=None,  # TODO replace by self.data_catalog
@@ -154,45 +156,7 @@ def setup_urban_sewer_network_topology_from_osm(
     return graph
 
 
-def optimize_graph(graph, logger=logger):
-    """Optimize graph based on various methods
-
-    if only elevtn is available at nodes, then the cost along path is used
-    need to determin which nodes are sources, which nodes are targets
-
-
-    """
-
-    logger.info("compute gradient from elevtn")
-    graph = _compute_gradient_from_elevtn(graph)
-
-    logger.info("update graph direction")
-    graph = reverse_edges_on_negative_weight(graph, weight="gradient")
-    return graph
-
-
-def _compute_gradient_from_elevtn(graph):
-    """
-    Compute the gradient for each edge in the graph based on node elevations and edge length.
-
-    Gradient is calculated as:
-    gradient = (elevation of source node - elevation of target node) / edge length
-
-    Modifies the input graph in place.
-    """
-    for e in graph.edges:
-        graph.edges[e].update(
-            {
-                "gradient": (
-                    (graph.nodes[e[0]]["elevtn"] - graph.nodes[e[1]]["elevtn"])
-                    / graph.edges[e]["length"]
-                )
-            }
-        )
-    return graph
-
-
-def update_graph_from_dem(
+def setup_urban_sewer_network_bedlevel_from_dem(
     graph: nx.Graph,  # TODO replace by self.graphs
     data_catalog: DataCatalog,  # TODO replace by self.data_catalog
     dem_fn: Union[str, Path, xr.DataArray, xr.Dataset],
@@ -232,7 +196,7 @@ def update_graph_from_dem(
 
     # Sample DEM
     # TODO replaced by super method
-    graph = setup_graph_from_rasterdataset(
+    graph = workflows.setup_graph_from_rasterdataset(
         graph=graph,
         data_catalog=data_catalog,
         raster_fn=dem_fn,
@@ -246,6 +210,47 @@ def update_graph_from_dem(
 
     logger.info("update graph direction")
     graph = reverse_edges_on_negative_weight(graph, weight="gradient")
+
+    # TODO set graph
+
+    return graph
+
+
+def optimize_graph(graph, logger=logger):
+    """Optimize graph based on various methods
+
+    if only elevtn is available at nodes, then the cost along path is used
+    need to determin which nodes are sources, which nodes are targets
+
+
+    """
+
+    logger.info("compute gradient from elevtn")
+    graph = _compute_gradient_from_elevtn(graph)
+
+    logger.info("update graph direction")
+    graph = reverse_edges_on_negative_weight(graph, weight="gradient")
+    return graph
+
+
+def _compute_gradient_from_elevtn(graph):
+    """
+    Compute the gradient for each edge in the graph based on node elevations and edge length.
+
+    Gradient is calculated as:
+    gradient = (elevation of source node - elevation of target node) / edge length
+
+    Modifies the input graph in place.
+    """
+    for e in graph.edges:
+        graph.edges[e].update(
+            {
+                "gradient": (
+                    (graph.nodes[e[0]]["elevtn"] - graph.nodes[e[1]]["elevtn"])
+                    / graph.edges[e]["length"]
+                )
+            }
+        )
     return graph
 
 
@@ -441,191 +446,6 @@ def setup_network_dimentions_from_rainfallstats(
     """
     # method implementation goes here
     pass
-
-
-# graph workflows
-def setup_graph_from_rasterdataset(
-    graph: nx.Graph,  # TODO replace by self.graphs
-    data_catalog: DataCatalog,  # TODO replace by self.data_catalog
-    raster_fn: Union[str, Path, xr.DataArray, xr.Dataset],
-    variables: Optional[List[str]] = None,
-    fill_method: Optional[str] = None,
-    resampling_method: Optional[str] = "mean",
-    all_touched: Optional[bool] = True,
-    rename: Optional[Dict[str, str]] = dict(),
-    graph_component: Optional[str] = "both",
-    logger: logging.Logger = logger,
-) -> nx.graph:
-    """Add data variable(s) from ``raster_fn`` to attribute(s) in graph object.
-
-    Raster data is sampled to the graph edges and nodes using the ``resampling_method``.
-    If raster is a dataset, all variables will be added unless ``variables`` list
-    is specified.
-
-    Parameters
-    ----------
-    raster_fn: str, Path, xr.DataArray, xr.Dataset
-        Data catalog key, path to raster file or raster xarray data object.
-    variables: list, optional
-        List of variables to add to mesh from raster_fn. By default all.
-    fill_method : str, optional
-        If specified, fills no data values using fill_nodata method.
-        Available methods are {'linear', 'nearest', 'cubic', 'rio_idw'}.
-    rename: dict, optional
-        Dictionary to rename variable names in raster_fn before adding to mesh
-        {'name_in_raster_fn': 'name_in_mesh'}. By default empty.
-    graph_component: str, optional
-        Specifies which component of the graph to process. Can be one of the following:
-        * "edges" - Only processes and updates the edges of the graph.
-        * "nodes" - Only processes and updates the nodes of the graph.
-        * "both" - Processes and updates both nodes and edges of the graph.
-        By default, it processes both nodes and edges ("both").
-    resampling_method: str, optional
-        Method to sample from raster data to mesh. By default mean. Options include
-        {'count', 'min', 'max', 'sum', 'mean', 'std', 'median', 'q##'}.
-        Only used when ``graph_component`` is "edges" or "both".
-    all_touched : bool, optional
-        If True, all pixels touched by geometries will used to define the sample.
-        If False, only pixels whose center is within the geometry or that are
-        selected by Bresenham's line algorithm will be used. By default True.
-        Only used when ``graph_component`` is "edges" or "both".
-    Returns
-    -------
-    list
-        List of variables added to mesh.
-    """  # noqa: E501
-
-    assert graph_component in [
-        "edges",
-        "nodes",
-        "both",
-    ], "Invalid graph_component value."
-
-    logger.info(f"Preparing graph data from raster source {raster_fn}")
-    region = graph_utils.graph_region(graph)
-
-    # Read raster data, select variables, and interpolate na if needed
-    ds = data_catalog.get_rasterdataset(
-        raster_fn, region=region, buffer=1000, variables=variables
-    )
-    if isinstance(ds, xr.DataArray):
-        ds = ds.to_dataset()
-    if fill_method is not None:
-        ds = ds.raster.interpolate_na(method=fill_method)
-
-    # Sample raster data
-    # Rename variables
-    rm_dict = {f"{var}_{resampling_method}": var for var in ds.data_vars}
-    # get sample at edges
-    if graph_component in ["edges", "both"]:
-        edges = graph_utils.graph_edges(graph)
-        ds_sample = ds.raster.zonal_stats(
-            gdf=edges,
-            stats=resampling_method,
-            all_touched=all_touched,
-        )
-        ds_sample = ds_sample.rename(rm_dict).rename(rename)
-        ds_sample_df = ds_sample.to_dataframe().set_index(edges["id"])
-        graph = update_edges_attributes(graph, ds_sample_df, id_col="id")
-    # get sample at nodes
-    if graph_component in ["nodes", "both"]:
-        nodes = graph_utils.graph_nodes(graph)
-        ds_sample = ds.raster.sample(
-            nodes
-        )  # FIXME dem for sample data too small, need to add nodedata value and correct crs
-        ds_sample = ds_sample.rename(rename)
-        ds_sample_df = ds_sample.to_dataframe().set_index(nodes["id"])
-        graph = update_nodes_attributes(graph, ds_sample_df)
-
-    # TODO Convert to UgridDataset
-    # uds_sample = xu.UgridDataset(ds_sample, grids=self.mesh_grids[grid_name])
-
-    return graph
-
-
-def setup_graph_from_geodataframe(
-    graph: nx.Graph,  # TODO replace by self.graphs
-    data_catalog: DataCatalog,  # TODO replace by self.data_catalog
-    vector_fn: Union[str, Path, xr.DataArray, xr.Dataset],
-    variables: Optional[List[str]] = None,
-    max_dist: float = np.inf,
-    rename: Optional[Dict[str, str]] = dict(),
-    graph_component: Optional[str] = "both",
-    logger: logging.Logger = logger,
-) -> nx.graph:
-    """Add data variable(s) from ``vector_fn`` to attribute(s) in graph object using nearest_join.
-
-    Raster data is sampled to the graph edges and nodes using the ``resampling_method``.
-    If raster is a dataset, all variables will be added unless ``variables`` list
-    is specified.
-
-    Parameters
-    ----------
-    raster_fn: str, Path, xr.DataArray, xr.Dataset
-        Data catalog key, path to raster file or raster xarray data object.
-    variables: list, optional
-        List of variables to add to mesh from raster_fn. By default all.
-    fill_method : str, optional
-        If specified, fills no data values using fill_nodata method.
-        Available methods are {'linear', 'nearest', 'cubic', 'rio_idw'}.
-    rename: dict, optional
-        Dictionary to rename variable names in raster_fn before adding to mesh
-        {'name_in_raster_fn': 'name_in_mesh'}. By default empty.
-    graph_component: str, optional
-        Specifies which component of the graph to process. Can be one of the following:
-        * "edges" - Only processes and updates the edges of the graph.
-        * "nodes" - Only processes and updates the nodes of the graph.
-        * "both" - Processes and updates both nodes and edges of the graph.
-        By default, it processes both nodes and edges ("both").
-    resampling_method: str, optional
-        Method to sample from raster data to mesh. By default mean. Options include
-        {'count', 'min', 'max', 'sum', 'mean', 'std', 'median', 'q##'}.
-        Only used when ``graph_component`` is "edges" or "both".
-    all_touched : bool, optional
-        If True, all pixels touched by geometries will used to define the sample.
-        If False, only pixels whose center is within the geometry or that are
-        selected by Bresenham's line algorithm will be used. By default True.
-        Only used when ``graph_component`` is "edges" or "both".
-    Returns
-    -------
-    list
-        List of variables added to mesh.
-    """  # noqa: E501
-
-    assert graph_component in [
-        "edges",
-        "nodes",
-        "both",
-    ], "Invalid graph_component value."
-
-    logger.info(f"Preparing graph data from raster source {vector_fn}")
-    region = graph_utils.graph_region(graph)
-
-    # Read vector data, select variables
-    gdf = data_catalog.get_geodataframe(
-        vector_fn, region=region, buffer=1000, variables=variables
-    )
-
-    # relate the geodataframe to graph using nearet join
-    # get gdf attributes at edges
-    if graph_component in ["edges", "both"]:
-        edges = graph_utils.graph_edges(graph)
-        gdf_sample = find_edge_ids_by_snapping(graph, gdf, snap_offset=max_dist)
-        gdf_sample = gdf_sample.rename(rename)
-        gdf_sample = gdf_sample.set_index(edges["id"])
-        graph = update_edges_attributes(graph, gdf_sample, id_col="id")
-    # get sample at nodes
-    if graph_component in ["nodes", "both"]:
-        nodes = graph_utils.graph_nodes(graph)
-        gdf_sample = find_node_ids_by_snapping(graph, gdf, snap_offset=max_dist)
-        gdf_sample = gdf_sample.rename(rename)
-        gdf_sample = gdf_sample.set_index(nodes["id"])
-        graph = update_nodes_attributes(graph, gdf_sample)
-
-    # TODO Convert to UgridDataset
-    # uds_sample = xu.UgridDataset(ds_sample, grids=self.mesh_grids[grid_name])
-
-    return graph
 
 
 # func from hybridurb
