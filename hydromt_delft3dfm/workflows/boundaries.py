@@ -827,12 +827,12 @@ def compute_forcing_values_polygon(
         coords_dict = get_geometry_coords_for_polygons(gdf)
         # Prepare the data
         data_3d = np.tile(
-            np.expand_dims(da.data, axis=1), (1, len(coords_dict["numcoordinates"]), 1)
+            np.expand_dims(da.data, axis=-1), (1, 1, len(coords_dict["numcoordinates"]))
         )
         # Create the DataArray
         da_out = xr.DataArray(
             data=data_3d,
-            dims=("index", "numcoordinates", "time"),
+            dims=("index", "time", "numcoordinates"),
             coords={
                 "index": coords_dict["index"],
                 "numcoordinates": coords_dict["numcoordinates"],

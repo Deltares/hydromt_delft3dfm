@@ -810,20 +810,24 @@ def read_1dlateral(
     # Get lateral locations and update dimentions and coordinates
     if any(df.numcoordinates.values):
         # polygons
-        df["geometry"] = df.apply(
+        _df = df[~df.numcoordinates.isna()]
+        _data = data[~df.numcoordinates.isna()]
+        # Update coords
+        _df["geometry"] = _df.apply(
             lambda row: Polygon(zip(row["xcoordinates"], row["ycoordinates"])), axis=1
         )
-        coords_dict = boundaries.get_geometry_coords_for_polygons(gpd.GeoDataFrame(df))
-        # Updates the data
-        data = np.tile(
-            np.expand_dims(data, axis=-1),
-            (1, 1, len(coords_dict["numcoordinates"])),
-        )
+        coords_dict = boundaries.get_geometry_coords_for_polygons(gpd.GeoDataFrame(_df))
         dims.append("numcoordinates")
         coords.update(coords_dict)
+        # Updates the data
+        _data = np.tile(
+            np.expand_dims(_data, axis=-1),
+            (1, 1, len(coords_dict["numcoordinates"])),
+        )
+
         # Prep DataArray and add to forcing
         da_out = xr.DataArray(
-            data=data,
+            data=_data,
             dims=dims,
             coords=coords,
             attrs=bc,
@@ -835,20 +839,23 @@ def read_1dlateral(
             # TODO laterals on nodes #78
             pass
         elif any(df.branchid.values):
-            branchids = df.branchid.values
-            branchids = branchids[branchids != "nan"]
-            df["geometry"] = [
+            _df = df[~df.branchid.isna()]
+            _data = data[~df.numcoordinates.isna()]
+            # update coords
+            _df["geometry"] = [
                 branches.set_index("branchid")
                 .loc[i.branchid, "geometry"]
                 .interpolate(i.chainage)
-                for i in df.itertuples()
+                for i in _df.itertuples()
             ]
             # Updates the data
-            coords["x"] = ("index", np.array(df.geometry.x))
-            coords["y"] = ("index", np.array(df.geometry.y))
+            coords["x"] = ("index", np.array([p.x for p in _df["geometry"].values]))
+            coords["y"] = ("index", np.array([p.y for p in _df["geometry"].values]))
+            coords["branchid"] = ("index", _df["branchid"].values)
+            coords["chainage"] = ("index", _df["chainage"].values)
             # Prep DataArray and add to forcing
             da_out = xr.DataArray(
-                data=data,
+                data=_data,
                 dims=dims,
                 coords=coords,
                 attrs=bc,
