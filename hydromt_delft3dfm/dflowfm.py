@@ -191,9 +191,7 @@ class DFlowFMModel(MeshModel):
         self._crs = CRS.from_user_input(crs) if crs else None
         self._check_crs()
 
-    def setup_region(
-        self,
-    ):
+    def setup_region(self, region):
         """HYDROMT CORE METHOD NOT USED FOR DFlowFMModel."""
         raise ValueError(
             "setup_region() method not implemented for DFlowFMModel."
@@ -1633,6 +1631,112 @@ class DFlowFMModel(MeshModel):
             da_out, name=f"boundary1d_{da_out.name}_{branch_type}"
         )  # FIXME: this format cannot be read back due to lack of branch type info from model files
 
+    def setup_1dlateral_from_points(
+        self,
+        laterals_geodataset_fn: str = None,
+        lateral_value: float = -2.5,
+        branch_type: str = "river",
+        snap_offset: float = 1.0,
+    ):
+        """
+        Prepares the 1D lateral discharge for a certain `branch_type`.
+        E.g. '1' m3/s for all lateral locations on the 'river' branches.
+
+        Use ``lateral_fn`` to set the lateral values from a geodataframe of point locations.
+        Only locations that are snapped to the network of `branch_type`
+        within a max distance defined in ``snap_offset`` are used.
+
+        The discharge can either be a constant using ``lateral_value`` (default) or
+        a timeseries read from ``laterals_timeseries_fn``.
+        If ``laterals_timeseries_fn`` has missing values, the constant ``lateral_value`` will be used.
+
+        The timeseries are clipped to the model time based on the model config
+        tstart and tstop entries.
+
+        Adds/Updates model layers:
+            * ** lateral_discharge_{branch_type}** forcing: 1D laterals DataArray
+
+        Parameters
+        ----------
+        laterals_geodataset_fn : str, Path
+            Path or data source name for geospatial point location file.
+            * Required variables if a combined point location file: ['index'] with type int
+            * Required variables ['laterals_discharge']
+        laterals_timeseries_fn: str, Path
+            Path to tabulated timeseries csv file with time index in first column
+            and location IDs in the first row,
+            see :py:meth:`hydromt.open_timeseries_from_table`, for details.
+            NOTE: tabulated timeseries files can only in combination with point location
+            coordinates be set as a geodataset in the data_catalog yml file.
+            NOTE: Require equidistant time series
+        lateral_value : float, optional
+            Constant value to use for all laterals if ``laterals_timeseries_fn`` is None and to
+            fill in missing data. By default 0 [m3/s].
+        branch_type: str
+            Type of branch to apply boundaries on. One of ["river", "pipe"].
+        snap_offset : float, optional
+                Snapping tolerance to automatically applying boundaries at the correct network nodes.
+            By default 0.1, a small snapping is applied to avoid precision errors.
+        """
+        self.logger.info(f"Preparing 1D laterals for {branch_type}.")
+        network_by_branchtype = self.staticgeoms[f"{branch_type}s"]
+        refdate, tstart, tstop = self.get_model_time()  # time slice
+
+        # 1. read lateral geodataset
+        # FIXME what if I only have geodataframe?
+        if laterals_geodataset_fn is not None:
+            da_bnd = self.data_catalog.get_geodataset(
+                laterals_geodataset_fn,
+                geom=self.region.buffer(
+                    self._network_snap_offset
+                ),  # only select data within region of interest
+                variables=["lateral_discharge"],
+                time_tuple=(tstart, tstop),
+                crs=self.crs.to_epsg(),  # assume model crs if none defined
+            ).rename("lateral_discharge")
+            # error if time mismatch
+            if np.logical_and(
+                pd.to_datetime(da_bnd.time.values[0]) == pd.to_datetime(tstart),
+                pd.to_datetime(da_bnd.time.values[-1]) == pd.to_datetime(tstop),
+            ):
+                pass
+            else:
+                self.logger.error(
+                    "forcing has different start and end time. Please check the forcing file. support yyyy-mm-dd HH:MM:SS. "
+                )
+            # reproject if needed and convert to location
+            if da_bnd.vector.crs != self.crs:
+                da_bnd.vector.to_crs(self.crs)
+            # get geom
+            gdf_laterals = da_bnd.vector.to_gdf(reducer=np.mean)
+        else:
+            da_bnd = None  # FIXME
+            gdf_laterals = None
+
+        # snap laterlas to selected branches
+        workflows.find_nearest_branch(
+            branches=network_by_branchtype.set_index("branchid"),
+            geometries=gdf_laterals,
+            maxdist=snap_offset,
+        )
+        gdf_laterals = gdf_laterals.rename(
+            columns={"branch_id": "branchid", "branch_offset": "chainage"}
+        )
+
+        # 3. Derive lateral dataarray
+        da_out = workflows.compute_forcing_values(  # points
+            gdf=gdf_laterals,
+            da=da_bnd,
+            forcing_value=lateral_value,
+            forcing_type="lateral_discharge",
+            forcing_unit="m3/s",
+            logger=self.logger,
+        )
+        # TODO: the polygon is supported by delft3dfm lateral, no convertion to points needed
+
+        # 4. set boundaries
+        self.set_forcing(da_out, name=f"lateral1d_{branch_type}")
+
     def _setup_1dstructures(
         self,
         st_type: str,
@@ -1648,7 +1752,6 @@ class DFlowFMModel(MeshModel):
         Read locations are then filtered for value specified in ``filter`` on the column ``st_type``.
         They are then snapped to the existing network within a max distance defined in ``snap_offset`` and will be dropped if not snapped.
         Finally, crossections are read and set up for the remaining structures.
-
 
         Parameters
         ----------
@@ -3126,6 +3229,26 @@ class DFlowFMModel(MeshModel):
                         )
                         # Add to forcing
                         self.set_forcing(da_out)
+            # lateral
+            if len(ext_model.lateral) > 0:
+                df_ext = pd.DataFrame([f.__dict__ for f in ext_model.lateral])
+                # Forcing dataarrays to prepare for each quantity
+                name = "lateral_discharge"
+                # Get the dataframe corresponding to the current variable
+                df = df_ext
+                # get network
+                network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
+                    self.mesh_datasets["network1d"]
+                )
+                node_geoms = network1d_nodes[
+                    np.isin(network1d_nodes["nodeid"], df.nodeid.values)
+                ]
+                branches = self.branches
+                da_out = utils.read_1dlateral(
+                    df, quantity=name, branches=branches
+                )  # FIXME check if I need node_geoms or branches
+                # Add to forcing
+                self.set_forcing(da_out)
             # meteo
             if len(ext_model.meteo) > 0:
                 df_ext = pd.DataFrame([f.__dict__ for f in ext_model.meteo])
@@ -3154,6 +3277,7 @@ class DFlowFMModel(MeshModel):
             # populate external forcing file
             utils.write_1dboundary(self.forcing, savedir, ext_fn=ext_fn)
             utils.write_2dboundary(self.forcing, savedir, ext_fn=ext_fn)
+            utils.write_1dlateral(self.forcing, savedir, ext_fn=ext_fn)
             utils.write_meteo(self.forcing, savedir, ext_fn=ext_fn)
             self.set_config("external_forcing.extforcefilenew", ext_fn)
 
@@ -3197,8 +3321,7 @@ class DFlowFMModel(MeshModel):
             branches = utils.read_branches_gui(branches, self.dfmmodel)
 
             # Set branches
-            self._branches = branches
-            self.set_geoms(branches, "branches")
+            self.set_branches(branches)
 
     def write_mesh(self, write_gui=True):
         """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc> in model ready format."""

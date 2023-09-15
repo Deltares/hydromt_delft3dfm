@@ -23,6 +23,7 @@ __all__ = [
     "compute_boundary_values",
     "compute_2dboundary_values",
     "compute_meteo_forcings",
+    "compute_forcing_values",
 ]
 
 
@@ -605,3 +606,120 @@ def compute_meteo_forcings(
     da_out.dropna(dim="time")
 
     return da_out
+
+
+def compute_forcing_values(
+    gdf: gpd.GeoDataFrame,
+    da: xr.DataArray = None,
+    forcing_value: float = -2.5,
+    forcing_type: str = "waterlevelbnd",
+    forcing_unit: str = "m",
+    logger=logger,
+):
+    """
+    Compute 1d forcing values. Used for 1D lateral point locations.
+    # TODO harmonize for all 1D forcings (boundary + laterals)
+
+    Parameters
+    ----------
+    gdf : gpd.GeoDataFrame
+        Point locations of the 1D forcings to which to add data.
+
+        * Required variables: ['branchid', 'chainage']
+    da : xr.DataArray, optional
+        xr.DataArray containing the forcing timeseries values. If None, uses a constant values for all forcings.
+
+        * Required variables: [``forcing_type``]
+
+    forcing_value : float, optional
+        Constant value to use for all forcings if ``da`` is None and to
+        fill in missing data.
+    forcing_type : {'lateral_discharge'}
+        Type of forcing to use.
+    forcing_unit : {'m3/s'}
+        Unit corresponding to [forcing_type].
+    logger
+        Logger to log messages.
+    """
+    # Timeseries boundary values
+    if da is not None:
+        logger.info(f"Preparing 1D forcing type {forcing_type} from timeseries.")
+
+        # get boundary data freq in seconds
+        _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
+        dt = pd.to_timedelta((da.time[1].values - da.time[0].values))
+        freq = dt.resolution_string
+        multiplier = 1
+        if freq == "D":
+            logger.warning(
+                "time unit days is not supported by the current GUI version: 2022.04"
+            )  # converting to hours as temporary solution # FIXME: day is converted to hours temporarily
+            multiplier = 24
+        if len(pd.date_range(da.time[0].values, da.time[-1].values, freq=dt)) != len(
+            da.time
+        ):
+            logger.error("does not support non-equidistant time-series.")
+        freq_name = _TIMESTR[freq]
+        freq_step = getattr(dt.components, freq_name)
+        bd_times = np.array([(i * freq_step) for i in range(len(da.time))])
+        if multiplier == 24:
+            bd_times = np.array(
+                [(i * freq_step * multiplier) for i in range(len(da.time))]
+            )
+            freq_name = "hours"
+
+        # instantiate xr.DataArray for bnd data
+        da_out = xr.DataArray(
+            data=da.data,
+            dims=["index", "time"],
+            coords=dict(
+                index=gdf.index,
+                time=bd_times,
+                x=("index", gdf.geometry.x.values),
+                y=("index", gdf.geometry.y.values),
+                branchid=("index", gdf.branchid.values),
+                chainage=("index", gdf.chainage.values),
+            ),
+            attrs=dict(
+                function="TimeSeries",
+                timeInterpolation="Linear",
+                quantity=f"{forcing_type}",
+                units=f"{forcing_unit}",
+                time_unit=f"{freq_name} since {pd.to_datetime(da.time[0].values)}",  # support only yyyy-mm-dd HH:MM:SS
+            ),
+        )
+
+        # fill in na using default
+        da_out = da_out.fillna(forcing_value)
+
+        # drop na in time
+        da_out.dropna(dim="time")
+
+        # add name
+        da_out.name = f"{forcing_type}"
+    else:
+        logger.info(
+            f"Using constant value {forcing_value} {forcing_unit} for all {forcing_type} forcings."
+        )
+        # instantiate xr.DataArray for bnd data with forcing_type directly
+        da_out = xr.DataArray(
+            data=np.full((len(gdf.index)), forcing_value, dtype=np.float32),
+            dims=["index"],
+            coords=dict(
+                index=gdf.index,
+                x=("index", gdf.geometry.x.values),
+                y=("index", gdf.geometry.y.values),
+                branchid=("index", gdf.branchid.values),
+                chainage=("index", gdf.chainage.values),
+            ),
+            attrs=dict(
+                function="constant",
+                offset=0.0,
+                factor=1.0,
+                quantity=f"{forcing_type}",
+                units=f"{forcing_unit}",
+            ),
+        )
+        da_out.name = f"{forcing_type}"
+
+    return da_out.drop_duplicates(dim=...)

@@ -17,6 +17,7 @@ from hydrolib.core.dflowfm import (
     ForcingModel,
     FrictionModel,
     Meteo,
+    Lateral,
     PolyFile,
     StorageNodeModel,
     StructureModel,
@@ -731,6 +732,213 @@ def write_1dboundary(forcing: Dict, savedir: str = None, ext_fn: str = None) -> 
     return forcing_fn, ext_fn
 
 
+def read_1dlateral(
+    df: pd.DataFrame,
+    quantity: str,
+    nodes: gpd.GeoDataFrame = None,
+    branches: gpd.GeoDataFrame = None,
+) -> xr.DataArray:
+    """
+    Read for a specific quantity the corresponding external and forcing files and parse to xarray
+    # TODO: support external forcing for 2D.
+
+    Parameters
+    ----------
+    df: pd.DataFrame
+        External Model DataFrame filtered for quantity.
+    quantity: str
+        Name of quantity (eg 'waterlevel').
+    nodes: gpd.GeoDataFrame
+        Nodes locations of the boundary in df.
+
+    Returns
+    -------
+    da_out: xr.DataArray
+        External and focing values combined into a DataArray for variable quantity.
+    """
+    # Initialise dataarray attributes
+    # TODO change to read using branchid and chainage
+    # TODO add read using polygons
+    bc = {"quantity": quantity}
+
+    # Assume one discharge (lateral specific) file (hydromt writer) and read
+    forcing = df.discharge.iloc[0]
+    df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
+
+    # Get data
+    # Check if all constant
+    if np.all(df_forcing.function == "constant"):
+        # Prepare data
+        data = np.array([v[0][0] for v in df_forcing.datablock])
+        data = data + df_forcing.offset.values * df_forcing.factor.values
+        # Prepare dataarray properties
+        dims = ["index"]
+        coords = dict(index=df_forcing.name)
+        bc["function"] = "constant"
+        bc["units"] = df_forcing.quantityunitpair.iloc[0][0].unit
+        bc["factor"] = 1
+        bc["offset"] = 0
+    # Check if all timeseries
+    elif np.all(df_forcing.function == "timeseries"):
+        # Prepare data
+        data = list()
+        for i in np.arange(len(df_forcing.datablock)):
+            v = df_forcing.datablock.iloc[i]
+            offset = df_forcing.offset.iloc[i]
+            factor = df_forcing.factor.iloc[i]
+            databl = [n[1] * factor + offset for n in v]
+            data.append(databl)
+        data = np.array(data)
+        # Assume unique times
+        times = np.array([n[0] for n in df_forcing.datablock.iloc[0]])
+        # Prepare dataarray properties
+        dims = ["index", "time"]
+        coords = dict(index=df_forcing.name, time=times)
+        bc["function"] = "timeseries"
+        bc["units"] = df_forcing.quantityunitpair.iloc[0][1].unit
+        bc["time_unit"] = df_forcing.quantityunitpair.iloc[0][0].unit
+        bc["factor"] = 1
+        bc["offset"] = 0
+    # Else not implemented yet
+    else:
+        raise NotImplementedError(
+            f"ForcingFile with several function for a single variable not implemented yet. Skipping reading forcing for variable {quantity}."
+        )
+
+    # Get lateral locations
+    if any(df.nodeid.values):
+        # TODO test when implementing laterals on nodes
+        nodeids = df.nodeid.values
+        nodeids = nodeids[nodeids != "nan"]
+        node_geoms = nodes.set_index("name").reindex(nodeids)
+    elif any(df.branchid.values):
+        branchids = df.branchid.values
+        branchids = branchids[branchids != "nan"]
+        df["geometry"] = [
+            branches.set_index("branchid")
+            .loc[i.branchid, "geometry"]
+            .interpolate(i.chainage)
+            for i in df.itertuples()
+        ]
+        node_geoms = df
+    else:  # TODO polygon
+        pass
+
+    # branches
+    # get crsloc geometry
+
+    # # get rid of missing geometries
+    # index_name = node_geoms.index.name
+    # node_geoms = pd.DataFrame([row for n, row in node_geoms.iterrows() if row["geometry"] is not None])
+    # node_geoms.index.name = index_name
+    # FIXME polygon geometry?
+    xs, ys = np.vectorize(
+        lambda p: (np.nan, np.nan) if p is None else (p.xy[0][0], p.xy[1][0])
+    )(node_geoms["geometry"])
+    coords["x"] = ("index", xs)
+    coords["y"] = ("index", ys)
+
+    # Prep DataArray and add to forcing
+    da_out = xr.DataArray(
+        data=data,
+        dims=dims,
+        coords=coords,
+        attrs=bc,
+    )
+    da_out.name = f"lateral1d_{quantity}"
+
+    return da_out
+
+
+def write_1dlateral(forcing: Dict, savedir: str = None, ext_fn: str = None) -> Tuple:
+    """ "
+    write 1dlateral ext and bc files from forcing dict.
+
+    Parameters
+    ----------
+    forcing: dict of xarray DataArray
+        Dict of lateral DataArray for each variable
+        Only forcing that starts with "lateral1d" is recognised.
+    savedir: str, optional
+        path to the directory where to save the file.
+    ext_fn: str or Path, optional
+        Path of the external forcing file (.ext) in which this function will append to.
+    """
+    # filter for 1d lateral
+    forcing = {
+        key: forcing[key] for key in forcing.keys() if key.startswith("lateral1d")
+    }
+    if len(forcing) == 0:
+        return
+
+    extdict = list()
+    bcdict = list()
+    # Loop over forcing dict
+    for name, da in forcing.items():
+        for i in da.index.values:
+            if da.name == "lateral_discharge":
+                bc = da.attrs.copy()
+                # Lateral
+                ext = dict()
+                ext["id"] = str(i)
+                ext["name"] = str(i)
+                ext["quantity"] = "discharge"
+                ext["locationType"] = "1d"
+                if "nodeid" in da.coords:  # not used
+                    ext["nodeid"] = da.coords["nodeid"].values[0]
+                elif "branchid" in da.coords:  # for point laterals
+                    ext["branchid"] = da.coords["branchid"].values[0]
+                    ext["chainage"] = da.coords["chainage"].values[0]
+                elif "xcoordinates" in da.coords:  # for polygon laterals
+                    ext["numcoordinates"] = da.coords["numcoordinates"].values[0]
+                    # ext["xcoordinates"] = da["xcoordinates"] # TODO convert to something like list?
+                    # ext["ycoordinates"] = da["ycoordinates"]
+                else:
+                    raise ValueError("Not supported.")
+                extdict.append(ext)
+                # Forcing
+                bc["name"] = str(i)
+                if bc["function"] == "constant":
+                    # one quantityunitpair
+                    bc["quantityunitpair"] = [
+                        {"quantity": da.name, "unit": bc["units"]}
+                    ]
+                    # only one value column (no times)
+                    bc["datablock"] = [[da.sel(index=i).values.item()]]
+                else:
+                    # two quantityunitpair
+                    bc["quantityunitpair"] = [
+                        {"quantity": "time", "unit": bc["time_unit"]},
+                        {"quantity": da.name, "unit": bc["units"]},
+                    ]
+                    bc.pop("time_unit")
+                    # time/value datablock
+                    bc["datablock"] = [
+                        [t, x] for t, x in zip(da.time.values, da.sel(index=i).values)
+                    ]
+                bc.pop("quantity")
+                bc.pop("units")
+                bcdict.append(bc)
+
+    # write forcing file
+    forcing_model = ForcingModel(forcing=bcdict)
+    forcing_fn = f'lateral1d_{ext["quantity"]}.bc'
+    forcing_model.save(join(savedir, forcing_fn), recurse=True)
+
+    # add forcingfile to ext, note forcing file is called discharge for lateral
+    extdicts = []
+    for ext in extdict:
+        ext["discharge"] = forcing_fn
+        extdicts.append(ext)
+
+    # write external forcing file
+    if ext_fn is not None:
+        # write to external forcing file
+        write_ext(extdicts, savedir, ext_fn=ext_fn, block_name="lateral", mode="append")
+
+    return forcing_fn, ext_fn
+
+
 def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArray:
     """
     Read a 2d boundary forcing location and values, and parse to xarray.
@@ -1091,7 +1299,7 @@ def write_ext(
         if block_name == "boundary":
             ext_model.boundary.append(Boundary(**{**extdicts[i]}))
         elif block_name == "lateral":
-            raise NotImplementedError("laterals are not yet supported.")
+            ext_model.lateral.append(Lateral(**{**extdicts[i]}))
         elif block_name == "meteo":
             ext_model.meteo.append(Meteo(**{**extdicts[i]}))
         else:
