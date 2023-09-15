@@ -1631,6 +1631,53 @@ class DFlowFMModel(MeshModel):
             da_out, name=f"boundary1d_{da_out.name}_{branch_type}"
         )  # FIXME: this format cannot be read back due to lack of branch type info from model files
 
+    def _read_laterals(self, laterals_geodataset_fn):
+        """Reads laterals"""
+
+        refdate, tstart, tstop = self.get_model_time()  # time slice
+
+        if (
+            laterals_geodataset_fn is not None
+            and self.data_catalog[laterals_geodataset_fn].data_type == "GeoDataset"
+        ):
+            da_lat = self.data_catalog.get_geodataset(
+                laterals_geodataset_fn,
+                geom=self.region.buffer(
+                    self._network_snap_offset
+                ),  # only select data within region of interest
+                variables=["lateral_discharge"],
+                time_tuple=(tstart, tstop),
+                crs=self.crs.to_epsg(),  # assume model crs if none defined
+            ).rename("lateral_discharge")
+            # error if time mismatch
+            if np.logical_and(
+                pd.to_datetime(da_lat.time.values[0]) == pd.to_datetime(tstart),
+                pd.to_datetime(da_lat.time.values[-1]) == pd.to_datetime(tstop),
+            ):
+                pass
+            else:
+                self.logger.error(
+                    "forcing has different start and end time. Please check the forcing file. support yyyy-mm-dd HH:MM:SS. "
+                )
+            # reproject if needed and convert to location
+            if da_lat.vector.crs != self.crs:
+                da_lat.vector.to_crs(self.crs)
+            # get geom
+            gdf_laterals = da_lat.vector.to_gdf(reducer=np.mean)
+        elif (
+            laterals_geodataset_fn is not None
+            and self.data_catalog[laterals_geodataset_fn].data_type == "GeoDataFrame"
+        ):
+            gdf_laterals = self.data_catalog.get_geodataframe(
+                laterals_geodataset_fn,
+                geom=self.region.buffer(self._network_snap_offset),
+            )
+            da_lat = None
+        else:
+            gdf_laterals = None
+            da_lat = None
+        return gdf_laterals, da_lat
+
     def setup_1dlateral_from_points(
         self,
         laterals_geodataset_fn: str = None,
@@ -1735,7 +1782,57 @@ class DFlowFMModel(MeshModel):
         # TODO: the polygon is supported by delft3dfm lateral, no convertion to points needed
 
         # 4. set boundaries
-        self.set_forcing(da_out, name=f"lateral1d_{branch_type}")
+        self.set_forcing(da_out, name=f"lateral1d_points")
+
+    def setup_1dlateral_from_polygons(
+        self,
+        laterals_geodataset_fn: str = None,
+        lateral_value: float = -2.5,
+    ):
+        """
+        Prepares the 1D lateral discharge within a polygon.
+        E.g. '1' m3/s for all lateral polygons.
+
+        Use ``laterals_geodataset_fn`` to set the lateral values from a geodatasets containing of polygons and (optionaly) timeseries.
+
+        The discharge can either be a constant using ``lateral_value`` (default) or
+        a timeseries read from ``laterals_geodataset_fn``.
+        If ``laterals_geodataset_fn`` has missing values, the constant ``lateral_value`` will be used.
+
+        The timeseries are clipped to the model time based on the model config
+        tstart and tstop entries.
+
+        Adds/Updates model layers:
+            * ** lateral1d_polygon** forcing: 1D laterals DataArray
+
+        Parameters
+        ----------
+        laterals_geodataset_fn : str, Path
+            Path or data source name for geospatial point location file.
+            * Required variables if a combined point location file: ['index'] with type int
+            * Required variables ['laterals_discharge']
+        lateral_value : float, optional
+            Constant value to use for all laterals if ``laterals_timeseries_fn`` is None and to
+            fill in missing data. By default 0 [m3/s].
+        """
+        self.logger.info(f"Preparing 1D laterals for polygons.")
+
+        # 1. read lateral geodataset
+        # FIXME what if I only have geodataframe?
+        gdf_laterals, da_lat = self._read_laterals(laterals_geodataset_fn)
+
+        # 2. Derive lateral dataarray
+        da_out = workflows.compute_forcing_values_polygon(
+            gdf=gdf_laterals,
+            da=da_lat,
+            forcing_value=lateral_value,
+            forcing_type="lateral_discharge",
+            forcing_unit="m3/s",
+            logger=self.logger,
+        )
+
+        # 3. set boundaries
+        self.set_forcing(da_out, name=f"lateral1d_polygons")
 
     def _setup_1dstructures(
         self,
@@ -3232,21 +3329,9 @@ class DFlowFMModel(MeshModel):
             # lateral
             if len(ext_model.lateral) > 0:
                 df_ext = pd.DataFrame([f.__dict__ for f in ext_model.lateral])
-                # Forcing dataarrays to prepare for each quantity
-                name = "lateral_discharge"
-                # Get the dataframe corresponding to the current variable
-                df = df_ext
-                # get network
-                network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
-                    self.mesh_datasets["network1d"]
-                )
-                node_geoms = network1d_nodes[
-                    np.isin(network1d_nodes["nodeid"], df.nodeid.values)
-                ]
-                branches = self.branches
                 da_out = utils.read_1dlateral(
-                    df, quantity=name, branches=branches
-                )  # FIXME check if I need node_geoms or branches
+                    df_ext, branches=self.branches
+                )  # TODO extend support to get laterals on nodes #78
                 # Add to forcing
                 self.set_forcing(da_out)
             # meteo

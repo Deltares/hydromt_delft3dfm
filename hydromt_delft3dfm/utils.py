@@ -22,9 +22,10 @@ from hydrolib.core.dflowfm import (
     StorageNodeModel,
     StructureModel,
 )
-from shapely.geometry import Point
+from shapely.geometry import Point, Polygon
 
 from .workflows import helper
+from .workflows import boundaries
 
 __all__ = [
     "read_branches_gui",
@@ -734,22 +735,23 @@ def write_1dboundary(forcing: Dict, savedir: str = None, ext_fn: str = None) -> 
 
 def read_1dlateral(
     df: pd.DataFrame,
-    quantity: str,
+    quantity: str = "lateral_discharge",
     nodes: gpd.GeoDataFrame = None,
     branches: gpd.GeoDataFrame = None,
 ) -> xr.DataArray:
     """
     Read for a specific quantity the corresponding external and forcing files and parse to xarray
-    # TODO: support external forcing for 2D.
 
     Parameters
     ----------
     df: pd.DataFrame
         External Model DataFrame filtered for quantity.
     quantity: str
-        Name of quantity (eg 'waterlevel').
+        Name of quantity. Supports only "lateral_discharge".
     nodes: gpd.GeoDataFrame
-        Nodes locations of the boundary in df.
+        Nodes locations of the laterals in df.
+    branches: gpd.GeoDataFrame
+        Branches on which the laterals in df are located.
 
     Returns
     -------
@@ -757,8 +759,6 @@ def read_1dlateral(
         External and focing values combined into a DataArray for variable quantity.
     """
     # Initialise dataarray attributes
-    # TODO change to read using branchid and chainage
-    # TODO add read using polygons
     bc = {"quantity": quantity}
 
     # Assume one discharge (lateral specific) file (hydromt writer) and read
@@ -795,6 +795,7 @@ def read_1dlateral(
         dims = ["index", "time"]
         coords = dict(index=df_forcing.name, time=times)
         bc["function"] = "timeseries"
+        bc["timeinterpolation"] = df_forcing.timeinterpolation.iloc[0]
         bc["units"] = df_forcing.quantityunitpair.iloc[0][1].unit
         bc["time_unit"] = df_forcing.quantityunitpair.iloc[0][0].unit
         bc["factor"] = 1
@@ -805,47 +806,53 @@ def read_1dlateral(
             f"ForcingFile with several function for a single variable not implemented yet. Skipping reading forcing for variable {quantity}."
         )
 
-    # Get lateral locations
-    if any(df.nodeid.values):
-        # TODO test when implementing laterals on nodes
-        nodeids = df.nodeid.values
-        nodeids = nodeids[nodeids != "nan"]
-        node_geoms = nodes.set_index("name").reindex(nodeids)
-    elif any(df.branchid.values):
-        branchids = df.branchid.values
-        branchids = branchids[branchids != "nan"]
-        df["geometry"] = [
-            branches.set_index("branchid")
-            .loc[i.branchid, "geometry"]
-            .interpolate(i.chainage)
-            for i in df.itertuples()
-        ]
-        node_geoms = df
-    else:  # TODO polygon
-        pass
-
-    # branches
-    # get crsloc geometry
-
-    # # get rid of missing geometries
-    # index_name = node_geoms.index.name
-    # node_geoms = pd.DataFrame([row for n, row in node_geoms.iterrows() if row["geometry"] is not None])
-    # node_geoms.index.name = index_name
-    # FIXME polygon geometry?
-    xs, ys = np.vectorize(
-        lambda p: (np.nan, np.nan) if p is None else (p.xy[0][0], p.xy[1][0])
-    )(node_geoms["geometry"])
-    coords["x"] = ("index", xs)
-    coords["y"] = ("index", ys)
-
-    # Prep DataArray and add to forcing
-    da_out = xr.DataArray(
-        data=data,
-        dims=dims,
-        coords=coords,
-        attrs=bc,
-    )
-    da_out.name = f"lateral1d_{quantity}"
+    # Get lateral locations and update dimentions and coordinates
+    if any(df.numcoordinates.values):
+        # polygons
+        df["geometry"] = df.apply(
+            lambda row: Polygon(zip(row["xcoordinates"], row["ycoordinates"])), axis=1
+        )
+        coords_dict = boundaries.get_geometry_coords_for_polygons(gpd.GeoDataFrame(df))
+        # Updates the data
+        data = np.tile(
+            np.expand_dims(data, axis=-1),
+            (1, 1, len(coords_dict["numcoordinates"])),
+        )
+        dims.append("numcoordinates")
+        coords.update(coords_dict)
+        # Prep DataArray and add to forcing
+        da_out = xr.DataArray(
+            data=data,
+            dims=dims,
+            coords=coords,
+            attrs=bc,
+        )
+        da_out.name = f"lateral1d_polygons"
+    else:
+        # points
+        if any(df.nodeid.values):
+            # TODO laterals on nodes #78
+            pass
+        elif any(df.branchid.values):
+            branchids = df.branchid.values
+            branchids = branchids[branchids != "nan"]
+            df["geometry"] = [
+                branches.set_index("branchid")
+                .loc[i.branchid, "geometry"]
+                .interpolate(i.chainage)
+                for i in df.itertuples()
+            ]
+            # Updates the data
+            coords["x"] = ("index", np.array(df.geometry.x))
+            coords["y"] = ("index", np.array(df.geometry.y))
+            # Prep DataArray and add to forcing
+            da_out = xr.DataArray(
+                data=data,
+                dims=dims,
+                coords=coords,
+                attrs=bc,
+            )
+            da_out.name = f"lateral1d_points"
 
     return da_out
 
@@ -876,28 +883,37 @@ def write_1dlateral(forcing: Dict, savedir: str = None, ext_fn: str = None) -> T
     # Loop over forcing dict
     for name, da in forcing.items():
         for i in da.index.values:
-            if da.name == "lateral_discharge":
-                bc = da.attrs.copy()
+            if da.attrs["quantity"] == "lateral_discharge":
                 # Lateral
+                latid = f"{name}_{i}"
+                # Ext
                 ext = dict()
-                ext["id"] = str(i)
-                ext["name"] = str(i)
+                ext["id"] = latid
+                ext["name"] = latid
                 ext["quantity"] = "discharge"
                 ext["locationType"] = "1d"
-                if "nodeid" in da.coords:  # not used
-                    ext["nodeid"] = da.coords["nodeid"].values[0]
+                if "nodeid" in da.coords:
+                    # TODO laterals on nodes #78
+                    # ext["nodeid"] = da.sel(index=i).coords["nodeid"].item()
+                    pass
                 elif "branchid" in da.coords:  # for point laterals
-                    ext["branchid"] = da.coords["branchid"].values[0]
-                    ext["chainage"] = da.coords["chainage"].values[0]
-                elif "xcoordinates" in da.coords:  # for polygon laterals
-                    ext["numcoordinates"] = da.coords["numcoordinates"].values[0]
-                    # ext["xcoordinates"] = da["xcoordinates"] # TODO convert to something like list?
-                    # ext["ycoordinates"] = da["ycoordinates"]
+                    ext["branchid"] = da.sel(index=i).coords["branchid"].item()
+                    ext["chainage"] = da.sel(index=i).coords["chainage"].item()
+                elif "numcoordinates" in da.coords:  # for polygon laterals
+                    ext["xcoordinates"] = da.sel(index=i)[
+                        "xcoordinates"
+                    ].values.tolist()
+                    ext["ycoordinates"] = da.sel(index=i)[
+                        "ycoordinates"
+                    ].values.tolist()
+                    ext["numcoordinates"] = len(ext["ycoordinates"])
+                    da = da.isel(numcoordinates=0)  # drop coordinates
                 else:
                     raise ValueError("Not supported.")
                 extdict.append(ext)
                 # Forcing
-                bc["name"] = str(i)
+                bc = da.attrs.copy()
+                bc["name"] = latid
                 if bc["function"] == "constant":
                     # one quantityunitpair
                     bc["quantityunitpair"] = [
@@ -1299,7 +1315,7 @@ def write_ext(
         if block_name == "boundary":
             ext_model.boundary.append(Boundary(**{**extdicts[i]}))
         elif block_name == "lateral":
-            ext_model.lateral.append(Lateral(**{**extdicts[i]}))
+            ext_model.lateral.append(Lateral(**extdicts[i]))
         elif block_name == "meteo":
             ext_model.meteo.append(Meteo(**{**extdicts[i]}))
         else:

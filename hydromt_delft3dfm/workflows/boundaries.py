@@ -8,7 +8,7 @@ import hydromt.io
 import numpy as np
 import pandas as pd
 import xarray as xr
-from shapely.geometry import Point
+from shapely.geometry import Point, Polygon
 
 from hydromt_delft3dfm import graph_utils
 
@@ -24,6 +24,8 @@ __all__ = [
     "compute_2dboundary_values",
     "compute_meteo_forcings",
     "compute_forcing_values",
+    "compute_forcing_values_polygon",
+    "get_geometry_coords_for_polygons",
 ]
 
 
@@ -712,6 +714,166 @@ def compute_forcing_values(
                 branchid=("index", gdf.branchid.values),
                 chainage=("index", gdf.chainage.values),
             ),
+            attrs=dict(
+                function="constant",
+                offset=0.0,
+                factor=1.0,
+                quantity=f"{forcing_type}",
+                units=f"{forcing_unit}",
+            ),
+        )
+        da_out.name = f"{forcing_type}"
+    return da_out
+
+
+def get_geometry_coords_for_polygons(gdf):
+    """Gets static coordinates from polygon inputs.
+    Inlcudes numcoordinates, xcoordinates and ycoordinates"""
+    if gdf.geometry.type.iloc[0] == "Polygon":
+        # Get the maximum number of coordinates for any polygon
+        max_coords = gdf["geometry"].apply(lambda x: len(x.exterior.coords[:])).max()
+
+        def get_xcoords(geom):
+            coords = [xy[0] for xy in geom.exterior.coords[:]]
+            return np.pad(
+                coords,
+                (0, max_coords - len(coords)),
+                "constant",
+                constant_values=np.nan,
+            )
+
+        def get_ycoords(geom):
+            coords = [xy[1] for xy in geom.exterior.coords[:]]
+            return np.pad(
+                coords,
+                (0, max_coords - len(coords)),
+                "constant",
+                constant_values=np.nan,
+            )
+
+        # Create the 2D arrays
+        x_2d = np.vstack(gdf["geometry"].apply(get_xcoords))
+        y_2d = np.vstack(gdf["geometry"].apply(get_ycoords))
+
+        return dict(
+            index=gdf.index,
+            numcoordinates=np.arange(max_coords),
+            xcoordinates=(("index", "numcoordinates"), x_2d),
+            ycoordinates=(("index", "numcoordinates"), y_2d),
+        )
+
+
+def compute_forcing_values_polygon(
+    gdf: gpd.GeoDataFrame,
+    da: xr.DataArray = None,
+    forcing_value: float = -2.5,
+    forcing_type: str = "waterlevelbnd",
+    forcing_unit: str = "m",
+    logger=logger,
+):
+    """
+    Compute 1d forcing values. Used for 1D lateral polygon locations.
+
+    Parameters
+    ----------
+    gdf : gpd.GeoDataFrame
+        Point locations of the 1D forcings to which to add data.
+
+        * Required variables: ['geometry']
+    da : xr.DataArray, optional
+        xr.DataArray containing the forcing timeseries values. If None, uses a constant values for all forcings.
+
+        * Required variables: [``forcing_type``]
+
+    forcing_value : float, optional
+        Constant value to use for all forcings if ``da`` is None and to
+        fill in missing data.
+    forcing_type : {'lateral_discharge'}
+        Type of forcing to use.
+    forcing_unit : {'m3/s'}
+        Unit corresponding to [forcing_type].
+    logger
+        Logger to log messages.
+    """
+    # Timeseries boundary values
+    if da is not None:
+        logger.info(f"Preparing 1D forcing type {forcing_type} from timeseries.")
+
+        # get boundary data freq in seconds
+        _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
+        dt = pd.to_timedelta((da.time[1].values - da.time[0].values))
+        freq = dt.resolution_string
+        multiplier = 1
+        if freq == "D":
+            logger.warning(
+                "time unit days is not supported by the current GUI version: 2022.04"
+            )  # converting to hours as temporary solution # FIXME: day is converted to hours temporarily
+            multiplier = 24
+        if len(pd.date_range(da.time[0].values, da.time[-1].values, freq=dt)) != len(
+            da.time
+        ):
+            logger.error("does not support non-equidistant time-series.")
+        freq_name = _TIMESTR[freq]
+        freq_step = getattr(dt.components, freq_name)
+        bd_times = np.array([(i * freq_step) for i in range(len(da.time))])
+        if multiplier == 24:
+            bd_times = np.array(
+                [(i * freq_step * multiplier) for i in range(len(da.time))]
+            )
+            freq_name = "hours"
+
+        # instantiate xr.Dataset for bnd data
+        coords_dict = get_geometry_coords_for_polygons(gdf)
+        # Prepare the data
+        data_3d = np.tile(
+            np.expand_dims(da.data, axis=1), (1, len(coords_dict["numcoordinates"]), 1)
+        )
+        # Create the DataArray
+        da_out = xr.DataArray(
+            data=data_3d,
+            dims=("index", "numcoordinates", "time"),
+            coords={
+                "index": coords_dict["index"],
+                "numcoordinates": coords_dict["numcoordinates"],
+                "xcoordinates": coords_dict["xcoordinates"],
+                "ycoordinates": coords_dict["ycoordinates"],
+                "time": bd_times,
+            },
+            attrs=dict(
+                function="TimeSeries",
+                timeInterpolation="Linear",
+                quantity=f"{forcing_type}",
+                units=f"{forcing_unit}",
+                time_unit=f"{freq_name} since {pd.to_datetime(da.time[0].values)}",  # support only yyyy-mm-dd HH:MM:SS
+            ),
+        )
+        # fill in na using default
+        da_out = da_out.fillna(forcing_value)
+
+        # drop na in time
+        da_out.dropna(dim="time")
+
+        # add name
+        da_out.name = f"{forcing_type}"
+    else:
+        logger.info(
+            f"Using constant value {forcing_value} {forcing_unit} for all {forcing_type} forcings."
+        )
+        # instantiate xr.DataSet for bnd data with forcing_type directly
+        coords_dict = get_geometry_coords_for_polygons(gdf)
+        data_3d = np.full(
+            (len(coords_dict["index"]), len(coords_dict["numcoordinates"])),
+            forcing_value,
+            dtype=np.float32,
+        )
+        da_out = xr.DataArray(
+            data=data_3d,
+            coords={
+                "index": coords_dict["index"],
+                "numcoordinates": coords_dict["numcoordinates"],
+                "xcoordinates": coords_dict["xcoordinates"],
+                "ycoordinates": coords_dict["ycoordinates"],
+            },
             attrs=dict(
                 function="constant",
                 offset=0.0,
