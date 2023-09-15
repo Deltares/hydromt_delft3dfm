@@ -750,6 +750,7 @@ def read_1dlateral(
         Name of quantity. Supports only "lateral_discharge".
     nodes: gpd.GeoDataFrame
         Nodes locations of the laterals in df.
+        # not implemented
     branches: gpd.GeoDataFrame
         Branches on which the laterals in df are located.
 

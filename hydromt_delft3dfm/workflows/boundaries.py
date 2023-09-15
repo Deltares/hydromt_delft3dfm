@@ -23,7 +23,7 @@ __all__ = [
     "compute_boundary_values",
     "compute_2dboundary_values",
     "compute_meteo_forcings",
-    "compute_forcing_values",
+    "compute_forcing_values_points",
     "compute_forcing_values_polygon",
     "get_geometry_coords_for_polygons",
 ]
@@ -610,67 +610,81 @@ def compute_meteo_forcings(
     return da_out
 
 
-def compute_forcing_values(
+def _standardize_forcing_timeindexes(da):
+    """Standardize timeindexes frequency based on forcing DataArray"""
+    _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
+    dt = pd.to_timedelta((da.time[1].values - da.time[0].values))
+    freq = dt.resolution_string
+    multiplier = 1
+    if freq == "D":
+        logger.warning(
+            "time unit days is not supported by the current GUI version: 2022.04"
+        )  # converting to hours as temporary solution # FIXME: day is converted to hours temporarily
+        multiplier = 24
+    if len(pd.date_range(da.time[0].values, da.time[-1].values, freq=dt)) != len(
+        da.time
+    ):
+        logger.error("does not support non-equidistant time-series.")
+    freq_name = _TIMESTR[freq]
+    freq_step = getattr(dt.components, freq_name)
+    bd_times = np.array([(i * freq_step) for i in range(len(da.time))])
+    if multiplier == 24:
+        bd_times = np.array([(i * freq_step * multiplier) for i in range(len(da.time))])
+        freq_name = "hours"
+    return bd_times, freq_name
+
+
+def compute_forcing_values_points(
     gdf: gpd.GeoDataFrame,
     da: xr.DataArray = None,
-    forcing_value: float = -2.5,
-    forcing_type: str = "waterlevelbnd",
-    forcing_unit: str = "m",
+    forcing_value: float = 0.0,
+    forcing_type: str = "lateral_discharge",
+    forcing_unit: str = "m3/s",
     logger=logger,
 ):
     """
-    Compute 1d forcing values. Used for 1D lateral point locations.
-    # TODO harmonize for all 1D forcings (boundary + laterals)
+    Compute 1d forcing values.
+
+    Used for 1D lateral point locations.
 
     Parameters
     ----------
     gdf : gpd.GeoDataFrame
-        Point locations of the 1D forcings to which to add data.
+        GeoDataFrame of points to add 1D forcing data.
 
-        * Required variables: ['branchid', 'chainage']
+        * Required variables: ['geometry']
     da : xr.DataArray, optional
-        xr.DataArray containing the forcing timeseries values. If None, uses a constant values for all forcings.
+        xr.DataArray containing the forcing timeseries values.
+        If None, uses a constant ``forcing_value`` for all forcings.
 
-        * Required variables: [``forcing_type``]
+        * Required variables: ['forcing_type']
 
     forcing_value : float, optional
         Constant value to use for all forcings if ``da`` is None and to
         fill in missing data.
+        By default 0.0 ``forcing_unit``
     forcing_type : {'lateral_discharge'}
         Type of forcing to use.
+        For now only support 'lateral_discharge'.
+        By default 'lateral_discharge'
     forcing_unit : {'m3/s'}
-        Unit corresponding to [forcing_type].
+        Unit corresponding to ``forcing_type``.
+        By default 'm3/s'
     logger
         Logger to log messages.
     """
-    # Timeseries boundary values
+    # TODO: harmonize for other point forcing #21
+    # first process data based on either timeseries or constant
+    # then update data based on either nodes or branches
+    # Timeseries forcing values
     if da is not None:
         logger.info(f"Preparing 1D forcing type {forcing_type} from timeseries.")
 
-        # get boundary data freq in seconds
-        _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
-        dt = pd.to_timedelta((da.time[1].values - da.time[0].values))
-        freq = dt.resolution_string
-        multiplier = 1
-        if freq == "D":
-            logger.warning(
-                "time unit days is not supported by the current GUI version: 2022.04"
-            )  # converting to hours as temporary solution # FIXME: day is converted to hours temporarily
-            multiplier = 24
-        if len(pd.date_range(da.time[0].values, da.time[-1].values, freq=dt)) != len(
-            da.time
-        ):
-            logger.error("does not support non-equidistant time-series.")
-        freq_name = _TIMESTR[freq]
-        freq_step = getattr(dt.components, freq_name)
-        bd_times = np.array([(i * freq_step) for i in range(len(da.time))])
-        if multiplier == 24:
-            bd_times = np.array(
-                [(i * freq_step * multiplier) for i in range(len(da.time))]
-            )
-            freq_name = "hours"
+        # get forcing data freq in seconds
+        bd_times, freq_name = _standardize_forcing_timeindexes(da)
 
-        # instantiate xr.DataArray for bnd data
+        # instantiate xr.DataArray for forcing data
+        # NOTE only support points on branches
         da_out = xr.DataArray(
             data=da.data,
             dims=["index", "time"],
@@ -727,7 +741,7 @@ def compute_forcing_values(
 
 
 def get_geometry_coords_for_polygons(gdf):
-    """Gets static coordinates from polygon inputs.
+    """Gets xarray DataArray coordinates that describes polygon geometries.
     Inlcudes numcoordinates, xcoordinates and ycoordinates"""
     if gdf.geometry.type.iloc[0] == "Polygon":
         # Get the maximum number of coordinates for any polygon
@@ -766,63 +780,50 @@ def get_geometry_coords_for_polygons(gdf):
 def compute_forcing_values_polygon(
     gdf: gpd.GeoDataFrame,
     da: xr.DataArray = None,
-    forcing_value: float = -2.5,
+    forcing_value: float = 0.0,
     forcing_type: str = "waterlevelbnd",
     forcing_unit: str = "m",
     logger=logger,
 ):
     """
-    Compute 1d forcing values. Used for 1D lateral polygon locations.
+    Compute 1d forcing values.
+
+    Used for 1D lateral polygon locations.
 
     Parameters
     ----------
     gdf : gpd.GeoDataFrame
-        Point locations of the 1D forcings to which to add data.
+        GeoDataFrame of polygons to add 1D forcing data.
 
         * Required variables: ['geometry']
     da : xr.DataArray, optional
-        xr.DataArray containing the forcing timeseries values. If None, uses a constant values for all forcings.
+        xr.DataArray containing the forcing timeseries values.
+        If None, uses a constant ``forcing_value`` for all forcings.
 
-        * Required variables: [``forcing_type``]
+        * Required variables: ['forcing_type']
 
     forcing_value : float, optional
         Constant value to use for all forcings if ``da`` is None and to
         fill in missing data.
+        By default 0.0 ``forcing_unit``
     forcing_type : {'lateral_discharge'}
         Type of forcing to use.
+        For now only support 'lateral_discharge'.
+        By default 'lateral_discharge'
     forcing_unit : {'m3/s'}
-        Unit corresponding to [forcing_type].
+        Unit corresponding to ``forcing_type``.
+        By default 'm3/s'
     logger
         Logger to log messages.
     """
-    # Timeseries boundary values
+    # Timeseries forcing values
     if da is not None:
         logger.info(f"Preparing 1D forcing type {forcing_type} from timeseries.")
 
-        # get boundary data freq in seconds
-        _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
-        dt = pd.to_timedelta((da.time[1].values - da.time[0].values))
-        freq = dt.resolution_string
-        multiplier = 1
-        if freq == "D":
-            logger.warning(
-                "time unit days is not supported by the current GUI version: 2022.04"
-            )  # converting to hours as temporary solution # FIXME: day is converted to hours temporarily
-            multiplier = 24
-        if len(pd.date_range(da.time[0].values, da.time[-1].values, freq=dt)) != len(
-            da.time
-        ):
-            logger.error("does not support non-equidistant time-series.")
-        freq_name = _TIMESTR[freq]
-        freq_step = getattr(dt.components, freq_name)
-        bd_times = np.array([(i * freq_step) for i in range(len(da.time))])
-        if multiplier == 24:
-            bd_times = np.array(
-                [(i * freq_step * multiplier) for i in range(len(da.time))]
-            )
-            freq_name = "hours"
+        # get forcing data time indes
+        bd_times, freq_name = _standardize_forcing_timeindexes(da)
 
-        # instantiate xr.Dataset for bnd data
+        # instantiate xr.DataArray for forcing data
         coords_dict = get_geometry_coords_for_polygons(gdf)
         # Prepare the data
         data_3d = np.tile(
@@ -859,7 +860,7 @@ def compute_forcing_values_polygon(
         logger.info(
             f"Using constant value {forcing_value} {forcing_unit} for all {forcing_type} forcings."
         )
-        # instantiate xr.DataSet for bnd data with forcing_type directly
+        # instantiate xr.DataArray for forcing data with forcing_type directly
         coords_dict = get_geometry_coords_for_polygons(gdf)
         data_3d = np.full(
             (len(coords_dict["index"]), len(coords_dict["numcoordinates"])),

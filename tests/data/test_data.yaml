@@ -93,6 +93,21 @@
     1D_laterals_timeseries: lateral_discharge
   kwargs:
     fn_data: local_data/laterals_series.csv
+1D_laterals_polygons:
+  data_type: GeoDataFrame
+  driver: vector
+  path: local_data/laterals_polygons.geojson
+  crs: 32647
+1D_laterals_polygons_timeseries:
+  path: local_data/laterals_polygons.geojson
+  data_type: GeoDataset
+  driver: vector
+  crs: 32647
+  rename:
+    1D_laterals_polygons_timeseries: lateral_discharge
+  kwargs:
+    fn_data: local_data/laterals_series.csv
+    assert_gtype: Polygon
 roads:
   path: local_data/roads.tiff
   data_type: RasterDataset
