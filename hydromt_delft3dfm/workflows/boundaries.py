@@ -10,12 +10,14 @@ import pandas as pd
 import xarray as xr
 from shapely.geometry import Point
 
-from ..graph_utils import gpd_to_digraph
+from hydromt_delft3dfm import graph_utils
+
 
 logger = logging.getLogger(__name__)
 
 
 __all__ = [
+    "get_boundaries_with_nodeid",
     "generate_boundaries_from_branches",
     "select_boundary_type",
     "validate_boundaries",
@@ -23,6 +25,30 @@ __all__ = [
     "compute_2dboundary_values",
     "compute_meteo_forcings",
 ]
+
+
+def get_boundaries_with_nodeid(
+    branches: gpd.GeoDataFrame, network1d_nodes: gpd.GeoDataFrame
+) -> gpd.GeoDataFrame:
+    """Get boundary locations from the network branches and associate them with node IDs.
+
+    Parameters
+    ----------
+    branches: A GeoDataFrame containing the branches of the network.
+    network1d_nodes: A GeoDataFrame containing the network1d nodes with node IDs.
+
+    Returns
+    -------
+    A GeoDataFrame with boundary locations and their associated node IDs.
+    """
+
+    # generate all possible and allowed boundary locations
+    _boundaries = generate_boundaries_from_branches(branches, where="both")
+
+    boundaries = hydromt.gis_utils.nearest_merge(
+        _boundaries, network1d_nodes, max_dist=0.1, overwrite=False
+    )
+    return boundaries
 
 
 def generate_boundaries_from_branches(
@@ -43,7 +69,7 @@ def generate_boundaries_from_branches(
         A data frame containing all the upstream and downstream end nodes of the branches
     """
     # convert branches to graph
-    G = gpd_to_digraph(branches)
+    G = graph_utils.gpd_to_digraph(branches)
 
     # get boundary locations at where
     if where == "downstream":

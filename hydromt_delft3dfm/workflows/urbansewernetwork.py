@@ -3,8 +3,9 @@
 import logging
 import tempfile
 from pathlib import Path
-from typing import Union
+from typing import Union, Optional, List, Dict
 
+import pandas as pd
 import geopandas as gpd
 import networkx as nx
 import numpy as np
@@ -14,21 +15,24 @@ import xarray as xr
 
 # hydromt
 from hydromt import flw
-
-# TODO #65: ra2ce installation issue
-from ra2ce.graph.network_config_data.network_config_data import NetworkConfigData
-from ra2ce.graph.network_wrappers.osm_network_wrapper.osm_network_wrapper import (
-    OsmNetworkWrapper,
-)
+from hydromt import DataCatalog
+from hydromt.gis_utils import nearest_merge
 
 from hydromt_delft3dfm import graph_utils
+from hydromt_delft3dfm import workflows
+
 
 logger = logging.getLogger(__name__)
 
-
 __all__ = [
-    "setup_graph_from_openstreetmap",
-    "setup_graph_from_hydrography",
+    "setup_urban_sewer_network_topology_from_osm",
+    "setup_urban_sewer_network_bedlevel_from_dem",
+    # graph additions
+    # "setup_graph_nodes",
+    # "setup_graph_egdes",
+    # graph workflows
+    "optimize_graph",
+    # TODO to be categorized
     "setup_network_connections_based_on_flowdirections",
     "setup_network_parameters_from_rasters",
     "setup_network_topology_optimization",
@@ -36,213 +40,219 @@ __all__ = [
 ]
 
 
-def setup_graph_from_openstreetmap(
-    region: gpd.GeoDataFrame,
-    network_type: str = None,
-    road_types: list[str] = None,
+def setup_urban_sewer_network_topology_from_osm(
+    region,
+    highway_types: list[str] = None,
+    waterway_types: list[str] = None,
     logger: logging.Logger = logger,
 ) -> nx.MultiDiGraph:
     """
-    Download and process Open Street Map (OSM) data within region into a graph network.
+    Set up a complete urban sewer network topology OpenStreetMap.
 
-    The steps involved are:
-    1. Fetch vector lines from OSM data based on a provided query and perform cleaning.
-    2. simplify the graph's topology by removing interstitial nodes
-    3. extract network edges and nodes from the graph (extract geometries from graph)
-    4. recreate graph using network edges and nodes (add geometries to graph)
+    Include data for waterways and highways for open and closed systems.
+    The two systems are connected and outlets are added at intersection points.
 
-    Parameters
-    ----------
-    region: GeoDataFrame
-        The region polygon to consider for fetching OSM data.
-        Must contain crs.
+    Adds/Updates model layers:
 
-    network_type: str {"all_private", "all", "bike", "drive", "drive_service", "walk"})
-        The type of street network to consider. This helps filter the OSM data.
-        If None, use road_types to filter features.
-        By default None.
+    * **rivers** geom: 1D rivers vector
+    * **pipes** geom: 1D pipes vector
+    * **branches** geom: 1D branches vector
+    * **outlets** geom: 1D outlets vector
 
-    road_types: list[str], optional
-        A list of road types to consider during the creation of the graph.
-        This is a refined filter to get data that is included from the OSM dataset.
-        A complete list can be found in: https://wiki.openstreetmap.org/wiki/Key:highway.
-        by default None.
+    Parameters:
+    - region : object
+        The geographical region for which the sewer network is to be constructed.
+        This could be a bounding box, polygon, or any other representation of a region.
+    - highway_types : list
+        List of highway types (e.g., ["motorway", "primary"]) to include from the OpenStreetMap data.
+    - waterway_types : list
+        List of waterway types (e.g., ["river", "stream"]) to include from the OpenStreetMap data.
+    - logger : Logger object
+        An instance of a logger to capture logs and messages during the process.
+        Useful for debugging and understanding the workflow steps.
 
-    Returns
-    -------
-    nx.MultiDiGraph:
-        An instance of the graph as a multi-digraph, with geometry information for edges
-        and nodes.
-        - Global property: 'crs'.
-        - Edge property: ['edgeid', 'geometry', 'node_start', 'node_end','osmid',
-                          'highway', 'oneway', 'reversed', 'length', 'rfid_c', , 'rfid']
-        - Node property: ['nodeid', 'geometry', 'y', 'x', 'street_count']
-
-    See Also
-    --------
-    - ra2ce.OsmNetworkWrapper.get_clean_graph_from_osm
-    - osmnx.simplfy_graph
-    - ra2ce.OsmNetworkWrapper.get_clean_graph
-    - graph_utils.preprocess_graph
+    Returns:
+    - graph : nx.MultiDiGraph
+        The final preprocessed graph representing the urban sewer network.
+        It integrates both the open and closed drainage systems and includes outlets at
+        the intersection points.
     """
-    # method implementation goes here
+    # input
+    if waterway_types is None:
+        waterway_types = ["river", "stream", "brook", "canal", "ditch"]
+    if highway_types is None:
+        highway_types = [
+            "motorway",
+            "motorway_link",
+            "primary",
+            "primary_link",
+            "secondary",
+            "secondary_link",
+            "tertiary",
+            "tertiary_link",
+            "residential",
+        ]
+    # output
+    _required_columns = None
 
-    # this function use OsmNetworkWrapper from race to download OSM data into network
+    # 1. Build the graph for waterways (open system)
+    logger.info(f"Download waterway {waterway_types} form osm")
+    graph_osm_open = workflows.create_graph_from_openstreetmap(
+        region=region,
+        buffer=1000,
+        osm_key="waterway",
+        osm_values=waterway_types,
+        logger=logger,
+    )
 
-    # get crs
-    crs = region.crs
+    # 2. Build the graph for highways (closed system)
+    logger.info(f"Download highway {highway_types} form osm")
+    graph_osm_closed = workflows.create_graph_from_openstreetmap(
+        region=region,
+        buffer=500,
+        osm_key="highway",
+        osm_values=highway_types,
+        logger=logger,
+    )
 
-    def _get_osm_wrapper() -> OsmNetworkWrapper:
-        # creates and configures a osm network wrapper
-        _network_config_data = NetworkConfigData()
-        _osm_network_wrapper = OsmNetworkWrapper(_network_config_data)
-        # configure wrapper properties
-        _osm_network_wrapper.is_directed = True
-        _osm_network_wrapper.network_type = network_type
-        _osm_network_wrapper.road_types = road_types
-        _osm_network_wrapper.polygon_path = _get_temp_polygon_path()
-        _osm_network_wrapper.output_graph_dir = _get_temp_output_graph_dir()
-        return _osm_network_wrapper
+    # 3. obtain open and closed systems and outlets by intersecting
+    open_system, closed_system, outlets = workflows.intersect_lines(
+        graph_utils.graph_to_network(graph_osm_open)[0],
+        graph_utils.graph_to_network(graph_osm_closed)[0],
+    )
+    # add attributes
+    open_system["branchid"] = open_system["id"]
+    open_system["branchtype"] = "river"
+    closed_system["branchid"] = closed_system["id"]
+    closed_system["branchtype"] = "pipe"
+    outlets["nodeid"] = outlets["id"]
+    outlets["nodetype"] = "outlet"
 
-    # TODO #65: replace funcs to get temp paths after ra2ce update
-    def _get_temp_polygon_path() -> Path:
-        # create a temporary file for region polygon in EPSG:4326
-        with tempfile.TemporaryFile(suffix=".geojson") as temp:
-            # dump the data to the file
-            region.to_crs(pyproj.CRS.from_user_input(4326)).geometry.reset_index(
-                drop=True
-            ).to_file(temp.name, driver="GeoJSON")
-        return Path(temp.name)
+    # TODO select required columns
 
-    def _get_temp_output_graph_dir() -> Path:
-        # create a temporary directory
-        temp = tempfile.TemporaryDirectory()
-        return Path(temp.name)
+    # 4. Recreate the graph from the complete system topology
+    logger.info(f"Create graph and update open system, closed system and outlets.")
+    graph = workflows.create_graph_from_geodataframe(
+        pd.concat([open_system, closed_system]),
+        is_directed=False,
+        logger=logger,
+    )
 
-    # download from osm and perform cleaning (drop_duplicates, add_missing_geoms_graph, snap_nodes_to_nodes)
-    _osm_network_wrapper = _get_osm_wrapper()
-    _osm_graph = _osm_network_wrapper.get_clean_graph_from_osm()
-    logger.info("Get clean graph from osm.")
+    # TODO set graph
 
-    # simplify the graph's topology by removing interstitial nodes
-    _osm_simplified_graph = osmnx.simplify_graph(
-        _osm_graph
-    )  # TODO #64: needs testing, too longe/too short are not beneficial for dem based direction.
-    _osm_simplified_graph = _osm_network_wrapper.get_clean_graph(
-        _osm_simplified_graph
-    )  # clean again for the simplified graph
-    logger.info("Get simplified graph from osm.")
-
-    # preprocess to desired graph format
-    graph = graph_utils.preprocess_graph(_osm_simplified_graph, to_crs=crs)
-
-    # get edges and nodes from graph (momepy convention)
-    # edges, nodes = graph_utils.graph_to_network(_osm_simplified_graph, crs=crs)
-
-    # get new graph with correct crs
-    # graph = graph_utils.network_to_graph(
-    #     edges=edges, nodes=nodes, create_using=nx.MultiDiGraph
-    # )
-
-    # unit test
-    # _edges, _nodes = graph_utils.graph_to_network(graph)
-    # _graph = graph_utils.network_to_graph(
-    #     edges=_edges, nodes=_nodes, create_using=nx.MultiDiGraph
-    # )
-    # nx.is_isomorphic(_graph, graph) -->  True
+    # 5. Add outlets to graph
+    # TODO replaced by super method
+    graph = workflows.setup_graph_from_geodataframe(
+        graph,  # TODO replace by self.graph
+        data_catalog=None,  # TODO replace by self.data_catalog
+        vector_fn=outlets,
+        variables=["nodeid", "nodetype"],
+        max_dist=1.0,
+        rename=dict(nodeid="nodeid", nodetype="nodetype"),
+        graph_component="nodes",
+        logger=logger,
+    )
 
     return graph
 
 
-def setup_graph_from_hydrography(
-    region: gpd.GeoDataFrame,
-    ds_hydro: xr.Dataset,
-    min_sto: int = 1,
+def setup_urban_sewer_network_bedlevel_from_dem(
+    graph: nx.Graph,  # TODO replace by self.graphs
+    data_catalog: DataCatalog,  # TODO replace by self.data_catalog
+    dem_fn: Union[str, Path, xr.DataArray, xr.Dataset],
+    fill_method: Optional[str] = None,
     logger: logging.Logger = logger,
-) -> nx.Graph:
-    """Preprocess DEM to graph representing flow directions.
+):
+    """
+    Update the graph with elevation data from a DEM, compute gradient for edges,
+    and reverse the direction of edges with negative gradient.
 
-    The steps involved are:
-    1. Obtain or derive D8 flow directions from a dem.
-    2. Get flow direction vectors as geodataframe based on a minumum stream order.
-    3. convert the geodataframe into graph.
+    The function samples elevation data from the provided DEM to the nodes of the graph.
+    It then computes the gradient of edges based on the elevation difference between the nodes
+    and the edge length. If the computed gradient is negative, the direction of the edge is reversed.
 
     Parameters
     ----------
-    region: gpd.GeoDataframe
-        Region geodataframe that provide model extent and crs.
-    ds_hydro : xr.Dataset
-        Hydrography data (or dem) to derive river shape and characteristics from.
-        * Required variables: ['elevtn']
-        * Optional variables: ['flwdir', 'uparea']
-    min_sto : int, optional
-        minimum stream order of subbasins, by default the stream order is set to
-        one under the global maximum stream order (slow).
+    graph : nx.Graph
+        Input graph to be updated.
+    data_catalog : DataCatalog
+        Data catalog to read and process raster data.
+    dem_fn : Union[str, Path, xr.DataArray, xr.Dataset]
+        Data catalog key, path to DEM file or DEM xarray data object.
+    fill_method : str, optional
+        If specified, fills no data values using fill_nodata method.
+        Available methods are {'linear', 'nearest', 'cubic', 'rio_idw'}.
+    logger : logging.Logger, optional
+        Logger object to log messages. Default is the global logger.
 
     Returns
     -------
-    nx.DiGraph:
-        The processed flow direction as a graph.
+    nx.Graph
+        Graph with updated node elevations, edge gradients, and potentially reversed edge directions.
+    """
+    logger.info(
+        "Update the graph with elevation data from a DEM and compute gradient for edges"
+    )
+
+    # Sample DEM
+    # TODO replaced by super method
+    graph = workflows.setup_graph_from_rasterdataset(
+        graph=graph,
+        data_catalog=data_catalog,
+        raster_fn=dem_fn,
+        fill_method=fill_method,
+        graph_component="nodes",
+        logger=logger,
+    )
+
+    logger.info("compute gradient from elevtn")
+    graph = _compute_gradient_from_elevtn(graph)
+
+    logger.info("update graph direction")
+    graph = reverse_edges_on_negative_weight(graph, weight="gradient")
+
+    # TODO set graph
+
+    return graph
+
+
+def optimize_graph(graph, logger=logger):
+    """Optimize graph based on various methods
+
+    if only elevtn is available at nodes, then the cost along path is used
+    need to determin which nodes are sources, which nodes are targets
+
 
     """
-    crs = region.crs
 
-    # extra fix of data if user provided tiff
-    elevtn = ds_hydro["elevtn"]
-    if elevtn.raster.res[1] > 0:
-        elevtn = elevtn.raster.flipud()
-    if np.isnan(elevtn.raster.nodata):
-        elevtn.raster.set_nodata(-9999.0)
-        logger.debug("Missing nodata value, setting to -9999.0")
+    logger.info("compute gradient from elevtn")
+    graph = _compute_gradient_from_elevtn(graph)
 
-    # check if flwdir and uparea in ds_hydro
-    if "flwdir" not in ds_hydro.data_vars:
-        da_flw = flw.d8_from_dem(
-            elevtn,
-            max_depth=-1,  # no local pits
-            outlets="edge",
-            idxs_pit=None,
+    logger.info("update graph direction")
+    graph = reverse_edges_on_negative_weight(graph, weight="gradient")
+    return graph
+
+
+def _compute_gradient_from_elevtn(graph):
+    """
+    Compute the gradient for each edge in the graph based on node elevations and edge length.
+
+    Gradient is calculated as:
+    gradient = (elevation of source node - elevation of target node) / edge length
+
+    Modifies the input graph in place.
+    """
+    # TODO: check if need to convert into digraph first
+
+    for e in graph.edges:
+        graph.edges[e].update(
+            {
+                "gradient": (
+                    (graph.nodes[e[0]]["elevtn"] - graph.nodes[e[1]]["elevtn"])
+                    / graph.edges[e]["length"]
+                )
+            }
         )
-        logger.info("flwdir computed from elevtn")
-    else:
-        da_flw = ds_hydro["flwdir"]
-
-    flwdir = flw.flwdir_from_da(da_flw, ftype="d8")
-    if min_sto > 1:
-        # will add stream order key "strord" to feat
-        feat = flwdir.streams(min_sto=min_sto)
-    else:
-        # add stream order key "strord" manually
-        feat = flwdir.streams(strord=flwdir.stream_order())
-    logger.info("Obtain stream vectors")
-
-    # get stream vector geodataframe
-    gdf = gpd.GeoDataFrame.from_features(feat, crs=ds_hydro.raster.crs)
-    # convert to local crs, because flwdir is performed on the raster crs
-    gdf = gdf.to_crs(crs)
-
-    # convert to graph
-    graph = graph_utils.gpd_to_digraph(gdf)
-    graph = graph_utils.preprocess_graph(graph, to_crs=crs)
-
-    # TODO #63: test a few different scales and compare with real cases
-
-    # plot
-    # import matplotlib.pyplot as plt
-    # fig = plt.figure(figsize=(8, 8))
-    # ax = fig.add_subplot()
-    # ds_hydro["elevtn"].plot(
-    #     ax=ax, zorder=1, cbar_kwargs=dict(aspect=30, shrink=0.5), alpha=0.5, **kwargs
-    # )
-    # gdf.to_crs(ds_hydro.raster.crs).plot(
-    #     ax=ax,
-    #     color="blue",
-    #     linewidth=gdf["strord"] / 3,
-    #     label="Original flow directions",
-    # )
-    # f = Path().joinpath("temp.geojson")
-    # gdf.to_file(f)
-
     return graph
 
 
@@ -438,3 +448,135 @@ def setup_network_dimentions_from_rainfallstats(
     """
     # method implementation goes here
     pass
+
+
+# func from hybridurb
+def update_edges_attributes(
+    graph: nx.Graph,
+    edges: gpd.GeoDataFrame,
+    id_col: str = "id",
+) -> nx.Graph():
+    """This function updates the graph by adding new edges attributes specified in edges.
+
+    Only edges with matching ids specified in "id" will be updated."""
+
+    # graph df
+    _graph_df = nx.to_pandas_edgelist(graph).set_index("id")
+    _graph_df["_graph_edge_tuple"] = list(graph.edges)
+
+    # check if edges id in attribute df
+    if edges.index.name == id_col:
+        edges.index.name = "id"
+    elif id_col in edges.columns:
+        edges = edges.set_index(id_col)
+        edges.index.name = "id"
+    else:
+        raise ValueError(
+            "attributes could not be updated to graph: could not perform join"
+        )
+
+    # last item that isnt NA
+    graph_df = _graph_df.reindex(
+        columns=_graph_df.columns.union(edges.columns, sort=False)
+    )
+    graph_df.update(edges)
+
+    # add each attribute
+    for c in edges.columns:
+        dict = {row._graph_edge_tuple: row[c] for i, row in graph_df.iterrows()}
+        nx.set_node_attributes(graph, dict, c)
+
+    return graph
+
+
+# func from hybridurb
+def update_nodes_attributes(
+    graph: nx.Graph,
+    nodes: gpd.GeoDataFrame,
+    id_col: str = "id",
+) -> nx.Graph():
+    """This function updates the graph by adding new edges attributes specified in edges.
+
+    Only edges with matching ids specified in "id" will be updated."""
+
+    # graph df
+    _graph_df = pd.DataFrame(graph.nodes(data="id"), columns=["tuple", "id"]).set_index(
+        "id"
+    )
+
+    # check if edges id in attribute df
+    if nodes.index.name == id_col:
+        nodes.index.name = "id"
+    elif id_col in nodes.columns:
+        nodes = nodes.set_index(id_col)
+        nodes.index.name = "id"
+    else:
+        raise ValueError(
+            "attributes could not be updated to graph: could not perform join"
+        )
+
+    # last item that isnt NA
+    _graph_df = _graph_df.reindex(
+        columns=_graph_df.columns.union(nodes.columns, sort=False)
+    )
+    graph_df = pd.concat([_graph_df, nodes]).groupby(level=0).last()
+    graph_df = graph_df.loc[_graph_df.index]
+
+    # add each attribute
+    for c in nodes.columns:
+        dict = {row.tuple: row[c] for i, row in graph_df.iterrows()}
+        nx.set_node_attributes(graph, dict, c)
+
+    return graph
+
+
+def reverse_edges_on_negative_weight(
+    graph: Union[nx.MultiDiGraph, nx.DiGraph], weight: str = "gradient"
+) -> Union[nx.MultiDiGraph, nx.DiGraph]:
+    """Reverse graph edges based on a negative weight attribute.
+
+    Parameters:
+    -----------
+    graph : Union[nx.DiGraph,nx.MultiDiGraph]
+        Input graph.
+    weight : str
+        Name of the edge attribute to check. Default is 'gradient'.
+
+    Returns:
+    --------
+    Union[nx.DiGraph,nx.MultiDiGraph]
+        The function modifies the graph in-place and returns it.
+    """
+
+    if isinstance(graph, nx.MultiDiGraph):
+        # Collect edges that need to be reversed for MultiDiGraph
+        edges_to_reverse = [
+            (u, v, key, data)
+            for u, v, key, data in graph.edges(keys=True, data=True)
+            if data.get(weight, 0) < 0
+        ]
+        for u, v, key, data in edges_to_reverse:
+            # Remove original edge
+            graph.remove_edge(u, v, key=key)
+            # Add reversed edge with preserved attributes
+            data[weight] = data[weight] * -1.0
+            graph.add_edge(v, u, key=key, **data)
+
+    elif isinstance(graph, nx.DiGraph):
+        # Collect edges that need to be reversed for DiGraph
+        edges_to_reverse = [
+            (u, v, data)
+            for u, v, data in graph.edges(data=True)
+            if data.get(weight, 0) < 0
+        ]
+        for u, v, data in edges_to_reverse:
+            # Remove original edge
+            graph.remove_edge(u, v)
+            # Add reversed edge with preserved attributes and reversed weights
+            data[weight] = data[weight] * -1.0
+            graph.add_edge(v, u, **data)
+
+    else:
+        raise ValueError("The graph should be either a DiGraph or a MultiDiGraph.")
+
+    return graph

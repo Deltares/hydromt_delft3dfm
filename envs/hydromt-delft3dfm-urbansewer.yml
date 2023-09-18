@@ -8,8 +8,6 @@ channels:
 dependencies:
   - black # linting
   - flit>=3.4
-  - gdal=3.5.1
-  - hydromt>=0.7.0
   - jupyter # to run examples
   - matplotlib # to run examples
   - nbsphinx # docs notebook examples
@@ -18,7 +16,6 @@ dependencies:
   - pip
   - pre-commit # linting
   - pydata-sphinx-theme # docs
-  - pygeos
   - pyproj
   - pytest # tests
   - pytest-cov # tests
@@ -33,9 +30,10 @@ dependencies:
   - xarray
   - xugrid
   - networkx
+  - llvmlite>=0.39.1 # hydrolib-core
   - osmnx
   - momepy
   - pip:
-      - hydrolib-core
-      - meshkernel
-      # - git+https://github.com/Deltares/ra2ce.git@v0.6.0 conflicts for gdal and shapely, use conda develop. 
+      - git+https://github.com/Deltares/hydromt.git
+      - hydrolib-core==0.5.2
+      - meshkernel==2.0.2 # temp pin because of hydrolib-core

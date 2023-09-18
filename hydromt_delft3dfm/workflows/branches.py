@@ -6,8 +6,11 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import shapely
+from hydromt import gis_utils
 from scipy.spatial import distance
 from shapely.geometry import LineString, MultiLineString, Point
+
+from hydromt_delft3dfm import graph_utils, mesh_utils
 
 from .helper import cut_pieces, split_lines
 
@@ -17,11 +20,94 @@ logger = logging.getLogger(__name__)
 __all__ = [
     "process_branches",
     "validate_branches",
+    "add_branches",
     "find_nearest_branch",
     "update_data_columns_attributes",
     "update_data_columns_attribute_from_query",
-    "snap_newbranches_to_branches_at_snapnodes",
+    "snap_newbranches_to_branches_at_snappednodes",
+    "intersect_lines",
+    "explode_and_deduplicate_geometries",
 ]
+
+
+def add_branches(
+    mesh1d,
+    branches,
+    new_branches,
+    snap_newbranches_to_branches_at_snapnodes,
+    snap_offset,
+):
+    """Add branches to exisitng open system branches at mesh1d node locations."""
+    if not snap_newbranches_to_branches_at_snapnodes or mesh1d is None:
+        # do not perform snap or no mesh nodes to perform snap
+        branches = gpd.GeoDataFrame(
+            pd.concat([branches, new_branches], ignore_index=True), crs=new_branches.crs
+        )
+        return snap_branch_ends(branches)
+
+    # first snap nodes
+    snappednodes = _snap_nodes(mesh1d, branches, new_branches, snap_offset)
+
+    # snap branches
+    (
+        new_branches_snapped,
+        branches_snapped,
+    ) = snap_newbranches_to_branches_at_snappednodes(
+        new_branches, branches, snappednodes
+    )
+
+    # update the branches
+    branches = gpd.GeoDataFrame(
+        pd.concat([branches_snapped, new_branches_snapped], ignore_index=True),
+        crs=branches.crs,
+    )
+    return snap_branch_ends(branches)
+
+
+def _snap_nodes(mesh1d, branches, newbranches, snap_offset):
+    # snap nodes
+    # get mesh1d nodes that allows to be snapped
+    mesh1d_nodes = mesh_utils.mesh1d_nodes_geodataframe(mesh1d, branches)
+    mesh1d_nodes_open = mesh1d_nodes.loc[
+        mesh1d_nodes.branch_name.isin(
+            branches[branches.branchtype.isin(["river", "channel"])].branchid.tolist()
+        )
+    ]
+
+    # get locations that needs to be snapped
+    unsnappednodes = _get_possible_unsnappednodes(newbranches)
+
+    # snap the new endnodes to existing mesh1d_nodes_open
+    snappednodes = _snap_unsnappednodes_to_nodes(
+        unsnappednodes, mesh1d_nodes_open, snap_offset
+    )
+    return snappednodes
+
+
+def _get_possible_unsnappednodes(newbranches):
+    branchtype = newbranches["branchtype"].unique()[0]
+
+    if branchtype in ["pipe", "tunnel"]:
+        # add pipes - connect both ends to existing network
+        endnodes = graph_utils.get_endnodes_from_lines(newbranches, where="downstream")
+    else:
+        # add rivers/channels - only connect downstream ends to existing network
+        endnodes = graph_utils.get_endnodes_from_lines(newbranches, where="both")
+    return endnodes
+
+
+def _snap_unsnappednodes_to_nodes(
+    unsnapped_nodes: gpd.GeoDataFrame, nodes: gpd.GeoDataFrame, snap_offset: float
+) -> gpd.GeoDataFrame:
+    snapped_nodes = gis_utils.nearest_merge(
+        unsnapped_nodes, nodes, max_dist=snap_offset, overwrite=False
+    )
+    snapped_nodes = snapped_nodes[snapped_nodes.index_right != -1]  # drop not snapped
+    snapped_nodes["geometry_left"] = snapped_nodes["geometry"]
+    snapped_nodes["geometry_right"] = [
+        nodes.at[i, "geometry"] for i in snapped_nodes["index_right"]
+    ]
+    return snapped_nodes
 
 
 def update_data_columns_attributes(
@@ -244,7 +330,7 @@ def cleanup_branches(
     branches = branches.loc[~branches.geometry.isna(), :]
 
     # explode multiline string
-    _branches = branches.explode()
+    _branches = branches.explode(index_parts=False)
     # 3 remove z coordinates
     _branches["geometry"] = _branches["geometry"].apply(
         lambda x: LineString(
@@ -898,12 +984,12 @@ def find_nearest_branch(
                 geometries.at[geometry.Index, "branch_offset"] = offset
 
 
-def snap_newbranches_to_branches_at_snapnodes(
+def snap_newbranches_to_branches_at_snappednodes(
     new_branches: gpd.GeoDataFrame,
     branches: gpd.GeoDataFrame,
-    snapnodes: gpd.GeoDataFrame,
+    snappednodes: gpd.GeoDataFrame,
 ):
-    """Function to snap new_branches to branches at snapnodes.
+    """Function to snap new_branches to branches at snappednodes.
     snapnodes are located at branches. new branches will be snapped, and branches will be splitted.
     # NOTE: no interpolation of crosssection is needed because inter branch interpolation is turned on using branchorder.
 
@@ -931,7 +1017,7 @@ def snap_newbranches_to_branches_at_snapnodes(
     branches_snapped = branches.copy()
 
     # modify new branches
-    for snapnode in snapnodes.itertuples():
+    for snapnode in snappednodes.itertuples():
         new_branch = new_branches.loc[snapnode.branchid]
         snapped_line = LineString(
             [
@@ -944,19 +1030,21 @@ def snap_newbranches_to_branches_at_snapnodes(
         new_branches_snapped.at[snapnode.branchid, "geometry"] = snapped_line
 
     # modify old branches
-    for branch_name in set(snapnodes.branch_name):
+    _branch_order_base = max(max(branches_snapped.branchorder), 1)
+    for branch_order, branch_name in enumerate(sorted(set(snappednodes.branch_name))):
         branch = branches.loc[branch_name]
-        distances = snapnodes[
-            snapnodes.branch_name == branch_name
+        branch_order = _branch_order_base + branch_order
+        distances = snappednodes[
+            snappednodes.branch_name == branch_name
         ].branch_chainage.to_list()
         snapped_line = MultiLineString(cut_pieces(branch.geometry, distances))
         branches_snapped.at[branch_name, "geometry"] = snapped_line
-        branches_snapped.at[branch_name, "branchorder"] = (
-            max(branches_snapped.branchorder) + 1
-        )  # allow interpolation on the snapped branch
+        branches_snapped.at[
+            branch_name, "branchorder"
+        ] = branch_order  # allow interpolation on the snapped branch
 
     # explode multilinestring after snapping
-    branches_snapped = branches_snapped.explode()
+    branches_snapped = branches_snapped.explode(index_parts=False)
 
     # reset the idex
     branches_snapped = cleanup_branches(branches_snapped)
@@ -980,3 +1068,92 @@ def _remove_branches_with_ring_geometries(
     logger.debug("Removing branches with ring geometries.")
 
     return branches
+
+
+def intersect_lines(gdf1, gdf2):
+    """
+    Computes the intersection between two geopandas GeoDataFrames with line geometries.
+
+    Parameters:
+    - gdf1 : geopandas.GeoDataFrame
+        The first GeoDataFrame.
+    - gdf2 : geopandas.GeoDataFrame
+        The second GeoDataFrame.
+
+    Returns:
+    - gdf1_cleaned : geopandas.GeoDataFrame
+        Part of gdf1 that intersects with gdf2.
+    - gdf2_cleaned : geopandas.GeoDataFrame
+        Part of gdf2 that intersects with gdf1.
+    - points_cleaned : geopandas.GeoDataFrame
+        The intersection points between gdf1 and gdf2.
+    """
+
+    # Assign identifiers to distinguish the source of the geometries later
+    gdf1 = gdf1.copy()
+    gdf2 = gdf2.copy()
+    gdf1["_from_left"] = True
+    gdf2["_from_right"] = True
+
+    # Compute the union of the two GeoDataFrames
+    union_result = gpd.overlay(
+        gdf1, gdf2, how="union", keep_geom_type=False, make_valid=True
+    )
+
+    # Extract lines and points from the union result
+    union_lines = union_result[
+        union_result.geometry.type.isin(["LineString", "MultiLineString"])
+    ]
+    union_points = union_result[
+        union_result.geometry.type.isin(["Point", "MultiPoint"])
+    ]
+
+    # Explode in case of MultiGeometries and reset the index
+    lines_exploded = union_lines.explode().reset_index(drop=True)
+    points_exploded = union_points.explode().reset_index(drop=True)
+
+    # Filter the exploded lines based on the source identifiers
+    gdf1_intersected = lines_exploded[lines_exploded["_from_left"] == True].drop(
+        columns=["_from_left", "_from_right"]
+    )
+    columns_to_drop = [col for col in gdf1_intersected.columns if col.endswith("_2")]
+    gdf1_cleaned = gdf1_intersected.drop(columns=columns_to_drop)
+    columns_to_rename = {
+        col: col.rstrip("_1") for col in gdf1_cleaned.columns if col.endswith("_1")
+    }
+    gdf1_cleaned = gdf1_cleaned.rename(columns=columns_to_rename)
+
+    gdf2_intersected = lines_exploded[lines_exploded["_from_right"] == True].drop(
+        columns=["_from_left", "_from_right"]
+    )
+    columns_to_drop = [col for col in gdf2_intersected.columns if col.endswith("_1")]
+    gdf2_cleaned = gdf2_intersected.drop(columns=columns_to_drop)
+    columns_to_rename = {
+        col: col.rstrip("_2") for col in gdf2_cleaned.columns if col.endswith("_2")
+    }
+    gdf2_cleaned = gdf2_cleaned.rename(columns=columns_to_rename)
+
+    # Filter the exploded points
+    points_exploded["id"] = points_exploded.index
+    points_cleaned = points_exploded[["id", "geometry"]]
+
+    # Return the intersected parts and the intersection points
+    return gdf1_cleaned, gdf2_cleaned, points_cleaned
+
+
+def explode_and_deduplicate_geometries(gpd: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """Explodes and deduplicates geometries a GeoDataFrame.
+
+    Parameters:
+        gpd (gpd.GeoDataFrame): Input GeoDataFrame.
+
+    Returns:
+        gpd.GeoDataFrame: GeoDataFrame with exploded and deduplicated geometries.
+    """
+    gpd = gpd.explode()
+    gpd = gpd[
+        gpd.index.isin(
+            gpd.geometry.apply(lambda geom: geom.wkb).drop_duplicates().index
+        )
+    ]
+    return gpd
