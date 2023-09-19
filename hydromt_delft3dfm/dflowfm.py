@@ -3017,10 +3017,16 @@ class DFlowFMModel(MeshModel):
         self._assert_read_mode
         # Read initial fields
         inifield_model = self.dfmmodel.geometry.inifieldfile
-        if inifield_model is not None:
+        # seperate 1d and 2d
+        inifield_model_1d = [
+            i for i in inifield_model.initial if "1d" in i.datafiletype
+        ]
+        inifield_model_2d = [
+            i for i in inifield_model.initial if "2d" in i.datafiletype
+        ]
+        if any(inifield_model_2d):
             # Loop over initial / parameter to read the geotif
-            inilist = inifield_model.initial.copy()
-            inilist.extend(inifield_model.parameter)
+            inilist = inifield_model_2d
 
             if len(inilist) > 0:
                 # DFM map names
@@ -3204,14 +3210,6 @@ class DFlowFMModel(MeshModel):
         """Write model geometries to a GeoJSON file at <root>/<geoms>."""
         self._assert_write_mode
 
-        # Optional: also write mesh_gdf object
-        if write_mesh_gdf:
-            for name, gdf in self.mesh_gdf.items():
-                self.set_geoms(gdf, name)
-
-        # Write geojson equivalent of all objects. Note that these files are not directly used when updating the model
-        super().write_geoms(fn="geoms/{name}.geojson")
-
         # Write dfm files
         savedir = dirname(join(self.root, self._config_fn))
 
@@ -3255,6 +3253,27 @@ class DFlowFMModel(MeshModel):
                 savedir,
             )
             self.set_config("geometry.structurefile", structures_fn)
+
+        # write hydromt
+        # Optional: also write mesh_gdf object
+        if write_mesh_gdf:
+            for name, gdf in self.mesh_gdf.items():
+                self.set_geoms(gdf, name)
+
+        # Write geojson equivalent of all objects. Note that these files are not directly used when updating the model
+        # convert any list in geoms to strings
+        def convert_lists_to_strings(df):
+            for column_name in df.columns:
+                if df[column_name].apply(isinstance, args=(list,)).all():
+                    df[column_name] = df[column_name].apply(
+                        lambda x: " ".join(f"{x}") if isinstance(x, list) else x
+                    )
+            return df
+
+        for name in self.geoms:
+            self.set_geoms(convert_lists_to_strings(self.geoms[name]), name)
+
+        super().write_geoms(fn="geoms/{name}.geojson")
 
     def read_forcing(
         self,
@@ -3347,10 +3366,12 @@ class DFlowFMModel(MeshModel):
         # FIXME: crs info is not available in dfmmodel, so get it from region.geojson
         # Cannot use read_geoms yet because for some some geoms (crosssections, manholes) mesh needs to be read first...
         region_fn = join(self.root, "geoms", "region.geojson")
-        if isfile(region_fn):
-            crs = gpd.read_file(region_fn).crs
-        else:
-            crs = None
+        if not self.crs:
+            if isfile(region_fn):
+                crs = gpd.read_file(region_fn).crs
+                self._crs = crs
+
+        crs = self.crs
 
         # convert to xugrid
         mesh = mesh_utils.mesh_from_hydrolib_network(network, crs=crs)
@@ -3364,12 +3385,10 @@ class DFlowFMModel(MeshModel):
 
         # creates branches geometry from network1d
         if "network1d" in self.mesh_names:
-            network1d_geometry = self.mesh_gdf["network1d"]
             network1d_dataset = self.mesh_datasets["network1d"]
-            # Create the branches GeoDataFrame
-            branches = network1d_geometry
-            branches["branchid"] = network1d_dataset["network1d_branch_id"]
-            branches["branchorder"] = network1d_dataset["network1d_branch_order"]
+            # Create the branches GeoDataFrame (from geom)
+            # network1d_geometry = self.mesh_gdf["network1d"] this returns the network
+            branches = mesh_utils.network1d_geoms_geodataframe(network1d_dataset)
             # branches["branchtype"] = network1d_dataset["network1d_branch_type"] # might support in the future https://github.com/Deltares/HYDROLIB-core/issues/561
 
             # Add branchtype, properties from branches.gui file

@@ -399,11 +399,14 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
     friction_fns = []
     # create a new friction
     for i, row in frictions.iterrows():
-        fric_model = FrictionModel(global_=row.to_dict())
-        fric_name = f"{row.frictiontype[0]}-{str(row.frictionvalue).replace('.', 'p')}"
-        fric_filename = f"{fric_model._filename()}_{fric_name}" + fric_model._ext()
-        fric_model.filepath = join(savedir, fric_filename)
-        fric_model.save(fric_model.filepath, recurse=False)
+        if not np.isnan(row.frictionvalue):
+            fric_model = FrictionModel(global_=row.to_dict())
+            fric_name = (
+                f"{row.frictiontype[0]}-{str(row.frictionvalue).replace('.', 'p')}"
+            )
+            fric_filename = f"{fric_model._filename()}_{fric_name}" + fric_model._ext()
+            fric_model.filepath = join(savedir, fric_filename)
+            fric_model.save(fric_model.filepath, recurse=False)
 
         # save relative path to mdu
         friction_fns.append(fric_filename)
