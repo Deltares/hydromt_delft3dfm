@@ -545,6 +545,9 @@ def write_manholes(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     storage_fn: str
         relative path to storage nodes file.
     """
+    if gdf.columns.__contains__("numlevels"):
+        gdf["numlevels"] = gdf["numlevels"].astype("Int64")
+
     storagenodes = StorageNodeModel(storagenode=gdf.to_dict("records"))
 
     storage_fn = storagenodes._filename() + ".ini"

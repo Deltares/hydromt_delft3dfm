@@ -3264,7 +3264,7 @@ class DFlowFMModel(MeshModel):
         # convert any list in geoms to strings
         def convert_lists_to_strings(df):
             for column_name in df.columns:
-                if df[column_name].apply(isinstance, args=(list,)).all():
+                if df[column_name].apply(isinstance, args=(list,)).any():
                     df[column_name] = df[column_name].apply(
                         lambda x: " ".join(f"{x}") if isinstance(x, list) else x
                     )
