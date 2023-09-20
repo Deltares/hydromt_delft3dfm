@@ -709,18 +709,8 @@ def write_1dboundary(forcing: Dict, savedir: str = None, ext_fn: str = None) -> 
             bcdict.append(bc)
 
     # write forcing file
-    for bc in bcdict:
-        try:
-            ForcingModel(
-                forcing=[
-                    bc for bc in bcdict if bc["name"] == "481349.951956_8041528.002583"
-                ]
-            )
-        except:
-            raise ValueError(f"Error in boundary forcing {bc['name']}")
-
     forcing_model = ForcingModel(forcing=bcdict)
-    forcing_fn = f'boundaryconditions1d_{ext["quantity"]}.bc'
+    forcing_fn = f"boundarycondition1d.bc"
     forcing_model.save(join(savedir, forcing_fn), recurse=True)
 
     # add forcingfile to ext, note each node needs a forcingfile
@@ -846,7 +836,7 @@ def read_1dlateral(
             pass
         elif any(df.branchid.values):
             _df = df[~df.branchid.isna()]
-            _data = data[~df.numcoordinates.isna()]
+            _data = data[~df.numcoordinates.isnull()]
             # update coords
             _df["geometry"] = [
                 branches.set_index("branchid")
@@ -940,22 +930,31 @@ def write_1dlateral(forcing: Dict, savedir: str = None, ext_fn: str = None) -> T
                     ]
                     bc.pop("time_unit")
                     # time/value datablock
-                    bc["datablock"] = [
-                        [t, x]
-                        for t, x in zip(
-                            da.time.values,
-                            np.unique(
-                                da.sel(index=i).values
-                            ),  # get the unique value to reduce polygon dimention
-                        )
-                    ]
+                    _d = da.sel(index=i).values
+                    if len(_d.shape) == 1:
+                        # point
+                        bc["datablock"] = [
+                            [t, x]
+                            for t, x in zip(da.time.values, da.sel(index=i).values)
+                        ]
+                    else:
+                        # polygon
+                        bc["datablock"] = [
+                            [t, x]
+                            for t, x in zip(
+                                da.time.values,
+                                np.unique(
+                                    da.sel(index=i).values, axis=1
+                                ),  # get the unique value to reduce polygon dimention
+                            )
+                        ]
                 bc.pop("quantity")
                 bc.pop("units")
                 bcdict.append(bc)
 
     # write forcing file
     forcing_model = ForcingModel(forcing=bcdict)
-    forcing_fn = f'lateral1d_{ext["quantity"]}.bc'
+    forcing_fn = f"lateral1d.bc"
     forcing_model.save(join(savedir, forcing_fn), recurse=True)
 
     # add forcingfile to ext, note forcing file is called discharge for lateral

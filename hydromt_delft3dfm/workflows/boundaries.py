@@ -262,29 +262,11 @@ def compute_boundary_values(
             max_dist=snap_offset,
             overwrite=True,
         )
+        gdf_bnd = gdf_bnd[~gdf_bnd["nodeid"].isna()]
+        da_bnd = da_bnd.sel(index=gdf_bnd.index)
 
-        # get boundary data freq in seconds
-        _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
-        dt = pd.to_timedelta((da_bnd.time[1].values - da_bnd.time[0].values))
-        freq = dt.resolution_string
-        multiplier = 1
-        if freq == "D":
-            logger.warning(
-                "time unit days is not supported by the current GUI version: 2022.04"
-            )  # converting to hours as temporary solution # FIXME: day is converted to hours temporarily
-            multiplier = 24
-        if len(
-            pd.date_range(da_bnd.time[0].values, da_bnd.time[-1].values, freq=dt)
-        ) != len(da_bnd.time):
-            logger.error("does not support non-equidistant time-series.")
-        freq_name = _TIMESTR[freq]
-        freq_step = getattr(dt.components, freq_name)
-        bd_times = np.array([(i * freq_step) for i in range(len(da_bnd.time))])
-        if multiplier == 24:
-            bd_times = np.array(
-                [(i * freq_step * multiplier) for i in range(len(da_bnd.time))]
-            )
-            freq_name = "hours"
+        # get forcing data time indes
+        bd_times, freq_name = _standardize_forcing_timeindexes(da_bnd)
 
         # instantiate xr.DataArray for bnd data
         da_out = xr.DataArray(
@@ -704,7 +686,6 @@ def compute_forcing_values_points(
                 time_unit=f"{freq_name} since {pd.to_datetime(da.time[0].values)}",  # support only yyyy-mm-dd HH:MM:SS
             ),
         )
-
         # fill in na using default
         da_out = da_out.fillna(forcing_value)
 

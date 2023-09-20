@@ -1575,45 +1575,20 @@ class DFlowFMModel(MeshModel):
             By default 0.1, a small snapping is applied to avoid precision errors.
         """
         self.logger.info(f"Preparing 1D {boundary_type} boundaries for {branch_type}.")
+
+        # 1. get potential boundary locations based on branch_type and boundary_type
         boundaries = workflows.get_boundaries_with_nodeid(
             self.branches,
             mesh_utils.network1d_nodes_geodataframe(self.mesh_datasets["network1d"]),
         )
-        refdate, tstart, tstop = self.get_model_time()  # time slice
-
-        # 1. get potential boundary locations based on branch_type and boundary_type
         boundaries_branch_type = workflows.select_boundary_type(
             boundaries, branch_type, boundary_type, boundary_locs
         )
 
         # 2. read boundary from user data
-        if boundaries_geodataset_fn is not None:
-            da_bnd = self.data_catalog.get_geodataset(
-                boundaries_geodataset_fn,
-                geom=boundaries.buffer(
-                    snap_offset
-                ),  # only select data close to the boundary of the model region
-                variables=[boundary_type],
-                time_tuple=(tstart, tstop),
-                crs=self.crs.to_epsg(),  # assume model crs if none defined
-            ).rename(boundary_type)
-            # error if time mismatch
-            if np.logical_and(
-                pd.to_datetime(da_bnd.time.values[0]) == pd.to_datetime(tstart),
-                pd.to_datetime(da_bnd.time.values[-1]) == pd.to_datetime(tstop),
-            ):
-                pass
-            else:
-                self.logger.error(
-                    "forcing has different start and end time. Please check the forcing file. support yyyy-mm-dd HH:MM:SS. "
-                )
-            # reproject if needed and convert to location
-            if da_bnd.vector.crs != self.crs:
-                da_bnd.vector.to_crs(self.crs)
-        elif boundaries_timeseries_fn is not None:
-            raise NotImplementedError()
-        else:
-            da_bnd = None
+        gdf_bnds, da_bnd = self._read_forcing_geodataset(
+            boundaries_geodataset_fn, boundary_type
+        )
 
         # 3. Derive DataArray with boundary values at boundary locations in boundaries_branch_type
         da_out = workflows.compute_boundary_values(
@@ -1631,27 +1606,29 @@ class DFlowFMModel(MeshModel):
             da_out, name=f"boundary1d_{da_out.name}_{branch_type}"
         )  # FIXME: this format cannot be read back due to lack of branch type info from model files
 
-    def _read_laterals(self, laterals_geodataset_fn):
-        """Reads laterals"""
+    def _read_forcing_geodataset(
+        self, forcing_geodataset_fn: Union[str, Path], forcing_name: str = "discharge"
+    ):
+        """Read forcing geodataset."""
 
         refdate, tstart, tstop = self.get_model_time()  # time slice
 
         if (
-            laterals_geodataset_fn is not None
-            and self.data_catalog[laterals_geodataset_fn].data_type == "GeoDataset"
+            forcing_geodataset_fn is not None
+            and self.data_catalog[forcing_geodataset_fn].data_type == "GeoDataset"
         ):
-            da_lat = self.data_catalog.get_geodataset(
-                laterals_geodataset_fn,
+            da = self.data_catalog.get_geodataset(
+                forcing_geodataset_fn,
                 geom=self.region.buffer(
-                    self._network_snap_offset
-                ),  # only select data within region of interest
-                variables=["lateral_discharge"],
+                    1000
+                ),  # only select data within region of interest (large region for forcing)
+                variables=[forcing_name],
                 time_tuple=(tstart, tstop),
-            ).rename("lateral_discharge")
+            ).rename(forcing_name)
             # error if time mismatch
             if np.logical_and(
-                pd.to_datetime(da_lat.time.values[0]) == pd.to_datetime(tstart),
-                pd.to_datetime(da_lat.time.values[-1]) == pd.to_datetime(tstop),
+                pd.to_datetime(da.time.values[0]) == pd.to_datetime(tstart),
+                pd.to_datetime(da.time.values[-1]) == pd.to_datetime(tstop),
             ):
                 pass
             else:
@@ -1659,23 +1636,23 @@ class DFlowFMModel(MeshModel):
                     "forcing has different start and end time. Please check the forcing file. support yyyy-mm-dd HH:MM:SS. "
                 )
             # reproject if needed and convert to location
-            if da_lat.vector.crs != self.crs:
-                da_lat = da_lat.vector.to_crs(self.crs)
+            if da.vector.crs != self.crs:
+                da = da.vector.to_crs(self.crs)
             # get geom
-            gdf_laterals = da_lat.vector.to_gdf(reducer=np.mean)
+            gdf = da.vector.to_gdf(reducer=np.mean)
         elif (
-            laterals_geodataset_fn is not None
-            and self.data_catalog[laterals_geodataset_fn].data_type == "GeoDataFrame"
+            forcing_geodataset_fn is not None
+            and self.data_catalog[forcing_geodataset_fn].data_type == "GeoDataFrame"
         ):
-            gdf_laterals = self.data_catalog.get_geodataframe(
-                laterals_geodataset_fn,
+            gdf = self.data_catalog.get_geodataframe(
+                forcing_geodataset_fn,
                 geom=self.region.buffer(self._network_snap_offset),
             )
-            da_lat = None
+            da = None
         else:
-            gdf_laterals = None
-            da_lat = None
-        return gdf_laterals, da_lat
+            gdf = None
+            da = None
+        return gdf, da
 
     def _snap_geom_to_branches_and_drop_nonsnapped(
         self, branches: gpd.GeoDataFrame, geoms: gpd.GeoDataFrame, snap_offset=0.0
@@ -1750,7 +1727,9 @@ class DFlowFMModel(MeshModel):
         network_by_branchtype = self.staticgeoms[f"{branch_type}s"]
 
         # 1. read lateral geodataset and snap to network
-        gdf_laterals, da_lat = self._read_laterals(laterals_geodataset_fn)
+        gdf_laterals, da_lat = self._read_forcing_geodataset(
+            laterals_geodataset_fn, "lateral_discharge"
+        )
 
         # snap laterlas to selected branches
         gdf_laterals = self._snap_geom_to_branches_and_drop_nonsnapped(
@@ -1812,7 +1791,9 @@ class DFlowFMModel(MeshModel):
         self.logger.info(f"Preparing 1D laterals for polygons.")
 
         # 1. read lateral geodataset
-        gdf_laterals, da_lat = self._read_laterals(laterals_geodataset_fn)
+        gdf_laterals, da_lat = self._read_forcing_geodataset(
+            laterals_geodataset_fn, "lateral_discharge"
+        )
 
         if len(gdf_laterals) == 0:
             return None
