@@ -627,7 +627,7 @@ def _standardize_forcing_timeindexes(da):
         logger.error("does not support non-equidistant time-series.")
     freq_name = _TIMESTR[freq]
     freq_step = getattr(dt.components, freq_name)
-    bd_times = np.array([(i * freq_step) for i in range(len(da.time))])
+    bd_times = np.array([float(i * freq_step) for i in range(len(da.time))])
     if multiplier == 24:
         bd_times = np.array([(i * freq_step * multiplier) for i in range(len(da.time))])
         freq_name = "hours"

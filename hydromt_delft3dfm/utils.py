@@ -914,14 +914,11 @@ def write_1dlateral(forcing: Dict, savedir: str = None, ext_fn: str = None) -> T
                     ext["branchid"] = da.sel(index=i).coords["branchid"].item()
                     ext["chainage"] = da.sel(index=i).coords["chainage"].item()
                 elif "numcoordinates" in da.coords:  # for polygon laterals
-                    ext["xcoordinates"] = da.sel(index=i)[
-                        "xcoordinates"
-                    ].values.tolist()
-                    ext["ycoordinates"] = da.sel(index=i)[
-                        "ycoordinates"
-                    ].values.tolist()
+                    xs = da.sel(index=i)["xcoordinates"].values.tolist()
+                    ys = da.sel(index=i)["ycoordinates"].values.tolist()
+                    ext["xcoordinates"] = [x for x in xs if not np.isnan(x)]
+                    ext["ycoordinates"] = [y for y in ys if not np.isnan(y)]
                     ext["numcoordinates"] = len(ext["ycoordinates"])
-                    da = da.isel(numcoordinates=0)  # drop coordinates
                 else:
                     raise ValueError("Not supported.")
                 extdict.append(ext)
@@ -944,7 +941,13 @@ def write_1dlateral(forcing: Dict, savedir: str = None, ext_fn: str = None) -> T
                     bc.pop("time_unit")
                     # time/value datablock
                     bc["datablock"] = [
-                        [t, x] for t, x in zip(da.time.values, da.sel(index=i).values)
+                        [t, x]
+                        for t, x in zip(
+                            da.time.values,
+                            np.unique(
+                                da.sel(index=i).values
+                            ),  # get the unique value to reduce polygon dimention
+                        )
                     ]
                 bc.pop("quantity")
                 bc.pop("units")

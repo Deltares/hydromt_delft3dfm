@@ -1647,7 +1647,6 @@ class DFlowFMModel(MeshModel):
                 ),  # only select data within region of interest
                 variables=["lateral_discharge"],
                 time_tuple=(tstart, tstop),
-                crs=self.crs.to_epsg(),  # assume model crs if none defined
             ).rename("lateral_discharge")
             # error if time mismatch
             if np.logical_and(
@@ -1661,7 +1660,7 @@ class DFlowFMModel(MeshModel):
                 )
             # reproject if needed and convert to location
             if da_lat.vector.crs != self.crs:
-                da_lat.vector.to_crs(self.crs)
+                da_lat = da_lat.vector.to_crs(self.crs)
             # get geom
             gdf_laterals = da_lat.vector.to_gdf(reducer=np.mean)
         elif (
@@ -1677,6 +1676,29 @@ class DFlowFMModel(MeshModel):
             gdf_laterals = None
             da_lat = None
         return gdf_laterals, da_lat
+
+    def _snap_geom_to_branches_and_drop_nonsnapped(
+        self, branches: gpd.GeoDataFrame, geoms: gpd.GeoDataFrame, snap_offset=0.0
+    ):
+        """Snaps geoms to branches and drop the ones that are not snapped.
+        Returns snapped geoms with branchid and chainage.
+        branches must have branchid.
+        """
+        workflows.find_nearest_branch(
+            branches=branches,
+            geometries=geoms,
+            maxdist=snap_offset,
+        )
+        geoms = geoms.rename(
+            columns={"branch_id": "branchid", "branch_offset": "chainage"}
+        )
+
+        # drop ones non snapped
+        _drop_geoms = geoms["chainage"].isna()
+        if any(_drop_geoms):
+            self.logger.debug(f"Unable to snap to branches: {geoms[_drop_geoms].index}")
+
+        return geoms[~_drop_geoms]
 
     def setup_1dlateral_from_points(
         self,
@@ -1731,14 +1753,14 @@ class DFlowFMModel(MeshModel):
         gdf_laterals, da_lat = self._read_laterals(laterals_geodataset_fn)
 
         # snap laterlas to selected branches
-        workflows.find_nearest_branch(
+        gdf_laterals = self._snap_geom_to_branches_and_drop_nonsnapped(
             branches=network_by_branchtype.set_index("branchid"),
-            geometries=gdf_laterals,
-            maxdist=snap_offset,
+            geoms=gdf_laterals,
+            snap_offset=snap_offset,
         )
-        gdf_laterals = gdf_laterals.rename(
-            columns={"branch_id": "branchid", "branch_offset": "chainage"}
-        )
+
+        if len(gdf_laterals) == 0:
+            return None
 
         # 2. Compute lateral dataarray
         da_out = workflows.compute_forcing_values_points(
@@ -1791,6 +1813,9 @@ class DFlowFMModel(MeshModel):
 
         # 1. read lateral geodataset
         gdf_laterals, da_lat = self._read_laterals(laterals_geodataset_fn)
+
+        if len(gdf_laterals) == 0:
+            return None
 
         # 2. Compute lateral dataarray
         da_out = workflows.compute_forcing_values_polygon(
