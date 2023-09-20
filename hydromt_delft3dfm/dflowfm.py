@@ -1577,12 +1577,8 @@ class DFlowFMModel(MeshModel):
         self.logger.info(f"Preparing 1D {boundary_type} boundaries for {branch_type}.")
 
         # 1. get potential boundary locations based on branch_type and boundary_type
-        boundaries = workflows.get_boundaries_with_nodeid(
-            self.branches,
-            mesh_utils.network1d_nodes_geodataframe(self.mesh_datasets["network1d"]),
-        )
         boundaries_branch_type = workflows.select_boundary_type(
-            boundaries, branch_type, boundary_type, boundary_locs
+            self.boundaries, branch_type, boundary_type, boundary_locs
         )
 
         # 2. read boundary from user data
@@ -1751,7 +1747,7 @@ class DFlowFMModel(MeshModel):
             logger=self.logger,
         )
 
-        # 4. set boundaries
+        # 4. set laterals
         self.set_forcing(da_out, name=f"lateral1d_points")
 
     def setup_1dlateral_from_polygons(
@@ -3642,6 +3638,20 @@ class DFlowFMModel(MeshModel):
         else:
             gdf = gpd.GeoDataFrame()
         return gdf
+
+    @property
+    def boundaries(self):
+        if "boundaries" not in self.geoms:
+            self.set_geoms(
+                workflows.get_boundaries_with_nodeid(
+                    self.branches,
+                    mesh_utils.network1d_nodes_geodataframe(
+                        self.mesh_datasets["network1d"]
+                    ),
+                ),
+                "boundaries",
+            )
+        return self.geoms["boundaries"]
 
     def get_model_time(self):
         """Return (refdate, tstart, tstop) tuple with parsed model reference datem start and end time."""
