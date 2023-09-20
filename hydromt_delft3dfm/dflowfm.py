@@ -3368,7 +3368,7 @@ class DFlowFMModel(MeshModel):
         # FIXME: crs info is not available in dfmmodel, so get it from region.geojson
         # Cannot use read_geoms yet because for some some geoms (crosssections, manholes) mesh needs to be read first...
         region_fn = join(self.root, "geoms", "region.geojson")
-        if not self.crs:
+        if not self._crs:
             if isfile(region_fn):
                 crs = gpd.read_file(region_fn).crs
                 self._crs = crs
