@@ -580,7 +580,7 @@ class DFlowFMModel(MeshModel):
         )
         # Prepare friction
         branches = workflows.prepare_default_friction_and_crosssection(
-            branches,
+            rivers,
             br_type=br_type,
             friction_type=friction_type,
             friction_value=friction_value,
