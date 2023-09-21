@@ -3188,7 +3188,7 @@ class DFlowFMModel(MeshModel):
             crosssections = utils.read_crosssections(self.branches, self.dfmmodel)
 
             # Add friction properties from roughness files
-            self.logger.info("Reading friction files")
+            # self.logger.info("Reading friction files")
             crosssections = utils.read_friction(crosssections, self.dfmmodel)
             self.set_geoms(crosssections, "crosssections")
 

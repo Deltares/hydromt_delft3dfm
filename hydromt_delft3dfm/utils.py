@@ -208,7 +208,6 @@ def read_crosssections(
     _gdf_crsdef = df_crsdef.rename(
         columns={c: f"crsdef_{c}" for c in df_crsdef.columns if c != "crs_id"}
     )
-    _gdf_crsdef = _gdf_crsdef.rename(columns={"crsdef_frictionid": "crsdef_frictionid"})
 
     # Continue with locs to get the locations and branches id
     crsloc = fm_model.geometry.crosslocfile
@@ -329,10 +328,8 @@ def read_friction(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
         gdf containing the crosssections updated with the friction params
     """
     fric_list = fm_model.geometry.frictfile
-    # TODO: check if read/write crosssections can automatically parse it?
-
     # Create dictionnaries with all attributes from fricfile
-    # For now assume global only
+    # global only
     fricval = dict()
     frictype = dict()
     for i in range(len(fric_list)):
@@ -343,18 +340,45 @@ def read_friction(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
             frictype[fric_list[i].global_[j].frictionid] = (
                 fric_list[i].global_[j].frictiontype
             )
+
     # Create friction value and type by replacing frictionid values with dict
     gdf_out = gdf.copy()
     if "crsdef_frictionid" in gdf_out:
         gdf_out["frictionvalue"] = gdf_out["crsdef_frictionid"]
-    elif "crsdef_frictionids" in gdf_out:
-        gdf_out["frictionvalue"] = gdf_out["crsdef_frictionids"]
-    gdf_out["frictionvalue"] = gdf_out["frictionvalue"].replace(fricval)
-    if "crsdef_frictionid" in gdf_out:
         gdf_out["frictiontype"] = gdf_out["crsdef_frictionid"]
-    elif "crsdef_frictionids" in gdf_out:
-        gdf_out["frictiontype"] = gdf_out["crsdef_frictionids"]
+    if "crsdef_frictionids" in gdf_out:
+        gdf_out["frictionvalue"] = gdf_out["frictionvalue"].combine_first(
+            gdf_out["crsdef_frictionids"]
+        )
+        gdf_out["frictiontype"] = gdf_out["frictiontype"].combine_first(
+            gdf_out["crsdef_frictionids"]
+        )
+    gdf_out["frictionvalue"] = gdf_out["frictionvalue"].replace(fricval)
     gdf_out["frictiontype"] = gdf_out["frictiontype"].replace(frictype)
+    # remain nan to be filled with branch roughness
+
+    # try add branch (# TODO improvement - only support one value per branch for now)
+    fricval = dict()
+    frictype = dict()
+    for i in range(len(fric_list)):
+        for j in range(len(fric_list[i].branch)):
+            fricval[fric_list[i].branch[j].branchid] = np.unique(
+                fric_list[i].branch[j].frictionvalues
+            )[0]
+            frictype[fric_list[i].branch[j].branchid] = (
+                fric_list[i].branch[j].frictiontype
+            )
+    fric_df = pd.DataFrame(
+        {
+            "frictionvalue": fricval,
+            "frictiontype": frictype,
+            "frictionid": {i: i for i in fricval},
+        }
+    ).reset_index()
+    gdf_out = gdf_out.combine_first(fric_df)
+    gdf_out["frictionvalue"] = gdf_out["frictionvalue"].combine_first(
+        fric_df["frictionvalue"]
+    )
 
     return gdf_out
 
@@ -375,27 +399,12 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
     friction_fns: List of str
         list of relative filepaths to friction files.
     """
-    friction_keys = (
-        ["crsdef_frictionid", "frictionvalue", "frictiontype"]
-        if "crsdef_frictionid" in gdf
-        else ["frictionvalue", "frictiontype", "crsdef_frictionids"]
+    frictions = gdf.rename(
+        columns={"crsdef_frictionids": "frictionids", "crsdef_frictionid": "frictionid"}
     )
-    frictions = gdf[friction_keys]
-    if "crsdef_frictionid" in frictions:
-        # Remove nan
-        frictions = frictions.rename(columns={"crsdef_frictionid": "frictionid"})
-        frictions = frictions.dropna(subset="frictionid")
-    # For xyz crosssections, column name is frictionids instead of frictionid
-    if "crsdef_frictionids" in gdf:
-        # For now assume unique and not list
-        frictionsxyz = gdf
-        # frictionsxyz = gdf[["crsdef_frictionids", "frictionvalue", "frictiontype"]]
-        frictionsxyz = frictionsxyz.dropna(subset="crsdef_frictionids")
-        frictionsxyz = frictionsxyz.rename(columns={"crsdef_frictionids": "frictionid"})
-        frictions = pd.concat([frictions, frictionsxyz])
-    if "frictionid" in frictions:
-        frictions = frictions.drop_duplicates(subset="frictionid")
-
+    frictions = frictions.drop_duplicates(subset=["frictionid", "frictionids"]).dropna(
+        how="all"
+    )
     friction_fns = []
     # create a new friction
     for i, row in frictions.iterrows():
