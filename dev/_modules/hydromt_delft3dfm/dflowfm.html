@@ -17,12 +17,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -32,8 +32,9 @@
     <link rel="stylesheet" type="text/css" href="../../_static/theme-deltares.css?v=17060807" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
     <script src="../../_static/documentation_options.js?v=8a448e45"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
@@ -53,6 +54,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -93,7 +103,8 @@
     <span class="fa-solid fa-bars"></span>
   </label>
   
-  <div class="navbar-header-items__start">
+  
+  <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
   
@@ -115,7 +126,6 @@
 </a></div>
     
   </div>
-  
   
   <div class="col-lg-9 navbar-header-items">
     
@@ -174,13 +184,15 @@
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
@@ -227,13 +239,15 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
@@ -371,8 +385,8 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../../index.html" class="nav-link" aria-label="Home">
@@ -382,7 +396,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">hydromt_delft3dfm.dflowfm</li>
+    <li class="breadcrumb-item active" aria-current="page">hydromt_delf...</li>
   </ul>
 </nav>
 </div>
@@ -423,7 +437,8 @@ document.write(`
 <span class="kn">from</span> <span class="nn">pyproj</span> <span class="kn">import</span> <span class="n">CRS</span>
 <span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">box</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">DATADIR</span><span class="p">,</span> <span class="n">mesh_utils</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">workflows</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">DATADIR</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">mesh_utils</span><span class="p">,</span> <span class="n">gis_utils</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">workflows</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DFlowFMModel&quot;</span><span class="p">]</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -598,9 +613,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_crs</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span> <span class="nf">setup_region</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="k">def</span> <span class="nf">setup_region</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;HYDROMT CORE METHOD NOT USED FOR DFlowFMModel.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">&quot;setup_region() method not implemented for DFlowFMModel.&quot;</span>
@@ -609,199 +622,13 @@ document.write(`
             <span class="s2">&quot;Pass the region argument to these methods directly and not in the command line.&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_setup_branches</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">br_fn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">],</span>
-        <span class="n">defaults_fn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
-        <span class="n">br_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">friction_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">friction_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">region</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">crosssections_shape</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">crosssections_value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">spacing</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">allow_intersection_snapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">allowed_columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
-        <span class="nb">filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;This function is to set all common steps to add branches type of objects (ie channels, rivers, pipes...).</span>
-<span class="sd">        Default frictions and crossections will also be added.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        br_fn : str, gpd.GeoDataFrame</span>
-<span class="sd">            Either data source in data catalogue or Path for branches file or branches gpd.GeoDataFrame directly.</span>
-<span class="sd">        defaults_fn : str Path</span>
-<span class="sd">            Either data source in data catalogue or path to a csv file containing all defaults values per &quot;branchtype&quot; or defaults pd.DataFRame directly.</span>
-<span class="sd">        br_type : str</span>
-<span class="sd">            branches type. Either &quot;river&quot;, &quot;channel&quot;, &quot;pipe&quot;.</span>
-<span class="sd">        friction_type : str</span>
-<span class="sd">            Type of friction to use. One of [&quot;Manning&quot;, &quot;Chezy&quot;, &quot;wallLawNikuradse&quot;, &quot;WhiteColebrook&quot;, &quot;StricklerNikuradse&quot;, &quot;Strickler&quot;, &quot;deBosBijkerk&quot;].</span>
-<span class="sd">        friction_value : float</span>
-<span class="sd">            Value corresponding to &#39;&#39;friction_type&#39;&#39;. Units are [&quot;Chézy C [m 1/2 /s]&quot;, &quot;Manning n [s/m 1/3 ]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Strickler k_s [m 1/3 /s]&quot;, &quot;De Bos-Bijkerk γ [1/s]&quot;]</span>
-<span class="sd">        region : dict, optional</span>
-<span class="sd">            Dictionary describing region of interest for extracting 1D branches, e.g.:</span>
-
-<span class="sd">            * {&#39;bbox&#39;: [xmin, ymin, xmax, ymax]}</span>
-
-<span class="sd">            * {&#39;geom&#39;: &#39;path/to/polygon_geometry&#39;}</span>
-<span class="sd">            Note that only crs=4326 is supported for &#39;bbox&#39;.</span>
-<span class="sd">        crosssections_shape : str, optional</span>
-<span class="sd">            Shape of branch crosssections to overwrite defaults. Either &quot;circle&quot; or &quot;rectangle&quot;.</span>
-<span class="sd">        crosssections_value : float or list of float, optional</span>
-<span class="sd">            Crosssections parameter value to overwrite defaults.</span>
-<span class="sd">            If ``crosssections_shape`` = &quot;circle&quot;, expects a diameter [m], used for br_type == &quot;pipe&quot;</span>
-<span class="sd">            If ``crosssections_shape`` = &quot;rectangle&quot;, expects a list with [width, height] (e.g. [1.0, 1.0]) [m]. used for br_type == &quot;river&quot; or &quot;channel&quot;.</span>
-<span class="sd">        spacing: float, optional</span>
-<span class="sd">            Spacing value in meters to split the long pipelines lines into shorter pipes. By default inf - no splitting is applied.</span>
-<span class="sd">        snap_offset: float, optional</span>
-<span class="sd">            Snapping tolerance to automatically connecting branches. Tolerance must be smaller than the shortest pipe length.</span>
-<span class="sd">            By default 0.0, no snapping is applied.</span>
-<span class="sd">        allow_intersection_snapping: bool, optional</span>
-<span class="sd">            Switch to choose whether snapping of multiple branch ends are allowed when ``snap_offset`` is used.</span>
-<span class="sd">            By default True.</span>
-<span class="sd">        allowed_columns: list, optional</span>
-<span class="sd">            List of columns to filter in branches GeoDataFrame</span>
-<span class="sd">        filter: str, optional</span>
-<span class="sd">            Keyword in branchtype column of br_fn used to filter lines. If None all lines in br_fn are used (default).</span>
-
-
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">         dflowfm.setup_rivers</span>
-<span class="sd">         dflowfm.setup_pipes</span>
-<span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># noqa: D205</span>
-        <span class="c1"># 1. Read data and filter within region</span>
-
-        <span class="c1"># If needed read the branches GeoDataFrame</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">br_fn</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">br_fn</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
-            <span class="c1"># parse region argument</span>
-            <span class="n">region</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">parse_region_geometry</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
-            <span class="n">gdf_br</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_geodataframe</span><span class="p">(</span>
-                <span class="n">br_fn</span><span class="p">,</span> <span class="n">geom</span><span class="o">=</span><span class="n">region</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="s2">&quot;intersects&quot;</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">gdf_br</span> <span class="o">=</span> <span class="n">br_fn</span>
-        <span class="c1"># Filter features based on filter</span>
-        <span class="k">if</span> <span class="nb">filter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">&quot;branchtype&quot;</span> <span class="ow">in</span> <span class="n">gdf_br</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="n">gdf_br</span> <span class="o">=</span> <span class="n">gdf_br</span><span class="p">[</span><span class="n">gdf_br</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="nb">filter</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Set </span><span class="si">{</span><span class="nb">filter</span><span class="si">}</span><span class="s2"> locations filtered from </span><span class="si">{</span><span class="n">br_fn</span><span class="si">}</span><span class="s2"> as </span><span class="si">{</span><span class="n">br_type</span><span class="si">}</span><span class="s2"> .&quot;</span>
-            <span class="p">)</span>
-        <span class="c1"># Check if features in region</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gdf_br</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No 1D </span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2"> locations found within domain&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">None</span>
-
-        <span class="c1"># Read defaults table</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">defaults_fn</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
-            <span class="n">defaults</span> <span class="o">=</span> <span class="n">defaults_fn</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">defaults_fn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;defaults_fn (</span><span class="si">{</span><span class="n">defaults_fn</span><span class="si">}</span><span class="s2">) does not exist. Fall back choice to defaults. &quot;</span>
-                <span class="p">)</span>
-                <span class="n">defaults_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_DATADIR</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">br_type</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">br_type</span><span class="si">}</span><span class="s2">s_defaults.csv&quot;</span>
-                <span class="p">)</span>
-            <span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">defaults_fn</span><span class="p">,</span> <span class="n">time_tuple</span><span class="o">=</span><span class="p">())</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">br_type</span><span class="si">}</span><span class="s2"> default settings read from </span><span class="si">{</span><span class="n">defaults_fn</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-
-        <span class="c1"># 2. Add defaults</span>
-        <span class="c1"># Add branchtype and branchid attributes if does not exist</span>
-        <span class="c1"># overwrite branchtype if exist</span>
-        <span class="n">gdf_br</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">br_type</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">gdf_br</span><span class="p">)),</span> <span class="n">index</span><span class="o">=</span><span class="n">gdf_br</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="s2">&quot;branchid&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">gdf_br</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">br_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
-                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">gdf_br</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-                <span class="p">)</span>
-            <span class="p">]</span>  <span class="c1"># avoid duplicated ids being generated</span>
-            <span class="n">gdf_br</span><span class="p">[</span><span class="s2">&quot;branchid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">gdf_br</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
-
-        <span class="c1"># assign id</span>
-        <span class="n">id_col</span> <span class="o">=</span> <span class="s2">&quot;branchid&quot;</span>
-        <span class="n">gdf_br</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">gdf_br</span><span class="p">[</span><span class="n">id_col</span><span class="p">]</span>
-        <span class="n">gdf_br</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">id_col</span>
-
-        <span class="c1"># filter for allowed columns</span>
-        <span class="n">allowed_columns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">allowed_columns</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">gdf_br</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-        <span class="n">gdf_br</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">gdf_br</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">allowed_columns</span><span class="p">)],</span> <span class="n">crs</span><span class="o">=</span><span class="n">gdf_br</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
-
-        <span class="c1"># Add spacing to defaults</span>
-        <span class="k">if</span> <span class="n">spacing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;spacing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spacing</span>
-        <span class="c1"># Add friction to defaults</span>
-        <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;frictiontype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">friction_type</span>
-        <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;frictionvalue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">friction_value</span>
-        <span class="c1"># Add crosssections to defaults</span>
-        <span class="k">if</span> <span class="n">crosssections_shape</span> <span class="o">==</span> <span class="s2">&quot;circle&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crosssections_value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
-                <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">crosssections_shape</span>
-                <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;diameter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">crosssections_value</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="s2">&quot;If crosssections_shape is circle, crosssections_value should be a single float for diameter. Keeping defaults&quot;</span>
-                <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">crosssections_shape</span> <span class="o">==</span> <span class="s2">&quot;rectangle&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crosssections_value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">crosssections_value</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">crosssections_shape</span>
-                <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">],</span> <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">crosssections_value</span>
-                <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;closed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;no&quot;</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="s2">&quot;If crosssections_shape is rectangle, crosssections_value should be a list with [width, height] values. Keeping defaults&quot;</span>
-                <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Adding/Filling branches attributes values&quot;</span><span class="p">)</span>
-        <span class="n">gdf_br</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">update_data_columns_attributes</span><span class="p">(</span>
-            <span class="n">gdf_br</span><span class="p">,</span> <span class="n">defaults</span><span class="p">,</span> <span class="n">brtype</span><span class="o">=</span><span class="n">br_type</span>
-        <span class="p">)</span>
-
-        <span class="c1"># 4. Split and prepare branches</span>
-        <span class="k">if</span> <span class="n">gdf_br</span><span class="o">.</span><span class="n">crs</span><span class="o">.</span><span class="n">is_geographic</span><span class="p">:</span>  <span class="c1"># needed for length and splitting</span>
-            <span class="n">gdf_br</span> <span class="o">=</span> <span class="n">gdf_br</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="mi">3857</span><span class="p">)</span>
-        <span class="c1"># Line smoothing for pipes</span>
-        <span class="n">smooth_branches</span> <span class="o">=</span> <span class="n">br_type</span> <span class="o">==</span> <span class="s2">&quot;pipe&quot;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Processing branches&quot;</span><span class="p">)</span>
-        <span class="n">branches</span><span class="p">,</span> <span class="n">branches_nodes</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">process_branches</span><span class="p">(</span>
-            <span class="n">gdf_br</span><span class="p">,</span>
-            <span class="n">id_col</span><span class="o">=</span><span class="s2">&quot;branchid&quot;</span><span class="p">,</span>
-            <span class="n">snap_offset</span><span class="o">=</span><span class="n">snap_offset</span><span class="p">,</span>
-            <span class="n">allow_intersection_snapping</span><span class="o">=</span><span class="n">allow_intersection_snapping</span><span class="p">,</span>
-            <span class="n">smooth_branches</span><span class="o">=</span><span class="n">smooth_branches</span><span class="p">,</span>
-            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Validating branches&quot;</span><span class="p">)</span>
-        <span class="n">workflows</span><span class="o">.</span><span class="n">validate_branches</span><span class="p">(</span><span class="n">branches</span><span class="p">)</span>
-
-        <span class="c1"># convert to model crs</span>
-        <span class="n">branches</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
-        <span class="n">branches_nodes</span> <span class="o">=</span> <span class="n">branches_nodes</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
-
-        <span class="c1"># 5. Add friction id</span>
-        <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;frictionid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ftype</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">fvalue</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="k">for</span> <span class="n">ftype</span><span class="p">,</span> <span class="n">fvalue</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
-                <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;frictiontype&quot;</span><span class="p">],</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;frictionvalue&quot;</span><span class="p">]</span>
-            <span class="p">)</span>
-        <span class="p">]</span>
-
-        <span class="k">return</span> <span class="n">branches</span><span class="p">,</span> <span class="n">branches_nodes</span>
-
 <div class="viewcode-block" id="DFlowFMModel.setup_channels">
 <a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.setup_channels.html#hydromt_delft3dfm.DFlowFMModel.setup_channels">[docs]</a>
     <span class="k">def</span> <span class="nf">setup_channels</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">region</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">channels_fn</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">channels_defaults_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">channels_defaults_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channels_defaults&quot;</span><span class="p">,</span>
         <span class="n">channel_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">friction_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Manning&quot;</span><span class="p">,</span>
         <span class="n">friction_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.023</span><span class="p">,</span>
@@ -866,6 +693,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preparing 1D channels.&quot;</span><span class="p">)</span>
 
         <span class="c1"># filter for allowed columns</span>
+        <span class="n">br_type</span> <span class="o">=</span> <span class="s2">&quot;channel&quot;</span>
         <span class="n">_allowed_columns</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;geometry&quot;</span><span class="p">,</span>
             <span class="s2">&quot;branchid&quot;</span><span class="p">,</span>
@@ -883,19 +711,34 @@ document.write(`
             <span class="s2">&quot;friction_value&quot;</span><span class="p">,</span>
         <span class="p">]</span>
 
-        <span class="c1"># Build the channels branches and nodes and fill with attributes and spacing</span>
-        <span class="n">channels</span><span class="p">,</span> <span class="n">channel_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_branches</span><span class="p">(</span>
-            <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
-            <span class="n">br_fn</span><span class="o">=</span><span class="n">channels_fn</span><span class="p">,</span>
-            <span class="n">defaults_fn</span><span class="o">=</span><span class="n">channels_defaults_fn</span><span class="p">,</span>
-            <span class="n">br_type</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span>
-            <span class="n">friction_type</span><span class="o">=</span><span class="n">friction_type</span><span class="p">,</span>
-            <span class="n">friction_value</span><span class="o">=</span><span class="n">friction_value</span><span class="p">,</span>
+        <span class="c1"># Read data and filter within region</span>
+        <span class="n">region</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">parse_region_geometry</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
+        <span class="n">gdf_br</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_geodataframe</span><span class="p">(</span>
+            <span class="n">channels_fn</span><span class="p">,</span> <span class="n">geom</span><span class="o">=</span><span class="n">region</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="s2">&quot;intersects&quot;</span>
+        <span class="p">)</span>
+        <span class="c1"># Read defaults table</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">channels_defaults_fn</span><span class="p">)</span>
+        <span class="c1"># Prepare branches</span>
+        <span class="n">channels</span><span class="p">,</span> <span class="n">channel_nodes</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">prepare_branches</span><span class="p">(</span>
+            <span class="n">gdf_br</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">defaults</span><span class="p">,</span>
+            <span class="n">br_type</span><span class="o">=</span><span class="n">br_type</span><span class="p">,</span>
+            <span class="n">dst_crs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">,</span>
+            <span class="n">id_start</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nb">filter</span><span class="o">=</span><span class="n">channel_filter</span><span class="p">,</span>
             <span class="n">spacing</span><span class="o">=</span><span class="n">spacing</span><span class="p">,</span>
             <span class="n">snap_offset</span><span class="o">=</span><span class="n">snap_offset</span><span class="p">,</span>
             <span class="n">allow_intersection_snapping</span><span class="o">=</span><span class="n">allow_intersection_snapping</span><span class="p">,</span>
             <span class="n">allowed_columns</span><span class="o">=</span><span class="n">_allowed_columns</span><span class="p">,</span>
-            <span class="nb">filter</span><span class="o">=</span><span class="n">channel_filter</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Prepare friction and crosssections</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">prepare_default_friction_and_crosssection</span><span class="p">(</span>
+            <span class="n">channels</span><span class="p">,</span>
+            <span class="n">br_type</span><span class="o">=</span><span class="n">br_type</span><span class="p">,</span>
+            <span class="n">friction_type</span><span class="o">=</span><span class="n">friction_type</span><span class="p">,</span>
+            <span class="n">friction_value</span><span class="o">=</span><span class="n">friction_value</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># setup crosssections</span>
@@ -904,7 +747,7 @@ document.write(`
         <span class="k">assert</span> <span class="p">{</span><span class="n">crosssections_type</span><span class="p">}</span><span class="o">.</span><span class="n">issubset</span><span class="p">({</span><span class="s2">&quot;xyzpoints&quot;</span><span class="p">,</span> <span class="s2">&quot;branch&quot;</span><span class="p">})</span>
         <span class="n">crosssections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_crosssections</span><span class="p">(</span>
             <span class="n">branches</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
-            <span class="n">region</span><span class="o">=</span><span class="n">workflows</span><span class="o">.</span><span class="n">parse_region_geometry</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">),</span>
+            <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
             <span class="n">crosssections_fn</span><span class="o">=</span><span class="n">crosssections_fn</span><span class="p">,</span>
             <span class="n">crosssections_type</span><span class="o">=</span><span class="n">crosssections_type</span><span class="p">,</span>
         <span class="p">)</span>
@@ -950,7 +793,7 @@ document.write(`
         <span class="n">region</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">hydrography_fn</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">river_geom_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">rivers_defaults_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rivers_defaults_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;rivers_defaults&quot;</span><span class="p">,</span>
         <span class="n">rivdph_method</span><span class="o">=</span><span class="s2">&quot;gvf&quot;</span><span class="p">,</span>
         <span class="n">rivwth_method</span><span class="o">=</span><span class="s2">&quot;geom&quot;</span><span class="p">,</span>
         <span class="n">river_upa</span><span class="o">=</span><span class="mf">25.0</span><span class="p">,</span>
@@ -1126,20 +969,8 @@ document.write(`
         <span class="n">rm_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;rivwth&quot;</span><span class="p">:</span> <span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="s2">&quot;rivdph&quot;</span><span class="p">:</span> <span class="s2">&quot;height&quot;</span><span class="p">,</span> <span class="s2">&quot;zb&quot;</span><span class="p">:</span> <span class="s2">&quot;bedlev&quot;</span><span class="p">}</span>
         <span class="n">gdf_riv</span> <span class="o">=</span> <span class="n">gdf_riv</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">rm_dict</span><span class="p">)</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
 
-        <span class="c1"># assign default attributes</span>
-        <span class="k">if</span> <span class="n">rivers_defaults_fn</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">rivers_defaults_fn</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;rivers_defaults_fn (</span><span class="si">{</span><span class="n">rivers_defaults_fn</span><span class="si">}</span><span class="s2">) does not exist. Fall back choice to defaults. &quot;</span>
-            <span class="p">)</span>
-            <span class="n">rivers_defaults_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_DATADIR</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span>
-                <span class="s2">&quot;rivers&quot;</span><span class="p">,</span> <span class="s2">&quot;rivers_defaults.csv&quot;</span>
-            <span class="p">)</span>
-        <span class="n">defaults</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">rivers_defaults_fn</span><span class="p">)</span>
-        <span class="c1"># Make sure default shape is rectangle</span>
-        <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;rectangle&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;river default settings read from </span><span class="si">{</span><span class="n">rivers_defaults_fn</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-
         <span class="c1"># filter for allowed columns</span>
+        <span class="n">br_type</span> <span class="o">=</span> <span class="s2">&quot;river&quot;</span>
         <span class="n">_allowed_columns</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;geometry&quot;</span><span class="p">,</span>
             <span class="s2">&quot;branchid&quot;</span><span class="p">,</span>
@@ -1157,17 +988,29 @@ document.write(`
             <span class="s2">&quot;friction_value&quot;</span><span class="p">,</span>
         <span class="p">]</span>
 
-        <span class="c1"># Build the rivers branches and nodes and fill with attributes and spacing</span>
-        <span class="n">rivers</span><span class="p">,</span> <span class="n">river_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_branches</span><span class="p">(</span>
-            <span class="n">br_fn</span><span class="o">=</span><span class="n">gdf_riv</span><span class="p">,</span>
-            <span class="n">defaults_fn</span><span class="o">=</span><span class="n">defaults</span><span class="p">,</span>
-            <span class="n">br_type</span><span class="o">=</span><span class="s2">&quot;river&quot;</span><span class="p">,</span>
+        <span class="c1"># assign default attributes</span>
+        <span class="c1"># Read defaults table</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">rivers_defaults_fn</span><span class="p">)</span>
+        <span class="c1"># Make sure default shape is rectangle</span>
+        <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;rectangle&quot;</span><span class="p">])</span>
+
+        <span class="c1"># Prepare branches</span>
+        <span class="n">rivers</span><span class="p">,</span> <span class="n">river_nodes</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">prepare_branches</span><span class="p">(</span>
+            <span class="n">gdf_riv</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">defaults</span><span class="p">,</span>
+            <span class="n">br_type</span><span class="o">=</span><span class="n">br_type</span><span class="p">,</span>
+            <span class="n">dst_crs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">,</span>
+            <span class="n">id_start</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">allowed_columns</span><span class="o">=</span><span class="n">_allowed_columns</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Prepare friction</span>
+        <span class="n">branches</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">prepare_default_friction_and_crosssection</span><span class="p">(</span>
+            <span class="n">rivers</span><span class="p">,</span>
+            <span class="n">br_type</span><span class="o">=</span><span class="n">br_type</span><span class="p">,</span>
             <span class="n">friction_type</span><span class="o">=</span><span class="n">friction_type</span><span class="p">,</span>
             <span class="n">friction_value</span><span class="o">=</span><span class="n">friction_value</span><span class="p">,</span>
-            <span class="n">spacing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># does not allow spacing for rivers</span>
-            <span class="n">snap_offset</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-            <span class="n">allow_intersection_snapping</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">allowed_columns</span><span class="o">=</span><span class="n">_allowed_columns</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># setup crosssections</span>
@@ -1217,7 +1060,7 @@ document.write(`
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">region</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">rivers_fn</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">rivers_defaults_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rivers_defaults_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;rivers_defaults&quot;</span><span class="p">,</span>
         <span class="n">river_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">friction_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Manning&quot;</span><span class="p">,</span>
         <span class="n">friction_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.023</span><span class="p">,</span>
@@ -1298,6 +1141,7 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preparing 1D rivers.&quot;</span><span class="p">)</span>
         <span class="c1"># filter for allowed columns</span>
+        <span class="n">br_type</span> <span class="o">=</span> <span class="s2">&quot;river&quot;</span>
         <span class="n">_allowed_columns</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;geometry&quot;</span><span class="p">,</span>
             <span class="s2">&quot;branchid&quot;</span><span class="p">,</span>
@@ -1314,19 +1158,33 @@ document.write(`
             <span class="s2">&quot;friction_value&quot;</span><span class="p">,</span>
         <span class="p">]</span>
 
-        <span class="c1"># Build the rivers branches and nodes and fill with attributes and spacing</span>
-        <span class="n">rivers</span><span class="p">,</span> <span class="n">river_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_branches</span><span class="p">(</span>
-            <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
-            <span class="n">br_fn</span><span class="o">=</span><span class="n">rivers_fn</span><span class="p">,</span>
-            <span class="n">defaults_fn</span><span class="o">=</span><span class="n">rivers_defaults_fn</span><span class="p">,</span>
-            <span class="n">br_type</span><span class="o">=</span><span class="s2">&quot;river&quot;</span><span class="p">,</span>
-            <span class="n">friction_type</span><span class="o">=</span><span class="n">friction_type</span><span class="p">,</span>
-            <span class="n">friction_value</span><span class="o">=</span><span class="n">friction_value</span><span class="p">,</span>
-            <span class="n">spacing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># does not allow spacing for rivers</span>
+        <span class="c1"># Read data and filter within region</span>
+        <span class="n">region</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">parse_region_geometry</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
+        <span class="n">gdf_br</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_geodataframe</span><span class="p">(</span>
+            <span class="n">rivers_fn</span><span class="p">,</span> <span class="n">geom</span><span class="o">=</span><span class="n">region</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="s2">&quot;intersects&quot;</span>
+        <span class="p">)</span>
+        <span class="c1"># Read defaults table</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">rivers_defaults_fn</span><span class="p">)</span>
+        <span class="c1"># Prepare branches</span>
+        <span class="n">rivers</span><span class="p">,</span> <span class="n">river_nodes</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">prepare_branches</span><span class="p">(</span>
+            <span class="n">gdf_br</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">defaults</span><span class="p">,</span>
+            <span class="n">br_type</span><span class="o">=</span><span class="n">br_type</span><span class="p">,</span>
+            <span class="n">dst_crs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">,</span>
+            <span class="n">id_start</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nb">filter</span><span class="o">=</span><span class="n">river_filter</span><span class="p">,</span>
             <span class="n">snap_offset</span><span class="o">=</span><span class="n">snap_offset</span><span class="p">,</span>
             <span class="n">allow_intersection_snapping</span><span class="o">=</span><span class="n">allow_intersection_snapping</span><span class="p">,</span>
             <span class="n">allowed_columns</span><span class="o">=</span><span class="n">_allowed_columns</span><span class="p">,</span>
-            <span class="nb">filter</span><span class="o">=</span><span class="n">river_filter</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Prepare friction and crosssections</span>
+        <span class="n">rivers</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">prepare_default_friction_and_crosssection</span><span class="p">(</span>
+            <span class="n">rivers</span><span class="p">,</span>
+            <span class="n">br_type</span><span class="o">=</span><span class="n">br_type</span><span class="p">,</span>
+            <span class="n">friction_type</span><span class="o">=</span><span class="n">friction_type</span><span class="p">,</span>
+            <span class="n">friction_value</span><span class="o">=</span><span class="n">friction_value</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># setup crosssections</span>
@@ -1336,7 +1194,7 @@ document.write(`
         <span class="k">for</span> <span class="n">crs_fn</span><span class="p">,</span> <span class="n">crs_type</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">crosssections_fn</span><span class="p">,</span> <span class="n">crosssections_type</span><span class="p">):</span>
             <span class="n">crosssections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_crosssections</span><span class="p">(</span>
                 <span class="n">branches</span><span class="o">=</span><span class="n">rivers</span><span class="p">,</span>
-                <span class="n">region</span><span class="o">=</span><span class="n">workflows</span><span class="o">.</span><span class="n">parse_region_geometry</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">),</span>
+                <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
                 <span class="n">crosssections_fn</span><span class="o">=</span><span class="n">crs_fn</span><span class="p">,</span>
                 <span class="n">crosssections_type</span><span class="o">=</span><span class="n">crs_type</span><span class="p">,</span>
             <span class="p">)</span>
@@ -1392,7 +1250,7 @@ document.write(`
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">region</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">pipes_fn</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">pipes_defaults_fn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">pipes_defaults_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pipes_defaults&quot;</span><span class="p">,</span>
         <span class="n">pipe_filter</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">spacing</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
         <span class="n">friction_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;WhiteColebrook&quot;</span><span class="p">,</span>
@@ -1483,6 +1341,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preparing 1D pipes.&quot;</span><span class="p">)</span>
 
         <span class="c1"># filter for allowed columns</span>
+        <span class="n">br_type</span> <span class="o">=</span> <span class="s2">&quot;pipe&quot;</span>
         <span class="n">_allowed_columns</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;geometry&quot;</span><span class="p">,</span>
             <span class="s2">&quot;branchid&quot;</span><span class="p">,</span>
@@ -1499,25 +1358,41 @@ document.write(`
             <span class="s2">&quot;invlev_up&quot;</span><span class="p">,</span>
             <span class="s2">&quot;inlev_dn&quot;</span><span class="p">,</span>
         <span class="p">]</span>
-        <span class="n">_region</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">parse_region_geometry</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
-        <span class="c1"># Build the pipe branches and nodes and fill with attributes and spacing</span>
-        <span class="n">pipes</span><span class="p">,</span> <span class="n">pipe_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_branches</span><span class="p">(</span>
-            <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
-            <span class="n">br_fn</span><span class="o">=</span><span class="n">pipes_fn</span><span class="p">,</span>
-            <span class="n">defaults_fn</span><span class="o">=</span><span class="n">pipes_defaults_fn</span><span class="p">,</span>
-            <span class="n">br_type</span><span class="o">=</span><span class="s2">&quot;pipe&quot;</span><span class="p">,</span>
+
+        <span class="c1"># Read data and filter within region</span>
+        <span class="n">region</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">parse_region_geometry</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
+        <span class="n">gdf_br</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_geodataframe</span><span class="p">(</span>
+            <span class="n">pipes_fn</span><span class="p">,</span> <span class="n">geom</span><span class="o">=</span><span class="n">region</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="s2">&quot;intersects&quot;</span>
+        <span class="p">)</span>
+        <span class="c1"># Read defaults table</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">pipes_defaults_fn</span><span class="p">)</span>
+        <span class="c1"># Prepare branches</span>
+        <span class="n">pipes</span><span class="p">,</span> <span class="n">pipe_nodes</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">prepare_branches</span><span class="p">(</span>
+            <span class="n">gdf_br</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">defaults</span><span class="p">,</span>
+            <span class="n">br_type</span><span class="o">=</span><span class="n">br_type</span><span class="p">,</span>
+            <span class="n">dst_crs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">,</span>
+            <span class="n">id_start</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nb">filter</span><span class="o">=</span><span class="n">pipe_filter</span><span class="p">,</span>
+            <span class="n">spacing</span><span class="o">=</span><span class="n">spacing</span><span class="p">,</span>
+            <span class="n">snap_offset</span><span class="o">=</span><span class="n">snap_offset</span><span class="p">,</span>
+            <span class="n">allow_intersection_snapping</span><span class="o">=</span><span class="n">allow_intersection_snapping</span><span class="p">,</span>
+            <span class="n">allowed_columns</span><span class="o">=</span><span class="n">_allowed_columns</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Prepare friction and crosssections</span>
+        <span class="n">pipes</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">prepare_default_friction_and_crosssection</span><span class="p">(</span>
+            <span class="n">pipes</span><span class="p">,</span>
+            <span class="n">br_type</span><span class="o">=</span><span class="n">br_type</span><span class="p">,</span>
             <span class="n">friction_type</span><span class="o">=</span><span class="n">friction_type</span><span class="p">,</span>
             <span class="n">friction_value</span><span class="o">=</span><span class="n">friction_value</span><span class="p">,</span>
             <span class="n">crosssections_shape</span><span class="o">=</span><span class="n">crosssections_shape</span><span class="p">,</span>
             <span class="n">crosssections_value</span><span class="o">=</span><span class="n">crosssections_value</span><span class="p">,</span>
-            <span class="n">spacing</span><span class="o">=</span><span class="n">spacing</span><span class="p">,</span>  <span class="c1"># for now only single default value implemented, use &quot;spacing&quot; column</span>
-            <span class="n">snap_offset</span><span class="o">=</span><span class="n">snap_offset</span><span class="p">,</span>
-            <span class="n">allow_intersection_snapping</span><span class="o">=</span><span class="n">allow_intersection_snapping</span><span class="p">,</span>
-            <span class="n">allowed_columns</span><span class="o">=</span><span class="n">_allowed_columns</span><span class="p">,</span>
-            <span class="nb">filter</span><span class="o">=</span><span class="n">pipe_filter</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># filter extra time for geting clipped pipes within the region (better match)</span>
-        <span class="n">pipes</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">sjoin</span><span class="p">(</span><span class="n">pipes</span><span class="p">,</span> <span class="n">_region</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="s2">&quot;within&quot;</span><span class="p">)</span>
+        <span class="n">pipes</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">sjoin</span><span class="p">(</span><span class="n">pipes</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="s2">&quot;within&quot;</span><span class="p">)</span>
+
         <span class="c1"># setup crosssections</span>
         <span class="c1"># setup invert levels</span>
         <span class="c1"># 1. check if invlev up and dn are fully filled in (nothing needs to be done)</span>
@@ -1539,7 +1414,7 @@ document.write(`
         <span class="k">if</span> <span class="n">fill_invlev</span> <span class="ow">and</span> <span class="n">dem_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">dem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_rasterdataset</span><span class="p">(</span>
                 <span class="n">dem_fn</span><span class="p">,</span>
-                <span class="n">geom</span><span class="o">=</span><span class="n">_region</span><span class="p">,</span>
+                <span class="n">geom</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
                 <span class="n">buffer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_network_snap_offset</span><span class="p">,</span>
                 <span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;elevtn&quot;</span><span class="p">],</span>
             <span class="p">)</span>
@@ -1696,7 +1571,7 @@ document.write(`
                     <span class="sa">f</span><span class="s2">&quot;No </span><span class="si">{</span><span class="n">crosssections_fn</span><span class="si">}</span><span class="s2"> 1D xyz crosssections found within domain&quot;</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">None</span>
-            <span class="n">valid_attributes</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">check_gpd_attributes</span><span class="p">(</span>
+            <span class="n">valid_attributes</span> <span class="o">=</span> <span class="n">gis_utils</span><span class="o">.</span><span class="n">check_gpd_attributes</span><span class="p">(</span>
                 <span class="n">gdf_cs</span><span class="p">,</span> <span class="n">required_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;crsid&quot;</span><span class="p">,</span> <span class="s2">&quot;order&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">]</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_attributes</span><span class="p">:</span>
@@ -1732,7 +1607,7 @@ document.write(`
                     <span class="sa">f</span><span class="s2">&quot;No </span><span class="si">{</span><span class="n">crosssections_fn</span><span class="si">}</span><span class="s2"> 1D point crosssections found within domain&quot;</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">None</span>
-            <span class="n">valid_attributes</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">check_gpd_attributes</span><span class="p">(</span>
+            <span class="n">valid_attributes</span> <span class="o">=</span> <span class="n">gis_utils</span><span class="o">.</span><span class="n">check_gpd_attributes</span><span class="p">(</span>
                 <span class="n">gdf_cs</span><span class="p">,</span> <span class="n">required_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;crsid&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="s2">&quot;shift&quot;</span><span class="p">]</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_attributes</span><span class="p">:</span>
@@ -1767,7 +1642,7 @@ document.write(`
     <span class="k">def</span> <span class="nf">setup_manholes</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">manholes_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">manhole_defaults_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">manhole_defaults_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;manholes_defaults&quot;</span><span class="p">,</span>
         <span class="n">bedlevel_shift</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span>
         <span class="n">dem_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
@@ -1840,15 +1715,8 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">set_branches</span><span class="p">(</span><span class="n">branches</span><span class="p">)</span>
 
         <span class="c1"># add manhole attributes from defaults</span>
-        <span class="k">if</span> <span class="n">manhole_defaults_fn</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">manhole_defaults_fn</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;manhole_defaults_fn (</span><span class="si">{</span><span class="n">manhole_defaults_fn</span><span class="si">}</span><span class="s2">) does not exist. Fall back choice to defaults. &quot;</span>
-            <span class="p">)</span>
-            <span class="n">manhole_defaults_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_DATADIR</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span>
-                <span class="s2">&quot;manholes&quot;</span><span class="p">,</span> <span class="s2">&quot;manholes_defaults.csv&quot;</span>
-            <span class="p">)</span>
-        <span class="n">defaults</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">manhole_defaults_fn</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;manhole default settings read from </span><span class="si">{</span><span class="n">manhole_defaults_fn</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">manhole_defaults_fn</span><span class="p">)</span>
+
         <span class="c1"># add defaults</span>
         <span class="n">manholes</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">update_data_columns_attributes</span><span class="p">(</span><span class="n">manholes</span><span class="p">,</span> <span class="n">defaults</span><span class="p">)</span>
 
@@ -2058,187 +1926,12 @@ document.write(`
         <span class="p">)</span>  <span class="c1"># FIXME: this format cannot be read back due to lack of branch type info from model files</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_setup_1dstructures</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">st_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">st_fn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">defaults_fn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="nb">filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">snap_offset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup 1D structures.</span>
-<span class="sd">        Include the universal weir (Not Implemented) , culvert and bridge (``str_type`` = &#39;bridge&#39;), which can only be used in a single 1D channel.</span>
-
-<span class="sd">        The structures are first read from ``st_fn`` (only locations within the region will be read), and if any missing, filled with information provided in ``defaults_fn``.</span>
-<span class="sd">        Read locations are then filtered for value specified in ``filter`` on the column ``st_type``.</span>
-<span class="sd">        They are then snapped to the existing network within a max distance defined in ``snap_offset`` and will be dropped if not snapped.</span>
-<span class="sd">        Finally, crossections are read and set up for the remaining structures.</span>
-
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        st_type: str, required</span>
-<span class="sd">            Name of structure type</span>
-
-<span class="sd">        st_fn: str Path, optional</span>
-<span class="sd">            Path or data source name for structures, see data/data_sources.yml.</span>
-<span class="sd">            Note only the points that are within the region polygon will be used.</span>
-
-<span class="sd">            * Optional variables: see the setup function for each ``st_type``</span>
-
-<span class="sd">        defaults_fn : str Path, optional</span>
-<span class="sd">            Path to a csv file containing all defaults values per &quot;structure_type&quot;.</span>
-<span class="sd">            By default `hydrolib.hydromt_delft3dfm.data.bridges.bridges_defaults.csv` is used. This file describes a minimum rectangle bridge profile.</span>
-
-<span class="sd">            * Allowed variables: see the setup function for each ``st_type``</span>
-
-<span class="sd">        filter: str, optional</span>
-<span class="sd">            Keyword in &quot;structure_type&quot; column of ``st_fn`` used to filter features. If None all features are used (default).</span>
-
-<span class="sd">        snap_offset: float, optional</span>
-<span class="sd">            Snapping tolenrance to automatically snap bridges to network and add [&#39;branchid&#39;, &#39;chainage&#39;] attributes.</span>
-<span class="sd">            By default None. In this case, global variable &quot;network_snap_offset&quot; will be used.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        gdf_st: geopandas.GeoDataFrame</span>
-<span class="sd">            geodataframe of the structures and crossections</span>
-
-
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        dflowfm.setup_bridges</span>
-<span class="sd">        dflowfm.setup_culverts</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">snap_offset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">snap_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network_snap_offset</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Snap_offset is set to global network snap offset: </span><span class="si">{</span><span class="n">snap_offset</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-
-        <span class="n">type_col</span> <span class="o">=</span> <span class="s2">&quot;structure_type&quot;</span>
-        <span class="n">id_col</span> <span class="o">=</span> <span class="s2">&quot;structure_id&quot;</span>
-
-        <span class="n">branches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;branchid&quot;</span><span class="p">)</span>
-
-        <span class="c1"># 1. Read data and filter within region</span>
-        <span class="c1"># If needed read the structures GeoDataFrame</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">st_fn</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">st_fn</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
-            <span class="n">gdf_st</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_geodataframe</span><span class="p">(</span>
-                <span class="n">st_fn</span><span class="p">,</span> <span class="n">geom</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="s2">&quot;contains&quot;</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">gdf_st</span> <span class="o">=</span> <span class="n">st_fn</span>
-        <span class="c1"># Filter features based on filter on type_col</span>
-        <span class="k">if</span> <span class="nb">filter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">type_col</span> <span class="ow">in</span> <span class="n">gdf_st</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="n">gdf_st</span> <span class="o">=</span> <span class="n">gdf_st</span><span class="p">[</span><span class="n">gdf_st</span><span class="p">[</span><span class="n">type_col</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="nb">filter</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Set </span><span class="si">{</span><span class="nb">filter</span><span class="si">}</span><span class="s2"> locations filtered from </span><span class="si">{</span><span class="n">st_fn</span><span class="si">}</span><span class="s2"> as </span><span class="si">{</span><span class="n">st_type</span><span class="si">}</span><span class="s2"> .&quot;</span>
-            <span class="p">)</span>
-        <span class="c1"># Check if features in region</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gdf_st</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No 1D </span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2"> locations found within domain&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">None</span>
-        <span class="c1"># reproject to model crs</span>
-        <span class="n">gdf_st</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
-
-        <span class="c1"># 2.  Read defaults table</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">defaults_fn</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
-            <span class="n">defaults</span> <span class="o">=</span> <span class="n">defaults_fn</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">defaults_fn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;defaults_fn (</span><span class="si">{</span><span class="n">defaults_fn</span><span class="si">}</span><span class="s2">) does not exist. Fall back choice to defaults. &quot;</span>
-                <span class="p">)</span>
-                <span class="n">defaults_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_DATADIR</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">st_type</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">st_type</span><span class="si">}</span><span class="s2">s_defaults.csv&quot;</span>
-                <span class="p">)</span>
-            <span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">defaults_fn</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">st_type</span><span class="si">}</span><span class="s2"> default settings read from </span><span class="si">{</span><span class="n">defaults_fn</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-
-        <span class="c1"># 3. Add defaults</span>
-        <span class="c1"># overwrite type and add id attributes if does not exist</span>
-        <span class="n">gdf_st</span><span class="p">[</span><span class="n">type_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">st_type</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">gdf_st</span><span class="p">)),</span> <span class="n">index</span><span class="o">=</span><span class="n">gdf_st</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="n">id_col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">gdf_st</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">st_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
-                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structures</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structures</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">gdf_st</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-                <span class="p">)</span>
-            <span class="p">]</span>  <span class="c1"># avoid duplicated ids being generated</span>
-            <span class="n">gdf_st</span><span class="p">[</span><span class="n">id_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">gdf_st</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
-        <span class="c1"># assign id</span>
-        <span class="n">gdf_st</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">gdf_st</span><span class="p">[</span><span class="n">id_col</span><span class="p">]</span>
-        <span class="n">gdf_st</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">id_col</span>
-        <span class="c1"># filter for allowed columns</span>
-        <span class="n">allowed_columns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">defaults</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">gdf_st</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-        <span class="n">allowed_columns</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;geometry&quot;</span><span class="p">})</span>
-        <span class="n">gdf_st</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">gdf_st</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">allowed_columns</span><span class="p">)],</span> <span class="n">crs</span><span class="o">=</span><span class="n">gdf_st</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Adding/Filling default attributes values&quot;</span><span class="p">)</span>
-        <span class="n">gdf_st</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">update_data_columns_attributes_based_on_filter</span><span class="p">(</span>
-            <span class="n">gdf_st</span><span class="p">,</span> <span class="n">defaults</span><span class="p">,</span> <span class="n">type_col</span><span class="p">,</span> <span class="n">st_type</span>
-        <span class="p">)</span>
-
-        <span class="c1"># 4. snap structures to branches</span>
-        <span class="c1"># setup branch_id - snap structures to branch (inplace of structures, will add branch_id and branch_offset columns)</span>
-        <span class="n">workflows</span><span class="o">.</span><span class="n">find_nearest_branch</span><span class="p">(</span>
-            <span class="n">branches</span><span class="o">=</span><span class="n">branches</span><span class="p">,</span> <span class="n">geometries</span><span class="o">=</span><span class="n">gdf_st</span><span class="p">,</span> <span class="n">maxdist</span><span class="o">=</span><span class="n">snap_offset</span>
-        <span class="p">)</span>
-        <span class="c1"># setup failed - drop based on branch_offset that are not snapped to branch</span>
-        <span class="n">_old_ids</span> <span class="o">=</span> <span class="n">gdf_st</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
-        <span class="n">gdf_st</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;branch_offset&quot;</span><span class="p">])</span>
-        <span class="n">_new_ids</span> <span class="o">=</span> <span class="n">gdf_st</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_old_ids</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">_new_ids</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;structure with id: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">_old_ids</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">set</span><span class="p">(</span><span class="n">_new_ids</span><span class="p">))</span><span class="si">}</span><span class="s2"> are dropped: unable to find closest branch. &quot;</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_new_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;No 1D </span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2"> locations found within the proximity of the network&quot;</span>
-            <span class="p">)</span>
-            <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># setup success, add branchid and chainage</span>
-            <span class="n">gdf_st</span><span class="p">[</span><span class="s2">&quot;structure_branchid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf_st</span><span class="p">[</span><span class="s2">&quot;branch_id&quot;</span><span class="p">]</span>
-            <span class="n">gdf_st</span><span class="p">[</span><span class="s2">&quot;structure_chainage&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf_st</span><span class="p">[</span><span class="s2">&quot;branch_offset&quot;</span><span class="p">]</span>
-
-        <span class="c1"># 5. add structure crossections</span>
-        <span class="c1"># add a dummy &quot;shift&quot; for crossection locations if missing (e.g. culverts), because structures only needs crossection definitions.</span>
-        <span class="k">if</span> <span class="s2">&quot;shift&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">gdf_st</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="n">gdf_st</span><span class="p">[</span><span class="s2">&quot;shift&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-        <span class="c1"># derive crosssections</span>
-        <span class="n">gdf_st_crossections</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">set_point_crosssections</span><span class="p">(</span>
-            <span class="n">branches</span><span class="p">,</span> <span class="n">gdf_st</span><span class="p">,</span> <span class="n">maxdist</span><span class="o">=</span><span class="n">snap_offset</span>
-        <span class="p">)</span>
-        <span class="c1"># remove crossection locations and any friction from the setup</span>
-        <span class="n">gdf_st_crsdefs</span> <span class="o">=</span> <span class="n">gdf_st_crossections</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
-            <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
-                <span class="n">c</span>
-                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gdf_st_crossections</span><span class="o">.</span><span class="n">columns</span>
-                <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;crsloc&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;friction&quot;</span> <span class="ow">in</span> <span class="n">c</span>
-            <span class="p">]</span>
-        <span class="p">)</span>
-        <span class="c1"># add to structures</span>
-        <span class="n">gdf_st</span> <span class="o">=</span> <span class="n">gdf_st</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
-            <span class="n">gdf_st_crsdefs</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">&quot;geometry&quot;</span><span class="p">),</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span>
-
-        <span class="c1"># 6. replace np.nan as None</span>
-        <span class="n">gdf_st</span> <span class="o">=</span> <span class="n">gdf_st</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-
-        <span class="c1"># 7. remove index</span>
-        <span class="n">gdf_st</span> <span class="o">=</span> <span class="n">gdf_st</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-
-        <span class="k">return</span> <span class="n">gdf_st</span>
-
 <div class="viewcode-block" id="DFlowFMModel.setup_bridges">
 <a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.setup_bridges.html#hydromt_delft3dfm.DFlowFMModel.setup_bridges">[docs]</a>
     <span class="k">def</span> <span class="nf">setup_bridges</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">bridges_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">bridges_defaults_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bridges_defaults_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1D_bridges_defaults&quot;</span><span class="p">,</span>
         <span class="n">bridge_filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">snap_offset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
@@ -2284,7 +1977,8 @@ document.write(`
 <span class="sd">        --------</span>
 <span class="sd">        dflowfm._setup_1dstructures</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># keywords in hydrolib-core</span>
+
+        <span class="n">snap_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network_snap_offset</span> <span class="k">if</span> <span class="n">snap_offset</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">snap_offset</span>
         <span class="n">_st_type</span> <span class="o">=</span> <span class="s2">&quot;bridge&quot;</span>
         <span class="n">_allowed_columns</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;id&quot;</span><span class="p">,</span>
@@ -2303,9 +1997,20 @@ document.write(`
             <span class="s2">&quot;length&quot;</span><span class="p">,</span>
         <span class="p">]</span>
 
+        <span class="c1"># read data</span>
+        <span class="n">gdf_bridges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_geodataframe</span><span class="p">(</span>
+            <span class="n">bridges_fn</span><span class="p">,</span> <span class="n">geom</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="s2">&quot;contains&quot;</span>
+        <span class="p">)</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">bridges_defaults_fn</span><span class="p">)</span>
+
         <span class="c1"># setup general 1d structures</span>
-        <span class="n">bridges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_1dstructures</span><span class="p">(</span>
-            <span class="n">_st_type</span><span class="p">,</span> <span class="n">bridges_fn</span><span class="p">,</span> <span class="n">bridges_defaults_fn</span><span class="p">,</span> <span class="n">bridge_filter</span><span class="p">,</span> <span class="n">snap_offset</span>
+        <span class="n">bridges</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">prepare_1dstructures</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">,</span>
+            <span class="n">gdf_bridges</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">defaults</span><span class="p">,</span>
+            <span class="nb">filter</span><span class="o">=</span><span class="n">bridge_filter</span><span class="p">,</span>
+            <span class="n">snap_offset</span><span class="o">=</span><span class="n">snap_offset</span><span class="p">,</span>
+            <span class="n">st_type</span><span class="o">=</span><span class="n">_st_type</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># setup crossection definitions</span>
@@ -2315,7 +2020,7 @@ document.write(`
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_geoms</span><span class="p">(</span><span class="n">crosssections</span><span class="p">,</span> <span class="s2">&quot;crosssections&quot;</span><span class="p">)</span>
 
-        <span class="c1"># setup bridges</span>
+        <span class="c1"># setup bridges (note the allowed columns are different per structure)</span>
         <span class="n">bridges</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">bridges</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">bridges</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
             <span class="n">columns</span><span class="o">=</span><span class="p">{</span>
@@ -2341,7 +2046,7 @@ document.write(`
     <span class="k">def</span> <span class="nf">setup_culverts</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">culverts_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">culverts_defaults_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">culverts_defaults_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1D_culverts_defaults&quot;</span><span class="p">,</span>
         <span class="n">culvert_filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">snap_offset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
@@ -2396,7 +2101,7 @@ document.write(`
 <span class="sd">        --------</span>
 <span class="sd">        dflowfm._setup_1dstructures</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># keywords in hydrolib-core</span>
+        <span class="n">snap_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network_snap_offset</span> <span class="k">if</span> <span class="n">snap_offset</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">snap_offset</span>
         <span class="n">_st_type</span> <span class="o">=</span> <span class="s2">&quot;culvert&quot;</span>
         <span class="n">_allowed_columns</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;id&quot;</span><span class="p">,</span>
@@ -2419,9 +2124,20 @@ document.write(`
             <span class="s2">&quot;bedfriction&quot;</span><span class="p">,</span>
         <span class="p">]</span>
 
+        <span class="c1"># read data</span>
+        <span class="n">gdf_culverts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_geodataframe</span><span class="p">(</span>
+            <span class="n">culverts_fn</span><span class="p">,</span> <span class="n">geom</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="s2">&quot;contains&quot;</span>
+        <span class="p">)</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">culverts_defaults_fn</span><span class="p">)</span>
+
         <span class="c1"># setup general 1d structures</span>
-        <span class="n">culverts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_1dstructures</span><span class="p">(</span>
-            <span class="n">_st_type</span><span class="p">,</span> <span class="n">culverts_fn</span><span class="p">,</span> <span class="n">culverts_defaults_fn</span><span class="p">,</span> <span class="n">culvert_filter</span><span class="p">,</span> <span class="n">snap_offset</span>
+        <span class="n">culverts</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">prepare_1dstructures</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">,</span>
+            <span class="n">gdf_culverts</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">defaults</span><span class="p">,</span>
+            <span class="nb">filter</span><span class="o">=</span><span class="n">culvert_filter</span><span class="p">,</span>
+            <span class="n">snap_offset</span><span class="o">=</span><span class="n">snap_offset</span><span class="p">,</span>
+            <span class="n">st_type</span><span class="o">=</span><span class="n">_st_type</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># setup crossection definitions</span>
@@ -2433,7 +2149,7 @@ document.write(`
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_geoms</span><span class="p">(</span><span class="n">crosssections</span><span class="p">,</span> <span class="s2">&quot;crosssections&quot;</span><span class="p">)</span>
 
-        <span class="c1"># setup culverts</span>
+        <span class="c1"># setup culverts (note the allowed columns are different per structure)</span>
         <span class="n">culverts</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">culverts</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">culverts</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
             <span class="n">columns</span><span class="o">=</span><span class="p">{</span>
@@ -4095,16 +3811,12 @@ document.write(`
               
               
               
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
 <div class="prev-next-area">
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
@@ -4122,8 +3834,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -4141,7 +3853,7 @@ document.write(`
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     <br/>
   </p>
 </div>
@@ -4149,10 +3861,11 @@ document.write(`
     </div>
   
   
+  
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
 </p></div>
       
     </div>
