@@ -7,12 +7,12 @@ fileType    = extForce
 [Boundary]
 quantity     = waterlevelbnd
 nodeId       = 664197.234160_1527152.705985
-forcingFile  = boundaryconditions1d_waterlevelbnd.bc
+forcingFile  = boundarycondition1d.bc
 
 [Boundary]
 quantity     = waterlevelbnd
 nodeId       = 666180.040000_1525894.770000
-forcingFile  = boundaryconditions1d_waterlevelbnd.bc
+forcingFile  = boundarycondition1d.bc
 
 [Boundary]
 quantity     = waterlevelbnd
@@ -30,7 +30,7 @@ name           = lateral1d_points_0
 locationType   = 1d
 branchId       = branch_7
 chainage       = 370.839
-discharge      = lateral1d_discharge.bc
+discharge      = lateral1d.bc
 
 [Lateral]
 id             = lateral1d_polygons_0
@@ -39,7 +39,7 @@ locationType   = 1d
 numCoordinates = 5
 xCoordinates   = 663197.4913821429 663634.2637682621 662898.6471179562 662500.1880990406 663197.4913821429
 yCoordinates   = 1525273.2984456269 1524966.7915079996 1524208.1868373717 1524867.1767532704 1525273.2984456269
-discharge      = lateral1d_discharge.bc
+discharge      = lateral1d.bc
 
 [Meteo]
 quantity            = rainfall_rate               # Name of the quantity. See UM Section C.5.3

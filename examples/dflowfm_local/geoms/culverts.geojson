@@ -2,6 +2,6 @@
 "type": "FeatureCollection",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::32647" } },
 "features": [
-{ "type": "Feature", "properties": { "rightlevel": 2.5, "leftlevel": 2.56, "bedfrictiontype": "Manning", "bedfriction": 0.012, "csdefid": "rect_h1.500_w1.500_cyes_point", "id": "culvert_1", "numlosscoeff": null, "type": "culvert", "allowedflowdir": "positive", "chainage": 331.832, "valveopeningheight": null, "branchid": "branch_13", "length": 1.0, "outletlosscoeff": 0.2, "inletlosscoeff": 0.2, "valveonoff": 0.0, "losscoeff": null, "relopening": null }, "geometry": { "type": "Point", "coordinates": [ 665186.754018069244921, 1525896.07843215460889 ] } }
+{ "type": "Feature", "properties": { "length": 1.0, "valveopeningheight": null, "type": "culvert", "relopening": null, "outletlosscoeff": 0.2, "inletlosscoeff": 0.2, "numlosscoeff": null, "csdefid": "rect_h1.500_w1.500_cyes_point", "allowedflowdir": "positive", "branchid": "branch_13", "leftlevel": 2.56, "rightlevel": 2.5, "bedfrictiontype": "Manning", "valveonoff": 0.0, "id": "culvert_1", "chainage": 331.832, "bedfriction": 0.012, "losscoeff": null }, "geometry": { "type": "Point", "coordinates": [ 665186.754018069244921, 1525896.07843215460889 ] } }
 ]
 }
