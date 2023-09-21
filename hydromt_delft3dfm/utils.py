@@ -193,6 +193,10 @@ def read_crosssections(
     # convertion needed  for xyz/zw crossections
     # convert list to str ()
     df_crsdef = df_crsdef.applymap(lambda x: _list2Str(x))
+    # except for frictionids
+    df_crsdef["frictionids"] = df_crsdef["frictionids"].str.replace(
+        " ", ";"
+    )  # comma list sperated
     # convert float to int
     int_columns = list(
         set(df_crsdef.columns).intersection(("xyzcount", "sectioncount"))
@@ -347,39 +351,20 @@ def read_friction(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
         gdf_out["frictionvalue"] = gdf_out["crsdef_frictionid"]
         gdf_out["frictiontype"] = gdf_out["crsdef_frictionid"]
     if "crsdef_frictionids" in gdf_out:
-        gdf_out["frictionvalue"] = gdf_out["frictionvalue"].combine_first(
-            gdf_out["crsdef_frictionids"]
+        _do_not_support = (
+            gdf_out["crsdef_frictionids"].str.split(";").apply(np.count_nonzero) > 1
         )
-        gdf_out["frictiontype"] = gdf_out["frictiontype"].combine_first(
-            gdf_out["crsdef_frictionids"]
-        )
+        gdf_out.loc[~_do_not_support, "crsdef_frictionid"] = gdf_out.loc[
+            ~_do_not_support, "crsdef_frictionids"
+        ].combine_first(gdf_out.loc[~_do_not_support, "crsdef_frictionids"])
+        gdf_out.loc[~_do_not_support, "frictionvalue"] = gdf_out.loc[
+            ~_do_not_support, "frictionvalue"
+        ].combine_first(gdf_out.loc[~_do_not_support, "crsdef_frictionids"])
+        gdf_out.loc[~_do_not_support, "frictiontype"] = gdf_out.loc[
+            ~_do_not_support, "frictiontype"
+        ].combine_first(gdf_out.loc[~_do_not_support, "crsdef_frictionids"])
     gdf_out["frictionvalue"] = gdf_out["frictionvalue"].replace(fricval)
     gdf_out["frictiontype"] = gdf_out["frictiontype"].replace(frictype)
-    # remain nan to be filled with branch roughness
-
-    # try add branch (# TODO improvement - only support one value per branch for now)
-    fricval = dict()
-    frictype = dict()
-    for i in range(len(fric_list)):
-        for j in range(len(fric_list[i].branch)):
-            fricval[fric_list[i].branch[j].branchid] = np.unique(
-                fric_list[i].branch[j].frictionvalues
-            )[0]
-            frictype[fric_list[i].branch[j].branchid] = (
-                fric_list[i].branch[j].frictiontype
-            )
-    fric_df = pd.DataFrame(
-        {
-            "frictionvalue": fricval,
-            "frictiontype": frictype,
-            "frictionid": {i: i for i in fricval},
-        }
-    ).reset_index()
-    gdf_out = gdf_out.combine_first(fric_df)
-    gdf_out["frictionvalue"] = gdf_out["frictionvalue"].combine_first(
-        fric_df["frictionvalue"]
-    )
-
     return gdf_out
 
 
@@ -408,7 +393,7 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
     friction_fns = []
     # create a new friction
     for i, row in frictions.iterrows():
-        if not np.isnan(row.frictionvalue):
+        if isinstance(row.frictionvalue, float) and not np.isnan(row.frictionvalue):
             fric_model = FrictionModel(global_=row.to_dict())
             fric_name = (
                 f"{row.frictiontype[0]}-{str(row.frictionvalue).replace('.', 'p')}"
@@ -416,9 +401,8 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
             fric_filename = f"{fric_model._filename()}_{fric_name}" + fric_model._ext()
             fric_model.filepath = join(savedir, fric_filename)
             fric_model.save(fric_model.filepath, recurse=False)
-
-        # save relative path to mdu
-        friction_fns.append(fric_filename)
+            # save relative path to mdu
+            friction_fns.append(fric_filename)
 
     return friction_fns
 
