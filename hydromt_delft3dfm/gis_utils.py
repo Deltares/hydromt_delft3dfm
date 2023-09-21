@@ -614,4 +614,4 @@ def get_gdf_from_branches(
         new_point_geometry = line_geometry.interpolate(row.chainage)
         df.loc[i, "geometry"] = new_point_geometry
 
-    return gpd.GeoDataFrame(df)
+    return gpd.GeoDataFrame(df, crs=branches.crs)

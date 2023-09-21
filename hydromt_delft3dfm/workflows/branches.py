@@ -10,9 +10,9 @@ from hydromt import gis_utils
 from scipy.spatial import distance
 from shapely.geometry import LineString, MultiLineString, Point
 
-from hydromt_delft3dfm import graph_utils, mesh_utils
+from .. import graph_utils, mesh_utils
 
-from .helper import cut_pieces, split_lines
+from ..gis_utils import cut_pieces, split_lines
 
 logger = logging.getLogger(__name__)
 

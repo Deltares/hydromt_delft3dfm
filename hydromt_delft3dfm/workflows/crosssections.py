@@ -11,7 +11,7 @@ from shapely.geometry import LineString, Point
 from .branches import find_nearest_branch
 
 # from delft3dfmpy.core import geometry
-from .helper import check_gpd_attributes
+from ..gis_utils import check_gpd_attributes
 
 logger = logging.getLogger(__name__)
 

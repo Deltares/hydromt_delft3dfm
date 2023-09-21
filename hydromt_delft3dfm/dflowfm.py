@@ -21,7 +21,8 @@ from hydromt.workflows import create_mesh2d
 from pyproj import CRS
 from shapely.geometry import LineString, box
 
-from . import DATADIR, mesh_utils, utils, workflows
+from . import DATADIR
+from . import mesh_utils, gis_utils, utils, workflows
 
 __all__ = ["DFlowFMModel"]
 logger = logging.getLogger(__name__)
@@ -1277,7 +1278,7 @@ class DFlowFMModel(MeshModel):
                     f"No {crosssections_fn} 1D xyz crosssections found within domain"
                 )
                 return None
-            valid_attributes = workflows.helper.check_gpd_attributes(
+            valid_attributes = gis_utils.check_gpd_attributes(
                 gdf_cs, required_columns=["crsid", "order", "z"]
             )
             if not valid_attributes:
@@ -1313,7 +1314,7 @@ class DFlowFMModel(MeshModel):
                     f"No {crosssections_fn} 1D point crosssections found within domain"
                 )
                 return None
-            valid_attributes = workflows.helper.check_gpd_attributes(
+            valid_attributes = gis_utils.check_gpd_attributes(
                 gdf_cs, required_columns=["crsid", "shape", "shift"]
             )
             if not valid_attributes:

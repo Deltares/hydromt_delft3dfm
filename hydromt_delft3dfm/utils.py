@@ -22,8 +22,9 @@ from hydrolib.core.dflowfm import (
     StructureModel,
 )
 from shapely.geometry import Point
+from . import gis_utils
+from .workflows import boundaries
 
-from .workflows import helper
 
 __all__ = [
     "read_branches_gui",
@@ -442,7 +443,7 @@ def read_structures(branches: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDat
     )
 
     # Add geometry
-    gdf_structures = helper.get_gdf_from_branches(branches, df_structures)
+    gdf_structures = gis_utils.get_gdf_from_branches(branches, df_structures)
 
     return gdf_structures
 
