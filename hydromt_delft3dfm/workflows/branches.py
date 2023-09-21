@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
+from typing import Tuple, Union, List, Literal
 import geopandas as gpd
 import numpy as np
 import pandas as pd
@@ -9,15 +9,16 @@ import shapely
 from hydromt import gis_utils
 from scipy.spatial import distance
 from shapely.geometry import LineString, MultiLineString, Point
+import pyproj
+from .. import graph_utils, mesh_utils
 
-from hydromt_delft3dfm import graph_utils, mesh_utils
-
-from .helper import cut_pieces, split_lines
+from ..gis_utils import cut_pieces, split_lines
 
 logger = logging.getLogger(__name__)
 
 
 __all__ = [
+    "prepare_branches",
     "process_branches",
     "validate_branches",
     "add_branches",
@@ -26,6 +27,110 @@ __all__ = [
     "update_data_columns_attribute_from_query",
     "snap_newbranches_to_branches_at_snappednodes",
 ]
+
+
+def prepare_branches(
+    gdf_br: gpd.GeoDataFrame,
+    params: pd.DataFrame,
+    br_type: Literal["river", "channel", "pipe"],
+    dst_crs: pyproj.CRS,
+    filter: str = None,
+    id_start: int = 1,
+    spacing: pd.DataFrame = None,
+    snap_offset: float = 0.0,
+    allow_intersection_snapping: bool = False,
+    allowed_columns: List[str] = [],
+    logger: logging.Logger = logger,
+) -> Tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
+    """This function is to set all common steps to add branches type of objects (ie channels, rivers, pipes...).
+    Default frictions and crossections will also be added.
+
+    Parameters
+    ----------
+    gdf_br : gpd.GeoDataFrame
+        gpd.GeoDataFrame of branches.
+    params : pd.DataFrame
+        pd.Dataframe of defaults values for gdf_br.
+    br_type : str
+        branches type. Either "river", "channel", "pipe".
+    dst_crs : pyproj.CRS
+        Destination crs for the branches and branch_nodes.
+    id_start: int, optional
+        Start index for branchid. By default 1.
+    filter: str, optional
+        Keyword in branchtype column of gdf_br used to filter lines. If None all lines in br_fn are used (default).
+    spacing: float, optional
+        Spacing value in meters to split the long pipelines lines into shorter pipes. By default inf - no splitting is applied.
+    snap_offset: float, optional
+        Snapping tolerance to automatically connecting branches. Tolerance must be smaller than the shortest pipe length.
+        By default 0.0, no snapping is applied.
+    allow_intersection_snapping: bool, optional
+        Switch to choose whether snapping of multiple branch ends are allowed when ``snap_offset`` is used.
+        By default True.
+    allowed_columns: list, optional
+        List of columns to filter in branches GeoDataFrame
+    logger: logging.Logger, optional
+        Logger.
+
+    Returns
+    -------
+    branches: gpd.GeoDataFrame
+        Prepared branches.
+    branches_nodes: gpd.GeoDataFrame
+        Nodes of the prepared branches.
+    """
+
+    # 1. Filter features based on filter
+    if filter is not None and "branchtype" in gdf_br.columns:
+        gdf_br = gdf_br[gdf_br["branchtype"].str.lower() == filter.lower()]
+        logger.info(f"Set {filter} locations filtered from branches as {br_type} .")
+    # Check if features are present
+    if len(gdf_br) == 0:
+        logger.warning(f"No 1D {type} locations found within domain")
+        return (None, None)
+
+    # 2. Add defaults
+    # Add branchtype and branchid attributes if does not exist
+    gdf_br["branchtype"] = br_type
+    if "branchid" not in gdf_br.columns:
+        data = [
+            f"{br_type}_{i}" for i in np.arange(id_start, id_start + len(gdf_br))
+        ]  # avoid duplicated ids being generated
+        gdf_br["branchid"] = pd.Series(data, index=gdf_br.index, dtype=str)
+    gdf_br.index = gdf_br["branchid"]
+    gdf_br.index.name = "branchid"
+
+    # filter for allowed columns
+    allowed_columns = set(allowed_columns).intersection(gdf_br.columns)
+    gdf_br = gpd.GeoDataFrame(gdf_br[list(allowed_columns)], crs=gdf_br.crs)
+
+    # Add spacing to defaults
+    if spacing is not None:
+        params["spacing"] = spacing
+
+    # add params
+    gdf_br = update_data_columns_attributes(gdf_br, params, brtype=br_type)
+
+    # 3. (geo-) process branches
+    logger.info("Processing branches")
+    if gdf_br.crs.is_geographic:  # needed for length and splitting
+        gdf_br = gdf_br.to_crs(3857)
+    branches, branches_nodes = process_branches(
+        gdf_br,
+        id_col="branchid",
+        snap_offset=snap_offset,
+        allow_intersection_snapping=allow_intersection_snapping,
+        smooth_branches=br_type == "pipe",
+        logger=logger,
+    )
+    logger.info("Validating branches")
+    validate_branches(branches)
+
+    # 4. convert to model crs
+    branches = branches.to_crs(dst_crs)
+    branches_nodes = branches_nodes.to_crs(dst_crs)
+
+    return branches, branches_nodes
 
 
 def add_branches(
