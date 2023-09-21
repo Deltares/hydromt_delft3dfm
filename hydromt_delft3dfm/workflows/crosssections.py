@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from typing import Tuple, Union
+from typing import Tuple, Union, Literal, List
 
 import geopandas as gpd
 import numpy as np
 import pandas as pd
 from shapely.geometry import LineString, Point
 
-from .branches import find_nearest_branch
+from .branches import find_nearest_branch, update_data_columns_attributes
 
 # from delft3dfmpy.core import geometry
 from ..gis_utils import check_gpd_attributes
@@ -17,12 +17,86 @@ logger = logging.getLogger(__name__)
 
 
 __all__ = [
+    "prepare_default_friction_and_crosssection",
     "init_crosssections_options",
     "set_branch_crosssections",
     "set_xyz_crosssections",
     "set_point_crosssections",
     "add_crosssections",
 ]  # , "process_crosssections", "validate_crosssections"]
+
+
+def prepare_default_friction_and_crosssection(
+    branches: gpd.GeoDataFrame,
+    br_type: Literal["river", "channel", "pipe"],
+    friction_type: str = "Manning",
+    friction_value: float = 0.023,
+    crosssections_shape: Literal["rectangle", "circle"] = None,
+    crosssections_value: Union[List[float], float] = None,
+    logger: logging.Logger = logger,
+):
+    """
+    Prepare the default uniform friction type-value pairs and crosssection profiles for branches.
+
+    Parameters
+    ----------
+    branches: gpd.GeoDataFrame
+        Branches to add frictions and crosssections.
+    br_type : str
+        branches type. Either "river", "channel", "pipe".
+    friction_type : str
+        Type of friction to use. One of ["Manning", "Chezy", "wallLawNikuradse", "WhiteColebrook", "StricklerNikuradse", "Strickler", "deBosBijkerk"].
+    friction_value : float
+        Value corresponding to ''friction_type''. Units are ["Chézy C [m 1/2 /s]", "Manning n [s/m 1/3 ]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Strickler k_s [m 1/3 /s]", "De Bos-Bijkerk γ [1/s]"]
+    crosssections_shape : str, optional
+        Shape of branch crosssections to overwrite defaults. Either "circle" or "rectangle".
+    crosssections_value : float or list of float, optional
+        Crosssections parameter value to overwrite defaults.
+        If ``crosssections_shape`` = "circle", expects a diameter [m], used for br_type == "pipe"
+        If ``crosssections_shape`` = "rectangle", expects a list with [width, height] (e.g. [1.0, 1.0]) [m]. used for br_type == "river" or "channel".
+    logger: Logger, optional
+        Logger.
+    Return
+    ------
+    branches: gpd.GeoDataFrame
+        Branches with frictions and crosssections added.
+
+    """
+    # intialise defaults with branch type
+    defaults = pd.DataFrame({"branchtype": br_type}, index=[0])
+
+    # Add friction to defaults
+    defaults["frictiontype"] = friction_type
+    defaults["frictionvalue"] = friction_value
+    # Add crosssections to defaults
+    if crosssections_shape == "circle":
+        if isinstance(crosssections_value, float):
+            defaults["shape"] = crosssections_shape
+            defaults["diameter"] = crosssections_value
+        else:
+            logger.warning(
+                "If crosssections_shape is circle, crosssections_value should be a single float for diameter. Keeping defaults"
+            )
+    elif crosssections_shape == "rectangle":
+        if isinstance(crosssections_value, list) and len(crosssections_value) == 2:
+            defaults["shape"] = crosssections_shape
+            defaults["width"], defaults["height"] = crosssections_value
+            defaults["closed"] = "no"
+        else:
+            logger.warning(
+                "If crosssections_shape is rectangle, crosssections_value should be a list with [width, height] values. Keeping defaults"
+            )
+
+    logger.info("Adding/Filling branches attributes values")
+    branches = update_data_columns_attributes(branches, defaults, brtype=br_type)
+
+    # compose
+    branches["frictionid"] = [
+        f"{ftype}_{fvalue}"
+        for ftype, fvalue in zip(branches["frictiontype"], branches["frictionvalue"])
+    ]
+
+    return branches
 
 
 def init_crosssections_options(
