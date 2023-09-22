@@ -108,7 +108,7 @@ class DFlowFMModel(MeshModel):
             "frictype": 3,
         },
     }
-    _FOLDERS = ["dflowfm", "geoms", "mesh", "maps"]
+    _FOLDERS = ["dflowfm", "geoms", "maps"]
     _CLI_ARGS = {"region": "setup_region"}
     _CATALOGS = join(_DATADIR, "parameters_data.yml")
 

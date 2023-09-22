@@ -61,4 +61,6 @@ are three ways for the user to select which data libraries to use:
 .. toctree::
     :hidden:
 
-    Example: Build Wflow model <../_examples/build_model.ipynb>
+    Example: Build a Delft3D FM 1D model <../_examples/build_1dmodel.ipynb>
+    Example: Build a Delft3D FM 2D model <../_examples/build_2dmodel.ipynb>
+    Example: Build a Delft3D FM 1D2D model <../_examples/build_1d2dmodel.ipynb>
