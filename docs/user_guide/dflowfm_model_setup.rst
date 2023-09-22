@@ -1,4 +1,4 @@
-.. currentmodule:: hydromt_wflow
+.. currentmodule:: hydromt_delft3dfm
 
 .. _model_set_up:
 
@@ -6,9 +6,9 @@
 Model methods and components
 ============================
 
-The HydroMT-Wflow plugin helps you preparing or updating several methods of a Wflow model such as topography information, landuse, soil or forcing.
+The HydroMT-Delft3D FM plugin helps you preparing or updating several methods of a Delft3D FM model such as topography information, landuse, soil or forcing.
 The main interactions are available from the HydroMT Command Line Interface and allow you to configure
-HydroMT in order to build or update or clip Wflow models.
+HydroMT in order to build or update or clip Delft3D FM models.
 
 When building or updating a model from command line a
 `model region <https://deltares.github.io/hydromt/latest/user_guide/model_region>`_; a model setup
@@ -20,7 +20,7 @@ a `data sources <https://deltares.github.io/hydromt/latest/user_guide/data_main>
 Model setup methods
 ===================
 
-An overview of the available Wflow model setup methods
+An overview of the available Delft3D FM model setup methods
 is provided in the table below. When using HydroMT from the command line only the
 setup methods are exposed. Click on
 a specific method see its documentation.
@@ -32,40 +32,51 @@ a specific method see its documentation.
 
     * - Method
       - Explanation
-    * - :py:func:`~WflowModel.setup_config`
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+
+    * - :py:func:`~DFlowFMModel.setup_config`
       - Update config with a dictionary
-    * - :py:func:`~WflowModel.setup_basemaps`
-      - This component sets the region of interest and res (resolution in degrees) of the model.
-    * - :py:func:`~WflowModel.setup_rivers`
-      - This component sets the all river parameter maps.
-    * - :py:func:`~WflowModel.setup_floodplains`
-        This component This components adds floodplain information to the model schematization (can be either 1D or 2D).
-    * - :py:func:`~WflowModel.setup_lakes`
-      - This component generates maps of lake areas and outlets as well as parameters with average lake area, depth a discharge values.
-    * - :py:func:`~WflowModel.setup_reservoirs`
-      - This component generates maps of reservoir areas and outlets as well as parameters with average reservoir area, demand, min and max target storage capacities and discharge capacity values.
-    * - :py:func:`~WflowModel.setup_glaciers`
-      - This component generates maps of glacier areas, area fraction and volume fraction, as well as tables with temperature threshold, melting factor and snow-to-ice convertion fraction.
-    * - :py:func:`~WflowModel.setup_lulcmaps`
-      - This component derives several wflow maps are derived based on landuse- landcover (LULC) data.
-    * - :py:func:`~WflowModel.setup_laimaps`
-      - This component sets leaf area index (LAI) climatology maps per month.
-    * - :py:func:`~WflowModel.setup_soilmaps`
-      - This component derives several (layered) soil parameters based on a database with physical soil properties using available point-scale (pedo)transfer functions (PTFs) from literature with upscaling rulesto ensure flux matching across scales.
-    * - :py:func:`~WflowModel.setup_hydrodem`
-      - This component adds a hydrologically conditioned elevation (hydrodem) map for river and/or land local-inertial routing.
-    * - :py:func:`~WflowModel.setup_gauges`
-      - This method sets the default gauge map based on basin outlets and additional gauge maps based on gauges_fn data.
-    * - :py:func:`~WflowModel.setup_areamap`
-      -  Setup area map from vector data to save wflow outputs for specific area.
-    * - :py:func:`~WflowModel.setup_precip_forcing`
-      -  Setup gridded precipitation forcing at model resolution.
-    * - :py:func:`~WflowModel.setup_temp_pet_forcing`
-      -  Setup gridded reference evapotranspiration forcing at model resolution.
-    * - :py:func:`~WflowModel.setup_constant_pars`
-      -  Setup constant parameter maps for all active model cells.
-    * - :py:func:`~WflowModel.setup_staticmaps_from_raster`
-      -  Setup staticmaps from raster to add parameters from direct data.
+    * - :py:func:`~DFlowFMModel.setup_rivers`
+      - This component sets the 1D river branches with parameters.
+    * - :py:func:`~DFlowFMModel.setup_channels`
+      - This component sets the 1D channel branches with parameters.
+    * - :py:func:`~DFlowFMModel.setup_rivers_from_dem`
+      - This component sets the 1D river branches with parameters derived from hydrography.
+    * - :py:func:`~DFlowFMModel.setup_pipes`
+      - This component sets the 1D pipe branches with parameters.
+    * - :py:func:`~DFlowFMModel.setup_manholes`
+      - This component adds manholes with parameters to 1D pipes.
+    * - :py:func:`~DFlowFMModel.setup_bridges`
+      - This component adds bridges with parameters to 1D branches.
+    * - :py:func:`~DFlowFMModel.setup_culverts`
+      - This component adds culverts with parameters to 1D branches.
+    * - :py:func:`~DFlowFMModel.setup_mesh2d`
+      - This component sets a 2D mesh.
+    * - :py:func:`~DFlowFMModel.setup_mesh2d_refine`
+      - This component refines the 2D mesh.
+    * - :py:func:`~DFlowFMModel.setup_link1d2d`
+      - This component sets 1d2d links that link the 1D branchs to the 2D mesh.
+    * - :py:func:`~DFlowFMModel.setup_maps_from_rasterdataset`
+      - This component adds parameter maps to the 2D mesh.
+    * - :py:func:`~DFlowFMModel.setup_maps_from_raster_reclass`
+      - This component adds parameter maps that are derived by reclass existing maps to the 2D mesh. 
+    * - :py:func:`~DFlowFMModel.setup_1dboundary`
+      -  Setup a 1D boundary forcing to the 1D branches.
+    * - :py:func:`~DFlowFMModel.setup_2dboundary`
+      -  Setup a 2D boundary forcing to the 2D mesh.
+    * - :py:func:`~DFlowFMModel.setup_rainfall_from_constant`
+      -  Setup a constant precipitation forcing to the 2D mesh.
+    * - :py:func:`~DFlowFMModel.setup_rainfall_from_uniform_timeseries`
+      -  Setup a spatial uniform precipitation forcing to the 2D mesh.
 
 
 .. _model_components:
