@@ -1,0 +1,27 @@
+---
+# note that these are the developer dependencies
+name: hydromt-delft3dfm
+
+channels:
+  - conda-forge
+
+dependencies:
+  - flit>=3.4
+  - geopandas
+  - hydromt>= 0.8.0
+  - numpy
+  - pandas
+  - pip
+  - pyflwdir >=0.5.4
+  - pyproj
+  - python=3.9.*
+  - scipy
+  - shapely>=2.0.0
+  - xarray
+  - xugrid
+  - networkx
+  - llvmlite>=0.39.1 # hydrolib-core
+  - pip:
+      - git+https://github.com/Deltares/hydromt.git
+      - hydrolib-core==0.5.2
+      - meshkernel==2.0.2 # temp pin because of hydrolib-core
