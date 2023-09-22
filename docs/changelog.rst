@@ -6,6 +6,18 @@ All notable changes to this project will be documented in this page.
 The format is based on `Keep a Changelog`_, and this project adheres to
 `Semantic Versioning`_.
 
+Unreleased
+==========
+
+Added
+-----
+
+Changed
+-------
+
+Fixed
+-----
+
 v0.1.0 (22 September 2023)
 ==========================
 First experimental release of functionalities to build and update Delft3D FM 1D2D models.
