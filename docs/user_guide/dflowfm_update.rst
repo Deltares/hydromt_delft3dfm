@@ -33,6 +33,4 @@ To add or change one or more components of an existing Wflow model the ``update`
 .. toctree::
     :hidden:
 
-    Example: Update Wflow model (landuse) <../_examples/update_model_landuse.ipynb>
-    Example: Update Wflow model (forcing) <../_examples/update_model_forcing.ipynb>
-    Example: Update Wflow model (gauges) <../_examples/update_model_gauges.ipynb>
+    Example: Update 2D model - refine mesh <../_examples/update_refine_2dgrid.ipynb>

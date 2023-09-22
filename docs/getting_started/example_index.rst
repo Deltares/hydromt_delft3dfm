@@ -19,11 +19,8 @@ For a static (non-interactive) view of the examples follow one of the links belo
 
 **Update model from command line interface**
 
-*   `Update Wflow model: landuse <../_examples/update_model_landuse.ipynb>`_
-*   `Update Wflow model: forcing <../_examples/update_model_forcing.ipynb>`_
-*   `Update Wflow model: gauges <../_examples/update_model_gauges.ipynb>`_
+*   `Update 2D model: refine mesh <../_examples/update_refine_2dgrid.ipynb>`_
 
 **Postprocessing and visualization**
 
-*   `Plot Wflow static maps <../_examples/plot_wflow_staticmaps.ipynb>`_
-*   `Plot Wflow forcing data <../_examples/plot_wflow_forcing.ipynb>`_
+*   `Plot Delft3D FM mesh <../_examples/plot_dflowfm_mesh.ipynb>`_
