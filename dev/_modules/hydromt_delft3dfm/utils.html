@@ -524,6 +524,8 @@
 
 
 
+<div class="viewcode-block" id="write_branches_gui">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.write_branches_gui.html#hydromt_delft3dfm.utils.write_branches_gui">[docs]</a>
 <span class="k">def</span> <span class="nf">write_branches_gui</span><span class="p">(</span>
     <span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">savedir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -567,9 +569,12 @@
     <span class="n">branchgui_model</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">savedir</span><span class="p">,</span> <span class="n">branchgui_fn</span><span class="p">)</span>
     <span class="n">branchgui_model</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="n">branchgui_fn</span>
+    <span class="k">return</span> <span class="n">branchgui_fn</span></div>
 
 
+
+<div class="viewcode-block" id="read_crosssections">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.read_crosssections.html#hydromt_delft3dfm.utils.read_crosssections">[docs]</a>
 <span class="k">def</span> <span class="nf">read_crosssections</span><span class="p">(</span>
     <span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">fm_model</span><span class="p">:</span> <span class="n">FMModel</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">((</span><span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">)):</span>
@@ -665,9 +670,12 @@
     <span class="p">)</span>  <span class="c1"># use outer because some crsdefs are from structures, therefore no crslocs associated</span>
     <span class="n">gdf_crs</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">gdf_crs</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">gdf</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">gdf_crs</span>
+    <span class="k">return</span> <span class="n">gdf_crs</span></div>
 
 
+
+<div class="viewcode-block" id="write_crosssections">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.write_crosssections.html#hydromt_delft3dfm.utils.write_crosssections">[docs]</a>
 <span class="k">def</span> <span class="nf">write_crosssections</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">savedir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write crosssections into hydrolib-core crsloc and crsdef objects.</span>
 
@@ -726,9 +734,12 @@
         <span class="n">recurse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">crsdef_fn</span><span class="p">,</span> <span class="n">crsloc_fn</span>
+    <span class="k">return</span> <span class="n">crsdef_fn</span><span class="p">,</span> <span class="n">crsloc_fn</span></div>
 
 
+
+<div class="viewcode-block" id="read_friction">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.read_friction.html#hydromt_delft3dfm.utils.read_friction">[docs]</a>
 <span class="k">def</span> <span class="nf">read_friction</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">fm_model</span><span class="p">:</span> <span class="n">FMModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    read friction files and add properties to branches geodataframe.</span>
@@ -774,9 +785,12 @@
         <span class="n">gdf_out</span><span class="p">[</span><span class="s2">&quot;frictiontype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf_out</span><span class="p">[</span><span class="s2">&quot;crsdef_frictionids&quot;</span><span class="p">]</span>
     <span class="n">gdf_out</span><span class="p">[</span><span class="s2">&quot;frictiontype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf_out</span><span class="p">[</span><span class="s2">&quot;frictiontype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">frictype</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">gdf_out</span>
+    <span class="k">return</span> <span class="n">gdf_out</span></div>
 
 
+
+<div class="viewcode-block" id="write_friction">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.write_friction.html#hydromt_delft3dfm.utils.write_friction">[docs]</a>
 <span class="k">def</span> <span class="nf">write_friction</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">savedir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    write friction files from crosssections geodataframe.</span>
@@ -826,9 +840,12 @@
         <span class="c1"># save relative path to mdu</span>
         <span class="n">friction_fns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fric_filename</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">friction_fns</span>
+    <span class="k">return</span> <span class="n">friction_fns</span></div>
 
 
+
+<div class="viewcode-block" id="read_structures">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.read_structures.html#hydromt_delft3dfm.utils.read_structures">[docs]</a>
 <span class="k">def</span> <span class="nf">read_structures</span><span class="p">(</span><span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">fm_model</span><span class="p">:</span> <span class="n">FMModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read structures into hydrolib-core structures objects</span>
@@ -864,9 +881,12 @@
     <span class="c1"># Add geometry</span>
     <span class="n">gdf_structures</span> <span class="o">=</span> <span class="n">gis_utils</span><span class="o">.</span><span class="n">get_gdf_from_branches</span><span class="p">(</span><span class="n">branches</span><span class="p">,</span> <span class="n">df_structures</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">gdf_structures</span>
+    <span class="k">return</span> <span class="n">gdf_structures</span></div>
 
 
+
+<div class="viewcode-block" id="write_structures">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.write_structures.html#hydromt_delft3dfm.utils.write_structures">[docs]</a>
 <span class="k">def</span> <span class="nf">write_structures</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">savedir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    write structures into hydrolib-core structures objects.</span>
@@ -891,9 +911,12 @@
         <span class="n">recurse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">structures_fn</span>
+    <span class="k">return</span> <span class="n">structures_fn</span></div>
 
 
+
+<div class="viewcode-block" id="read_manholes">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.read_manholes.html#hydromt_delft3dfm.utils.read_manholes">[docs]</a>
 <span class="k">def</span> <span class="nf">read_manholes</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">fm_model</span><span class="p">:</span> <span class="n">FMModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read manholes from hydrolib-core storagenodes and network 1d nodes for locations.</span>
@@ -941,9 +964,12 @@
         <span class="n">df_manholes</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s2">&quot;nodeid&quot;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">),</span> <span class="n">crs</span><span class="o">=</span><span class="n">gdf</span><span class="o">.</span><span class="n">crs</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">gdf_manholes</span>
+    <span class="k">return</span> <span class="n">gdf_manholes</span></div>
 
 
+
+<div class="viewcode-block" id="write_manholes">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.write_manholes.html#hydromt_delft3dfm.utils.write_manholes">[docs]</a>
 <span class="k">def</span> <span class="nf">write_manholes</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">savedir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    write manholes into hydrolib-core storage nodes objects.</span>
@@ -968,9 +994,12 @@
         <span class="n">recurse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">storage_fn</span>
+    <span class="k">return</span> <span class="n">storage_fn</span></div>
 
 
+
+<div class="viewcode-block" id="read_1dboundary">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.read_1dboundary.html#hydromt_delft3dfm.utils.read_1dboundary">[docs]</a>
 <span class="k">def</span> <span class="nf">read_1dboundary</span><span class="p">(</span>
     <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">quantity</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">:</span>
@@ -1063,9 +1092,12 @@
     <span class="p">)</span>
     <span class="n">da_out</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;boundary1d_</span><span class="si">{</span><span class="n">quantity</span><span class="si">}</span><span class="s2">bnd&quot;</span>
 
-    <span class="k">return</span> <span class="n">da_out</span>
+    <span class="k">return</span> <span class="n">da_out</span></div>
 
 
+
+<div class="viewcode-block" id="write_1dboundary">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.write_1dboundary.html#hydromt_delft3dfm.utils.write_1dboundary">[docs]</a>
 <span class="k">def</span> <span class="nf">write_1dboundary</span><span class="p">(</span><span class="n">forcing</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">savedir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ext_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; &quot;</span>
 <span class="sd">    write 1dboundary ext and boundary files from forcing dict.</span>
@@ -1148,9 +1180,12 @@
             <span class="n">extdicts</span><span class="p">,</span> <span class="n">savedir</span><span class="p">,</span> <span class="n">ext_fn</span><span class="o">=</span><span class="n">ext_fn</span><span class="p">,</span> <span class="n">block_name</span><span class="o">=</span><span class="s2">&quot;boundary&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;append&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">forcing_fn</span><span class="p">,</span> <span class="n">ext_fn</span>
+    <span class="k">return</span> <span class="n">forcing_fn</span><span class="p">,</span> <span class="n">ext_fn</span></div>
 
 
+
+<div class="viewcode-block" id="read_2dboundary">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.read_2dboundary.html#hydromt_delft3dfm.utils.read_2dboundary">[docs]</a>
 <span class="k">def</span> <span class="nf">read_2dboundary</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">workdir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">())</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read a 2d boundary forcing location and values, and parse to xarray.</span>
@@ -1220,9 +1255,12 @@
     <span class="p">)</span>
     <span class="n">da_out</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;boundary2d_</span><span class="si">{</span><span class="n">boundary_name</span><span class="si">}</span><span class="s2">&quot;</span>
 
-    <span class="k">return</span> <span class="n">da_out</span>
+    <span class="k">return</span> <span class="n">da_out</span></div>
 
 
+
+<div class="viewcode-block" id="write_2dboundary">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.write_2dboundary.html#hydromt_delft3dfm.utils.write_2dboundary">[docs]</a>
 <span class="k">def</span> <span class="nf">write_2dboundary</span><span class="p">(</span><span class="n">forcing</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">savedir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ext_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    write 2 boundary forcings from forcing dict.</span>
@@ -1312,9 +1350,12 @@
                 <span class="n">extdicts</span><span class="p">,</span> <span class="n">savedir</span><span class="p">,</span> <span class="n">ext_fn</span><span class="o">=</span><span class="n">ext_fn</span><span class="p">,</span> <span class="n">block_name</span><span class="o">=</span><span class="s2">&quot;boundary&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;append&quot;</span>
             <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">forcing_fn</span><span class="p">,</span> <span class="n">ext_fn</span>
+    <span class="k">return</span> <span class="n">forcing_fn</span><span class="p">,</span> <span class="n">ext_fn</span></div>
 
 
+
+<div class="viewcode-block" id="read_meteo">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.read_meteo.html#hydromt_delft3dfm.utils.read_meteo">[docs]</a>
 <span class="k">def</span> <span class="nf">read_meteo</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">quantity</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read for a specific quantity the corresponding external and forcing files and parse to xarray.</span>
@@ -1394,9 +1435,12 @@
     <span class="p">)</span>
     <span class="n">da_out</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">quantity</span><span class="si">}</span><span class="s2">&quot;</span>
 
-    <span class="k">return</span> <span class="n">da_out</span>
+    <span class="k">return</span> <span class="n">da_out</span></div>
 
 
+
+<div class="viewcode-block" id="write_meteo">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.write_meteo.html#hydromt_delft3dfm.utils.write_meteo">[docs]</a>
 <span class="k">def</span> <span class="nf">write_meteo</span><span class="p">(</span><span class="n">forcing</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">savedir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ext_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    write 2d meteo forcing from forcing dict.</span>
@@ -1466,7 +1510,8 @@
         <span class="c1"># write to external forcing file</span>
         <span class="n">write_ext</span><span class="p">(</span><span class="n">extdicts</span><span class="p">,</span> <span class="n">savedir</span><span class="p">,</span> <span class="n">ext_fn</span><span class="o">=</span><span class="n">ext_fn</span><span class="p">,</span> <span class="n">block_name</span><span class="o">=</span><span class="s2">&quot;meteo&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">forcing_fn</span><span class="p">,</span> <span class="n">ext_fn</span>
+    <span class="k">return</span> <span class="n">forcing_fn</span><span class="p">,</span> <span class="n">ext_fn</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">write_ext</span><span class="p">(</span>

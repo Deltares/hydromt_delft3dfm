@@ -1,0 +1,1577 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>hydromt_delft3dfm.workflows.crosssections &#8212; HydroMT Delft3D FM  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/theme-deltares.css?v=17060807" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+
+    <script src="../../../_static/documentation_options.js?v=8a448e45"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/hydromt_delft3dfm/workflows/crosssections';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../../_static/hydromt-logo.jpg" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../../_static/hydromt-logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+    <p class="title logo__title">HydroMT Delft3D FM</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../getting_started/intro.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../user_guide/intro.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../api.html">
+                        API reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../dev_guide/intro.html">
+                        Developments
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
+                    HydroMT core
+                  </a>
+                </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../getting_started/intro.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../user_guide/intro.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../api.html">
+                        API reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../dev_guide/intro.html">
+                        Developments
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
+                    HydroMT core
+                  </a>
+                </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">hydromt_delf...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for hydromt_delft3dfm.workflows.crosssections</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">Point</span>
+
+<span class="kn">from</span> <span class="nn">.branches</span> <span class="kn">import</span> <span class="n">find_nearest_branch</span><span class="p">,</span> <span class="n">update_data_columns_attributes</span>
+
+<span class="c1"># from delft3dfmpy.core import geometry</span>
+<span class="kn">from</span> <span class="nn">..gis_utils</span> <span class="kn">import</span> <span class="n">check_gpd_attributes</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;prepare_default_friction_and_crosssection&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;init_crosssections_options&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;set_branch_crosssections&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;set_xyz_crosssections&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;set_point_crosssections&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;add_crosssections&quot;</span><span class="p">,</span>
+<span class="p">]</span>  <span class="c1"># , &quot;process_crosssections&quot;, &quot;validate_crosssections&quot;]</span>
+
+
+<div class="viewcode-block" id="prepare_default_friction_and_crosssection">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.prepare_default_friction_and_crosssection.html#hydromt_delft3dfm.workflows.prepare_default_friction_and_crosssection">[docs]</a>
+<span class="k">def</span> <span class="nf">prepare_default_friction_and_crosssection</span><span class="p">(</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">br_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;river&quot;</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="s2">&quot;pipe&quot;</span><span class="p">],</span>
+    <span class="n">friction_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Manning&quot;</span><span class="p">,</span>
+    <span class="n">friction_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.023</span><span class="p">,</span>
+    <span class="n">crosssections_shape</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;rectangle&quot;</span><span class="p">,</span> <span class="s2">&quot;circle&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">crosssections_value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span> <span class="o">=</span> <span class="n">logger</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare the default uniform friction type-value pairs and crosssection profiles for branches.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    branches: gpd.GeoDataFrame</span>
+<span class="sd">        Branches to add frictions and crosssections.</span>
+<span class="sd">    br_type : str</span>
+<span class="sd">        branches type. Either &quot;river&quot;, &quot;channel&quot;, &quot;pipe&quot;.</span>
+<span class="sd">    friction_type : str</span>
+<span class="sd">        Type of friction to use. One of [&quot;Manning&quot;, &quot;Chezy&quot;, &quot;wallLawNikuradse&quot;, &quot;WhiteColebrook&quot;, &quot;StricklerNikuradse&quot;, &quot;Strickler&quot;, &quot;deBosBijkerk&quot;].</span>
+<span class="sd">    friction_value : float</span>
+<span class="sd">        Value corresponding to &#39;&#39;friction_type&#39;&#39;. Units are [&quot;Chézy C [m 1/2 /s]&quot;, &quot;Manning n [s/m 1/3 ]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Strickler k_s [m 1/3 /s]&quot;, &quot;De Bos-Bijkerk γ [1/s]&quot;]</span>
+<span class="sd">    crosssections_shape : str, optional</span>
+<span class="sd">        Shape of branch crosssections to overwrite defaults. Either &quot;circle&quot; or &quot;rectangle&quot;.</span>
+<span class="sd">    crosssections_value : float or list of float, optional</span>
+<span class="sd">        Crosssections parameter value to overwrite defaults.</span>
+<span class="sd">        If ``crosssections_shape`` = &quot;circle&quot;, expects a diameter [m], used for br_type == &quot;pipe&quot;</span>
+<span class="sd">        If ``crosssections_shape`` = &quot;rectangle&quot;, expects a list with [width, height] (e.g. [1.0, 1.0]) [m]. used for br_type == &quot;river&quot; or &quot;channel&quot;.</span>
+<span class="sd">    logger: Logger, optional</span>
+<span class="sd">        Logger.</span>
+<span class="sd">    Return</span>
+<span class="sd">    ------</span>
+<span class="sd">    branches: gpd.GeoDataFrame</span>
+<span class="sd">        Branches with frictions and crosssections added.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># intialise defaults with branch type</span>
+    <span class="n">defaults</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;branchtype&quot;</span><span class="p">:</span> <span class="n">br_type</span><span class="p">},</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># Add friction to defaults</span>
+    <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;frictiontype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">friction_type</span>
+    <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;frictionvalue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">friction_value</span>
+    <span class="c1"># Add crosssections to defaults</span>
+    <span class="k">if</span> <span class="n">crosssections_shape</span> <span class="o">==</span> <span class="s2">&quot;circle&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crosssections_value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">crosssections_shape</span>
+            <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;diameter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">crosssections_value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;If crosssections_shape is circle, crosssections_value should be a single float for diameter. Keeping defaults&quot;</span>
+            <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">crosssections_shape</span> <span class="o">==</span> <span class="s2">&quot;rectangle&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crosssections_value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">crosssections_value</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">crosssections_shape</span>
+            <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">],</span> <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">crosssections_value</span>
+            <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;closed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;no&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;If crosssections_shape is rectangle, crosssections_value should be a list with [width, height] values. Keeping defaults&quot;</span>
+            <span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Adding/Filling branches attributes values&quot;</span><span class="p">)</span>
+    <span class="n">branches</span> <span class="o">=</span> <span class="n">update_data_columns_attributes</span><span class="p">(</span><span class="n">branches</span><span class="p">,</span> <span class="n">defaults</span><span class="p">,</span> <span class="n">brtype</span><span class="o">=</span><span class="n">br_type</span><span class="p">)</span>
+
+    <span class="c1"># compose</span>
+    <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;frictionid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ftype</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">fvalue</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">ftype</span><span class="p">,</span> <span class="n">fvalue</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">branches</span><span class="p">[</span><span class="s2">&quot;frictiontype&quot;</span><span class="p">],</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;frictionvalue&quot;</span><span class="p">])</span>
+    <span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">branches</span></div>
+
+
+
+<div class="viewcode-block" id="init_crosssections_options">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.init_crosssections_options.html#hydromt_delft3dfm.workflows.init_crosssections_options">[docs]</a>
+<span class="k">def</span> <span class="nf">init_crosssections_options</span><span class="p">(</span>
+    <span class="n">crosssections_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">crosssections_fn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise crosssection options from user input.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">crosssections_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">crosssections_type</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">crosssections_fn</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crosssections_type</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">crosssections_type</span> <span class="o">=</span> <span class="p">[</span><span class="n">crosssections_type</span><span class="p">]</span>
+        <span class="n">crosssections_fn</span> <span class="o">=</span> <span class="p">[</span><span class="n">crosssections_fn</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crosssections_type</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">crosssections_type</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">crosssections_fn</span><span class="p">)</span>
+    <span class="c1"># inser branch as default</span>
+    <span class="k">if</span> <span class="s2">&quot;branch&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">crosssections_type</span><span class="p">:</span>
+        <span class="n">crosssections_type</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;branch&quot;</span><span class="p">)</span>
+        <span class="n">crosssections_fn</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">crosssections_type</span><span class="p">,</span> <span class="n">crosssections_fn</span></div>
+
+
+
+<div class="viewcode-block" id="add_crosssections">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.add_crosssections.html#hydromt_delft3dfm.workflows.add_crosssections">[docs]</a>
+<span class="k">def</span> <span class="nf">add_crosssections</span><span class="p">(</span>
+    <span class="n">crosssections</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">new_crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds new_crossections to crosssections.</span>
+
+<span class="sd">    Besides adding, also removes duplicated crossections and overwrites generated with user specified.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO: setup river crosssections, set contrains based on branch types</span>
+    <span class="k">if</span> <span class="n">crosssections</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># add new crossections</span>
+        <span class="n">new_crosssections</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">crosssections</span><span class="p">,</span> <span class="n">new_crosssections</span><span class="p">]),</span> <span class="n">crs</span><span class="o">=</span><span class="n">crosssections</span><span class="o">.</span><span class="n">crs</span>
+        <span class="p">)</span>
+        <span class="c1"># seperate crossection locations (used by branches) and definitions (used by branches and structures)</span>
+        <span class="n">_crosssections_locations</span> <span class="o">=</span> <span class="n">new_crosssections</span><span class="p">[</span>
+            <span class="o">~</span><span class="n">new_crosssections</span><span class="o">.</span><span class="n">crsloc_id</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
+        <span class="p">]</span>
+        <span class="n">_crosssections_definitions</span> <span class="o">=</span> <span class="n">new_crosssections</span><span class="p">[</span>
+            <span class="n">new_crosssections</span><span class="o">.</span><span class="n">crsloc_id</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
+        <span class="p">]</span>
+        <span class="c1"># remove duplicated locations based on branchid_chainage (not on xy)</span>
+        <span class="n">_crosssections_locations</span><span class="p">[</span><span class="s2">&quot;temp_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_crosssections_locations</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;crsloc_branchid&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;crsloc_chainage&quot;</span><span class="p">]</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">_crosssections_locations</span><span class="p">[</span><span class="s2">&quot;temp_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Duplicate crosssections locations found, removing duplicates&quot;</span>
+            <span class="p">)</span>
+            <span class="c1"># Remove duplicates based on the branch_id, branch_offset column, keeping the first occurrence (with minimum branch_distance)</span>
+            <span class="n">_crosssections_locations</span> <span class="o">=</span> <span class="n">_crosssections_locations</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span>
+                <span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;temp_id&quot;</span><span class="p">],</span> <span class="n">keep</span><span class="o">=</span><span class="s2">&quot;first&quot;</span>
+            <span class="p">)</span>
+        <span class="c1"># combine them</span>
+        <span class="n">new_crosssections</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">_crosssections_locations</span><span class="p">,</span> <span class="n">_crosssections_definitions</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="c1"># remove existing generated branch crosssections</span>
+        <span class="n">crossections_generated</span> <span class="o">=</span> <span class="n">new_crosssections</span><span class="p">[</span>
+            <span class="n">new_crosssections</span><span class="o">.</span><span class="n">crsdef_id</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_branch&quot;</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">crossections_others</span> <span class="o">=</span> <span class="n">new_crosssections</span><span class="p">[</span>
+            <span class="o">~</span><span class="n">new_crosssections</span><span class="o">.</span><span class="n">crsdef_id</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_branch&quot;</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">mask_to_remove</span> <span class="o">=</span> <span class="n">crossections_generated</span><span class="p">[</span><span class="s2">&quot;crsloc_branchid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span>
+            <span class="n">crossections_others</span><span class="p">[</span><span class="s2">&quot;crsloc_branchid&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">mask_to_remove</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">new_crosssections</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
+                <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">crossections_generated</span><span class="p">[</span><span class="o">~</span><span class="n">mask_to_remove</span><span class="p">],</span> <span class="n">crossections_others</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="n">crs</span><span class="o">=</span><span class="n">crosssections</span><span class="o">.</span><span class="n">crs</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_crosssections</span></div>
+
+
+
+<div class="viewcode-block" id="set_branch_crosssections">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.set_branch_crosssections.html#hydromt_delft3dfm.workflows.set_branch_crosssections">[docs]</a>
+<span class="k">def</span> <span class="nf">set_branch_crosssections</span><span class="p">(</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">midpoint</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to set regular cross-sections for each branch.</span>
+<span class="sd">    Only support rectangle, trapezoid (for rivers) and circle (for pipes).</span>
+<span class="sd">    Crosssections are derived at branches mid points if ``midpoints`` is True. Use this to setup crossections for rivers.</span>
+<span class="sd">    Crosssections are derived at up and downstream of branches if ``midpoints`` is False. Use this to setup crossections for pipes.</span>
+<span class="sd">    else at both upstream and downstream extremities of branches if False.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    branches : gpd.GeoDataFrame</span>
+<span class="sd">        The branches.</span>
+<span class="sd">        * Required variables: branchid, shape, shift, frictionid, frictiontype, frictionvalue</span>
+<span class="sd">        * Optional variables:</span>
+<span class="sd">            if shape = &#39;circle&#39;: &#39;diameter&#39;</span>
+<span class="sd">            if shape = &#39;rectangle&#39;: &#39;width&#39;, &#39;height&#39;, &#39;closed&#39;</span>
+<span class="sd">            if shape = &#39;trapezoid&#39;: &#39;width&#39;, &#39;t_width&#39;, &#39;height&#39;, &#39;closed&#39;</span>
+<span class="sd">    midpoint : bool, Optional</span>
+<span class="sd">        Whether the crossection should be derived at midpoint of the branches.</span>
+<span class="sd">        if midpoint = True:</span>
+<span class="sd">            support &#39;rectangle&#39; and &#39;trapezoid&#39; shapes.</span>
+<span class="sd">        if midpoint = True:</span>
+<span class="sd">            support &#39;circle&#39; shape.</span>
+<span class="sd">        True by default.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gpd.GeoDataFrame</span>
+<span class="sd">        The cross sections.</span>
+
+<span class="sd">    # FIXME: upstream and downstream crosssection type needs further improvement for channels</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get the crs at the midpoint of branches if midpoint</span>
+    <span class="k">if</span> <span class="n">midpoint</span><span class="p">:</span>
+        <span class="n">crosssections</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;branch_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;branchid&quot;</span><span class="p">]</span>
+        <span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;branch_offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">l</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">length</span>
+        <span class="p">]</span>
+        <span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;shift&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;bedlev&quot;</span><span class="p">]</span>
+        <span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">geometry</span>
+        <span class="p">]</span>
+
+        <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+        <span class="c1"># loop through the shapes</span>
+        <span class="n">all_shapes</span> <span class="o">=</span> <span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">shape</span> <span class="ow">in</span> <span class="n">all_shapes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;rectangle&quot;</span><span class="p">:</span>
+                <span class="n">rectangle_crs</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">shape</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">rectangle_crs</span><span class="p">[</span><span class="s2">&quot;definitionid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rectangle_crs</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;rect_h</span><span class="si">{:,.3f}</span><span class="s2">_w</span><span class="si">{:,.3f}</span><span class="s2">_c</span><span class="si">{:s}</span><span class="s2">_</span><span class="si">{:s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">x</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">],</span>
+                        <span class="n">x</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">],</span>
+                        <span class="n">x</span><span class="p">[</span><span class="s2">&quot;closed&quot;</span><span class="p">],</span>
+                        <span class="s2">&quot;branch&quot;</span><span class="p">,</span>
+                    <span class="p">),</span>
+                    <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">check_gpd_attributes</span><span class="p">(</span>
+                    <span class="n">rectangle_crs</span><span class="p">,</span>
+                    <span class="n">required_columns</span><span class="o">=</span><span class="p">[</span>
+                        <span class="s2">&quot;branch_id&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;branch_offset&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;frictionid&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;frictiontype&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;frictionvalue&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;width&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;height&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;closed&quot;</span><span class="p">,</span>
+                    <span class="p">],</span>
+                <span class="p">)</span>
+                <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">crosssections_</span><span class="p">,</span> <span class="n">_set_rectangle_crs</span><span class="p">(</span><span class="n">rectangle_crs</span><span class="p">)]</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;trapezoid&quot;</span><span class="p">:</span>
+                <span class="n">trapezoid_crs</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">shape</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">trapezoid_crs</span><span class="p">[</span><span class="s2">&quot;definitionid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trapezoid_crs</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;trapz_h</span><span class="si">{:,.1f}</span><span class="s2">_bw</span><span class="si">{:,.1f}</span><span class="s2">_tw</span><span class="si">{:,.1f}</span><span class="s2">_c</span><span class="si">{:s}</span><span class="s2">_</span><span class="si">{:s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">x</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">],</span>
+                        <span class="n">x</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">],</span>
+                        <span class="n">x</span><span class="p">[</span><span class="s2">&quot;t_width&quot;</span><span class="p">],</span>
+                        <span class="n">x</span><span class="p">[</span><span class="s2">&quot;closed&quot;</span><span class="p">],</span>
+                        <span class="s2">&quot;branch&quot;</span><span class="p">,</span>
+                    <span class="p">),</span>
+                    <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">check_gpd_attributes</span><span class="p">(</span>
+                    <span class="n">trapezoid_crs</span><span class="p">,</span>
+                    <span class="n">required_columns</span><span class="o">=</span><span class="p">[</span>
+                        <span class="s2">&quot;branch_id&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;branch_offset&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;frictionid&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;frictiontype&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;frictionvalue&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;width&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;height&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;t_width&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;closed&quot;</span><span class="p">,</span>
+                    <span class="p">],</span>
+                <span class="p">)</span>
+                <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">crosssections_</span><span class="p">,</span> <span class="n">_set_trapezoid_crs</span><span class="p">(</span><span class="n">trapezoid_crs</span><span class="p">)]</span>
+                <span class="p">)</span>
+    <span class="c1"># Else prepares crosssections at both upstream and dowsntream extremities</span>
+    <span class="c1"># for now only support circle profile for pipes</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Upstream</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">_up&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">branches</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">crosssections_up</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">branches</span><span class="o">.</span><span class="n">geometry</span><span class="p">]},</span>
+            <span class="n">index</span><span class="o">=</span><span class="n">ids</span><span class="p">,</span>
+            <span class="n">crs</span><span class="o">=</span><span class="n">branches</span><span class="o">.</span><span class="n">crs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">crosssections_up</span><span class="p">[</span><span class="s2">&quot;crsloc_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">&quot;crs_up_</span><span class="si">{</span><span class="n">bid</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">bid</span> <span class="ow">in</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;branchid&quot;</span><span class="p">]</span>
+        <span class="p">]</span>
+        <span class="n">crosssections_up</span><span class="p">[</span><span class="s2">&quot;branch_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;branchid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">crosssections_up</span><span class="p">[</span><span class="s2">&quot;branch_offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">branches</span><span class="o">.</span><span class="n">geometry</span><span class="p">]</span>
+        <span class="n">crosssections_up</span><span class="p">[</span><span class="s2">&quot;shift&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;invlev_up&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">crosssections_up</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">crosssections_up</span><span class="p">[</span><span class="s2">&quot;diameter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;diameter&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">crosssections_up</span><span class="p">[</span><span class="s2">&quot;frictionid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;frictionid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">crosssections_up</span><span class="p">[</span><span class="s2">&quot;frictiontype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;frictiontype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">crosssections_up</span><span class="p">[</span><span class="s2">&quot;frictionvalue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;frictionvalue&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="c1"># Downstream</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">_dn&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">branches</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">crosssections_dn</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">branches</span><span class="o">.</span><span class="n">geometry</span><span class="p">]},</span>
+            <span class="n">index</span><span class="o">=</span><span class="n">ids</span><span class="p">,</span>
+            <span class="n">crs</span><span class="o">=</span><span class="n">branches</span><span class="o">.</span><span class="n">crs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">crosssections_dn</span><span class="p">[</span><span class="s2">&quot;crsloc_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">&quot;crs_dn_</span><span class="si">{</span><span class="n">bid</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">bid</span> <span class="ow">in</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;branchid&quot;</span><span class="p">]</span>
+        <span class="p">]</span>
+        <span class="n">crosssections_dn</span><span class="p">[</span><span class="s2">&quot;branch_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;branchid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">crosssections_dn</span><span class="p">[</span><span class="s2">&quot;branch_offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">length</span><span class="p">]</span>
+        <span class="n">crosssections_dn</span><span class="p">[</span><span class="s2">&quot;shift&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;invlev_dn&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">crosssections_dn</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">crosssections_dn</span><span class="p">[</span><span class="s2">&quot;diameter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;diameter&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">crosssections_dn</span><span class="p">[</span><span class="s2">&quot;frictionid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;frictionid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">crosssections_dn</span><span class="p">[</span><span class="s2">&quot;frictiontype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;frictiontype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">crosssections_dn</span><span class="p">[</span><span class="s2">&quot;frictionvalue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;frictionvalue&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="c1"># Merge</span>
+        <span class="n">crosssections</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">crosssections_up</span><span class="p">,</span> <span class="n">crosssections_dn</span><span class="p">])</span>
+
+        <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+        <span class="c1"># loop through the shapes</span>
+        <span class="n">all_shapes</span> <span class="o">=</span> <span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">shape</span> <span class="ow">in</span> <span class="n">all_shapes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;circle&quot;</span><span class="p">:</span>
+                <span class="n">circle_crs</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">shape</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">circle_crs</span><span class="p">[</span><span class="s2">&quot;definitionid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">circle_crs</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;circ_d</span><span class="si">{:,.3f}</span><span class="s2">_</span><span class="si">{:s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;diameter&quot;</span><span class="p">],</span> <span class="s2">&quot;branch&quot;</span><span class="p">),</span>
+                    <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="p">)</span>  <span class="c1"># note diameter is reserved keywords in geopandas</span>
+                <span class="n">check_gpd_attributes</span><span class="p">(</span>
+                    <span class="n">circle_crs</span><span class="p">,</span>
+                    <span class="n">required_columns</span><span class="o">=</span><span class="p">[</span>
+                        <span class="s2">&quot;branch_id&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;branch_offset&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;frictionid&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;frictiontype&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;frictionvalue&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;diameter&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;shift&quot;</span><span class="p">,</span>
+                    <span class="p">],</span>
+                <span class="p">)</span>
+                <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">crosssections_</span><span class="p">,</span> <span class="n">_set_circle_crs</span><span class="p">(</span><span class="n">circle_crs</span><span class="p">)]</span>
+                <span class="p">)</span>
+
+    <span class="c1"># setup thalweg for GUI</span>
+    <span class="n">crosssections_</span><span class="p">[</span><span class="s2">&quot;crsdef_thalweg&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="c1"># support both string and boolean for closed column</span>
+    <span class="k">if</span> <span class="s2">&quot;crsdef_closed&quot;</span> <span class="ow">in</span> <span class="n">crosssections_</span><span class="p">:</span>
+        <span class="n">crosssections_</span><span class="p">[</span><span class="s2">&quot;crsdef_closed&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="s2">&quot;yes&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">crosssections_</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">branches</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">crosssections_</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="set_xyz_crosssections">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.set_xyz_crosssections.html#hydromt_delft3dfm.workflows.set_xyz_crosssections">[docs]</a>
+<span class="k">def</span> <span class="nf">set_xyz_crosssections</span><span class="p">(</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set up xyz crosssections.</span>
+<span class="sd">    xyz crosssections should be points gpd, column z and column order.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    branches : gpd.GeoDataFrame</span>
+<span class="sd">        The branches.</span>
+<span class="sd">    crosssections : gpd.GeoDataFrame</span>
+<span class="sd">        The crosssections.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame</span>
+<span class="sd">        The xyz cross sections.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># check if require columns exist</span>
+    <span class="n">required_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">,</span> <span class="s2">&quot;crsid&quot;</span><span class="p">,</span> <span class="s2">&quot;order&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">required_columns</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">crosssections</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
+        <span class="n">crosssections</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">crosssections</span><span class="p">[</span><span class="n">required_columns</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Cannot setup crosssections from branch. Require columns </span><span class="si">{</span><span class="n">required_columns</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># apply data type</span>
+    <span class="n">crosssections</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">crosssections</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">y</span>
+    <span class="n">crosssections</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;z&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">z</span>
+    <span class="n">crosssections</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;order&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;order&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">)</span>
+
+    <span class="c1"># convert xyz crosssection into yz profile</span>
+    <span class="n">crosssections</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">xyzp2xyzl</span><span class="p">,</span> <span class="p">([</span><span class="s2">&quot;order&quot;</span><span class="p">]))</span>
+    <span class="n">crosssections</span><span class="o">.</span><span class="n">crs</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">crs</span>
+
+    <span class="c1"># snap to branch</span>
+    <span class="c1"># setup branch_id - snap bridges to branch (inplace of bridges, will add branch_id and branch_offset columns)</span>
+    <span class="n">find_nearest_branch</span><span class="p">(</span>
+        <span class="n">branches</span><span class="o">=</span><span class="n">branches</span><span class="p">,</span> <span class="n">geometries</span><span class="o">=</span><span class="n">crosssections</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;intersecting&quot;</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+        <span class="s2">&quot;Snapping to branches using intersection: Please double check if the crossection is closely located to a bifurcation.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># setup failed - drop based on branch_offset that are not snapped to branch (inplace of yz_crosssections) and issue warning</span>
+    <span class="n">_old_ids</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+    <span class="n">crosssections</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;branch_offset&quot;</span><span class="p">])</span>
+    <span class="n">crosssections</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+        <span class="n">branches</span><span class="p">[[</span><span class="s2">&quot;frictionid&quot;</span><span class="p">,</span> <span class="s2">&quot;frictiontype&quot;</span><span class="p">,</span> <span class="s2">&quot;frictionvalue&quot;</span><span class="p">]],</span>
+        <span class="n">left_on</span><span class="o">=</span><span class="s2">&quot;branch_id&quot;</span><span class="p">,</span>
+        <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_new_ids</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_old_ids</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">_new_ids</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Crosssection with id: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">_old_ids</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">set</span><span class="p">(</span><span class="n">_new_ids</span><span class="p">))</span><span class="si">}</span><span class="s2"> are dropped: unable to find closest branch. &quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># setup crsdef from xyz</span>
+    <span class="n">crsdefs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;crsdef_id&quot;</span><span class="p">:</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+            <span class="s2">&quot;crsdef_branchid&quot;</span><span class="p">:</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">branch_id</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+            <span class="s2">&quot;crsdef_type&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;crsdef_xyzcount&quot;</span><span class="p">:</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="nb">len</span><span class="p">)</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+            <span class="s2">&quot;crsdef_xcoordinates&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">l</span><span class="p">])</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;crsdef_ycoordinates&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">l</span><span class="p">])</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;crsdef_zcoordinates&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">l</span><span class="p">])</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">z</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+            <span class="p">],</span>
+            <span class="c1"># --- start of yz ---</span>
+            <span class="c1"># &quot;crsdef_type&quot;: &quot;yz&quot;,</span>
+            <span class="c1"># &quot;crsdef_yzCount&quot;: crosssections.l.map(len).to_list(),</span>
+            <span class="c1"># &#39;crsdef_ycoordinates&#39;: [</span>
+            <span class="c1">#      &quot; &quot;.join([&quot;{:.1f}&quot;.format(i) for i in l])</span>
+            <span class="c1">#      for l in crosssections.l.to_list()</span>
+            <span class="c1">#  ],</span>
+            <span class="c1"># &quot;crsdef_zcoordinates&quot;: [</span>
+            <span class="c1">#     &quot; &quot;.join([&quot;{:.1f}&quot;.format(i) for i in l])</span>
+            <span class="c1">#     for l in crosssections.z.to_list()</span>
+            <span class="c1"># ],</span>
+            <span class="c1"># --- end of yz ---</span>
+            <span class="c1"># lower case key means temp keys (not written to file)</span>
+            <span class="s2">&quot;crsdef_frictionids&quot;</span><span class="p">:</span> <span class="n">branches</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">crosssections</span><span class="o">.</span><span class="n">branch_id</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span> <span class="s2">&quot;frictionid&quot;</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;frictiontype&quot;</span><span class="p">:</span> <span class="n">branches</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">crosssections</span><span class="o">.</span><span class="n">branch_id</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span> <span class="s2">&quot;frictiontype&quot;</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;frictionvalue&quot;</span><span class="p">:</span> <span class="n">branches</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">crosssections</span><span class="o">.</span><span class="n">branch_id</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span> <span class="s2">&quot;frictionvalue&quot;</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;crsdef_frictionpositions&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="sa">f</span><span class="s2">&quot;0 </span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">length</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+            <span class="p">],</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="c1"># setup crsloc from xyz</span>
+    <span class="c1"># delete generated ones</span>
+    <span class="n">crslocs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;crsloc_id&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bid</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">bc</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">for</span> <span class="n">bid</span><span class="p">,</span> <span class="n">bc</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                    <span class="n">crosssections</span><span class="o">.</span><span class="n">branch_id</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+                    <span class="n">crosssections</span><span class="o">.</span><span class="n">branch_offset</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+                <span class="p">)</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;crsloc_branchid&quot;</span><span class="p">:</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">branch_id</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+            <span class="s2">&quot;crsloc_chainage&quot;</span><span class="p">:</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">branch_offset</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+            <span class="s2">&quot;crsloc_shift&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;crsloc_definitionid&quot;</span><span class="p">:</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+            <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">centroid</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>  <span class="c1"># line to centroid. because crossection geom has point feature.</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+        <span class="n">crslocs</span><span class="p">,</span>
+        <span class="n">crsdefs</span><span class="p">,</span>
+        <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
+        <span class="n">left_on</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;crsloc_definitionid&quot;</span><span class="p">],</span>
+        <span class="n">right_on</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;crsdef_id&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">crosssections_</span><span class="p">[</span><span class="s2">&quot;crsdef_thalweg&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">crosssections_</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">branches</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">crosssections_</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="set_point_crosssections">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.set_point_crosssections.html#hydromt_delft3dfm.workflows.set_point_crosssections">[docs]</a>
+<span class="k">def</span> <span class="nf">set_point_crosssections</span><span class="p">(</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">maxdist</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to set regular cross-sections from point.</span>
+<span class="sd">    only support rectangle, trapezoid, circle and yz.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    branches : gpd.GeoDataFrame</span>
+<span class="sd">        Require index to contain the branch id</span>
+<span class="sd">        The branches.</span>
+<span class="sd">    crosssections : gpd.GeoDataFrame</span>
+<span class="sd">        Required columns: shape,shift</span>
+<span class="sd">        The crosssections.</span>
+<span class="sd">    maxdist : float, optional</span>
+<span class="sd">        the maximum distant that a point crossection is snapped to the branch.</span>
+<span class="sd">        By default 1.0</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gpd.GeoDataFrame</span>
+<span class="sd">        The cross sections.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># check if crs mismatch</span>
+    <span class="k">if</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">crs</span> <span class="o">!=</span> <span class="n">branches</span><span class="o">.</span><span class="n">crs</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;mismatch crs between cross-sections and branches&quot;</span><span class="p">)</span>
+
+    <span class="c1"># remove duplicated geometries</span>
+    <span class="n">_nodes</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">_nodes</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">geom</span><span class="p">:</span> <span class="n">geom</span><span class="o">.</span><span class="n">wkb</span><span class="p">)</span>
+    <span class="c1"># check for diff in numbers: n = len(G) - len(G.drop_duplicates().index)</span>
+    <span class="n">crosssections</span> <span class="o">=</span> <span class="n">_nodes</span><span class="p">[</span><span class="n">_nodes</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span>
+
+    <span class="c1"># snap to branch</span>
+    <span class="c1"># setup branch_id - snap bridges to branch (inplace of bridges, will add branch_id and branch_offset columns)</span>
+    <span class="n">find_nearest_branch</span><span class="p">(</span>
+        <span class="n">branches</span><span class="o">=</span><span class="n">branches</span><span class="p">,</span> <span class="n">geometries</span><span class="o">=</span><span class="n">crosssections</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;overal&quot;</span><span class="p">,</span> <span class="n">maxdist</span><span class="o">=</span><span class="n">maxdist</span>
+    <span class="p">)</span>
+
+    <span class="c1"># setup failed - drop based on branch_offset that are not snapped to branch (inplace of yz_crosssections) and issue warning</span>
+    <span class="n">_old_ids</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+    <span class="n">crosssections</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;branch_offset&quot;</span><span class="p">])</span>
+    <span class="n">_new_ids</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_old_ids</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">_new_ids</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Crosssection with id: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">_old_ids</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">set</span><span class="p">(</span><span class="n">_new_ids</span><span class="p">))</span><span class="si">}</span><span class="s2"> are dropped: unable to find closest branch. &quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">crosssections</span><span class="o">.</span><span class="n">branch_offset</span><span class="o">.</span><span class="n">dropna</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;No crossections are set up.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+    <span class="c1"># get branch friction</span>
+    <span class="n">crosssections</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+        <span class="n">branches</span><span class="p">[[</span><span class="s2">&quot;frictionid&quot;</span><span class="p">,</span> <span class="s2">&quot;frictiontype&quot;</span><span class="p">,</span> <span class="s2">&quot;frictionvalue&quot;</span><span class="p">]],</span>
+        <span class="n">left_on</span><span class="o">=</span><span class="s2">&quot;branch_id&quot;</span><span class="p">,</span>
+        <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># NOTE: below is removed because in case of multiple structures at the same location, there can be multiple crossections</span>
+    <span class="c1"># # get a temporary id based on the convention of branch_id and branch_offset(precision 2 decimals)</span>
+    <span class="c1"># crosssections[&quot;temp_id&quot;] = crosssections.apply(lambda x:f&quot;{x.branch_id}_{x.branch_offset:.2f}&quot;, axis = 1)</span>
+    <span class="c1"># # drop duplicated temp_id, keep the one with minimum branch_distance</span>
+    <span class="c1"># if crosssections[&quot;temp_id&quot;].duplicated().any():</span>
+    <span class="c1">#     logger.warning(f&quot;Duplicate crosssections found, removing duplicates&quot;)</span>
+    <span class="c1">#     # Sort DataFrame by branch_distance in ascending order</span>
+    <span class="c1">#     crosssections_sorted = crosssections.sort_values(&#39;branch_distance&#39;)</span>
+    <span class="c1">#     # Remove duplicates based on the branch_id, branch_offset column, keeping the first occurrence (with minimum branch_distance)</span>
+    <span class="c1">#     crosssections = crosssections_sorted.drop_duplicates(subset=[&quot;temp_id&quot;], keep=&#39;first&#39;)</span>
+
+    <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+    <span class="c1"># loop through the shapes</span>
+    <span class="n">all_shapes</span> <span class="o">=</span> <span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">shape</span> <span class="ow">in</span> <span class="n">all_shapes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;circle&quot;</span><span class="p">:</span>
+            <span class="n">circle_crs</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">shape</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">circle_crs</span><span class="p">[</span><span class="s2">&quot;definitionid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">circle_crs</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;circ_d</span><span class="si">{:,.3f}</span><span class="s2">_</span><span class="si">{:s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;diameter&quot;</span><span class="p">],</span> <span class="s2">&quot;point&quot;</span><span class="p">),</span>
+                <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">check_gpd_attributes</span><span class="p">(</span>
+                <span class="n">circle_crs</span><span class="p">,</span>
+                <span class="n">required_columns</span><span class="o">=</span><span class="p">[</span>
+                    <span class="s2">&quot;branch_id&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;branch_offset&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;frictionid&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;frictiontype&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;frictionvalue&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;diameter&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;shift&quot;</span><span class="p">,</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">crosssections_</span><span class="p">,</span> <span class="n">_set_circle_crs</span><span class="p">(</span><span class="n">circle_crs</span><span class="p">)])</span>
+        <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;rectangle&quot;</span><span class="p">:</span>
+            <span class="n">rectangle_crs</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">shape</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">rectangle_crs</span><span class="p">[</span><span class="s2">&quot;definitionid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rectangle_crs</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;rect_h</span><span class="si">{:,.3f}</span><span class="s2">_w</span><span class="si">{:,.3f}</span><span class="s2">_c</span><span class="si">{:s}</span><span class="s2">_</span><span class="si">{:s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">x</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">],</span>
+                    <span class="n">x</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">],</span>
+                    <span class="n">x</span><span class="p">[</span><span class="s2">&quot;closed&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;point&quot;</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">check_gpd_attributes</span><span class="p">(</span>
+                <span class="n">rectangle_crs</span><span class="p">,</span>
+                <span class="n">required_columns</span><span class="o">=</span><span class="p">[</span>
+                    <span class="s2">&quot;branch_id&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;branch_offset&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;frictionid&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;frictiontype&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;frictionvalue&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;width&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;height&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;closed&quot;</span><span class="p">,</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">crosssections_</span><span class="p">,</span> <span class="n">_set_rectangle_crs</span><span class="p">(</span><span class="n">rectangle_crs</span><span class="p">)]</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;trapezoid&quot;</span><span class="p">:</span>
+            <span class="n">trapezoid_crs</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">shape</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">trapezoid_crs</span><span class="p">[</span><span class="s2">&quot;definitionid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trapezoid_crs</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;trapz_h</span><span class="si">{:,.1f}</span><span class="s2">_bw</span><span class="si">{:,.1f}</span><span class="s2">_tw</span><span class="si">{:,.1f}</span><span class="s2">_c</span><span class="si">{:s}</span><span class="s2">_</span><span class="si">{:s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">x</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">],</span>
+                    <span class="n">x</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">],</span>
+                    <span class="n">x</span><span class="p">[</span><span class="s2">&quot;t_width&quot;</span><span class="p">],</span>
+                    <span class="n">x</span><span class="p">[</span><span class="s2">&quot;closed&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;point&quot;</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">check_gpd_attributes</span><span class="p">(</span>
+                <span class="n">trapezoid_crs</span><span class="p">,</span>
+                <span class="n">required_columns</span><span class="o">=</span><span class="p">[</span>
+                    <span class="s2">&quot;branch_id&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;branch_offset&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;frictionid&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;frictiontype&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;frictionvalue&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;width&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;height&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;t_width&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;closed&quot;</span><span class="p">,</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">crosssections_</span><span class="p">,</span> <span class="n">_set_trapezoid_crs</span><span class="p">(</span><span class="n">trapezoid_crs</span><span class="p">)]</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;zw&quot;</span><span class="p">:</span>
+            <span class="n">zw_crs</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">shape</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">check_gpd_attributes</span><span class="p">(</span>
+                <span class="n">trapezoid_crs</span><span class="p">,</span>
+                <span class="n">required_columns</span><span class="o">=</span><span class="p">[</span>
+                    <span class="s2">&quot;branch_id&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;branch_offset&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;frictionid&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;frictiontype&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;frictionvalue&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;numlevels&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;levels&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;flowwidths&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;totalwidths&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;closed&quot;</span><span class="p">,</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">crosssections_</span><span class="p">,</span> <span class="n">_set_zw_crs</span><span class="p">(</span><span class="n">zw_crs</span><span class="p">)])</span>
+        <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;yz&quot;</span><span class="p">:</span>
+            <span class="n">yz_crs</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">shape</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">check_gpd_attributes</span><span class="p">(</span>
+                <span class="n">trapezoid_crs</span><span class="p">,</span>
+                <span class="n">required_columns</span><span class="o">=</span><span class="p">[</span>
+                    <span class="s2">&quot;branch_id&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;branch_offset&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;frictionid&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;frictiontype&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;frictionvalue&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;yzcount&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;ycoordinates&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;zcoordinates&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;closed&quot;</span><span class="p">,</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">crosssections_</span><span class="p">,</span> <span class="n">_set_yz_crs</span><span class="p">(</span><span class="n">yz_crs</span><span class="p">)])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;crossection shape not supported. For now only support rectangle, trapezoid, zw and yz&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># setup thaiweg for GUI</span>
+    <span class="n">crosssections_</span><span class="p">[</span><span class="s2">&quot;crsdef_thalweg&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="c1"># support both string and boolean for closed column</span>
+    <span class="n">crosssections_</span><span class="p">[</span><span class="s2">&quot;crsdef_closed&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="s2">&quot;yes&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">crosssections_</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">branches</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">crosssections_</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_set_circle_crs</span><span class="p">(</span><span class="n">crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Circle crossection.&quot;&quot;&quot;</span>
+    <span class="n">crsdefs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">crslocs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
+        <span class="n">crsdefs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;crsdef_id&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">definitionid</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_type&quot;</span><span class="p">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_branchid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">branch_id</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_diameter&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">diameter</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_closed&quot;</span><span class="p">:</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_frictionid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">frictionid</span><span class="p">,</span>
+                <span class="s2">&quot;frictiontype&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">frictiontype</span><span class="p">,</span>
+                <span class="s2">&quot;frictionvalue&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">frictionvalue</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">crslocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;crsloc_id&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">branch_id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">branch_offset</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_branchid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">branch_id</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_chainage&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">branch_offset</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_shift&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">shift</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_definitionid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">definitionid</span><span class="p">,</span>
+                <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">crslocs</span><span class="p">),</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">crsdefs</span><span class="p">)</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(),</span>
+        <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
+        <span class="n">left_on</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;crsloc_branchid&quot;</span><span class="p">,</span> <span class="s2">&quot;crsloc_definitionid&quot;</span><span class="p">],</span>
+        <span class="n">right_on</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;crsdef_branchid&quot;</span><span class="p">,</span> <span class="s2">&quot;crsdef_id&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">crosssections_</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">index</span>
+
+    <span class="k">return</span> <span class="n">crosssections_</span>
+
+
+<span class="k">def</span> <span class="nf">_set_rectangle_crs</span><span class="p">(</span><span class="n">crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Rectangle crossection.&quot;&quot;&quot;</span>
+    <span class="n">crsdefs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">crslocs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
+        <span class="n">crsdefs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;crsdef_id&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">definitionid</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_type&quot;</span><span class="p">:</span> <span class="s2">&quot;rectangle&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_branchid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">branch_id</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_height&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_width&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_closed&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">closed</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_frictionid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">frictionid</span><span class="p">,</span>
+                <span class="s2">&quot;frictiontype&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">frictiontype</span><span class="p">,</span>
+                <span class="s2">&quot;frictionvalue&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">frictionvalue</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">crslocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;crsloc_id&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">branch_id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">branch_offset</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_branchid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">branch_id</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_chainage&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">branch_offset</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_shift&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">shift</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_definitionid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">definitionid</span><span class="p">,</span>
+                <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">crslocs</span><span class="p">),</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">crsdefs</span><span class="p">)</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(),</span>
+        <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
+        <span class="n">left_on</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;crsloc_branchid&quot;</span><span class="p">,</span> <span class="s2">&quot;crsloc_definitionid&quot;</span><span class="p">],</span>
+        <span class="n">right_on</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;crsdef_branchid&quot;</span><span class="p">,</span> <span class="s2">&quot;crsdef_id&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">crosssections_</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">index</span>
+
+    <span class="k">return</span> <span class="n">crosssections_</span>
+
+
+<span class="k">def</span> <span class="nf">_set_trapezoid_crs</span><span class="p">(</span><span class="n">crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Trapezoid need to be converted into zw type.&quot;&quot;&quot;</span>
+    <span class="c1"># check for non-valid trapezoid crs</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
+        <span class="ow">or</span> <span class="p">(</span><span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;t_width&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
+        <span class="ow">or</span> <span class="p">(</span><span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
+    <span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;Invalid DataFrame: Found non-positive values in the &#39;width&#39;, &#39;t_width&#39;, or &#39;height&#39; columns.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">crsdefs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">crslocs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
+        <span class="n">levels</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;0 </span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">height</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">flowwidths</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">width</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">t_width</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">crsdefs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;crsdef_id&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">definitionid</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_type&quot;</span><span class="p">:</span> <span class="s2">&quot;zw&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_branchid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">branch_id</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_numlevels&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_levels&quot;</span><span class="p">:</span> <span class="n">levels</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_flowwidths&quot;</span><span class="p">:</span> <span class="n">flowwidths</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_totalwidths&quot;</span><span class="p">:</span> <span class="n">flowwidths</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_frictionid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">frictionid</span><span class="p">,</span>
+                <span class="s2">&quot;frictiontype&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">frictiontype</span><span class="p">,</span>
+                <span class="s2">&quot;frictionvalue&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">frictionvalue</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_closed&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">closed</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">crslocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;crsloc_id&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">branch_id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">branch_offset</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_branchid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">branch_id</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_chainage&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">branch_offset</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_shift&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">shift</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_definitionid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">definitionid</span><span class="p">,</span>
+                <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="c1"># merge</span>
+    <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">crslocs</span><span class="p">),</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">crsdefs</span><span class="p">)</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(),</span>
+        <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
+        <span class="n">left_on</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;crsloc_branchid&quot;</span><span class="p">,</span> <span class="s2">&quot;crsloc_definitionid&quot;</span><span class="p">],</span>
+        <span class="n">right_on</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;crsdef_branchid&quot;</span><span class="p">,</span> <span class="s2">&quot;crsdef_id&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">crosssections_</span>
+
+
+<span class="k">def</span> <span class="nf">_set_zw_crs</span><span class="p">(</span><span class="n">crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set zw profile.&quot;&quot;&quot;</span>
+    <span class="n">crsdefs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">crslocs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
+        <span class="n">crsdefs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;crsdef_id&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_type&quot;</span><span class="p">:</span> <span class="s2">&quot;zw&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_branchid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">branch_id</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_numlevels&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">numlevels</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_levels&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">levels</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_flowwidths&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">flowwidths</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_totalwidths&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">totalwidths</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_frictionid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">frictionid</span><span class="p">,</span>
+                <span class="s2">&quot;frictiontype&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">frictiontype</span><span class="p">,</span>
+                <span class="s2">&quot;frictionvalue&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">frictionvalue</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">crslocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;crsloc_id&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">branch_id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">branch_offset</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_branchid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">branch_id</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_chainage&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">branch_offset</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_shift&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">shift</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_definitionid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span>
+                <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">crslocs</span><span class="p">),</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">crsdefs</span><span class="p">)</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(),</span>
+        <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
+        <span class="n">left_on</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;crsloc_branchid&quot;</span><span class="p">,</span> <span class="s2">&quot;crsloc_definitionid&quot;</span><span class="p">],</span>
+        <span class="n">right_on</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;crsdef_branchid&quot;</span><span class="p">,</span> <span class="s2">&quot;crsdef_id&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">crosssections_</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">index</span>
+
+    <span class="k">return</span> <span class="n">crosssections_</span>
+
+
+<span class="k">def</span> <span class="nf">_set_yz_crs</span><span class="p">(</span><span class="n">crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set yz profile.&quot;&quot;&quot;</span>
+    <span class="n">crsdefs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">crslocs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
+        <span class="n">crsdefs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;crsdef_id&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_type&quot;</span><span class="p">:</span> <span class="s2">&quot;yz&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_branchid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">branch_id</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_yzcount&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">yzcount</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_ycoordinates&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">ycoordinates</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_zcoordinates&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">zcoordinates</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_frictionid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">frictionid</span><span class="p">,</span>
+                <span class="s2">&quot;frictiontype&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">frictiontype</span><span class="p">,</span>
+                <span class="s2">&quot;frictionvalue&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">frictionvalue</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">crslocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;crsloc_id&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">branch_id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">branch_offset</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_branchid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">branch_id</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_chainage&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">branch_offset</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_shift&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">shift</span><span class="p">,</span>
+                <span class="s2">&quot;crsloc_definitionid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span>
+                <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">crslocs</span><span class="p">),</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">crsdefs</span><span class="p">)</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(),</span>
+        <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
+        <span class="n">left_on</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;crsloc_branchid&quot;</span><span class="p">,</span> <span class="s2">&quot;crsloc_definitionid&quot;</span><span class="p">],</span>
+        <span class="n">right_on</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;crsdef_branchid&quot;</span><span class="p">,</span> <span class="s2">&quot;crsdef_id&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">crosssections_</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">index</span>
+
+    <span class="k">return</span> <span class="n">crosssections_</span>
+
+
+<span class="c1"># def parse_sobek_crs(filename, logger=logger):</span>
+<span class="c1">#     &quot;&quot;&quot;read sobek crosssection files as a dataframe. Include location and definition file.</span>
+<span class="c1">#     #TODO: include parsing geometry as well</span>
+
+<span class="c1">#     Parameters</span>
+<span class="c1">#     ----------</span>
+<span class="c1">#     filename : Path</span>
+<span class="c1">#         Path to the sobek crosssection files. supported format: .DAT amd .DEF</span>
+<span class="c1">#     logger : logger, Optional</span>
+
+<span class="c1">#     Raise</span>
+<span class="c1">#     -----</span>
+<span class="c1">#     NotImplementedError</span>
+<span class="c1">#         do not support other files than .dat and .def</span>
+
+<span class="c1">#     Returns</span>
+<span class="c1">#     -------</span>
+<span class="c1">#     df.DataFrame</span>
+<span class="c1">#         The data frame with each item as a row</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     import shlex</span>
+<span class="c1">#     from pathlib import Path</span>
+
+<span class="c1">#     import numpy as np</span>
+<span class="c1">#     import pandas as pd</span>
+
+<span class="c1">#     # check file</span>
+<span class="c1">#     if Path(filename).name.lower().endswith(&quot;.def&quot;):</span>
+<span class="c1">#         logger.info(&quot;Parsing cross section definition&quot;)</span>
+<span class="c1">#         prefix = &quot;CRDS&quot;</span>
+<span class="c1">#         suffix = &quot;crds&quot;</span>
+<span class="c1">#     elif Path(filename).name.lower().endswith(&quot;.dat&quot;):</span>
+<span class="c1">#         logger.info(&quot;Parsing cross section location&quot;)</span>
+<span class="c1">#         prefix = &quot;CRSN&quot;</span>
+<span class="c1">#         suffix = &quot;crsn&quot;</span>
+<span class="c1">#     else:</span>
+<span class="c1">#         raise NotImplementedError(&quot;do not support other files than .dat and .def&quot;)</span>
+
+<span class="c1">#     with open(filename) as myFile:</span>
+<span class="c1">#         text = myFile.read()</span>
+<span class="c1">#         raw_lines = text.split(suffix + &quot;\n&quot;)</span>
+
+<span class="c1">#     lines = []</span>
+<span class="c1">#     for l in raw_lines:</span>
+<span class="c1">#         if l.startswith(prefix):  # new item</span>
+<span class="c1">#             # preliminary handling</span>
+<span class="c1">#             l = l.removeprefix(prefix)</span>
+<span class="c1">#             t = None</span>
+<span class="c1">#             table_dict = {}</span>
+<span class="c1">#             # parse zw profile</span>
+<span class="c1">#             if &quot;lt lw\nTBLE&quot; in l:</span>
+<span class="c1">#                 # the table contains height, total width en flowing width.</span>
+<span class="c1">#                 l, t = l.split(&quot;lt lw\nTBLE&quot;)</span>
+<span class="c1">#                 levels, totalwidths, flowwidths = np.array(</span>
+<span class="c1">#                     [shlex.split(r, posix=False) for r in t.split(&quot;&lt;&quot;)][:-1]</span>
+<span class="c1">#                 ).T  # last element is the suffix of tble</span>
+<span class="c1">#                 table_dict[&quot;numlevels&quot;] = len(levels)</span>
+<span class="c1">#                 table_dict[&quot;levels&quot;] = &quot; &quot;.join(str(n) for n in levels)</span>
+<span class="c1">#                 table_dict[&quot;totalwidths&quot;] = &quot; &quot;.join(str(n) for n in totalwidths)</span>
+<span class="c1">#                 table_dict[&quot;flowwidths&quot;] = &quot; &quot;.join(str(n) for n in flowwidths)</span>
+<span class="c1">#             # parse yz profile</span>
+<span class="c1">#             if &quot;lt yz\nTBLE&quot; in l:</span>
+<span class="c1">#                 # Y horizontal distance increasing from the left to right,</span>
+<span class="c1">#                 # Z vertical distance increasing from bottom to top in m.</span>
+<span class="c1">#                 # In other words, use a coordinate system to define the Y-Z profile.</span>
+<span class="c1">#                 l, t = l.split(&quot;lt yz\nTBLE&quot;)</span>
+<span class="c1">#                 ycoordinates, zcoordinates = np.array(</span>
+<span class="c1">#                     [shlex.split(r, posix=False) for r in t.split(&quot;&lt;&quot;)][:-1]</span>
+<span class="c1">#                 ).T</span>
+<span class="c1">#                 table_dict[&quot;yzcount&quot;] = len(ycoordinates)</span>
+<span class="c1">#                 table_dict[&quot;ycoordinates&quot;] = &quot; &quot;.join(str(n) for n in ycoordinates)</span>
+<span class="c1">#                 table_dict[&quot;zcoordinates&quot;] = &quot; &quot;.join(str(n) for n in zcoordinates)</span>
+<span class="c1">#                 # storage width on surface in m</span>
+<span class="c1">#                 if &quot;lt sw 0&quot; in l:</span>
+<span class="c1">#                     l.replace(&quot;lt lw 0&quot;, &quot;lt_lw_0&quot;)  # remove space</span>
+<span class="c1">#                 else:</span>
+<span class="c1">#                     logger.error(</span>
+<span class="c1">#                         &quot;storage width function is not supported. Check lt sw field&quot;</span>
+<span class="c1">#                     )</span>
+<span class="c1">#             # parse line</span>
+<span class="c1">#             line = shlex.split(l, posix=False)</span>
+<span class="c1">#             line_dict = {line[i]: line[i + 1] for i in range(0, len(line), 2)}</span>
+<span class="c1">#             # add table</span>
+<span class="c1">#             if t is not None:</span>
+<span class="c1">#                 line_dict.update(table_dict)</span>
+<span class="c1">#             lines.append(line_dict)</span>
+
+<span class="c1">#     df = pd.DataFrame.from_records(lines)</span>
+<span class="c1">#     df[&quot;id&quot;] = df[&quot;id&quot;].str.strip(&quot;&#39;&quot;)</span>
+<span class="c1">#     df.set_index(&quot;id&quot;, inplace=True)</span>
+
+<span class="c1">#     return df</span>
+
+
+<span class="k">def</span> <span class="nf">xyzp2xyzl</span><span class="p">(</span><span class="n">xyz</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">sort_by</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert xyz points to xyz lines.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    xyz: pd.DataFrame</span>
+<span class="sd">        The xyz points.</span>
+<span class="sd">    sort_by: list, optional</span>
+<span class="sd">        List of attributes to sort by. Defaults to [&quot;x&quot;, &quot;y&quot;].</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gpd.GeoSeries</span>
+<span class="sd">        The xyz lines.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sort_by</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sort_by</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">xyz</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">yz_index</span> <span class="o">=</span> <span class="n">xyz</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+        <span class="n">xyz</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">xyz</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+        <span class="n">xyz</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># sort</span>
+        <span class="n">xyz_sorted</span> <span class="o">=</span> <span class="n">xyz</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">sort_by</span><span class="p">)</span>
+
+        <span class="n">new_z</span> <span class="o">=</span> <span class="n">xyz_sorted</span><span class="o">.</span><span class="n">z</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+        <span class="c1"># temporary</span>
+        <span class="c1"># new_z[0] = 1.4</span>
+        <span class="c1"># new_z[-1] = 1.4</span>
+
+        <span class="n">line</span> <span class="o">=</span> <span class="n">LineString</span><span class="p">([(</span><span class="n">px</span><span class="p">,</span> <span class="n">py</span><span class="p">)</span> <span class="k">for</span> <span class="n">px</span><span class="p">,</span> <span class="n">py</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xyz_sorted</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">xyz_sorted</span><span class="o">.</span><span class="n">y</span><span class="p">)])</span>
+        <span class="n">xyz_line</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="n">line</span><span class="p">,</span>
+                <span class="s2">&quot;l&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span>
+                        <span class="mf">0.0</span><span class="p">,</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[:,</span> <span class="mi">0</span><span class="p">],</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">],</span>
+                            <span class="p">)</span>
+                        <span class="p">),</span>
+                    <span class="p">]</span>
+                <span class="p">),</span>
+                <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="n">yz_index</span><span class="o">.</span><span class="n">to_list</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">xyz_sorted</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+                <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">xyz_sorted</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+                <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="n">new_z</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">xyz_line</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright Deltares.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

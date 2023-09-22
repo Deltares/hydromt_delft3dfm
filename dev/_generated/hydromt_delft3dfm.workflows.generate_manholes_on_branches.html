@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>hydromt_delft3dfm.workflows.branches &#8212; HydroMT Delft3D FM  documentation</title>
+    <title>hydromt_delft3dfm.workflows.generate_manholes_on_branches &#8212; HydroMT Delft3D FM  documentation</title>
   
   
   
@@ -42,11 +42,11 @@
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=36754332"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_generated/hydromt_delft3dfm.workflows.branches';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_generated/hydromt_delft3dfm.workflows.generate_manholes_on_branches';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="hydromt_delft3dfm.utils.read_branches_gui" href="hydromt_delft3dfm.utils.read_branches_gui.html" />
-    <link rel="prev" title="hydromt_delft3dfm.DFlowFMModel.get_model_time" href="hydromt_delft3dfm.DFlowFMModel.get_model_time.html" />
+    <link rel="next" title="hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches" href="hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches.html" />
+    <link rel="prev" title="hydromt_delft3dfm.workflows.get_river_bathymetry" href="hydromt_delft3dfm.workflows.get_river_bathymetry.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -396,8 +396,8 @@
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.region.html">hydromt_delft3dfm.DFlowFMModel.region</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.bounds.html">hydromt_delft3dfm.DFlowFMModel.bounds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.crs.html">hydromt_delft3dfm.DFlowFMModel.crs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.bounds.html">hydromt_delft3dfm.DFlowFMModel.bounds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.res.html">hydromt_delft3dfm.DFlowFMModel.res</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.root.html">hydromt_delft3dfm.DFlowFMModel.root</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.config.html">hydromt_delft3dfm.DFlowFMModel.config</a></li>
@@ -415,6 +415,10 @@
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.pipes.html">hydromt_delft3dfm.DFlowFMModel.pipes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.opensystem.html">hydromt_delft3dfm.DFlowFMModel.opensystem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.closedsystem.html">hydromt_delft3dfm.DFlowFMModel.closedsystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.mesh_names.html">hydromt_delft3dfm.DFlowFMModel.mesh_names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.mesh_grids.html">hydromt_delft3dfm.DFlowFMModel.mesh_grids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.mesh_datasets.html">hydromt_delft3dfm.DFlowFMModel.mesh_datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.mesh_gdf.html">hydromt_delft3dfm.DFlowFMModel.mesh_gdf</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.read.html">hydromt_delft3dfm.DFlowFMModel.read</a></li>
@@ -422,11 +426,9 @@
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.build.html">hydromt_delft3dfm.DFlowFMModel.build</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.update.html">hydromt_delft3dfm.DFlowFMModel.update</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.set_root.html">hydromt_delft3dfm.DFlowFMModel.set_root</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel._model_has_2d.html">hydromt_delft3dfm.DFlowFMModel._model_has_2d</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel._model_has_1d.html">hydromt_delft3dfm.DFlowFMModel._model_has_1d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.write_data_catalog.html">hydromt_delft3dfm.DFlowFMModel.write_data_catalog</a></li>
 </ul>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_config.html">hydromt_delft3dfm.DFlowFMModel.setup_config</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.get_config.html">hydromt_delft3dfm.DFlowFMModel.get_config</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.set_config.html">hydromt_delft3dfm.DFlowFMModel.set_config</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.read_config.html">hydromt_delft3dfm.DFlowFMModel.read_config</a></li>
@@ -445,19 +447,85 @@
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.write_states.html">hydromt_delft3dfm.DFlowFMModel.write_states</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.set_results.html">hydromt_delft3dfm.DFlowFMModel.set_results</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.read_results.html">hydromt_delft3dfm.DFlowFMModel.read_results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.get_mesh.html">hydromt_delft3dfm.DFlowFMModel.get_mesh</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.set_mesh.html">hydromt_delft3dfm.DFlowFMModel.set_mesh</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.set_link1d2d.html">hydromt_delft3dfm.DFlowFMModel.set_link1d2d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.read_mesh.html">hydromt_delft3dfm.DFlowFMModel.read_mesh</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.write_mesh.html">hydromt_delft3dfm.DFlowFMModel.write_mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.set_branches.html">hydromt_delft3dfm.DFlowFMModel.set_branches</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.read_dimr.html">hydromt_delft3dfm.DFlowFMModel.read_dimr</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.write_dimr.html">hydromt_delft3dfm.DFlowFMModel.write_dimr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.init_dfmmodel.html">hydromt_delft3dfm.DFlowFMModel.init_dfmmodel</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.get_model_time.html">hydromt_delft3dfm.DFlowFMModel.get_model_time</a></li>
 </ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.get_boundaries_with_nodeid.html">hydromt_delft3dfm.workflows.get_boundaries_with_nodeid</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.generate_boundaries_from_branches.html">hydromt_delft3dfm.workflows.generate_boundaries_from_branches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.select_boundary_type.html">hydromt_delft3dfm.workflows.select_boundary_type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.validate_boundaries.html">hydromt_delft3dfm.workflows.validate_boundaries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.compute_boundary_values.html">hydromt_delft3dfm.workflows.compute_boundary_values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.compute_2dboundary_values.html">hydromt_delft3dfm.workflows.compute_2dboundary_values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.compute_meteo_forcings.html">hydromt_delft3dfm.workflows.compute_meteo_forcings</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.prepare_branches.html">hydromt_delft3dfm.workflows.prepare_branches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.process_branches.html">hydromt_delft3dfm.workflows.process_branches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.validate_branches.html">hydromt_delft3dfm.workflows.validate_branches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.add_branches.html">hydromt_delft3dfm.workflows.add_branches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.find_nearest_branch.html">hydromt_delft3dfm.workflows.find_nearest_branch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.update_data_columns_attributes.html">hydromt_delft3dfm.workflows.update_data_columns_attributes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.update_data_columns_attribute_from_query.html">hydromt_delft3dfm.workflows.update_data_columns_attribute_from_query</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.snap_newbranches_to_branches_at_snappednodes.html">hydromt_delft3dfm.workflows.snap_newbranches_to_branches_at_snappednodes</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.prepare_default_friction_and_crosssection.html">hydromt_delft3dfm.workflows.prepare_default_friction_and_crosssection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.init_crosssections_options.html">hydromt_delft3dfm.workflows.init_crosssections_options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.set_branch_crosssections.html">hydromt_delft3dfm.workflows.set_branch_crosssections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.set_xyz_crosssections.html">hydromt_delft3dfm.workflows.set_xyz_crosssections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.set_point_crosssections.html">hydromt_delft3dfm.workflows.set_point_crosssections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.add_crosssections.html">hydromt_delft3dfm.workflows.add_crosssections</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.invert_levels_from_dem.html">hydromt_delft3dfm.workflows.invert_levels_from_dem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.get_river_bathymetry.html">hydromt_delft3dfm.workflows.get_river_bathymetry</a></li>
+</ul>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">hydromt_delft3dfm.workflows.branches</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">hydromt_delft3dfm.workflows.generate_manholes_on_branches</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches.html">hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.mesh1d_add_branch.html">hydromt_delft3dfm.workflows.mesh1d_add_branch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.mesh2d_refine.html">hydromt_delft3dfm.workflows.mesh2d_refine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.links1d2d_add_links_1d_to_2d.html">hydromt_delft3dfm.workflows.links1d2d_add_links_1d_to_2d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_embedded.html">hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_embedded</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_lateral.html">hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_lateral</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.parse_region_geometry.html">hydromt_delft3dfm.workflows.parse_region_geometry</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.generate_roughness.html">hydromt_delft3dfm.workflows.generate_roughness</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.prepare_1dstructures.html">hydromt_delft3dfm.workflows.prepare_1dstructures</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_branches_gui.html">hydromt_delft3dfm.utils.read_branches_gui</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_branches_gui.html">hydromt_delft3dfm.utils.write_branches_gui</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_crosssections.html">hydromt_delft3dfm.utils.read_crosssections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_crosssections.html">hydromt_delft3dfm.utils.write_crosssections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_friction.html">hydromt_delft3dfm.utils.read_friction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_friction.html">hydromt_delft3dfm.utils.write_friction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_structures.html">hydromt_delft3dfm.utils.read_structures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_structures.html">hydromt_delft3dfm.utils.write_structures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_manholes.html">hydromt_delft3dfm.utils.read_manholes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_manholes.html">hydromt_delft3dfm.utils.write_manholes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_1dboundary.html">hydromt_delft3dfm.utils.read_1dboundary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_1dboundary.html">hydromt_delft3dfm.utils.write_1dboundary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_2dboundary.html">hydromt_delft3dfm.utils.read_2dboundary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_2dboundary.html">hydromt_delft3dfm.utils.write_2dboundary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_meteo.html">hydromt_delft3dfm.utils.read_meteo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_meteo.html">hydromt_delft3dfm.utils.write_meteo</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.mesh_utils.hydrolib_network_from_mesh.html">hydromt_delft3dfm.mesh_utils.hydrolib_network_from_mesh</a></li>
@@ -466,6 +534,17 @@
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.mesh_utils.mesh_from_hydrolib_network.html">hydromt_delft3dfm.mesh_utils.mesh_from_hydrolib_network</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.mesh_utils.mesh1d_nodes_geodataframe.html">hydromt_delft3dfm.mesh_utils.mesh1d_nodes_geodataframe</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.mesh_utils.network1d_nodes_geodataframe.html">hydromt_delft3dfm.mesh_utils.network1d_nodes_geodataframe</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.graph_utils.gpd_to_digraph.html">hydromt_delft3dfm.graph_utils.gpd_to_digraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.graph_utils.get_endnodes_from_lines.html">hydromt_delft3dfm.graph_utils.get_endnodes_from_lines</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.gis_utils.split_lines.html">hydromt_delft3dfm.gis_utils.split_lines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.gis_utils.cut_pieces.html">hydromt_delft3dfm.gis_utils.cut_pieces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.gis_utils.check_gpd_attributes.html">hydromt_delft3dfm.gis_utils.check_gpd_attributes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.gis_utils.update_data_columns_attributes_based_on_filter.html">hydromt_delft3dfm.gis_utils.update_data_columns_attributes_based_on_filter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.gis_utils.get_gdf_from_branches.html">hydromt_delft3dfm.gis_utils.get_gdf_from_branches</a></li>
 </ul>
 </div>
 </nav></div>
@@ -523,58 +602,47 @@
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="module-hydromt_delft3dfm.workflows.branches">
-<span id="hydromt-delft3dfm-workflows-branches"></span><h1>hydromt_delft3dfm.workflows.branches<a class="headerlink" href="#module-hydromt_delft3dfm.workflows.branches" title="Link to this heading">#</a></h1>
-<p class="rubric">Functions</p>
-<table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_branches</span></code>(mesh1d, branches, new_branches, ...)</p></td>
-<td><p>Add branches to exisitng open system branches at mesh1d node locations.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cleanup_branches</span></code>(branches[, id_col, ...])</p></td>
-<td><p>Clean up the branches by: * Removing null geomtry * Exploding branches with multiline strings * simply line geometry by removing Z coordinates * Removing branches with duplicated geometry * Removing branches that are shorter than 0.1 meters * Renaming branches with duplicate IDs * Reducing the precision of the branch geometry to 6 digits.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_nearest_branch</span></code>(branches, geometries[, ...])</p></td>
-<td><p>Method to determine nearest branch for each geometry.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_branchnodes</span></code>(branches[, id_col, logger])</p></td>
-<td><p>Generate branch nodes at the branch ends.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">possibly_intersecting</span></code>(dataframebounds, geometry)</p></td>
-<td><p>Finding intersecting profiles for each branch is a slow process in case of large datasets To speed this up, we first determine which profile intersect a square box around the branch With the selection, the interseting profiles can be determines much faster.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_branches</span></code>(gdf_br, params, br_type, ...)</p></td>
-<td><p>This function is to set all common steps to add branches type of objects (ie channels, rivers, pipes...).</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_branches</span></code>(branches[, id_col, ...])</p></td>
-<td><p>Process the branches by cleaning up the branches, snapping them, splitting them and generating branchnodes.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reduce_gdf_precision</span></code>(gdf[, rounding_precision])</p></td>
-<td><p>Reduce the geometry coordinate precision with the provided number of digits.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">snap_branch_ends</span></code>(branches[, offset, ...])</p></td>
-<td><p>Helper to snap branch ends to other branch ends within a given offset.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">snap_newbranches_to_branches_at_snappednodes</span></code>(...)</p></td>
-<td><p>Function to snap new_branches to branches at snappednodes.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">space_branches</span></code>(branches[, spacing_col, ...])</p></td>
-<td><p>Space the branches based on the spacing_col on the branch.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">split_branches</span></code>(branches[, spacing_const, ...])</p></td>
-<td><p>Helper function to split branches based on a given spacing.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_data_columns_attribute_from_query</span></code>(...)</p></td>
-<td><p>Update an attribute column of branches based on query on &quot;branchtype&quot;, &quot;shape&quot; and &quot;width&quot;/&quot;diameter&quot; values specified in attribute DataFrame.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_data_columns_attributes</span></code>(branches, ...)</p></td>
-<td><p>Add or update columns in the branches geodataframe based on column and values in attributes (excluding 1st col branchtype used for query).</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_branches</span></code>(branches[, logger])</p></td>
-<td><p>Validate the branches.</p></td>
-</tr>
-</tbody>
-</table>
+  <section id="hydromt-delft3dfm-workflows-generate-manholes-on-branches">
+<h1>hydromt_delft3dfm.workflows.generate_manholes_on_branches<a class="headerlink" href="#hydromt-delft3dfm-workflows-generate-manholes-on-branches" title="Link to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="hydromt_delft3dfm.workflows.generate_manholes_on_branches">
+<span class="sig-prename descclassname"><span class="pre">hydromt_delft3dfm.workflows.</span></span><span class="sig-name descname"><span class="pre">generate_manholes_on_branches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">branches:</span> <span class="pre">~geopandas.geodataframe.GeoDataFrame,</span> <span class="pre">use_branch_variables:</span> <span class="pre">list</span> <span class="pre">=</span> <span class="pre">['diameter',</span> <span class="pre">'width'],</span> <span class="pre">bedlevel_shift:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0,</span> <span class="pre">id_prefix:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'',</span> <span class="pre">id_suffix:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'',</span> <span class="pre">logger=&lt;module</span> <span class="pre">'logging'</span> <span class="pre">from</span> <span class="pre">'/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/logging/__init__.py'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hydromt_delft3dfm/workflows/manholes.html#generate_manholes_on_branches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hydromt_delft3dfm.workflows.generate_manholes_on_branches" title="Link to this definition">#</a></dt>
+<dd><p>Generate manhole location and bedlevel from branches.</p>
+<p>Manholes will be generated at locations upstream and downstream of each pipe. No manholes will be generated at pipe/tunnel outlets into the channels/rivers.</p>
+<p>A new geom of manholes will be created.
+manholeid will be generated following the convension of id_prefix, id, and id_suffix.
+bedlevel will be generated from the lowest invert levels of the connecting pipes.
+Otehr attributes can be summersized from exisiting branch variables defined in ‘’use_branch_variables’’.</p>
+<dl class="simple">
+<dt>Adds:</dt><dd><ul class="simple">
+<li><p><strong>manholes</strong> geom: 1D manholes vector</p></li>
+</ul>
+</dd>
+<dt>Updates:</dt><dd><ul class="simple">
+<li><p><strong>branches</strong> geom: 1D branches vector</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>branches</strong> (<em>gpd.GeoDataFrame</em>) – branches where manholes need to be generated. Use the entire network branches.
+Required columns: [‘branchid’, ‘branchtype’, ‘invlev_up’, ‘invlev_dn’]
+Optional columns: ones defined in use_branch_variables</p></li>
+<li><p><strong>use_branch_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>Optional</em>) – list of branch variables to include as attributes for manholes.
+If multiple branches connects to a single manhole, then the maximum will be taken.
+By default [‘diameter’, ‘width’].</p></li>
+<li><p><strong>bedlevel_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – Shift applied to lowest pipe invert levels to derive manhole bedlevels [m] (bedlevel = pipe invert + bedlevel shift).
+By default 0.0 m, no shift is applied.</p></li>
+<li><p><strong>id_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – prefix to add to the id convention
+By default “”, no prefix are used.</p></li>
+<li><p><strong>id_suffix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – suffix to add to the id convention
+By default “”, no suffix are used.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
@@ -588,20 +656,20 @@
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="hydromt_delft3dfm.DFlowFMModel.get_model_time.html"
+       href="hydromt_delft3dfm.workflows.get_river_bathymetry.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">hydromt_delft3dfm.DFlowFMModel.get_model_time</p>
+        <p class="prev-next-title">hydromt_delft3dfm.workflows.get_river_bathymetry</p>
       </div>
     </a>
     <a class="right-next"
-       href="hydromt_delft3dfm.utils.read_branches_gui.html"
+       href="hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">hydromt_delft3dfm.utils.read_branches_gui</p>
+        <p class="prev-next-title">hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -615,9 +683,19 @@
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
   <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hydromt_delft3dfm.workflows.generate_manholes_on_branches"><code class="docutils literal notranslate"><span class="pre">generate_manholes_on_branches()</span></code></a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/Deltares/hydromt_delft3dfm/edit/main/docs/_generated/hydromt_delft3dfm.workflows.branches.rst">
+    <a href="https://github.com/Deltares/hydromt_delft3dfm/edit/main/docs/_generated/hydromt_delft3dfm.workflows.generate_manholes_on_branches.rst">
       <i class="fa-solid fa-pencil"></i>
       
       
@@ -631,7 +709,7 @@
 
   <div class="sidebar-secondary-item">
   <div class="tocsection sourcelink">
-    <a href="../_sources/_generated/hydromt_delft3dfm.workflows.branches.rst.txt">
+    <a href="../_sources/_generated/hydromt_delft3dfm.workflows.generate_manholes_on_branches.rst.txt">
       <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
   </div>

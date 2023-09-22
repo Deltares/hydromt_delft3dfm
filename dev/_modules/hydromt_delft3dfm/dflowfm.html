@@ -2921,18 +2921,6 @@
 
 
     <span class="c1"># ## I/O</span>
-    <span class="c1"># TODO: remove after hydromt 0.6.1 release</span>
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">_assert_write_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Model opened in read-only mode&quot;</span><span class="p">)</span>
-
-    <span class="c1"># TODO: remove after hydromt 0.6.1 release</span>
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">_assert_read_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Model opened in write-only mode&quot;</span><span class="p">)</span>
-
 <div class="viewcode-block" id="DFlowFMModel.read">
 <a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.read.html#hydromt_delft3dfm.DFlowFMModel.read">[docs]</a>
     <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -3505,6 +3493,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">init_dfmmodel</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dfmmodel</span>
 
+<div class="viewcode-block" id="DFlowFMModel.init_dfmmodel">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.init_dfmmodel.html#hydromt_delft3dfm.DFlowFMModel.init_dfmmodel">[docs]</a>
     <span class="k">def</span> <span class="nf">init_dfmmodel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># create a new MDU-Model</span>
         <span class="n">mdu_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_fn</span><span class="p">))</span>
@@ -3515,7 +3505,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_assert_write_mode</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Initialising empty mdu file&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_dfmmodel</span> <span class="o">=</span> <span class="n">FMModel</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_dfmmodel</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">mdu_fn</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dfmmodel</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">mdu_fn</span></div>
+
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dimr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -3594,6 +3585,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_branches</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_branches</span>
 
+<div class="viewcode-block" id="DFlowFMModel.set_branches">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.set_branches.html#hydromt_delft3dfm.DFlowFMModel.set_branches">[docs]</a>
     <span class="k">def</span> <span class="nf">set_branches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the branches object as well as the linked geoms.&quot;&quot;&quot;</span>
         <span class="c1"># Check if &quot;branchtype&quot; col in new branches</span>
@@ -3613,7 +3606,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding branches vector to geoms.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_geoms</span><span class="p">(</span><span class="n">branches</span><span class="p">,</span> <span class="s2">&quot;branches&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Updating branches in network.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Updating branches in network.&quot;</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">set_branches_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">gdf_comp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">name</span><span class="p">]</span>
@@ -3772,23 +3766,17 @@
         <span class="c1"># Add link1d2d to mesh</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">link1d2d</span><span class="p">)</span>
 
-<div class="viewcode-block" id="DFlowFMModel._model_has_2d">
-<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel._model_has_2d.html#hydromt_delft3dfm.DFlowFMModel._model_has_2d">[docs]</a>
     <span class="k">def</span> <span class="nf">_model_has_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="s2">&quot;mesh2d&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_names</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span></div>
+            <span class="k">return</span> <span class="kc">False</span>
 
-
-<div class="viewcode-block" id="DFlowFMModel._model_has_1d">
-<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel._model_has_1d.html#hydromt_delft3dfm.DFlowFMModel._model_has_1d">[docs]</a>
     <span class="k">def</span> <span class="nf">_model_has_1d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="s2">&quot;mesh1d&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_names</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span></div>
-
+            <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">_check_crs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
