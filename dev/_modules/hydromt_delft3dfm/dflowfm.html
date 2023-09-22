@@ -2995,7 +2995,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;From config dict to Hydrolib MDU.&quot;&quot;&quot;</span>
         <span class="c1"># Not sure if this is worth it compared to just calling write_config super method</span>
         <span class="c1"># advantage is the validator but the whole model is then read when initialising FMModel</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_write_mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_write_mode</span><span class="p">()</span>
 
         <span class="n">cf_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="c1"># Need to switch to dflowfm folder for files to be found and properly added</span>
@@ -3016,7 +3016,7 @@
 <a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.read_maps.html#hydromt_delft3dfm.DFlowFMModel.read_maps">[docs]</a>
     <span class="k">def</span> <span class="nf">read_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Read maps from initialfield and parse to dict of xr.DataArray.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_read_mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_read_mode</span><span class="p">()</span>
         <span class="c1"># Read initial fields</span>
         <span class="n">inifield_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dfmmodel</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">inifieldfile</span>
         <span class="k">if</span> <span class="n">inifield_model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -3076,7 +3076,7 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_maps</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No maps data found, skip writing.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_write_mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_write_mode</span><span class="p">()</span>
         <span class="c1"># Global parameters</span>
         <span class="n">mapsroot</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;maps&quot;</span><span class="p">)</span>
         <span class="n">inilist</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3177,7 +3177,7 @@
 <span class="sd">        For branches / boundaries etc... the reading of hydrolib-core objects happens in read_mesh</span>
 <span class="sd">        There the geoms geojson copies are re-set based on dflowfm files content.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_read_mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_read_mode</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">read_geoms</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="s2">&quot;geoms/region.geojson&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dfmmodel</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">crosslocfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -3213,7 +3213,7 @@
 <a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.write_geoms.html#hydromt_delft3dfm.DFlowFMModel.write_geoms">[docs]</a>
     <span class="k">def</span> <span class="nf">write_geoms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">write_mesh_gdf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write model geometries to a GeoJSON file at &lt;root&gt;/&lt;geoms&gt;.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_write_mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_write_mode</span><span class="p">()</span>
 
         <span class="c1"># Optional: also write mesh_gdf object</span>
         <span class="k">if</span> <span class="n">write_mesh_gdf</span><span class="p">:</span>
@@ -3274,7 +3274,7 @@
         <span class="bp">self</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># FIXME reading of forcing should include boundary, lateral and meteo</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Read forcing at &lt;root/?/&gt; and parse to dict of xr.DataArray.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_read_mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_read_mode</span><span class="p">()</span>
         <span class="c1"># Read external forcing</span>
         <span class="n">ext_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dfmmodel</span><span class="o">.</span><span class="n">external_forcing</span><span class="o">.</span><span class="n">extforcefilenew</span>
         <span class="k">if</span> <span class="n">ext_model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -3333,7 +3333,7 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_forcing</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No forcing data found, skip writing.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_assert_write_mode</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_assert_write_mode</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Writting forcing files.&quot;</span><span class="p">)</span>
             <span class="n">savedir</span> <span class="o">=</span> <span class="n">dirname</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_fn</span><span class="p">))</span>
             <span class="c1"># create new external forcing file</span>
@@ -3350,7 +3350,7 @@
 <a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.read_mesh.html#hydromt_delft3dfm.DFlowFMModel.read_mesh">[docs]</a>
     <span class="k">def</span> <span class="nf">read_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Read network file with Hydrolib-core and extract mesh/branches info.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_read_mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_read_mode</span><span class="p">()</span>
 
         <span class="c1"># Read mesh</span>
         <span class="c1"># hydrolib-core convention</span>
@@ -3396,7 +3396,7 @@
 <a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.write_mesh.html#hydromt_delft3dfm.DFlowFMModel.write_mesh">[docs]</a>
     <span class="k">def</span> <span class="nf">write_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">write_gui</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write 1D branches and 2D mesh at &lt;root/dflowfm/fm_net.nc&gt; in model ready format.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_write_mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_write_mode</span><span class="p">()</span>
         <span class="n">savedir</span> <span class="o">=</span> <span class="n">dirname</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_fn</span><span class="p">))</span>
         <span class="n">mesh_filename</span> <span class="o">=</span> <span class="s2">&quot;fm_net.nc&quot;</span>
 
@@ -3502,7 +3502,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reading mdu file at </span><span class="si">{</span><span class="n">mdu_fn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_dfmmodel</span> <span class="o">=</span> <span class="n">FMModel</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">mdu_fn</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># use hydrolib template</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_assert_write_mode</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_assert_write_mode</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Initialising empty mdu file&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_dfmmodel</span> <span class="o">=</span> <span class="n">FMModel</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_dfmmodel</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">mdu_fn</span></div>
@@ -3527,7 +3527,7 @@
             <span class="n">dimr</span> <span class="o">=</span> <span class="n">DIMR</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">dimr_fn</span><span class="p">))</span>
         <span class="c1"># else initialise</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_assert_write_mode</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_assert_write_mode</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Initialising empty dimr file&quot;</span><span class="p">)</span>
             <span class="n">dimr</span> <span class="o">=</span> <span class="n">DIMR</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dimr</span> <span class="o">=</span> <span class="n">dimr</span></div>
