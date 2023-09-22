@@ -10,15 +10,14 @@ authors = [
 	{ name = "Hélène Boisgontier", email = "helene.boisgontier@deltares.nl" },
 ]
 dependencies = [
-	"hydromt >=0.7.0",
-	"dask",
+	"hydromt >=0.8.0",
 	"geopandas >=0.10",
 	"numpy",
 	"pandas",
 	"xarray",
 	"hydrolib-core",
 	"xugrid",
-	"meshkernel",
+	"meshkernel=2.0.2",
 	"pyproj",
 	"shapely >=0.2.0",
 	"scipy",
@@ -37,7 +36,6 @@ classifiers = [
 	"Programming Language :: Python :: 3",
 	"Programming Language :: Python :: 3.9",
 	"Programming Language :: Python :: 3.10",
-	"Programming Language :: Python :: 3.11",
 ]
 dynamic = ['version', 'description']
 
