@@ -1,0 +1,1641 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>hydromt_delft3dfm.utils &#8212; HydroMT Delft3D FM  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/theme-deltares.css?v=17060807" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+
+    <script src="../../_static/documentation_options.js?v=8a448e45"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/hydromt_delft3dfm/utils';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/hydromt-logo.jpg" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../_static/hydromt-logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+    <p class="title logo__title">HydroMT Delft3D FM</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../getting_started/intro.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../user_guide/intro.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../api.html">
+                        API reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../dev_guide/intro.html">
+                        Developments
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
+                    HydroMT core
+                  </a>
+                </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../getting_started/intro.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../user_guide/intro.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../api.html">
+                        API reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../dev_guide/intro.html">
+                        Developments
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
+                    HydroMT core
+                  </a>
+                </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">hydromt_delf...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for hydromt_delft3dfm.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">from</span> <span class="nn">hydrolib.core.dflowfm</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Boundary</span><span class="p">,</span>
+    <span class="n">BranchModel</span><span class="p">,</span>
+    <span class="n">CrossDefModel</span><span class="p">,</span>
+    <span class="n">CrossLocModel</span><span class="p">,</span>
+    <span class="n">ExtModel</span><span class="p">,</span>
+    <span class="n">FMModel</span><span class="p">,</span>
+    <span class="n">ForcingModel</span><span class="p">,</span>
+    <span class="n">FrictionModel</span><span class="p">,</span>
+    <span class="n">Meteo</span><span class="p">,</span>
+    <span class="n">PolyFile</span><span class="p">,</span>
+    <span class="n">StorageNodeModel</span><span class="p">,</span>
+    <span class="n">StructureModel</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">gis_utils</span>
+<span class="kn">from</span> <span class="nn">.workflows</span> <span class="kn">import</span> <span class="n">boundaries</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;read_branches_gui&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;write_branches_gui&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;read_crosssections&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;write_crosssections&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;read_friction&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;write_friction&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;read_structures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;write_structures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;read_manholes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;write_manholes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;read_1dboundary&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;write_1dboundary&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;read_2dboundary&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;write_2dboundary&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;read_meteo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;write_meteo&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="read_branches_gui">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.read_branches_gui.html#hydromt_delft3dfm.utils.read_branches_gui">[docs]</a>
+<span class="k">def</span> <span class="nf">read_branches_gui</span><span class="p">(</span>
+    <span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">fm_model</span><span class="p">:</span> <span class="n">FMModel</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read branches.gui and add the properties to branches geodataframe.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gdf: geopandas.GeoDataFrame</span>
+<span class="sd">        gdf containing the branches</span>
+<span class="sd">    fm_model: hydrolib.core FMModel</span>
+<span class="sd">        DflowFM model object from hydrolib</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gdf_out: geopandas.GeoDataFrame</span>
+<span class="sd">        gdf containing the branches updated with branches gui params</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">branchgui_model</span> <span class="o">=</span> <span class="n">BranchModel</span><span class="p">()</span>
+    <span class="n">filepath</span> <span class="o">=</span> <span class="n">fm_model</span><span class="o">.</span><span class="n">filepath</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span>
+        <span class="n">branchgui_model</span><span class="o">.</span><span class="n">_filename</span><span class="p">()</span> <span class="o">+</span> <span class="n">branchgui_model</span><span class="o">.</span><span class="n">_ext</span><span class="p">()</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">filepath</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="c1"># Create df with all attributes from nothing; all branches are considered as river</span>
+        <span class="n">df_gui</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="n">df_gui</span><span class="p">[</span><span class="s2">&quot;branchid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">branchid</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">gdf</span><span class="o">.</span><span class="n">itertuples</span><span class="p">()]</span>
+        <span class="n">df_gui</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;river&quot;</span>
+        <span class="n">df_gui</span><span class="p">[</span><span class="s2">&quot;manhole_up&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">df_gui</span><span class="p">[</span><span class="s2">&quot;manhole_dn&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Create df with all attributes from gui</span>
+        <span class="n">branchgui_model</span> <span class="o">=</span> <span class="n">BranchModel</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        <span class="n">br_list</span> <span class="o">=</span> <span class="n">branchgui_model</span><span class="o">.</span><span class="n">branch</span>
+        <span class="n">df_gui</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="n">df_gui</span><span class="p">[</span><span class="s2">&quot;branchid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">br_list</span><span class="p">]</span>
+        <span class="n">df_gui</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">branchtype</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">br_list</span><span class="p">]</span>
+        <span class="n">df_gui</span><span class="p">[</span><span class="s2">&quot;manhole_up&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">sourcecompartmentname</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">br_list</span><span class="p">]</span>
+        <span class="n">df_gui</span><span class="p">[</span><span class="s2">&quot;manhole_dn&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">targetcompartmentname</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">br_list</span><span class="p">]</span>
+
+    <span class="c1"># Adapt type and add close attribute</span>
+    <span class="c1"># TODO: channel and tunnel types are not defined</span>
+    <span class="n">df_gui</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_gui</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;river&quot;</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;pipe&quot;</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;sewerconnection&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Merge the two df based on branchid</span>
+    <span class="n">df_gui</span> <span class="o">=</span> <span class="n">df_gui</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s2">&quot;branchid&quot;</span><span class="p">)</span>
+    <span class="n">gdf_out</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_gui</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s2">&quot;branchid&quot;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">gdf_out</span></div>
+
+
+
+<div class="viewcode-block" id="write_branches_gui">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.write_branches_gui.html#hydromt_delft3dfm.utils.write_branches_gui">[docs]</a>
+<span class="k">def</span> <span class="nf">write_branches_gui</span><span class="p">(</span>
+    <span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">savedir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    write branches.gui file from branches geodataframe.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gdf: geopandas.GeoDataFrame</span>
+<span class="sd">        gdf containing the branches</span>
+<span class="sd">    savedir: str</span>
+<span class="sd">        path to the directory where to save the file.</span>
+<span class="sd">    manholes: geopandas.GeoDataFrame, optional</span>
+<span class="sd">        If exists add manholes attributes</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    branchgui_fn: str</span>
+<span class="sd">        relative filepath to branches_gui file.</span>
+
+<span class="sd">    #TODO: branches.gui is written with a [general] section which is not recongnised by GUI. Improvement of the GUI is needed.</span>
+<span class="sd">    #TODO: branches.gui has a column is custumised length written as bool, which is not recongnised by GUI. improvement of the hydrolib-core writer is needed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">col</span> <span class="ow">in</span> <span class="n">gdf</span><span class="o">.</span><span class="n">columns</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;manhole_up&quot;</span><span class="p">,</span> <span class="s2">&quot;manhole_dn&quot;</span><span class="p">]]):</span>
+        <span class="n">gdf</span><span class="p">[[</span><span class="s2">&quot;manhole_up&quot;</span><span class="p">,</span> <span class="s2">&quot;manhole_dn&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="n">branches</span> <span class="o">=</span> <span class="n">gdf</span><span class="p">[[</span><span class="s2">&quot;branchid&quot;</span><span class="p">,</span> <span class="s2">&quot;branchtype&quot;</span><span class="p">,</span> <span class="s2">&quot;manhole_up&quot;</span><span class="p">,</span> <span class="s2">&quot;manhole_dn&quot;</span><span class="p">]]</span>
+    <span class="n">branches</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+        <span class="n">columns</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;branchid&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;manhole_up&quot;</span><span class="p">:</span> <span class="s2">&quot;sourceCompartmentName&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;manhole_dn&quot;</span><span class="p">:</span> <span class="s2">&quot;targetCompartmentName&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;river&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;pipe&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;sewerconnection&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">branchgui_model</span> <span class="o">=</span> <span class="n">BranchModel</span><span class="p">(</span><span class="n">branch</span><span class="o">=</span><span class="n">branches</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;records&quot;</span><span class="p">))</span>
+    <span class="n">branchgui_fn</span> <span class="o">=</span> <span class="n">branchgui_model</span><span class="o">.</span><span class="n">_filename</span><span class="p">()</span> <span class="o">+</span> <span class="n">branchgui_model</span><span class="o">.</span><span class="n">_ext</span><span class="p">()</span>
+    <span class="n">branchgui_model</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">savedir</span><span class="p">,</span> <span class="n">branchgui_fn</span><span class="p">)</span>
+    <span class="n">branchgui_model</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">branchgui_fn</span></div>
+
+
+
+<div class="viewcode-block" id="read_crosssections">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.read_crosssections.html#hydromt_delft3dfm.utils.read_crosssections">[docs]</a>
+<span class="k">def</span> <span class="nf">read_crosssections</span><span class="p">(</span>
+    <span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">fm_model</span><span class="p">:</span> <span class="n">FMModel</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">((</span><span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read crosssections from hydrolib-core crsloc and crsdef objects and add to branches.</span>
+<span class="sd">    Also returns crosssections geodataframe.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gdf: geopandas.GeoDataFrame</span>
+<span class="sd">        gdf containing the branches</span>
+<span class="sd">    fm_model: hydrolib.core FMModel</span>
+<span class="sd">        DflowFM model object from hydrolib</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gdf_crs: geopandas.GeoDataFrame</span>
+<span class="sd">        geodataframe copy of the cross-sections and data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_list2Str</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="c1"># apply conversion to list columns</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">):</span>
+                <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">lst</span>
+
+    <span class="c1"># Start with crsdef to create the crosssections attributes</span>
+    <span class="n">crsdef</span> <span class="o">=</span> <span class="n">fm_model</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">crossdeffile</span>
+    <span class="n">crs_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">crsdef</span><span class="o">.</span><span class="n">definition</span><span class="p">:</span>
+        <span class="n">crs_dict</span><span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="vm">__dict__</span>
+    <span class="n">df_crsdef</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">crs_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">)</span>
+    <span class="n">df_crsdef</span> <span class="o">=</span> <span class="n">df_crsdef</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;comments&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">df_crsdef</span><span class="p">[</span><span class="s2">&quot;crs_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_crsdef</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>  <span class="c1"># column to merge</span>
+    <span class="c1"># convertion needed  for xyz/zw crossections</span>
+    <span class="c1"># convert list to str ()</span>
+    <span class="n">df_crsdef</span> <span class="o">=</span> <span class="n">df_crsdef</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">_list2Str</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="c1"># convert float to int</span>
+    <span class="n">int_columns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+        <span class="nb">set</span><span class="p">(</span><span class="n">df_crsdef</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">((</span><span class="s2">&quot;xyzcount&quot;</span><span class="p">,</span> <span class="s2">&quot;sectioncount&quot;</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="n">df_crsdef</span><span class="p">[</span><span class="n">int_columns</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">df_crsdef</span><span class="p">[</span><span class="n">int_columns</span><span class="p">]</span>
+        <span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="o">-</span><span class="mi">999</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">df_crsdef</span><span class="p">[</span><span class="n">int_columns</span><span class="p">]</span><span class="o">.</span><span class="n">notnull</span><span class="p">())</span>
+    <span class="p">)</span>
+    <span class="c1"># Rename to prepare for crossection geom</span>
+    <span class="n">_gdf_crsdef</span> <span class="o">=</span> <span class="n">df_crsdef</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+        <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;crsdef_</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df_crsdef</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="o">!=</span> <span class="s2">&quot;crs_id&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">_gdf_crsdef</span> <span class="o">=</span> <span class="n">_gdf_crsdef</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;crsdef_frictionid&quot;</span><span class="p">:</span> <span class="s2">&quot;crsdef_frictionid&quot;</span><span class="p">})</span>
+
+    <span class="c1"># Continue with locs to get the locations and branches id</span>
+    <span class="n">crsloc</span> <span class="o">=</span> <span class="n">fm_model</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">crosslocfile</span>
+    <span class="n">crsloc_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">crsloc</span><span class="o">.</span><span class="n">crosssection</span><span class="p">:</span>
+        <span class="n">crsloc_dict</span><span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="vm">__dict__</span>
+    <span class="n">df_crsloc</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">crsloc_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">)</span>
+    <span class="n">df_crsloc</span> <span class="o">=</span> <span class="n">df_crsloc</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;comments&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">df_crsloc</span><span class="p">[</span><span class="s2">&quot;crs_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_crsloc</span><span class="p">[</span><span class="s2">&quot;definitionid&quot;</span><span class="p">]</span>  <span class="c1"># column to merge</span>
+    <span class="c1"># convert locationtype from enum to str (due to hydrolib-core bug)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df_crsloc</span><span class="p">[</span><span class="s2">&quot;locationtype&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">Enum</span><span class="p">):</span>
+        <span class="n">df_crsloc</span><span class="p">[</span><span class="s2">&quot;locationtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_crsloc</span><span class="p">[</span><span class="s2">&quot;locationtype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="c1"># get crsloc geometry</span>
+    <span class="k">if</span> <span class="n">df_crsloc</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="n">df_crsloc</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Point</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df_crsloc</span><span class="p">[[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">itertuples</span><span class="p">()</span>
+        <span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_gdf</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;branchid&quot;</span><span class="p">)</span>
+        <span class="n">df_crsloc</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_gdf</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">branchid</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">chainage</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df_crsloc</span><span class="o">.</span><span class="n">itertuples</span><span class="p">()</span>
+        <span class="p">]</span>
+    <span class="c1"># Rename to prepare for crossection geom</span>
+    <span class="n">_gdf_crsloc</span> <span class="o">=</span> <span class="n">df_crsloc</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+        <span class="n">columns</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">c</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;crsloc_</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df_crsloc</span><span class="o">.</span><span class="n">columns</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;crs_id&quot;</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Combine def attributes with locs for crossection geom</span>
+    <span class="n">gdf_crs</span> <span class="o">=</span> <span class="n">_gdf_crsloc</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+        <span class="n">_gdf_crsdef</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s2">&quot;crs_id&quot;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;outer&quot;</span>
+    <span class="p">)</span>  <span class="c1"># use outer because some crsdefs are from structures, therefore no crslocs associated</span>
+    <span class="n">gdf_crs</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">gdf_crs</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">gdf</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">gdf_crs</span></div>
+
+
+
+<div class="viewcode-block" id="write_crosssections">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.write_crosssections.html#hydromt_delft3dfm.utils.write_crosssections">[docs]</a>
+<span class="k">def</span> <span class="nf">write_crosssections</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">savedir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write crosssections into hydrolib-core crsloc and crsdef objects.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gdf: geopandas.GeoDataFrame</span>
+<span class="sd">        gdf containing the crosssections</span>
+<span class="sd">    savedir: str</span>
+<span class="sd">        path to the directory where to save the file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    crsdef_fn: str</span>
+<span class="sd">        relative filepath to crsdef file.</span>
+<span class="sd">    crsloc_fn: str</span>
+<span class="sd">        relative filepath to crsloc file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># crsdef</span>
+    <span class="c1"># get crsdef from crosssections gpd</span>
+    <span class="n">gpd_crsdef</span> <span class="o">=</span> <span class="n">gdf</span><span class="p">[[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gdf</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;crsdef&quot;</span><span class="p">)]]</span>
+    <span class="n">gpd_crsdef</span> <span class="o">=</span> <span class="n">gpd_crsdef</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+        <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">&quot;crsdef_&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gpd_crsdef</span><span class="o">.</span><span class="n">columns</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">gpd_crsdef</span> <span class="o">=</span> <span class="n">gpd_crsdef</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+    <span class="n">gpd_crsdef</span> <span class="o">=</span> <span class="n">gpd_crsdef</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">crsdef</span> <span class="o">=</span> <span class="n">CrossDefModel</span><span class="p">(</span><span class="n">definition</span><span class="o">=</span><span class="n">gpd_crsdef</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;records&quot;</span><span class="p">))</span>
+    <span class="c1"># fm_model.geometry.crossdeffile = crsdef</span>
+
+    <span class="n">crsdef_fn</span> <span class="o">=</span> <span class="n">crsdef</span><span class="o">.</span><span class="n">_filename</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;.ini&quot;</span>
+    <span class="n">crsdef</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+        <span class="n">join</span><span class="p">(</span><span class="n">savedir</span><span class="p">,</span> <span class="n">crsdef_fn</span><span class="p">),</span>
+        <span class="n">recurse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># crsloc</span>
+    <span class="c1"># get crsloc from crosssections gpd</span>
+    <span class="n">gpd_crsloc</span> <span class="o">=</span> <span class="n">gdf</span><span class="p">[[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gdf</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;crsloc&quot;</span><span class="p">)]]</span>
+    <span class="n">gpd_crsloc</span> <span class="o">=</span> <span class="n">gpd_crsloc</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+        <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">&quot;crsloc_&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gpd_crsloc</span><span class="o">.</span><span class="n">columns</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">gpd_crsloc</span> <span class="o">=</span> <span class="n">gpd_crsloc</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span>
+        <span class="n">subset</span><span class="o">=</span><span class="s2">&quot;id&quot;</span>
+    <span class="p">)</span>  <span class="c1"># structures have crsdefs but no crslocs</span>
+
+    <span class="c1"># add x,y column --&gt; hydrolib value_error: branchid and chainage or x and y should be provided</span>
+    <span class="c1"># x,y would make reading back much faster than re-computing from branchid and chainage....</span>
+    <span class="c1"># xs, ys = np.vectorize(lambda p: (p.xy[0][0], p.xy[1][0]))(gdf[&quot;geometry&quot;])</span>
+    <span class="c1"># gpd_crsloc[&quot;x&quot;] = xs</span>
+    <span class="c1"># gpd_crsloc[&quot;y&quot;] = ys</span>
+
+    <span class="n">crsloc</span> <span class="o">=</span> <span class="n">CrossLocModel</span><span class="p">(</span><span class="n">crosssection</span><span class="o">=</span><span class="n">gpd_crsloc</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;records&quot;</span><span class="p">))</span>
+
+    <span class="n">crsloc_fn</span> <span class="o">=</span> <span class="n">crsloc</span><span class="o">.</span><span class="n">_filename</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;.ini&quot;</span>
+    <span class="n">crsloc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+        <span class="n">join</span><span class="p">(</span><span class="n">savedir</span><span class="p">,</span> <span class="n">crsloc_fn</span><span class="p">),</span>
+        <span class="n">recurse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">crsdef_fn</span><span class="p">,</span> <span class="n">crsloc_fn</span></div>
+
+
+
+<div class="viewcode-block" id="read_friction">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.read_friction.html#hydromt_delft3dfm.utils.read_friction">[docs]</a>
+<span class="k">def</span> <span class="nf">read_friction</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">fm_model</span><span class="p">:</span> <span class="n">FMModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    read friction files and add properties to branches geodataframe.</span>
+<span class="sd">    assumes cross-sections have been read before to contain per branch frictionid.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gdf: geopandas.GeoDataFrame</span>
+<span class="sd">        gdf containing the crosssections</span>
+<span class="sd">    fm_model: hydrolib.core FMModel</span>
+<span class="sd">        DflowFM model object from hydrolib</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gdf_out: geopandas.GeoDataFrame</span>
+<span class="sd">        gdf containing the crosssections updated with the friction params</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fric_list</span> <span class="o">=</span> <span class="n">fm_model</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">frictfile</span>
+    <span class="c1"># TODO: check if read/write crosssections can automatically parse it?</span>
+
+    <span class="c1"># Create dictionnaries with all attributes from fricfile</span>
+    <span class="c1"># For now assume global only</span>
+    <span class="n">fricval</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">frictype</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fric_list</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fric_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">global_</span><span class="p">)):</span>
+            <span class="n">fricval</span><span class="p">[</span><span class="n">fric_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">global_</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">frictionid</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">fric_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">global_</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">frictionvalue</span>
+            <span class="p">)</span>
+            <span class="n">frictype</span><span class="p">[</span><span class="n">fric_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">global_</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">frictionid</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">fric_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">global_</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">frictiontype</span>
+            <span class="p">)</span>
+    <span class="c1"># Create friction value and type by replacing frictionid values with dict</span>
+    <span class="n">gdf_out</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s2">&quot;crsdef_frictionid&quot;</span> <span class="ow">in</span> <span class="n">gdf_out</span><span class="p">:</span>
+        <span class="n">gdf_out</span><span class="p">[</span><span class="s2">&quot;frictionvalue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf_out</span><span class="p">[</span><span class="s2">&quot;crsdef_frictionid&quot;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="s2">&quot;crsdef_frictionids&quot;</span> <span class="ow">in</span> <span class="n">gdf_out</span><span class="p">:</span>
+        <span class="n">gdf_out</span><span class="p">[</span><span class="s2">&quot;frictionvalue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf_out</span><span class="p">[</span><span class="s2">&quot;crsdef_frictionids&quot;</span><span class="p">]</span>
+    <span class="n">gdf_out</span><span class="p">[</span><span class="s2">&quot;frictionvalue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf_out</span><span class="p">[</span><span class="s2">&quot;frictionvalue&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">fricval</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;crsdef_frictionid&quot;</span> <span class="ow">in</span> <span class="n">gdf_out</span><span class="p">:</span>
+        <span class="n">gdf_out</span><span class="p">[</span><span class="s2">&quot;frictiontype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf_out</span><span class="p">[</span><span class="s2">&quot;crsdef_frictionid&quot;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="s2">&quot;crsdef_frictionids&quot;</span> <span class="ow">in</span> <span class="n">gdf_out</span><span class="p">:</span>
+        <span class="n">gdf_out</span><span class="p">[</span><span class="s2">&quot;frictiontype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf_out</span><span class="p">[</span><span class="s2">&quot;crsdef_frictionids&quot;</span><span class="p">]</span>
+    <span class="n">gdf_out</span><span class="p">[</span><span class="s2">&quot;frictiontype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf_out</span><span class="p">[</span><span class="s2">&quot;frictiontype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">frictype</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">gdf_out</span></div>
+
+
+
+<div class="viewcode-block" id="write_friction">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.write_friction.html#hydromt_delft3dfm.utils.write_friction">[docs]</a>
+<span class="k">def</span> <span class="nf">write_friction</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">savedir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    write friction files from crosssections geodataframe.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gdf: geopandas.GeoDataFrame</span>
+<span class="sd">        gdf containing the crosssections</span>
+<span class="sd">    savedir: str</span>
+<span class="sd">        path to the directory where to save the file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    friction_fns: List of str</span>
+<span class="sd">        list of relative filepaths to friction files.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">friction_keys</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">[</span><span class="s2">&quot;crsdef_frictionid&quot;</span><span class="p">,</span> <span class="s2">&quot;frictionvalue&quot;</span><span class="p">,</span> <span class="s2">&quot;frictiontype&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;crsdef_frictionid&quot;</span> <span class="ow">in</span> <span class="n">gdf</span>
+        <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;frictionvalue&quot;</span><span class="p">,</span> <span class="s2">&quot;frictiontype&quot;</span><span class="p">,</span> <span class="s2">&quot;crsdef_frictionids&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">frictions</span> <span class="o">=</span> <span class="n">gdf</span><span class="p">[</span><span class="n">friction_keys</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s2">&quot;crsdef_frictionid&quot;</span> <span class="ow">in</span> <span class="n">frictions</span><span class="p">:</span>
+        <span class="c1"># Remove nan</span>
+        <span class="n">frictions</span> <span class="o">=</span> <span class="n">frictions</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;crsdef_frictionid&quot;</span><span class="p">:</span> <span class="s2">&quot;frictionid&quot;</span><span class="p">})</span>
+        <span class="n">frictions</span> <span class="o">=</span> <span class="n">frictions</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s2">&quot;frictionid&quot;</span><span class="p">)</span>
+    <span class="c1"># For xyz crosssections, column name is frictionids instead of frictionid</span>
+    <span class="k">if</span> <span class="s2">&quot;crsdef_frictionids&quot;</span> <span class="ow">in</span> <span class="n">gdf</span><span class="p">:</span>
+        <span class="c1"># For now assume unique and not list</span>
+        <span class="n">frictionsxyz</span> <span class="o">=</span> <span class="n">gdf</span>
+        <span class="c1"># frictionsxyz = gdf[[&quot;crsdef_frictionids&quot;, &quot;frictionvalue&quot;, &quot;frictiontype&quot;]]</span>
+        <span class="n">frictionsxyz</span> <span class="o">=</span> <span class="n">frictionsxyz</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s2">&quot;crsdef_frictionids&quot;</span><span class="p">)</span>
+        <span class="n">frictionsxyz</span> <span class="o">=</span> <span class="n">frictionsxyz</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;crsdef_frictionids&quot;</span><span class="p">:</span> <span class="s2">&quot;frictionid&quot;</span><span class="p">})</span>
+        <span class="n">frictions</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">frictions</span><span class="p">,</span> <span class="n">frictionsxyz</span><span class="p">])</span>
+    <span class="k">if</span> <span class="s2">&quot;frictionid&quot;</span> <span class="ow">in</span> <span class="n">frictions</span><span class="p">:</span>
+        <span class="n">frictions</span> <span class="o">=</span> <span class="n">frictions</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s2">&quot;frictionid&quot;</span><span class="p">)</span>
+
+    <span class="n">friction_fns</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># create a new friction</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">frictions</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="n">fric_model</span> <span class="o">=</span> <span class="n">FrictionModel</span><span class="p">(</span><span class="n">global_</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
+        <span class="n">fric_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">row</span><span class="o">.</span><span class="n">frictiontype</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">frictionvalue</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;p&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">fric_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fric_model</span><span class="o">.</span><span class="n">_filename</span><span class="p">()</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">fric_name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">fric_model</span><span class="o">.</span><span class="n">_ext</span><span class="p">()</span>
+        <span class="n">fric_model</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">savedir</span><span class="p">,</span> <span class="n">fric_filename</span><span class="p">)</span>
+        <span class="n">fric_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">fric_model</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="n">recurse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># save relative path to mdu</span>
+        <span class="n">friction_fns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fric_filename</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">friction_fns</span></div>
+
+
+
+<div class="viewcode-block" id="read_structures">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.read_structures.html#hydromt_delft3dfm.utils.read_structures">[docs]</a>
+<span class="k">def</span> <span class="nf">read_structures</span><span class="p">(</span><span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">fm_model</span><span class="p">:</span> <span class="n">FMModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read structures into hydrolib-core structures objects</span>
+<span class="sd">    Returns structures geodataframe.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    branches: geopandas.GeoDataFrame</span>
+<span class="sd">        gdf containing the branches</span>
+<span class="sd">    fm_model: hydrolib.core FMModel</span>
+<span class="sd">        DflowFM model object from hydrolib</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gdf_structures: geopandas.GeoDataFrame</span>
+<span class="sd">        geodataframe of the structures and data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">structures_fns</span> <span class="o">=</span> <span class="n">fm_model</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">structurefile</span>
+    <span class="c1"># Parse to dict and DataFrame</span>
+    <span class="n">structures_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">structures_fn</span> <span class="ow">in</span> <span class="n">structures_fns</span><span class="p">:</span>
+        <span class="n">structures</span> <span class="o">=</span> <span class="n">structures_fn</span><span class="o">.</span><span class="n">structure</span>
+        <span class="k">for</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">structures</span><span class="p">:</span>
+            <span class="n">structures_dict</span><span class="p">[</span><span class="n">st</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="vm">__dict__</span>
+    <span class="n">df_structures</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">structures_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Drop comments</span>
+    <span class="n">df_structures</span> <span class="o">=</span> <span class="n">df_structures</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
+        <span class="p">[</span><span class="s2">&quot;comments&quot;</span><span class="p">],</span>
+        <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Add geometry</span>
+    <span class="n">gdf_structures</span> <span class="o">=</span> <span class="n">gis_utils</span><span class="o">.</span><span class="n">get_gdf_from_branches</span><span class="p">(</span><span class="n">branches</span><span class="p">,</span> <span class="n">df_structures</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">gdf_structures</span></div>
+
+
+
+<div class="viewcode-block" id="write_structures">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.write_structures.html#hydromt_delft3dfm.utils.write_structures">[docs]</a>
+<span class="k">def</span> <span class="nf">write_structures</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">savedir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    write structures into hydrolib-core structures objects.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gdf: geopandas.GeoDataFrame</span>
+<span class="sd">        gdf containing the structures</span>
+<span class="sd">    savedir: str</span>
+<span class="sd">        path to the directory where to save the file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    structures_fn: str</span>
+<span class="sd">        relative path to structures file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">structures</span> <span class="o">=</span> <span class="n">StructureModel</span><span class="p">(</span><span class="n">structure</span><span class="o">=</span><span class="n">gdf</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;records&quot;</span><span class="p">))</span>
+
+    <span class="n">structures_fn</span> <span class="o">=</span> <span class="n">structures</span><span class="o">.</span><span class="n">_filename</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;.ini&quot;</span>
+    <span class="n">structures</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+        <span class="n">join</span><span class="p">(</span><span class="n">savedir</span><span class="p">,</span> <span class="n">structures_fn</span><span class="p">),</span>
+        <span class="n">recurse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">structures_fn</span></div>
+
+
+
+<div class="viewcode-block" id="read_manholes">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.read_manholes.html#hydromt_delft3dfm.utils.read_manholes">[docs]</a>
+<span class="k">def</span> <span class="nf">read_manholes</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">fm_model</span><span class="p">:</span> <span class="n">FMModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read manholes from hydrolib-core storagenodes and network 1d nodes for locations.</span>
+<span class="sd">    Returns manholes geodataframe.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gdf: geopandas.GeoDataFrame</span>
+<span class="sd">        gdf containing the network1d nodes</span>
+<span class="sd">    fm_model: hydrolib.core FMModel</span>
+<span class="sd">        DflowFM model object from hydrolib</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gdf_manholes: geopandas.GeoDataFrame</span>
+<span class="sd">        geodataframe of the manholes and data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">manholes</span> <span class="o">=</span> <span class="n">fm_model</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">storagenodefile</span>
+    <span class="c1"># Parse to dict and DataFrame</span>
+    <span class="n">manholes_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">manholes</span><span class="o">.</span><span class="n">storagenode</span><span class="p">:</span>
+        <span class="n">manholes_dict</span><span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="vm">__dict__</span>
+    <span class="n">df_manholes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">manholes_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">)</span>
+    <span class="c1"># replace 0e to 0d # TODO: fix this when hydrolib-core fix issue https://github.com/Deltares/HYDROLIB-core/issues/559</span>
+    <span class="n">df_manholes</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_manholes</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;0D&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;0e&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span>
+    <span class="p">)</span>
+    <span class="n">df_manholes</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_manholes</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;0D&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;0e&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span>
+    <span class="p">)</span>
+    <span class="n">df_manholes</span><span class="p">[</span><span class="s2">&quot;manholeid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_manholes</span><span class="p">[</span><span class="s2">&quot;manholeid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;0D&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;0e&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span>
+    <span class="p">)</span>
+    <span class="n">df_manholes</span><span class="p">[</span><span class="s2">&quot;nodeid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_manholes</span><span class="p">[</span><span class="s2">&quot;nodeid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;0D&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;0e&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Drop variables</span>
+    <span class="n">df_manholes</span> <span class="o">=</span> <span class="n">df_manholes</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
+        <span class="p">[</span><span class="s2">&quot;comments&quot;</span><span class="p">],</span>
+        <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">gdf_manholes</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
+        <span class="n">df_manholes</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s2">&quot;nodeid&quot;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">),</span> <span class="n">crs</span><span class="o">=</span><span class="n">gdf</span><span class="o">.</span><span class="n">crs</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">gdf_manholes</span></div>
+
+
+
+<div class="viewcode-block" id="write_manholes">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.write_manholes.html#hydromt_delft3dfm.utils.write_manholes">[docs]</a>
+<span class="k">def</span> <span class="nf">write_manholes</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">savedir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    write manholes into hydrolib-core storage nodes objects.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gdf: geopandas.GeoDataFrame</span>
+<span class="sd">        gdf containing the manholes</span>
+<span class="sd">    savedir: str</span>
+<span class="sd">        path to the directory where to save the file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    storage_fn: str</span>
+<span class="sd">        relative path to storage nodes file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">storagenodes</span> <span class="o">=</span> <span class="n">StorageNodeModel</span><span class="p">(</span><span class="n">storagenode</span><span class="o">=</span><span class="n">gdf</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;records&quot;</span><span class="p">))</span>
+
+    <span class="n">storage_fn</span> <span class="o">=</span> <span class="n">storagenodes</span><span class="o">.</span><span class="n">_filename</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;.ini&quot;</span>
+    <span class="n">storagenodes</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+        <span class="n">join</span><span class="p">(</span><span class="n">savedir</span><span class="p">,</span> <span class="n">storage_fn</span><span class="p">),</span>
+        <span class="n">recurse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">storage_fn</span></div>
+
+
+
+<div class="viewcode-block" id="read_1dboundary">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.read_1dboundary.html#hydromt_delft3dfm.utils.read_1dboundary">[docs]</a>
+<span class="k">def</span> <span class="nf">read_1dboundary</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">quantity</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read for a specific quantity the corresponding external and forcing files and parse to xarray</span>
+<span class="sd">    # TODO: support external forcing for 2D.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df: pd.DataFrame</span>
+<span class="sd">        External Model DataFrame filtered for quantity.</span>
+<span class="sd">    quantity: str</span>
+<span class="sd">        Name of quantity (eg &#39;waterlevel&#39;).</span>
+<span class="sd">    nodes: gpd.GeoDataFrame</span>
+<span class="sd">        Nodes locations of the boundary in df.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    da_out: xr.DataArray</span>
+<span class="sd">        External and focing values combined into a DataArray for variable quantity.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Initialise dataarray attributes</span>
+    <span class="n">bc</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;quantity&quot;</span><span class="p">:</span> <span class="n">quantity</span><span class="p">}</span>
+    <span class="n">nodeids</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">nodeid</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">nodeids</span> <span class="o">=</span> <span class="n">nodeids</span><span class="p">[</span><span class="n">nodeids</span> <span class="o">!=</span> <span class="s2">&quot;nan&quot;</span><span class="p">]</span>
+    <span class="c1"># Assume one forcing file (hydromt writer) and read</span>
+    <span class="n">forcing</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">forcingfile</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">df_forcing</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="vm">__dict__</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">forcing</span><span class="o">.</span><span class="n">forcing</span><span class="p">])</span>
+    <span class="c1"># Filter for the current nodes, remove nans</span>
+    <span class="n">df_forcing</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">df_forcing</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">nodeids</span><span class="p">)]</span>
+
+    <span class="c1"># Get data</span>
+    <span class="c1"># Check if all constant</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">df_forcing</span><span class="o">.</span><span class="n">function</span> <span class="o">==</span> <span class="s2">&quot;constant&quot;</span><span class="p">):</span>
+        <span class="c1"># Prepare data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">datablock</span><span class="p">])</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span> <span class="o">+</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">offset</span><span class="o">.</span><span class="n">values</span> <span class="o">*</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">factor</span><span class="o">.</span><span class="n">values</span>
+        <span class="c1"># Prepare dataarray properties</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">nodeids</span><span class="p">)</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;constant&quot;</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">quantityunitpair</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># Check if all timeseries</span>
+    <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">df_forcing</span><span class="o">.</span><span class="n">function</span> <span class="o">==</span> <span class="s2">&quot;timeseries&quot;</span><span class="p">):</span>
+        <span class="c1"># Prepare data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_forcing</span><span class="o">.</span><span class="n">datablock</span><span class="p">)):</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">datablock</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">offset</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">factor</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">factor</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">databl</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">factor</span> <span class="o">+</span> <span class="n">offset</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">databl</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="c1"># Assume unique times</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">datablock</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="c1"># Prepare dataarray properties</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">]</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">nodeids</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">times</span><span class="p">)</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;timeseries&quot;</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">quantityunitpair</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;time_unit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">quantityunitpair</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># Else not implemented yet</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;ForcingFile with several function for a single variable not implemented yet. Skipping reading forcing for variable </span><span class="si">{</span><span class="n">quantity</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Get nodeid coordinates</span>
+    <span class="n">node_geoms</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;nodeid&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">nodeids</span><span class="p">)</span>
+    <span class="c1"># # get rid of missing geometries</span>
+    <span class="c1"># index_name = node_geoms.index.name</span>
+    <span class="c1"># node_geoms = pd.DataFrame([row for n, row in node_geoms.iterrows() if row[&quot;geometry&quot;] is not None])</span>
+    <span class="c1"># node_geoms.index.name = index_name</span>
+    <span class="n">xs</span><span class="p">,</span> <span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="p">)(</span><span class="n">node_geoms</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">])</span>
+    <span class="n">coords</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
+    <span class="n">coords</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
+
+    <span class="c1"># Prep DataArray and add to forcing</span>
+    <span class="n">da_out</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+        <span class="n">dims</span><span class="o">=</span><span class="n">dims</span><span class="p">,</span>
+        <span class="n">coords</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span>
+        <span class="n">attrs</span><span class="o">=</span><span class="n">bc</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">da_out</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;boundary1d_</span><span class="si">{</span><span class="n">quantity</span><span class="si">}</span><span class="s2">bnd&quot;</span>
+
+    <span class="k">return</span> <span class="n">da_out</span></div>
+
+
+
+<div class="viewcode-block" id="write_1dboundary">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.write_1dboundary.html#hydromt_delft3dfm.utils.write_1dboundary">[docs]</a>
+<span class="k">def</span> <span class="nf">write_1dboundary</span><span class="p">(</span><span class="n">forcing</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">savedir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ext_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; &quot;</span>
+<span class="sd">    write 1dboundary ext and boundary files from forcing dict.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    forcing: dict of xarray DataArray</span>
+<span class="sd">        Dict of boundary DataArray for each variable</span>
+<span class="sd">        Only forcing that starts with &quot;boundary1d&quot; is recognised.</span>
+<span class="sd">    savedir: str, optional</span>
+<span class="sd">        path to the directory where to save the file.</span>
+<span class="sd">    ext_fn: str or Path, optional</span>
+<span class="sd">        Path of the external forcing file (.ext) in which this function will append to.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># filter for 1d boundary</span>
+    <span class="n">forcing</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">key</span><span class="p">:</span> <span class="n">forcing</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">forcing</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;boundary1d&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">forcing</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">extdict</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">bcdict</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="c1"># Loop over forcing dict</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">da</span> <span class="ow">in</span> <span class="n">forcing</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">da</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+            <span class="n">bc</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="c1"># Boundary</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">ext</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">]</span>
+            <span class="n">ext</span><span class="p">[</span><span class="s2">&quot;nodeid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="n">extdict</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span>
+            <span class="c1"># Forcing</span>
+            <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="k">if</span> <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;constant&quot;</span><span class="p">:</span>
+                <span class="c1"># one quantityunitpair</span>
+                <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;quantityunitpair&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;quantity&quot;</span><span class="p">:</span> <span class="n">da</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]}]</span>
+                <span class="c1"># only one value column (no times)</span>
+                <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;datablock&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="n">da</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">item</span><span class="p">()]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># two quantityunitpair</span>
+                <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;quantityunitpair&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="p">{</span><span class="s2">&quot;quantity&quot;</span><span class="p">:</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;time_unit&quot;</span><span class="p">]},</span>
+                    <span class="p">{</span><span class="s2">&quot;quantity&quot;</span><span class="p">:</span> <span class="n">da</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]},</span>
+                <span class="p">]</span>
+                <span class="n">bc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;time_unit&quot;</span><span class="p">)</span>
+                <span class="c1"># time/value datablock</span>
+                <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;datablock&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">da</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+                <span class="p">]</span>
+            <span class="n">bc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;quantity&quot;</span><span class="p">)</span>
+            <span class="n">bc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;units&quot;</span><span class="p">)</span>
+            <span class="n">bcdict</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bc</span><span class="p">)</span>
+
+    <span class="c1"># write forcing file</span>
+    <span class="k">for</span> <span class="n">bc</span> <span class="ow">in</span> <span class="n">bcdict</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ForcingModel</span><span class="p">(</span>
+                <span class="n">forcing</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">bc</span> <span class="k">for</span> <span class="n">bc</span> <span class="ow">in</span> <span class="n">bcdict</span> <span class="k">if</span> <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;481349.951956_8041528.002583&quot;</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in boundary forcing </span><span class="si">{</span><span class="n">bc</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">forcing_model</span> <span class="o">=</span> <span class="n">ForcingModel</span><span class="p">(</span><span class="n">forcing</span><span class="o">=</span><span class="n">bcdict</span><span class="p">)</span>
+    <span class="n">forcing_fn</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;boundaryconditions1d_</span><span class="si">{</span><span class="n">ext</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">.bc&#39;</span>
+    <span class="n">forcing_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">savedir</span><span class="p">,</span> <span class="n">forcing_fn</span><span class="p">),</span> <span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># add forcingfile to ext, note each node needs a forcingfile</span>
+    <span class="n">extdicts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="n">extdict</span><span class="p">:</span>
+        <span class="n">ext</span><span class="p">[</span><span class="s2">&quot;forcingfile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">forcing_fn</span>
+        <span class="n">extdicts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span>
+
+    <span class="c1"># write external forcing file</span>
+    <span class="k">if</span> <span class="n">ext_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># write to external forcing file</span>
+        <span class="n">write_ext</span><span class="p">(</span>
+            <span class="n">extdicts</span><span class="p">,</span> <span class="n">savedir</span><span class="p">,</span> <span class="n">ext_fn</span><span class="o">=</span><span class="n">ext_fn</span><span class="p">,</span> <span class="n">block_name</span><span class="o">=</span><span class="s2">&quot;boundary&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;append&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">forcing_fn</span><span class="p">,</span> <span class="n">ext_fn</span></div>
+
+
+
+<div class="viewcode-block" id="read_2dboundary">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.read_2dboundary.html#hydromt_delft3dfm.utils.read_2dboundary">[docs]</a>
+<span class="k">def</span> <span class="nf">read_2dboundary</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">workdir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">())</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read a 2d boundary forcing location and values, and parse to xarray.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df: pd.DataFrame</span>
+<span class="sd">        External Model DataFrame filtered for 2d boundary.</span>
+<span class="sd">    workdir: Path</span>
+<span class="sd">        working directory, i.e. where the files are stored.</span>
+<span class="sd">        Required for reading disk only file model. #FIXME: there might be better options</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    da_out: xr.DataArray</span>
+<span class="sd">        External and forcing values combined into a DataArray with name starts with &quot;boundary2d&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Initialise dataarray attributes</span>
+    <span class="n">bc</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;quantity&quot;</span><span class="p">:</span> <span class="n">df</span><span class="o">.</span><span class="n">quantity</span><span class="p">}</span>
+    <span class="c1"># location file, assume one location file has only one location (hydromt writer) and read</span>
+    <span class="n">locationfile</span> <span class="o">=</span> <span class="n">PolyFile</span><span class="p">(</span><span class="n">workdir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">locationfile</span><span class="o">.</span><span class="n">filepath</span><span class="p">))</span>
+    <span class="n">boundary_name</span> <span class="o">=</span> <span class="n">locationfile</span><span class="o">.</span><span class="n">objects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">boundary_points</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="vm">__dict__</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">locationfile</span><span class="o">.</span><span class="n">objects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">points</span><span class="p">])</span>
+    <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;locationfile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">locationfile</span><span class="o">.</span><span class="n">filepath</span><span class="o">.</span><span class="n">name</span>
+    <span class="c1"># Assume one forcing file (hydromt writer) and read</span>
+    <span class="n">forcing</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">forcingfile</span>
+    <span class="n">df_forcing</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="vm">__dict__</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">forcing</span><span class="o">.</span><span class="n">forcing</span><span class="p">])</span>
+
+    <span class="c1"># Get data</span>
+    <span class="c1"># Check if all constant, Assume only timeseries exist (hydromt writer) and read</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">df_forcing</span><span class="o">.</span><span class="n">function</span> <span class="o">==</span> <span class="s2">&quot;timeseries&quot;</span><span class="p">):</span>
+        <span class="c1"># Prepare data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_forcing</span><span class="o">.</span><span class="n">datablock</span><span class="p">)):</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">datablock</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">offset</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">factor</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">factor</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">databl</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">factor</span> <span class="o">+</span> <span class="n">offset</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">databl</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="c1"># Assume unique times</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">datablock</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="c1"># prepare index</span>
+        <span class="n">indexes</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">values</span>
+        <span class="c1"># Prepare dataarray properties</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">]</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">indexes</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">times</span><span class="p">)</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;timeseries&quot;</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">quantityunitpair</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;time_unit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">quantityunitpair</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span>
+    <span class="c1"># Else not implemented yet</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;ForcingFile with several function for a single variable not implemented yet. Skipping reading forcing.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Get coordinates</span>
+    <span class="n">coords</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">boundary_points</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+    <span class="n">coords</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">boundary_points</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="c1"># Prep DataArray and add to forcing</span>
+    <span class="n">da_out</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+        <span class="n">dims</span><span class="o">=</span><span class="n">dims</span><span class="p">,</span>
+        <span class="n">coords</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span>
+        <span class="n">attrs</span><span class="o">=</span><span class="n">bc</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">da_out</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;boundary2d_</span><span class="si">{</span><span class="n">boundary_name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">return</span> <span class="n">da_out</span></div>
+
+
+
+<div class="viewcode-block" id="write_2dboundary">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.write_2dboundary.html#hydromt_delft3dfm.utils.write_2dboundary">[docs]</a>
+<span class="k">def</span> <span class="nf">write_2dboundary</span><span class="p">(</span><span class="n">forcing</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">savedir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ext_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    write 2 boundary forcings from forcing dict.</span>
+<span class="sd">    Note! forcing file (.bc) and forcing locations (.pli) are written in this function.</span>
+<span class="sd">    Use external forcing (.ext) file will be extended.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    forcing: dict of xarray DataArray</span>
+<span class="sd">        Dict of boundary DataArray.</span>
+<span class="sd">        Only forcing that startswith &quot;boundary&quot; will be recognised.</span>
+<span class="sd">    savedir: str, optional</span>
+<span class="sd">        path to the directory where to save the file.</span>
+<span class="sd">    ext_fn: str or Path, optional</span>
+<span class="sd">        Path of the external forcing file (.ext) in which this function will append to.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># filter for 2d boundary</span>
+    <span class="n">forcing</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">key</span><span class="p">:</span> <span class="n">forcing</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">forcing</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;boundary2d&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">forcing</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="c1"># Loop over forcing dict</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">da</span> <span class="ow">in</span> <span class="n">forcing</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">bcdicts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">extdicts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="c1"># Boundary ext (one instance per da for 2d boundary)</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">ext</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">]</span>
+        <span class="n">ext</span><span class="p">[</span><span class="s2">&quot;locationfile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;locationfile&quot;</span><span class="p">]</span>
+        <span class="c1"># pli location</span>
+        <span class="n">_points</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">[]}</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">da</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">pli_object</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">da</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;n_rows&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="s2">&quot;n_columns&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+            <span class="s2">&quot;points&quot;</span><span class="p">:</span> <span class="n">_points</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="c1"># Forcing (one instance per index id - support point- for 2d boundary)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">da</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+            <span class="n">bc</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="k">if</span> <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;constant&quot;</span><span class="p">:</span>
+                <span class="c1"># one quantityunitpair</span>
+                <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;quantityunitpair&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="p">{</span><span class="s2">&quot;quantity&quot;</span><span class="p">:</span> <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">],</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]}</span>
+                <span class="p">]</span>
+                <span class="c1"># only one value column (no times)</span>
+                <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;datablock&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="n">da</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">item</span><span class="p">()]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># two quantityunitpair</span>
+                <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;quantityunitpair&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="p">{</span><span class="s2">&quot;quantity&quot;</span><span class="p">:</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;time_unit&quot;</span><span class="p">]},</span>
+                    <span class="p">{</span><span class="s2">&quot;quantity&quot;</span><span class="p">:</span> <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">],</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]},</span>
+                <span class="p">]</span>
+                <span class="n">bc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;time_unit&quot;</span><span class="p">)</span>
+                <span class="c1"># time/value datablock</span>
+                <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;datablock&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">da</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+                <span class="p">]</span>
+            <span class="n">bc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;quantity&quot;</span><span class="p">)</span>
+            <span class="n">bc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;units&quot;</span><span class="p">)</span>
+            <span class="n">bc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;locationfile&quot;</span><span class="p">)</span>
+            <span class="n">bcdicts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bc</span><span class="p">)</span>
+
+        <span class="c1"># write polyfile</span>
+        <span class="n">pli_model</span> <span class="o">=</span> <span class="n">PolyFile</span><span class="p">(</span><span class="n">objects</span><span class="o">=</span><span class="p">[</span><span class="n">pli_object</span><span class="p">])</span>
+        <span class="n">pli_fn</span> <span class="o">=</span> <span class="n">ext</span><span class="p">[</span><span class="s2">&quot;locationfile&quot;</span><span class="p">]</span>
+        <span class="n">pli_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">savedir</span><span class="p">,</span> <span class="n">pli_fn</span><span class="p">),</span> <span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># write forcing file</span>
+        <span class="n">forcing_model</span> <span class="o">=</span> <span class="n">ForcingModel</span><span class="p">(</span><span class="n">forcing</span><span class="o">=</span><span class="n">bcdicts</span><span class="p">)</span>
+        <span class="n">forcing_fn</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;boundaryconditions2d_</span><span class="si">{</span><span class="n">ext</span><span class="p">[</span><span class="s2">&quot;locationfile&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;.pli&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">.bc&#39;</span>
+        <span class="n">forcing_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">savedir</span><span class="p">,</span> <span class="n">forcing_fn</span><span class="p">),</span> <span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># add forcingfile to ext</span>
+        <span class="n">ext</span><span class="p">[</span><span class="s2">&quot;forcingfile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">forcing_fn</span>
+        <span class="n">extdicts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span>
+
+        <span class="c1"># write external forcing file</span>
+        <span class="k">if</span> <span class="n">ext_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># write to external forcing file</span>
+            <span class="n">write_ext</span><span class="p">(</span>
+                <span class="n">extdicts</span><span class="p">,</span> <span class="n">savedir</span><span class="p">,</span> <span class="n">ext_fn</span><span class="o">=</span><span class="n">ext_fn</span><span class="p">,</span> <span class="n">block_name</span><span class="o">=</span><span class="s2">&quot;boundary&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;append&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">forcing_fn</span><span class="p">,</span> <span class="n">ext_fn</span></div>
+
+
+
+<div class="viewcode-block" id="read_meteo">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.read_meteo.html#hydromt_delft3dfm.utils.read_meteo">[docs]</a>
+<span class="k">def</span> <span class="nf">read_meteo</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">quantity</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read for a specific quantity the corresponding external and forcing files and parse to xarray.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df: pd.DataFrame</span>
+<span class="sd">        External Model DataFrame filtered for quantity.</span>
+<span class="sd">    quantity: str</span>
+<span class="sd">        Name of quantity (e.g. &quot;rainfall_rate&quot;, &quot;rainfall&quot;).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    da_out: xr.DataArray</span>
+<span class="sd">        External and focing values combined into a DataArray for variable quantity.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Initialise dataarray attributes</span>
+    <span class="n">bc</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;quantity&quot;</span><span class="p">:</span> <span class="n">quantity</span><span class="p">}</span>
+
+    <span class="c1"># Assume one forcing file (hydromt writer) and read</span>
+    <span class="n">forcing</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">forcingfile</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">df_forcing</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="vm">__dict__</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">forcing</span><span class="o">.</span><span class="n">forcing</span><span class="p">])</span>
+    <span class="c1"># Filter for the current nodes</span>
+    <span class="n">df_forcing</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">df_forcing</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;global&quot;</span><span class="p">)]</span>
+
+    <span class="c1"># Get data</span>
+    <span class="c1"># Check if all constant</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">df_forcing</span><span class="o">.</span><span class="n">function</span> <span class="o">==</span> <span class="s2">&quot;constant&quot;</span><span class="p">):</span>
+        <span class="c1"># Prepare data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">datablock</span><span class="p">])</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span> <span class="o">+</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">offset</span><span class="o">.</span><span class="n">values</span> <span class="o">*</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">factor</span><span class="o">.</span><span class="n">values</span>
+        <span class="c1"># Prepare dataarray properties</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">&quot;global&quot;</span><span class="p">)</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;constant&quot;</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">quantityunitpair</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># Check if all timeseries</span>
+    <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">df_forcing</span><span class="o">.</span><span class="n">function</span> <span class="o">==</span> <span class="s2">&quot;timeseries&quot;</span><span class="p">):</span>
+        <span class="c1"># Prepare data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_forcing</span><span class="o">.</span><span class="n">datablock</span><span class="p">)):</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">datablock</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">offset</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">factor</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">factor</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">databl</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">factor</span> <span class="o">+</span> <span class="n">offset</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">databl</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="c1"># Assume unique times</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">datablock</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="c1"># Prepare dataarray properties</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">]</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;global&quot;</span><span class="p">],</span> <span class="n">time</span><span class="o">=</span><span class="n">times</span><span class="p">)</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;timeseries&quot;</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;timeinterpolation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">timeinterpolation</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">quantityunitpair</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;time_unit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">quantityunitpair</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">factor</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_forcing</span><span class="o">.</span><span class="n">offset</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># Else not implemented yet</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;ForcingFile with several function for a single variable not implemented yet. Skipping reading forcing for variable </span><span class="si">{</span><span class="n">quantity</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Do not apply to &quot;global&quot; meteo</span>
+    <span class="c1"># coords[&quot;x&quot;]</span>
+    <span class="c1"># coords[&quot;y&quot;]</span>
+
+    <span class="c1"># Prep DataArray and add to forcing</span>
+    <span class="n">da_out</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+        <span class="n">dims</span><span class="o">=</span><span class="n">dims</span><span class="p">,</span>
+        <span class="n">coords</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span>
+        <span class="n">attrs</span><span class="o">=</span><span class="n">bc</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">da_out</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">quantity</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">return</span> <span class="n">da_out</span></div>
+
+
+
+<div class="viewcode-block" id="write_meteo">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.utils.write_meteo.html#hydromt_delft3dfm.utils.write_meteo">[docs]</a>
+<span class="k">def</span> <span class="nf">write_meteo</span><span class="p">(</span><span class="n">forcing</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">savedir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ext_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    write 2d meteo forcing from forcing dict.</span>
+<span class="sd">    Note! only forcing file (.bc) is written in this function.</span>
+<span class="sd">    Use utils.write_ext() for writing external forcing (.ext) file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    forcing: dict of xarray DataArray</span>
+<span class="sd">        Dict of boundary DataArray.</span>
+<span class="sd">        Only forcing that startswith &quot;meteo&quot; will be recognised.</span>
+<span class="sd">    savedir: str, optional</span>
+<span class="sd">        path to the directory where to save the file.</span>
+<span class="sd">    ext_fn: str or Path, optional</span>
+<span class="sd">        Path of the external forcing file (.ext) in which this function will append to.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># filter for 2d meteo</span>
+    <span class="n">forcing</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">forcing</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">forcing</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;meteo&quot;</span><span class="p">)}</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">forcing</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">extdicts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">bcdict</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="c1"># Loop over forcing dict</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">da</span> <span class="ow">in</span> <span class="n">forcing</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">da</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+            <span class="n">bc</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="c1"># Meteo</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">ext</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">]</span>
+            <span class="n">ext</span><span class="p">[</span>
+                <span class="s2">&quot;forcingFileType&quot;</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bcAscii&quot;</span>  <span class="c1"># FIXME: hardcoded, decide whether use bcAscii or netcdf in setup</span>
+            <span class="c1"># Forcing</span>
+            <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="k">if</span> <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;constant&quot;</span><span class="p">:</span>
+                <span class="c1"># one quantityunitpair</span>
+                <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;quantityunitpair&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;quantity&quot;</span><span class="p">:</span> <span class="n">da</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]}]</span>
+                <span class="c1"># only one value column (no times)</span>
+                <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;datablock&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="n">da</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">item</span><span class="p">()]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># two quantityunitpair</span>
+                <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;quantityunitpair&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="p">{</span><span class="s2">&quot;quantity&quot;</span><span class="p">:</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;time_unit&quot;</span><span class="p">]},</span>
+                    <span class="p">{</span><span class="s2">&quot;quantity&quot;</span><span class="p">:</span> <span class="n">da</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]},</span>
+                <span class="p">]</span>
+                <span class="n">bc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;time_unit&quot;</span><span class="p">)</span>
+                <span class="c1"># time/value datablock</span>
+                <span class="n">bc</span><span class="p">[</span><span class="s2">&quot;datablock&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">da</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+                <span class="p">]</span>
+            <span class="n">bc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;quantity&quot;</span><span class="p">)</span>
+            <span class="n">bc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;units&quot;</span><span class="p">)</span>
+            <span class="n">bcdict</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bc</span><span class="p">)</span>
+
+    <span class="n">forcing_model</span> <span class="o">=</span> <span class="n">ForcingModel</span><span class="p">(</span><span class="n">forcing</span><span class="o">=</span><span class="n">bcdict</span><span class="p">)</span>
+    <span class="n">forcing_fn</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;meteo_</span><span class="si">{</span><span class="n">forcing_model</span><span class="o">.</span><span class="n">_filename</span><span class="p">()</span><span class="si">}</span><span class="s2">.bc&quot;</span>
+    <span class="n">forcing_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">savedir</span><span class="p">,</span> <span class="n">forcing_fn</span><span class="p">),</span> <span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># add forcingfile to ext</span>
+    <span class="n">ext</span><span class="p">[</span><span class="s2">&quot;forcingfile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">forcing_fn</span>
+    <span class="n">extdicts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span>
+
+    <span class="c1"># write external forcing file</span>
+    <span class="k">if</span> <span class="n">ext_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># write to external forcing file</span>
+        <span class="n">write_ext</span><span class="p">(</span><span class="n">extdicts</span><span class="p">,</span> <span class="n">savedir</span><span class="p">,</span> <span class="n">ext_fn</span><span class="o">=</span><span class="n">ext_fn</span><span class="p">,</span> <span class="n">block_name</span><span class="o">=</span><span class="s2">&quot;meteo&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">forcing_fn</span><span class="p">,</span> <span class="n">ext_fn</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">write_ext</span><span class="p">(</span>
+    <span class="n">extdicts</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">savedir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">ext_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">block_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;boundary&quot;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    write external forcing file (.ext) from dictionary.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    extdicts: list[dict]</span>
+<span class="sd">        list of dictionary containing attributes of external forcing blocks</span>
+<span class="sd">    savedir: str, Path</span>
+<span class="sd">        path to the save location.</span>
+<span class="sd">    ext_fn: str, optional</span>
+<span class="sd">        filename to the external forcing file.</span>
+<span class="sd">    block_name: str, optional</span>
+<span class="sd">        name of the block in the external forcing file. Includes &quot;boundary&quot;, &quot;lateral&quot; and &quot;meteo&quot;.</span>
+<span class="sd">    mode: str, optional</span>
+<span class="sd">        &quot;overwrite&quot; or &quot;append&quot;.</span>
+<span class="sd">        By default, append.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># FIXME: requires change of working directory for the validator to work properly</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+
+    <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">savedir</span><span class="p">)</span>
+
+    <span class="c1"># ensure correct operation</span>
+    <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">savedir</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">ext_fn</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;append&quot;</span><span class="p">:</span>
+            <span class="n">ext_model</span> <span class="o">=</span> <span class="n">ExtModel</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">savedir</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">ext_fn</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ext_model</span> <span class="o">=</span> <span class="n">ExtModel</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">extdicts</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">block_name</span> <span class="o">==</span> <span class="s2">&quot;boundary&quot;</span><span class="p">:</span>
+            <span class="n">ext_model</span><span class="o">.</span><span class="n">boundary</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Boundary</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="o">**</span><span class="n">extdicts</span><span class="p">[</span><span class="n">i</span><span class="p">]}))</span>
+        <span class="k">elif</span> <span class="n">block_name</span> <span class="o">==</span> <span class="s2">&quot;lateral&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;laterals are not yet supported.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">block_name</span> <span class="o">==</span> <span class="s2">&quot;meteo&quot;</span><span class="p">:</span>
+            <span class="n">ext_model</span><span class="o">.</span><span class="n">meteo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Meteo</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="o">**</span><span class="n">extdicts</span><span class="p">[</span><span class="n">i</span><span class="p">]}))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="c1"># Save ext file</span>
+    <span class="n">ext_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ext_fn</span><span class="p">,</span> <span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Go back to working dir</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">cwd</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ext_fn</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright Deltares.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
