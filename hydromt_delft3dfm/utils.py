@@ -442,15 +442,17 @@ def read_structures(branches: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDat
             structures_dict[st.id] = st.__dict__
     df_structures = pd.DataFrame.from_dict(structures_dict, orient="index")
 
-    # Drop comments
-    df_structures = df_structures.drop(
-        ["comments"],
-        axis=1,
-    )
+    if len(df_structures) > 0:
+        # Drop comments
+        df_structures = df_structures.drop(
+            ["comments"],
+            axis=1,
+        )
 
-    # Add geometry
-    gdf_structures = helper.get_gdf_from_branches(branches, df_structures)
-
+        # Add geometry
+        gdf_structures = helper.get_gdf_from_branches(branches, df_structures)
+    else:
+        df_structures = None
     return gdf_structures
 
 
