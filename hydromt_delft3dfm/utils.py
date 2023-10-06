@@ -672,10 +672,34 @@ def write_1dboundary(forcing: Dict, savedir: str = None, ext_fn: str = None) -> 
     ext_fn: str or Path, optional
         Path of the external forcing file (.ext) in which this function will append to.
     """
+
+    # remove duplicated name and keep the last
+    def _remove_old_forcing_based_on_name(forcing):
+        data_names = [k for k, v in forcing.items()]
+        data = [v for k, v in forcing.items()]
+        seen_names = set()
+        filtered_datanames = []
+        filtered_data = []
+        # Reverse the list
+        data_names = data_names[::-1]
+        data = data[::-1]
+        for d_name, d in zip(data_names, data):
+            if d["index"].values[0] not in seen_names:
+                seen_names.add(d["index"].values[0])
+                filtered_data.append(d)
+                filtered_datanames.append(d_name)
+
+        # Reverse the filtered list
+        filtered_data = filtered_data[::-1]
+        filtered_datanames = filtered_datanames[::-1]
+        return {k: v for k, v in zip(filtered_datanames, filtered_data)}
+
     # filter for 1d boundary
     forcing = {
         key: forcing[key] for key in forcing.keys() if key.startswith("boundary1d")
     }
+    forcing = _remove_old_forcing_based_on_name(forcing)
+
     if len(forcing) == 0:
         return
 
@@ -694,14 +718,16 @@ def write_1dboundary(forcing: Dict, savedir: str = None, ext_fn: str = None) -> 
             bc["name"] = i
             if bc["function"] == "constant":
                 # one quantityunitpair
-                bc["quantityunitpair"] = [{"quantity": da.name, "unit": bc["units"]}]
+                bc["quantityunitpair"] = [
+                    {"quantity": bc["quantity"], "unit": bc["units"]}
+                ]
                 # only one value column (no times)
                 bc["datablock"] = [[da.sel(index=i).values.item()]]
             else:
                 # two quantityunitpair
                 bc["quantityunitpair"] = [
                     {"quantity": "time", "unit": bc["time_unit"]},
-                    {"quantity": da.name, "unit": bc["units"]},
+                    {"quantity": bc["quantity"], "unit": bc["units"]},
                 ]
                 bc.pop("time_unit")
                 # time/value datablock
