@@ -17,7 +17,7 @@ Changed
 
 Fixed
 -----
-- bugfixing assert_read_mode and assert_write_mode #91
+- bugfixing assert_read_mode and assert_write_mode. (PR#92)
 
 v0.1.0 (22 September 2023)
 ==========================
