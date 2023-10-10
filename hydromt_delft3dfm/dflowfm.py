@@ -2174,10 +2174,121 @@ class DFlowFMModel(MeshModel):
                     relsize = 1.01
                 self._MAPS[var]["averagingrelsize"] = relsize
 
+    def setup_2dboundary_from_lines(
+        self,
+        boundaries_geodataset_fn: str = None,
+        boundary_value: float = 0.0,
+        boundary_type: str = "waterlevel",
+        snap_offset: float = 1.0,
+    ):
+        """
+        Prepares the 2D boundaries from geodataset of line geometries.
+        E.g. `boundary_value` m3/s `boundary_type` boundary for all lines in `boundaries_geodataset_fn`.
+
+        Use ``boundaries_geodataset_fn`` to set the boundary timeseries from a geodataset
+        of line geometries.
+        Support also geodataframe of line geometries in combination of ``boundary_value`` and ``boundary_type``.
+
+        Only lines that are snapped to the 2d mesh
+        within a max distance defined in ``snap_offset`` are used.
+
+        The timeseries are clipped to the model time based on the model config
+        tstart and tstop entries.
+        If the timeseries has missing values, the constant ``boundary_value`` will be used.
+
+        Adds/Updates model layers:
+            * **boundary2d_{boundary_name}** forcing: 2D boundaries DataArray
+
+        Parameters
+        ----------
+
+        boundary_value : float, optional
+            Constant value to use for all boundaries, and to
+            fill in missing data. By default 0.0 m.
+        boundary_type : str, optional
+            Type of boundary tu use. One of ["waterlevel", "discharge"].
+            By default "waterlevel".
+        tolerance: float, optional
+            Search tolerance factor between boundary polyline and grid cells.
+            Unit: in cell size units (i.e., not meters)
+            By default, 3.0
+
+        Raises
+        ------
+        AssertionError
+            if "boundary_id" in "boundaries_fn" does not match the columns of ``boundaries_timeseries_fn``.
+
+        """
+        self.logger.info("Preparing 2D boundaries.")
+
+        if boundary_type == "waterlevel":
+            boundary_unit = "m"
+        if boundary_type == "discharge":
+            boundary_unit = "m3/s"
+
+        _mesh = self.mesh_grids["mesh2d"]
+        _mesh_region = gpd.GeoDataFrame(
+            geometry=_mesh.to_shapely(dim=_mesh.face_dimension)
+        ).unary_union
+        _boundary_region = _mesh_region.buffer(snap_offset * self.res).difference(
+            _mesh_region
+        )  # region where 2d boundary is allowed
+        _boundary_region = gpd.GeoDataFrame(
+            {"geometry": [_boundary_region]}, crs=self.crs
+        )
+
+        refdate, tstart, tstop = self.get_model_time()  # time slice
+
+        # 1. Read geodataset boundary time
+        if boundaries_geodataset_fn is not None:
+            da = self.data_catalog.get_geodataset(
+                boundaries_geodataset_fn,
+                geom=self.region.buffer(
+                    1000
+                ),  # only select data within region of interest (large region for forcing)
+                variables=[boundary_type],
+                time_tuple=(
+                    tstart,
+                    tstop + timedelta(seconds=1),
+                ),  # add a second to make sure tstop is included when time slicing
+            ).rename(boundary_type)
+            # error if time mismatch
+            if np.logical_and(
+                pd.to_datetime(da.time.values[0]) == pd.to_datetime(tstart),
+                pd.to_datetime(da.time.values[-1]) == pd.to_datetime(tstop),
+            ):
+                pass
+            else:
+                self.logger.error(
+                    "forcing has different start and end time. Please check the forcing file. support yyyy-mm-dd HH:MM:SS. "
+                )
+            # reproject if needed and convert to location
+            if da.vector.crs != self.crs:
+                da = da.vector.to_crs(self.crs)
+            # get geom
+            gdf_bnd = da.vector.to_gdf(reducer=np.mean)
+
+        if len(gdf_bnd) == 0:
+            return None
+
+        # 2. Compute lateral dataarray
+        da_out = workflows.compute_forcing_values_lines(
+            gdf=gdf_bnd,
+            da=da,
+            forcing_value=boundary_value,
+            forcing_type=boundary_type + "bnd",
+            forcing_unit=boundary_unit,
+            logger=self.logger,
+        )
+
+        # 3. set laterals
+        self.set_forcing(da_out, name=f"boundary2d_lines")
+
     def setup_2dboundary(
         self,
         boundaries_fn: str = None,
         boundaries_timeseries_fn: str = None,
+        boundaries_geodataset_fn: str = None,
         boundary_value: float = 0.0,
         boundary_type: str = "waterlevel",
         tolerance: float = 3.0,
@@ -2211,6 +2322,11 @@ class DFlowFMModel(MeshModel):
             Path to tabulated timeseries csv file with time index in first column
             and location index with type int in the first row, matching "boundary_id" in ``boundaries_fn`.
             see :py:meth:`hydromt.get_dataframe`, for details.
+            NOTE: Require equidistant time series
+        boundaries_geodataset_fn : str, Path
+            Path or data source name for geospatial file of timeseries with line-geometry.
+            * Required variables if geodataset is provided [``boundary_type``].
+            See example in tests/data/test_data.yaml
             NOTE: Require equidistant time series
         boundary_value : float, optional
             Constant value to use for all boundaries, and to
@@ -2294,7 +2410,7 @@ class DFlowFMModel(MeshModel):
                 assert all(
                     [bnd in df_bnd.columns for bnd in gdf_bnd["boundary_id"].unique()]
                 ), "Not all boundary_id are in df_bnd"
-        else:
+        elif gdf_bnd is not None:
             # default timeseries
             d_bnd = {bnd_id: np.nan for bnd_id in gdf_bnd["boundary_id"].unique()}
             d_bnd.update(
@@ -2307,8 +2423,10 @@ class DFlowFMModel(MeshModel):
                 }
             )
             df_bnd = pd.DataFrame(d_bnd).set_index("time")
+        else:
+            df_bnd = None
 
-        # 4. Derive DataArray with boundary values at boundary locations in boundaries_branch_type
+        # 4. Derive DataArra with boundary values at boundary locations in boundaries_branch_type
         da_out_dict = workflows.compute_2dboundary_values(
             boundaries=gdf_bnd,
             df_bnd=df_bnd.reset_index(),
