@@ -26,6 +26,8 @@ __all__ = [
     "compute_forcing_values_points",
     "compute_forcing_values_polygon",
     "compute_forcing_values_lines",
+    "get_geometry_coords_for_linestrings",
+    "get_geometry_coords_for_polygons",
 ]
 
 

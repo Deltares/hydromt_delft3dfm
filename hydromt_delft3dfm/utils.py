@@ -1001,6 +1001,64 @@ def write_1dlateral(forcing: Dict, savedir: str = None, ext_fn: str = None) -> T
     return forcing_fn, ext_fn
 
 
+def _forcingmodel_to_dataarray(forcing: ForcingModel):
+    """read forcingfile timeseries into dataarray"""
+    df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
+
+    # Get data
+    # Check if all constant, Assume only timeseries exist (hydromt writer) and read
+    bc = {}
+    if np.all(df_forcing.function == "constant"):
+        # Prepare data
+        data = np.array([v[0][0] for v in df_forcing.datablock])
+        data = data + df_forcing.offset.values * df_forcing.factor.values
+        # Prepare dataarray properties
+        dims = ["index"]
+        coords = dict(index=list(df_forcing.index))
+        bc["function"] = "constant"
+        bc["units"] = df_forcing.quantityunitpair.iloc[0][0].unit
+        bc["quantity"] = df_forcing.quantityunitpair.iloc[0][1].quantity
+        bc["factor"] = 1
+        bc["offset"] = 0
+    # Check if all timeseries
+    elif np.all(df_forcing.function == "timeseries"):
+        # Prepare data
+        data = list()
+        for i in np.arange(len(df_forcing.datablock)):
+            v = df_forcing.datablock.iloc[i]
+            offset = df_forcing.offset.iloc[i]
+            factor = df_forcing.factor.iloc[i]
+            databl = [n[1] * factor + offset for n in v]
+            data.append(databl)
+        data = np.array(data)
+        # Assume unique times
+        times = np.array([n[0] for n in df_forcing.datablock.iloc[0]])
+        # Prepare dataarray properties
+        dims = ["index", "time"]
+        coords = dict(index=list(df_forcing.index), time=times)
+        bc["function"] = "timeseries"
+        bc["timeinterpolation"] = df_forcing.timeinterpolation.iloc[0]
+        bc["units"] = df_forcing.quantityunitpair.iloc[0][1].unit
+        bc["time_unit"] = df_forcing.quantityunitpair.iloc[0][0].unit
+        bc["quantity"] = df_forcing.quantityunitpair.iloc[0][1].quantity
+        bc["factor"] = 1
+        bc["offset"] = 0
+    # Else not implemented yet
+    else:
+        raise NotImplementedError(
+            "ForcingFile with several function for a single variable not implemented yet. Skipping reading forcing."
+        )
+
+    # Prep DataArray and add to forcing
+    da_out = xr.DataArray(
+        data=data,
+        dims=dims,
+        coords=coords,
+        attrs=bc,
+    )
+    return da_out
+
+
 def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArray:
     """
     Read a 2d boundary forcing location and values, and parse to xarray.
@@ -1018,48 +1076,42 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
     da_out: xr.DataArray
         External and forcing values combined into a DataArray with name starts with "boundary2d".
     """
+    quantity = df.quantity[0]
+
     # Initialise dataarray attributes
-    bc = {"quantity": df.quantity}
-    # location file, assume one location file has only one location (hydromt writer) and read
-    locationfile = PolyFile(workdir.joinpath(df.locationfile.filepath))
-    boundary_name = locationfile.objects[0].metadata.name
-    boundary_points = pd.DataFrame([f.__dict__ for f in locationfile.objects[0].points])
-    bc["locationfile"] = df.locationfile.filepath.name
+
     # Assume one forcing file (hydromt writer) and read
-    forcing = df.forcingfile
-    df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
+    forcing = df.forcingfile[0]
+    _da_forcing = _forcingmodel_to_dataarray(forcing)
 
-    # Get data
-    # Check if all constant, Assume only timeseries exist (hydromt writer) and read
-    if np.all(df_forcing.function == "timeseries"):
-        # Prepare data
-        data = list()
-        for i in np.arange(len(df_forcing.datablock)):
-            v = df_forcing.datablock.iloc[i]
-            offset = df_forcing.offset.iloc[i]
-            factor = df_forcing.factor.iloc[i]
-            databl = [n[1] * factor + offset for n in v]
-            data.append(databl)
-        data = np.array(data)
-        # Assume unique times
-        times = np.array([n[0] for n in df_forcing.datablock.iloc[0]])
-        # prepare index
-        indexes = df_forcing.name.values
-        # Prepare dataarray properties
-        dims = ["index", "time"]
-        coords = dict(index=indexes, time=times)
-        bc["function"] = "timeseries"
-        bc["units"] = df_forcing.quantityunitpair.iloc[0][1].unit
-        bc["time_unit"] = df_forcing.quantityunitpair.iloc[0][0].unit
-    # Else not implemented yet
-    else:
-        raise NotImplementedError(
-            "ForcingFile with several function for a single variable not implemented yet. Skipping reading forcing."
-        )
+    # Add location
+    # one location file has only one location
+    _df = df.copy()
+    for i, df_i in df.iterrows():
+        locationfile = PolyFile(workdir.joinpath(df_i.locationfile.filepath))
+        x = [f.__dict__["x"] for f in locationfile.objects[0].points]
+        y = [f.__dict__["y"] for f in locationfile.objects[0].points]
+        from shapely import LineString
 
-    # Get coordinates
-    coords["x"] = ("index", boundary_points.x.values)
-    coords["y"] = ("index", boundary_points.y.values)
+        line = LineString(list(zip(x, y)))
+        _df.loc[i, "geometry"] = line
+
+    # Update dataarray
+    # prior
+    data = _da_forcing.data
+    dims = list(_da_forcing.dims)
+    coords = {k: v.values for k, v in _da_forcing.coords.items()}
+    bc = _da_forcing.attrs.copy()
+    # post
+    coords_dict = boundaries.get_geometry_coords_for_linestrings(gpd.GeoDataFrame(_df))
+    dims.append("numcoordinates")
+    coords["numcoordinates"] = coords_dict["numcoordinates"]
+    coords["x"] = coords_dict["xcoordinates"]
+    coords["y"] = coords_dict["ycoordinates"]
+    data = np.tile(
+        np.expand_dims(data, axis=-1),
+        (1, 1, len(coords_dict["numcoordinates"])),
+    )
 
     # Prep DataArray and add to forcing
     da_out = xr.DataArray(
@@ -1068,7 +1120,7 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
         coords=coords,
         attrs=bc,
     )
-    da_out.name = f"boundary2d_{boundary_name}"
+    da_out.name = f"{quantity}"
 
     return da_out
 
@@ -1090,6 +1142,9 @@ def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[di
         Path of the external forcing file (.ext) in which this function will append to.
 
     """
+
+    _bcfilename = "boundary2d.bc"
+
     # filter for 2d boundary
     forcing = {
         key: forcing[key] for key in forcing.keys() if key.startswith("boundary2d")
@@ -1097,70 +1152,95 @@ def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[di
     if len(forcing) == 0:
         return
 
+    extdict = list()
+    bcdict = list()
+    plidict = list()
     # Loop over forcing dict
     for name, da in forcing.items():
-        bcdicts = list()
-        extdicts = list()
-
-        # Boundary ext (one instance per da for 2d boundary)
-        ext = dict()
-        ext["quantity"] = da.attrs["quantity"]
-        ext["locationfile"] = da.attrs["locationfile"]
-        # pli location
-        _points = [
-            {"x": x, "y": y, "data": []} for x, y in zip(da.x.values, da.y.values)
-        ]
-        pli_object = {
-            "metadata": {"name": da.name, "n_rows": len(da.x), "n_columns": 2},
-            "points": _points,
-        }
-        # Forcing (one instance per index id - support point- for 2d boundary)
         for i in da.index.values:
+            # boundary
+            bndid = f"{da.name}_{i}"
+            # Pli file
+            if "numcoordinates" in da.coords:
+                xs = da.sel(index=i)["x"].values.tolist()
+                ys = da.sel(index=i)["y"].values.tolist()
+                xs = [x for x in xs if not np.isnan(x)]
+                ys = [y for y in ys if not np.isnan(y)]
+                _points = [{"x": x, "y": y, "data": []} for x, y in zip(xs, ys)]
+                pli_object = {
+                    "metadata": {"name": bndid, "n_rows": len(xs), "n_columns": 2},
+                    "points": _points,
+                }
+            else:
+                raise ValueError("Not supported.")
+            plidict.append(pli_object)
+            # Ext
+            ext = dict()
+            ext["quantity"] = da.attrs["quantity"]
+            ext["locationfile"] = bndid + ".pli"
+            extdict.append(ext)
+            # Forcing (bc/netcdf)
             bc = da.attrs.copy()
-            bc["name"] = i
+            # get datablock, use first point if spatial uniform
+            if np.any(
+                da.sel(index=i).max(dim="numcoordinates")
+                != da.sel(index=i).min(dim="numcoordinates")
+            ):
+                raise NotImplementedError(
+                    f"Varing values at support points are not yet implemented."
+                )
+            else:
+                # Now squeeze and drop the 'numcoordinates' dimension
+                datablock = da.sel(index=i, numcoordinates=0).drop_vars(
+                    "numcoordinates"
+                )
+                bc["name"] = bndid + "_0001"
+            # get quantityunitpair
             if bc["function"] == "constant":
                 # one quantityunitpair
-                bc["quantityunitpair"] = [
-                    {"quantity": bc["quantity"], "unit": bc["units"]}
-                ]
+                bc["quantityunitpair"] = [{"quantity": da.name, "unit": bc["units"]}]
                 # only one value column (no times)
-                bc["datablock"] = [[da.sel(index=i).values.item()]]
+                bc["datablock"] = [[datablock.values.item()]]
             else:
                 # two quantityunitpair
                 bc["quantityunitpair"] = [
                     {"quantity": "time", "unit": bc["time_unit"]},
-                    {"quantity": bc["quantity"], "unit": bc["units"]},
+                    {"quantity": da.name, "unit": bc["units"]},
                 ]
                 bc.pop("time_unit")
                 # time/value datablock
                 bc["datablock"] = [
-                    [t, x] for t, x in zip(da.time.values, da.sel(index=i).values)
+                    [t, x] for t, x in zip(da.time.values, datablock.values)
                 ]
+
             bc.pop("quantity")
             bc.pop("units")
-            bc.pop("locationfile")
-            bcdicts.append(bc)
+            bcdict.append(bc)
 
-        # write polyfile
-        pli_model = PolyFile(objects=[pli_object])
-        pli_fn = ext["locationfile"]
+    # write polyfile (allow single pli per external forcing block)
+    for _pliitem in plidict:
+        pli_model = PolyFile(objects=[_pliitem])
+        pli_fn = _pliitem["metadata"]["name"] + ".pli"
         pli_model.save(join(savedir, pli_fn), recurse=True)
 
-        # write forcing file
-        forcing_model = ForcingModel(forcing=bcdicts)
-        forcing_fn = f'boundaryconditions2d_{ext["locationfile"].strip(".pli")}.bc'
-        forcing_model.save(join(savedir, forcing_fn), recurse=True)
+    # write forcing file (as bc)
+    forcing_model = ForcingModel(forcing=bcdict)
+    forcing_fn = _bcfilename
+    forcing_model.save(join(savedir, forcing_fn), recurse=True)
+    # write forcing file (as netcdf)
 
-        # add forcingfile to ext
+    # add forcingfile and locationfile
+    extdicts = []
+    for ext in extdict:
         ext["forcingfile"] = forcing_fn
         extdicts.append(ext)
 
-        # write external forcing file
-        if ext_fn is not None:
-            # write to external forcing file
-            write_ext(
-                extdicts, savedir, ext_fn=ext_fn, block_name="boundary", mode="append"
-            )
+    # write external forcing file
+    if ext_fn is not None:
+        # write to external forcing file
+        write_ext(
+            extdicts, savedir, ext_fn=ext_fn, block_name="boundary", mode="append"
+        )
 
     return forcing_fn, ext_fn
 

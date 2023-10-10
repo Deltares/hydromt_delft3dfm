@@ -1431,10 +1431,15 @@ class DFlowFMModel(MeshModel):
             By default 0.1, a small snapping is applied to avoid precision errors.
         """
         self.logger.info(f"Preparing 1D {boundary_type} boundaries for {branch_type}.")
+        boundaries = workflows.get_boundaries_with_nodeid(
+            self.branches,
+            mesh_utils.network1d_nodes_geodataframe(self.mesh_datasets["network1d"]),
+        )
+        refdate, tstart, tstop = self.get_model_time()
 
         # 1. get potential boundary locations based on branch_type and boundary_type
         boundaries_branch_type = workflows.select_boundary_type(
-            self.boundaries, branch_type, boundary_type, boundary_locs
+            boundaries, branch_type, boundary_type, boundary_locs
         )
 
         # 2. read boundary from user data
@@ -1459,7 +1464,10 @@ class DFlowFMModel(MeshModel):
         )  # FIXME: this format cannot be read back due to lack of branch type info from model files
 
     def _read_forcing_geodataset(
-        self, forcing_geodataset_fn: Union[str, Path], forcing_name: str = "discharge"
+        self,
+        forcing_geodataset_fn: Union[str, Path],
+        forcing_name: str = "discharge",
+        buffer: float = 1000.0,
     ):
         """Read forcing geodataset."""
 
@@ -1472,10 +1480,16 @@ class DFlowFMModel(MeshModel):
             da = self.data_catalog.get_geodataset(
                 forcing_geodataset_fn,
                 geom=self.region.buffer(
-                    1000
+                    buffer
                 ),  # only select data within region of interest (large region for forcing)
                 variables=[forcing_name],
-                time_tuple=(tstart, tstop),
+                time_tuple=(
+                    tstart,
+                    tstop
+                    + timedelta(
+                        seconds=1
+                    ),  # extend with 1 seconds to include the last timestep
+                ),
             ).rename(forcing_name)
             # error if time mismatch
             if np.logical_and(
@@ -2529,7 +2543,7 @@ class DFlowFMModel(MeshModel):
         boundaries_geodataset_fn: str = None,
         boundary_value: float = 0.0,
         boundary_type: str = "waterlevel",
-        snap_offset: float = 1.0,
+        tolerance: float = 3.0,
     ):
         """
         Prepares the 2D boundaries from geodataset of line geometries.
@@ -2539,8 +2553,7 @@ class DFlowFMModel(MeshModel):
         of line geometries.
         Support also geodataframe of line geometries in combination of ``boundary_value`` and ``boundary_type``.
 
-        Only lines that are snapped to the 2d mesh
-        within a max distance defined in ``snap_offset`` are used.
+        Only lines that are within a max distance defined in ``tolerance`` are used.
 
         The timeseries are clipped to the model time based on the model config
         tstart and tstop entries.
@@ -2551,7 +2564,10 @@ class DFlowFMModel(MeshModel):
 
         Parameters
         ----------
-
+        boundaries_geodataset_fn : str, Path
+            Path or data source name for geospatial point location file.
+            * Required variables if geodataset is provided [``boundary_type``]
+            NOTE: Use universal datetime format e.g. yyyy-mm-dd to avoid ambiguity when using a csv timeseries.
         boundary_value : float, optional
             Constant value to use for all boundaries, and to
             fill in missing data. By default 0.0 m.
@@ -2563,11 +2579,6 @@ class DFlowFMModel(MeshModel):
             Unit: in cell size units (i.e., not meters)
             By default, 3.0
 
-        Raises
-        ------
-        AssertionError
-            if "boundary_id" in "boundaries_fn" does not match the columns of ``boundaries_timeseries_fn``.
-
         """
         self.logger.info("Preparing 2D boundaries.")
 
@@ -2576,55 +2587,19 @@ class DFlowFMModel(MeshModel):
         if boundary_type == "discharge":
             boundary_unit = "m3/s"
 
-        _mesh = self.mesh_grids["mesh2d"]
-        _mesh_region = gpd.GeoDataFrame(
-            geometry=_mesh.to_shapely(dim=_mesh.face_dimension)
-        ).unary_union
-        _boundary_region = _mesh_region.buffer(snap_offset * self.res).difference(
-            _mesh_region
-        )  # region where 2d boundary is allowed
-        _boundary_region = gpd.GeoDataFrame(
-            {"geometry": [_boundary_region]}, crs=self.crs
+        # 1. read boundary geodataset
+        gdf_bnd, da_bnd = self._read_forcing_geodataset(
+            boundaries_geodataset_fn,
+            boundary_type,
+            buffer=self.res * tolerance,
         )
-
-        refdate, tstart, tstop = self.get_model_time()  # time slice
-
-        # 1. Read geodataset boundary time
-        if boundaries_geodataset_fn is not None:
-            da = self.data_catalog.get_geodataset(
-                boundaries_geodataset_fn,
-                geom=self.region.buffer(
-                    1000
-                ),  # only select data within region of interest (large region for forcing)
-                variables=[boundary_type],
-                time_tuple=(
-                    tstart,
-                    tstop + timedelta(seconds=1),
-                ),  # add a second to make sure tstop is included when time slicing
-            ).rename(boundary_type)
-            # error if time mismatch
-            if np.logical_and(
-                pd.to_datetime(da.time.values[0]) == pd.to_datetime(tstart),
-                pd.to_datetime(da.time.values[-1]) == pd.to_datetime(tstop),
-            ):
-                pass
-            else:
-                self.logger.error(
-                    "forcing has different start and end time. Please check the forcing file. support yyyy-mm-dd HH:MM:SS. "
-                )
-            # reproject if needed and convert to location
-            if da.vector.crs != self.crs:
-                da = da.vector.to_crs(self.crs)
-            # get geom
-            gdf_bnd = da.vector.to_gdf(reducer=np.mean)
-
         if len(gdf_bnd) == 0:
             return None
 
         # 2. Compute lateral dataarray
         da_out = workflows.compute_forcing_values_lines(
             gdf=gdf_bnd,
-            da=da,
+            da=da_bnd,
             forcing_value=boundary_value,
             forcing_type=boundary_type + "bnd",
             forcing_unit=boundary_unit,
@@ -2632,163 +2607,7 @@ class DFlowFMModel(MeshModel):
         )
 
         # 3. set laterals
-        self.set_forcing(da_out, name=f"boundary2d_lines")
-
-    def setup_2dboundary(
-        self,
-        boundaries_fn: str = None,
-        boundaries_timeseries_fn: str = None,
-        boundaries_geodataset_fn: str = None,
-        boundary_value: float = 0.0,
-        boundary_type: str = "waterlevel",
-        tolerance: float = 3.0,
-    ):
-        """
-        Prepares the 2D boundaries from line geometries.
-
-        The values can either be a spatially-uniform constant using ``boundaries_fn`` and ``boundary_value`` (default),
-        or spatially-varying timeseries using ``boundaries_fn`` and  ``boundaries_timeseries_fn``
-        The ``boundary_type`` can either be "waterlevel" or "discharge".
-
-        If ``boundaries_timeseries_fn`` has missing values, the constant ``boundary_value`` will be used.
-
-        The dataset/timeseries are clipped to the model region (see below note), and model time based on the model config
-        tstart and tstop entries.
-
-        Note that:
-        (1) Only line geometry that are contained within the distance of ``tolenrance`` to grid cells are allowed.
-        (2) Because of the above, this function must be called before the mesh refinement. #FIXME: check this after deciding on mesh refinement being a workflow or function
-        (3) when using constant boundary, the output forcing will be written to time series with constant values.
-
-        Adds/Updates model layers:
-            * **boundary2d_{boundary_name}** forcing: 2D boundaries DataArray
-
-        Parameters
-        ----------
-        boundaries_fn: str Path
-            Path or data source name for line geometry file.
-            * Required variables if a combined time series data csv file: ["boundary_id"] with type int
-        boundaries_timeseries_fn: str, Path
-            Path to tabulated timeseries csv file with time index in first column
-            and location index with type int in the first row, matching "boundary_id" in ``boundaries_fn`.
-            see :py:meth:`hydromt.get_dataframe`, for details.
-            NOTE: Require equidistant time series
-        boundaries_geodataset_fn : str, Path
-            Path or data source name for geospatial file of timeseries with line-geometry.
-            * Required variables if geodataset is provided [``boundary_type``].
-            See example in tests/data/test_data.yaml
-            NOTE: Require equidistant time series
-        boundary_value : float, optional
-            Constant value to use for all boundaries, and to
-            fill in missing data. By default 0.0 m.
-        boundary_type : str, optional
-            Type of boundary tu use. One of ["waterlevel", "discharge"].
-            By default "waterlevel".
-        tolerance: float, optional
-            Search tolerance factor between boundary polyline and grid cells.
-            Unit: in cell size units (i.e., not meters)
-            By default, 3.0
-
-        Raises
-        ------
-        AssertionError
-            if "boundary_id" in "boundaries_fn" does not match the columns of ``boundaries_timeseries_fn``.
-
-        """
-        self.logger.info("Preparing 2D boundaries.")
-
-        if boundary_type == "waterlevel":
-            boundary_unit = "m"
-        if boundary_type == "discharge":
-            boundary_unit = "m3/s"
-
-        _mesh = self.mesh_grids["mesh2d"]
-        _mesh_region = gpd.GeoDataFrame(
-            geometry=_mesh.to_shapely(dim=_mesh.face_dimension)
-        ).unary_union
-        _boundary_region = _mesh_region.buffer(tolerance * self.res).difference(
-            _mesh_region
-        )  # region where 2d boundary is allowed
-        _boundary_region = gpd.GeoDataFrame(
-            {"geometry": [_boundary_region]}, crs=self.crs
-        )
-
-        refdate, tstart, tstop = self.get_model_time()  # time slice
-
-        # 1. read boundary geometries
-        if boundaries_fn is not None:
-            gdf_bnd = self.data_catalog.get_geodataframe(
-                boundaries_fn,
-                geom=_boundary_region,
-                crs=self.crs,
-                predicate="contains",
-            )
-            if len(gdf_bnd) == 0:
-                self.logger.error(
-                    "Boundaries are not found. Check if the boundary are outside of recognisable boundary region (cell size * tolerance to the mesh). "
-                )
-            # preprocess
-            gdf_bnd = gdf_bnd.explode()
-            # set index
-            if "boundary_id" not in gdf_bnd:
-                gdf_bnd["boundary_id"] = [
-                    f"2dboundary_{i}" for i in range(len(gdf_bnd))
-                ]
-            else:
-                gdf_bnd["boundary_id"] = gdf_bnd["boundary_id"].astype(str)
-        else:
-            gdf_bnd = None
-        # 2. read timeseries boundaries
-        if boundaries_timeseries_fn is not None:
-            self.logger.info("reading timeseries boundaries")
-            df_bnd = self.data_catalog.get_dataframe(
-                boundaries_timeseries_fn, time_tuple=(tstart, tstop)
-            )  # could not use open_geodataset due to line geometry
-            # error if time mismatch or wrong parsing of dates
-            if np.dtype(df_bnd.index).type != np.datetime64:
-                raise ValueError(
-                    "Dates in boundaries_timeseries_fn were not parsed correctly. "
-                    "Update the source kwargs in the DataCatalog based on the driver function arguments (eg pandas.read_csv for csv driver)."
-                )
-            if (df_bnd.index[-1] - df_bnd.index[0]) < (tstop - tstart):
-                raise ValueError(
-                    "Time in boundaries_timeseries_fn were shorter than model simulation time. "
-                    "Update the source kwargs in the DataCatalog based on the driver function arguments (eg pandas.read_csv for csv driver)."
-                )
-            if gdf_bnd is not None:
-                # check if all boundary_id are in df_bnd
-                assert all(
-                    [bnd in df_bnd.columns for bnd in gdf_bnd["boundary_id"].unique()]
-                ), "Not all boundary_id are in df_bnd"
-        elif gdf_bnd is not None:
-            # default timeseries
-            d_bnd = {bnd_id: np.nan for bnd_id in gdf_bnd["boundary_id"].unique()}
-            d_bnd.update(
-                {
-                    "time": pd.date_range(
-                        start=pd.to_datetime(tstart),
-                        end=pd.to_datetime(tstop),
-                        freq="D",
-                    )
-                }
-            )
-            df_bnd = pd.DataFrame(d_bnd).set_index("time")
-        else:
-            df_bnd = None
-
-        # 4. Derive DataArra with boundary values at boundary locations in boundaries_branch_type
-        da_out_dict = workflows.compute_2dboundary_values(
-            boundaries=gdf_bnd,
-            df_bnd=df_bnd.reset_index(),
-            boundary_value=boundary_value,
-            boundary_type=boundary_type,
-            boundary_unit=boundary_unit,
-            logger=self.logger,
-        )
-
-        # 5. set boundaries
-        for da_out_name, da_out in da_out_dict.items():
-            self.set_forcing(da_out, name=f"boundary2d_{da_out_name}")
+        self.set_forcing(da_out, name=f"boundary2d_lines_{boundary_type+'bnd'}")
 
         # adjust parameters
         self.set_config("geometry.openboundarytolerance", tolerance)
@@ -3297,12 +3116,13 @@ class DFlowFMModel(MeshModel):
                 # 2d boundary
                 df_ext_2d = df_ext.loc[df_ext.nodeid.isna(), :]
                 if len(df_ext_2d) > 0:
-                    for _, df in df_ext_2d.iterrows():
+                    for quantity in df_ext_2d.quantity.unique():
                         da_out = utils.read_2dboundary(
-                            df, workdir=self.dfmmodel.filepath.parent
+                            df_ext_2d[df_ext_2d.quantity == quantity],
+                            workdir=self.dfmmodel.filepath.parent,
                         )
                         # Add to forcing
-                        self.set_forcing(da_out)
+                        self.set_forcing(da_out, name=f"boundary2d_{da_out.name}")
             # lateral
             if len(ext_model.lateral) > 0:
                 df_ext = pd.DataFrame([f.__dict__ for f in ext_model.lateral])
