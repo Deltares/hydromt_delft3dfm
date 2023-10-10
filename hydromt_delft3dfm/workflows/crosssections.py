@@ -673,7 +673,7 @@ def set_point_crosssections(
         elif shape == "yz":
             yz_crs = crosssections.loc[crosssections["shape"] == shape, :]
             check_gpd_attributes(
-                trapezoid_crs,
+                yz_crs,
                 required_columns=[
                     "branch_id",
                     "branch_offset",
