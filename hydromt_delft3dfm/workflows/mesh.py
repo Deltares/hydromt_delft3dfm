@@ -574,9 +574,7 @@ def links1d2d_add_links_2d_to_1d_embedded(
         area = [area]
     for subarea in area:
         subarea = polygon_to_geometrylist(subarea)
-        idx |= (
-            network.meshkernel.polygon_get_included_points(subarea, mpgl).values == 1.0
-        )
+        idx |= network.meshkernel.polygon_get_included_points(subarea, mpgl).values == 1
 
     # Check for each of the remaining faces, if it actually crosses the branches
     nodes2d = np.stack(
