@@ -24,7 +24,7 @@ dependencies = [
 	"pyflwdir >=0.5.4",
 	"networkx",
 ]
-requires-python = ">=3.9,<3.11" # support 3.11 after new meshkernelpy releases
+requires-python = ">=3.9"
 readme = "README.rst"
 classifiers = [
 	# https://pypi.python.org/pypi?%3Aaction=list_classifiers
