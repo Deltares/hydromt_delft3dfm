@@ -17,7 +17,7 @@ dependencies = [
 	"xarray",
 	"hydrolib-core >=0.5.2",
 	"xugrid >=0.6.4",
-	"meshkernel <=2.0.2",
+	"meshkernel >2.0.2",
 	"pyproj",
 	"shapely >=2.0.0",
 	"scipy",

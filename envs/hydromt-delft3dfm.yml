@@ -34,4 +34,4 @@ dependencies:
   - pip:
       - git+https://github.com/Deltares/hydromt.git
       - hydrolib-core==0.5.2
-      - meshkernel==2.0.2 # temp pin because of hydrolib-core
+      - meshkernel

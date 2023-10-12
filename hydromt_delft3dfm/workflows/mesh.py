@@ -389,7 +389,10 @@ def links1d2d_add_links_1d_to_2d(
     npresent = len(network._link1d2d.link1d2d)
 
     # Generate links
-    network._link1d2d._link_from_1d_to_2d(node_mask, polygon=geometrylist)
+    network._link1d2d.meshkernel.contacts_compute_single(
+        node_mask=node_mask, polygons=geometrylist, projection_factor=1.0
+    )
+    network._link1d2d._process()
 
     # Filter the links that are longer than the max distance
     id1d = network._link1d2d.link1d2d[npresent:, 0]
@@ -466,9 +469,6 @@ def links1d2d_add_links_1d_to_2d_include_boundary(
 
     # Get the already present links. These are not filtered on length
     npresent = len(network._link1d2d.link1d2d)
-
-    # Generate links
-    network._link1d2d._link_from_1d_to_2d(node_mask, polygon=geometrylist)
 
     # generate 1d2d links #FIXME does not work yet
     network._link1d2d.meshkernel.contacts_compute_boundary(
@@ -596,7 +596,10 @@ def links1d2d_add_links_2d_to_1d_embedded(
     node_mask = network._mesh1d.get_node_mask(branchids)
 
     # Generate links
-    network._link1d2d._link_from_2d_to_1d_embedded(node_mask, points=multipoint)
+    network._link1d2d.meshkernel.contacts_compute_with_points(
+        node_mask=node_mask, points=multipoint
+    )
+    network._link1d2d._process()
 
     # extract links from network object
     link1d2d = mutils.links1d2d_from_hydrolib_network(network)
