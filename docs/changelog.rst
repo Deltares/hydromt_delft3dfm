@@ -14,7 +14,7 @@ Added
 
 Changed
 -------
-- Setup 1D2D links by calling meshkernel directly. 
+- Setup 1D2D links by calling meshkernel directly. (PR#94) 
 
 Fixed
 -----
