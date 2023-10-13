@@ -629,14 +629,14 @@ Otehr attributes can be summersized from exisiting branch variables defined in �
 <li><p><strong>branches</strong> (<em>gpd.GeoDataFrame</em>) – branches where manholes need to be generated. Use the entire network branches.
 Required columns: [‘branchid’, ‘branchtype’, ‘invlev_up’, ‘invlev_dn’]
 Optional columns: ones defined in use_branch_variables</p></li>
-<li><p><strong>use_branch_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>Optional</em>) – list of branch variables to include as attributes for manholes.
+<li><p><strong>use_branch_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>Optional</em>) – list of branch variables to include as attributes for manholes.
 If multiple branches connects to a single manhole, then the maximum will be taken.
 By default [‘diameter’, ‘width’].</p></li>
-<li><p><strong>bedlevel_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – Shift applied to lowest pipe invert levels to derive manhole bedlevels [m] (bedlevel = pipe invert + bedlevel shift).
+<li><p><strong>bedlevel_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Shift applied to lowest pipe invert levels to derive manhole bedlevels [m] (bedlevel = pipe invert + bedlevel shift).
 By default 0.0 m, no shift is applied.</p></li>
-<li><p><strong>id_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – prefix to add to the id convention
+<li><p><strong>id_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – prefix to add to the id convention
 By default “”, no prefix are used.</p></li>
-<li><p><strong>id_suffix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – suffix to add to the id convention
+<li><p><strong>id_suffix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – suffix to add to the id convention
 By default “”, no suffix are used.</p></li>
 </ul>
 </dd>

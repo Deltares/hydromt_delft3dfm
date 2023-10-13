@@ -816,91 +816,8 @@
     <span class="n">npresent</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">)</span>
 
     <span class="c1"># Generate links</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">_link_from_1d_to_2d</span><span class="p">(</span><span class="n">node_mask</span><span class="p">,</span> <span class="n">polygon</span><span class="o">=</span><span class="n">geometrylist</span><span class="p">)</span>
-
-    <span class="c1"># Filter the links that are longer than the max distance</span>
-    <span class="n">id1d</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">[</span><span class="n">npresent</span><span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
-    <span class="n">id2d</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">[</span><span class="n">npresent</span><span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
-    <span class="n">nodes1d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
-        <span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">mesh1d_node_x</span><span class="p">[</span><span class="n">id1d</span><span class="p">],</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">mesh1d_node_y</span><span class="p">[</span><span class="n">id1d</span><span class="p">]],</span>
-        <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">faces2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
-        <span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_face_x</span><span class="p">[</span><span class="n">id2d</span><span class="p">],</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_face_y</span><span class="p">[</span><span class="n">id2d</span><span class="p">]],</span>
-        <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">lengths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">nodes1d</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">faces2d</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">nodes1d</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">faces2d</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
-    <span class="n">keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
-        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">npresent</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lengths</span> <span class="o">&lt;</span> <span class="n">max_length</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">npresent</span><span class="p">]</span>
-    <span class="p">)</span>
-    <span class="n">_filter_links_on_idx</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="p">)</span>
-
-    <span class="c1"># extract links from network object</span>
-    <span class="n">link1d2d</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">links1d2d_from_hydrolib_network</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">link1d2d</span></div>
-
-
-
-<span class="k">def</span> <span class="nf">links1d2d_add_links_1d_to_2d_include_boundary</span><span class="p">(</span>
-    <span class="n">network</span><span class="p">:</span> <span class="n">Network</span><span class="p">,</span>
-    <span class="n">branchids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">within</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Polygon</span><span class="p">,</span> <span class="n">MultiPolygon</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">max_length</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to add 1d2d links to network, by generating them from 1d to 2d.</span>
-<span class="sd">    Branchids can be specified for 1d branches that need to be linked.</span>
-<span class="sd">    A (Multi)Polygon can be provided were links should be made.</span>
-<span class="sd">    Modified from links1d2d_add_links_1d_to_2d to include also boundary locations.</span>
-
-<span class="sd">    Note: The boundary nodes of Mesh1d (those sharing only one Mesh1d edge) are also connected to Mesh2d face.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        network (Network): Network in which the connections are made</span>
-<span class="sd">        branchids (List[str], optional): List of branchid&#39;s to connect. If None, all branches are connected. Defaults to None.</span>
-<span class="sd">        within (Union[Polygon, MultiPolygon], optional): Area within which connections are made. Defaults to None.</span>
-<span class="sd">        max_length (float, optional): Max edge length. Defaults to None.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">        links1d2d_add_links_1d_to_2d</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Load 1d and 2d in meshkernel</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">_set_mesh1d</span><span class="p">()</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">_set_mesh2d</span><span class="p">()</span>
-
-    <span class="k">if</span> <span class="n">within</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># If not provided, create a box from the maximum bounds</span>
-        <span class="n">xmin</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
-            <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">mesh1d_node_x</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_node_x</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-        <span class="p">)</span>
-        <span class="n">xmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
-            <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">mesh1d_node_x</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_node_x</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-        <span class="p">)</span>
-        <span class="n">ymin</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
-            <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">mesh1d_node_y</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_node_y</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-        <span class="p">)</span>
-        <span class="n">ymax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
-            <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">mesh1d_node_y</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_node_y</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-        <span class="p">)</span>
-
-        <span class="n">within</span> <span class="o">=</span> <span class="n">box</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
-
-    <span class="c1"># If a &#39;within&#39; polygon was provided, convert it to a geometrylist</span>
-    <span class="n">geometrylist</span> <span class="o">=</span> <span class="n">polygon_to_geometrylist</span><span class="p">(</span><span class="n">within</span><span class="p">)</span>
-
-    <span class="c1"># Get the nodes for the specific branch ids</span>
-    <span class="n">node_mask</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">get_node_mask</span><span class="p">(</span><span class="n">branchids</span><span class="p">)</span>
-
-    <span class="c1"># Get the already present links. These are not filtered on length</span>
-    <span class="n">npresent</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">)</span>
-
-    <span class="c1"># Generate links</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">_link_from_1d_to_2d</span><span class="p">(</span><span class="n">node_mask</span><span class="p">,</span> <span class="n">polygon</span><span class="o">=</span><span class="n">geometrylist</span><span class="p">)</span>
-
-    <span class="c1"># generate 1d2d links #FIXME does not work yet</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">contacts_compute_boundary</span><span class="p">(</span>
-        <span class="n">node_mask</span><span class="o">=</span><span class="n">node_mask</span><span class="p">,</span> <span class="n">polygons</span><span class="o">=</span><span class="n">geometrylist</span><span class="p">,</span> <span class="n">search_radius</span><span class="o">=</span><span class="n">max_length</span> <span class="o">*</span> <span class="mi">10</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">contacts_compute_single</span><span class="p">(</span>
+        <span class="n">node_mask</span><span class="o">=</span><span class="n">node_mask</span><span class="p">,</span> <span class="n">polygons</span><span class="o">=</span><span class="n">geometrylist</span><span class="p">,</span> <span class="n">projection_factor</span><span class="o">=</span><span class="mf">1.0</span>
     <span class="p">)</span>
     <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">_process</span><span class="p">()</span>
 
@@ -917,9 +834,15 @@
     <span class="p">)</span>
     <span class="n">lengths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">nodes1d</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">faces2d</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">nodes1d</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">faces2d</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
     <span class="n">keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
-        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">npresent</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lengths</span> <span class="o">&lt;</span> <span class="n">max_length</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">npresent</span><span class="p">]</span>
+        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">npresent</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">lengths</span> <span class="o">&lt;</span> <span class="n">max_length</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">npresent</span><span class="p">]</span>
     <span class="p">)</span>
     <span class="n">_filter_links_on_idx</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="p">)</span>
+
+    <span class="c1"># extract links from network object</span>
+    <span class="n">link1d2d</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">links1d2d_from_hydrolib_network</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">link1d2d</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_filter_links_on_idx</span><span class="p">(</span><span class="n">network</span><span class="p">:</span> <span class="n">Network</span><span class="p">,</span> <span class="n">keep</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1004,15 +927,13 @@
         <span class="n">area</span> <span class="o">=</span> <span class="p">[</span><span class="n">area</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">subarea</span> <span class="ow">in</span> <span class="n">area</span><span class="p">:</span>
         <span class="n">subarea</span> <span class="o">=</span> <span class="n">polygon_to_geometrylist</span><span class="p">(</span><span class="n">subarea</span><span class="p">)</span>
-        <span class="n">idx</span> <span class="o">|=</span> <span class="p">(</span>
-            <span class="n">network</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">polygon_get_included_points</span><span class="p">(</span><span class="n">subarea</span><span class="p">,</span> <span class="n">mpgl</span><span class="p">)</span><span class="o">.</span><span class="n">values</span> <span class="o">==</span> <span class="mf">1.0</span>
-        <span class="p">)</span>
+        <span class="n">idx</span> <span class="o">|=</span> <span class="n">network</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">polygon_get_included_points</span><span class="p">(</span><span class="n">subarea</span><span class="p">,</span> <span class="n">mpgl</span><span class="p">)</span><span class="o">.</span><span class="n">values</span> <span class="o">==</span> <span class="mi">1</span>
 
     <span class="c1"># Check for each of the remaining faces, if it actually crosses the branches</span>
     <span class="n">nodes2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
         <span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_node_x</span><span class="p">,</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_node_y</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
     <span class="p">)</span>
-    <span class="n">where</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">idx</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">where</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">idx</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">face_crds</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">nodes2d</span><span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_face_nodes</span><span class="p">[</span><span class="n">idx</span><span class="p">]]):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">mls_prep</span><span class="o">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">LineString</span><span class="p">(</span><span class="n">face_crds</span><span class="p">)):</span>
             <span class="n">idx</span><span class="p">[</span><span class="n">where</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1026,7 +947,10 @@
     <span class="n">node_mask</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">get_node_mask</span><span class="p">(</span><span class="n">branchids</span><span class="p">)</span>
 
     <span class="c1"># Generate links</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">_link_from_2d_to_1d_embedded</span><span class="p">(</span><span class="n">node_mask</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">multipoint</span><span class="p">)</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">contacts_compute_with_points</span><span class="p">(</span>
+        <span class="n">node_mask</span><span class="o">=</span><span class="n">node_mask</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">multipoint</span>
+    <span class="p">)</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">_process</span><span class="p">()</span>
 
     <span class="c1"># extract links from network object</span>
     <span class="n">link1d2d</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">links1d2d_from_hydrolib_network</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
