@@ -21,7 +21,6 @@ dependencies:
   - pytest-cov # tests
   - pytest-mock # tests
   - pytest-timeout # test
-  - python=3.9.*
   - responses # tests
   - ruff # linting
   - shapely>=2.0.0

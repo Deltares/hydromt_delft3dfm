@@ -14,7 +14,6 @@ dependencies:
   - pip
   - pyflwdir >=0.5.4
   - pyproj
-  - python=3.9.*
   - scipy
   - shapely>=2.0.0
   - xarray
