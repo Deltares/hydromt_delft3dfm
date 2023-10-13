@@ -9,15 +9,22 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+
     defaults:
       run:
         shell: bash -l {0}
+    
     strategy:
       max-parallel: 5
       matrix:
         python-version: ["3.9", "3.10", "3.11"]
         os: ["windows-latest"]
+
+    name: ${{ matrix.os }} - py${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    concurrency:
+      group: ${{ github.workflow }}-${{ matrix.python-version }}-${{ github.ref }}
+      cancel-in-progress: true
 
     steps:
       - uses: actions/checkout@v3
