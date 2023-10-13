@@ -6,18 +6,13 @@ All notable changes to this project will be documented in this page.
 The format is based on `Keep a Changelog`_, and this project adheres to
 `Semantic Versioning`_.
 
-Unreleased
-==========
-
-Added
------
+v0.1.1 (13 October 2023)
+========================
+Dependencies upgrade. 
 
 Changed
 -------
-- Setup 1D2D links by calling meshkernel directly. (PR#94) 
-
-Fixed
------
+- Upgraded meshkernel dependency to version 2.1.0. (PR#94) 
 
 v0.1.0 (22 September 2023)
 ==========================
