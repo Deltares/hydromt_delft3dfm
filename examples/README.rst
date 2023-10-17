@@ -1,10 +1,6 @@
-.. image:: https://mybinder.org/badge_logo.svg
-    :target: https://mybinder.org/v2/gh/Deltares/hydromt_delft3dfm/main?urlpath=lab/tree/examples
-
 This folder contains several iPython notebook examples for **HydroMT-Delft3D FM**. 
 
-These examples can be run online or on your local machine. 
-To run these examples online press the **binder** badge above.
+These examples can be run on your local machine. 
 
 Local installation
 ------------------

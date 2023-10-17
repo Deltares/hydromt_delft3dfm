@@ -204,7 +204,6 @@ def mesh2d_refine(
         parameters = mk.MeshRefinementParameters(
             refine_intersected=True,
             use_mass_center_when_refining=False,
-            min_face_size=10.0,  # Does nothing?
             refinement_type=1,  # No effect?
             connect_hanging_nodes=True,
             account_for_samples_outside_face=False,
@@ -250,7 +249,7 @@ def mesh2d_refine(
         parameters = mk.MeshRefinementParameters(
             refinement_type=2,  # Enumerator describing the different refinement types (WaveCourant = 1, RefinementLevels = 2)
             max_refinement_iterations=steps,  # Maximum number of refinement iterations, set to 1 if only one refinement is wanted (default 10)
-            min_face_size=res / 2**steps,  # calculate - Minimum cell size
+            min_edge_size=res / 2**steps,  # calculate - Minimum cell size
             account_for_samples_outside_face=False,  # default, not useful - Take samples outside face into account , 1 yes 0 no
             connect_hanging_nodes=True,  # default, not useful - Connect hanging nodes at the end of the iteration, 1 yes or 0 no
             refine_intersected=False,  # default, not useful - Whether to compute faces intersected by polygon (yes=1/no=0)
