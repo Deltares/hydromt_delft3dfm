@@ -6,14 +6,13 @@
 Model methods and components
 ============================
 
-The HydroMT-Delft3D FM plugin helps you preparing or updating several methods of a Delft3D FM model such as topography information, landuse, soil or forcing.
+The HydroMT-Delft3D FM plugin helps you preparing or updating several methods of a Delft3D FM model such as model topology, map data and forcing.
 The main interactions are available from the HydroMT Command Line Interface and allow you to configure
-HydroMT in order to build or update or clip Delft3D FM models.
+HydroMT in order to build or update Delft3D FM models.
 
-When building or updating a model from command line a
-`model region <https://deltares.github.io/hydromt/latest/user_guide/model_region>`_; a model setup
-:ref:`configuration <model_config>` (.ini file) with model methods and options and, optionally,
-a `data sources <https://deltares.github.io/hydromt/latest/user_guide/data_main>`_ (.yml) file should be prepared.
+When building or updating a model from command line a model setup
+:ref:`configuration <model_config>` (.yml/.ini file) with model methods and options and, optionally,
+a `data sources <https://deltares.github.io/hydromt/latest/user_guide/data_prepare_cat.html>`_ (.yml) file should be prepared.
 
 .. _model_methods:
 
@@ -84,30 +83,28 @@ a specific method see its documentation.
 Model components
 ================
 
-The following table provides an overview of which :py:class:`~hydromt_wflow.WflowModel`
-component contains which Wflow in- and output files. The files are read and written with the associated
-read- and write- methods, i.e. :py:func:`~WflowModel.read_config`
-and :py:func:`~WflowModel.write_config` for the
-:py:attr:`~WflowModel.config` component.
+The following table provides an overview of which :py:class:`~hydromt_delft3dfm.DFlowFMModel`
+component contains which Delft3DFM in- and output files. The files are read and written with the associated
+read- and write- methods, i.e. :py:func:`~DFlowFMModel.read_config`
+and :py:func:`~DFlowFMModel.write_config` for the
+:py:attr:`~DFlowFMModel.config` component.
 
 
 .. list-table::
    :widths: 30 70
    :header-rows: 1
 
-   * - :py:class:`~hydromt_wflow.WflowModel` component
-     - Wflow files
-   * - :py:attr:`~hydromt_wflow.WflowModel.config`
-     - wflow_sbm.toml
-   * - :py:attr:`~hydromt_wflow.WflowModel.staticmaps`
-     - staticmaps.nc
-   * - :py:attr:`~hydromt_wflow.WflowModel.staticgeoms`
-     - geometries from the staticgeoms folder (basins.geojson, rivers.geojson etc.)
-   * - :py:attr:`~hydromt_wflow.WflowModel.forcing`
-     - inmaps.nc
-   * - :py:attr:`~hydromt_wflow.WflowModel.states`
-     - instates.nc
-   * - :py:attr:`~hydromt_wflow.WflowModel.tables`
-     - tabular data (csv format, e.g. lake_hq.csv, lake_sh.csv)
-   * - :py:attr:`~hydromt_wflow.WflowModel.results`
-     - output.nc, output_scalar.nc, output.csv
+   * - :py:class:`~hydromt_delft3dfm.DFlowFMModel` component
+     - Delft3DFM files, saved in dflowfm model folder.
+   * - :py:attr:`~hydromt_delft3dfm.DFlowFMModel.config`
+     - DFlowFM.mdu, saved in dflowfm model folder.
+   * - :py:attr:`~hydromt_delft3dfm.DFlowFMModel.geoms`
+     - 1D model geometries, saved in the geoms folder.
+   * - :py:attr:`~hydromt_delft3dfm.DFlowFMModel.maps`
+     - 2D model data, saved in the maps folder
+   * - :py:attr:`~hydromt_delft3dfm.DFlowFMModel.forcing`
+     - 1D and 2D forcing, saved in dflowfm model folder.
+  ..  * - :py:attr:`~hydromt_delft3dfm.DFlowFMModel.states`
+  ..    - Empty
+  ..  * - :py:attr:`~hydromt_delft3dfm.DFlowFMModel.results`
+  ..    - Empty

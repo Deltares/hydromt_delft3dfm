@@ -1,4 +1,4 @@
-.. currentmodule:: hydromt_wflow
+.. currentmodule:: hydromt_delft3dfm
 
 .. _faq:
 
