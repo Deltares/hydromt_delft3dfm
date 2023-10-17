@@ -55,6 +55,10 @@ doc = [
 	"pydata-sphinx-theme",
 	"sphinx_autosummary_accessors",
 ]
+examples = [
+  "jupyterlab",      # run examples in jupyter notebook
+  "notebook",        # jupyter integration
+]
 
 [project.urls]
 Documentation = "http://deltares.github.io/hydromt_delft3dfm/latest/"
