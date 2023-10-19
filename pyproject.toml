@@ -58,6 +58,7 @@ doc = [
 examples = [
   "jupyterlab",      # run examples in jupyter notebook
   "notebook",        # jupyter integration
+  "cartopy",
 ]
 
 [project.urls]

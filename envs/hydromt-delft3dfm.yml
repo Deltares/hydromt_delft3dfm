@@ -7,6 +7,7 @@ channels:
 
 dependencies:
   - black # linting
+  - cartopy # to run examples
   - flit>=3.4
   - jupyter # to run examples
   - matplotlib # to run examples
