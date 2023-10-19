@@ -484,7 +484,8 @@ class DFlowFMModel(MeshModel):
 
         # read data
         ds_hydro = self.data_catalog.get_rasterdataset(
-            hydrography_fn, geom=region, buffer=10
+            hydrography_fn,
+            geom=region,
         )
         if isinstance(ds_hydro, xr.DataArray):
             ds_hydro = ds_hydro.to_dataset()
@@ -493,7 +494,7 @@ class DFlowFMModel(MeshModel):
         gdf_riv = None
         if river_geom_fn is not None:
             gdf_riv = self.data_catalog.get_geodataframe(
-                river_geom_fn, geom=region
+                river_geom_fn, geom=region, buffer=1
             ).to_crs(ds_hydro.raster.crs)
 
         # check if flwdir and uparea in ds_hydro
@@ -2556,7 +2557,7 @@ class DFlowFMModel(MeshModel):
                     name = inidict.quantity
                     # Need to get branchid from config
                     if name == "frictioncoefficient":
-                        frictype = self.get_config("physics.UniFrictType", 1)
+                        frictype = self.get_config("physics.uniffricttype", fallback=1)
                         fricname = [
                             n
                             for n in self._MAPS
@@ -2581,9 +2582,8 @@ class DFlowFMModel(MeshModel):
                         # Rename to hydromt name
                         name = rm_dict[name]
                     # Add to maps
+                    inimap.name = name
                     self.set_maps(inimap, name)
-
-            return self._maps
 
     def write_maps(self) -> None:
         """Write maps as tif files in maps folder and update initial fields."""
