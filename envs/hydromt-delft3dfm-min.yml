@@ -6,26 +6,17 @@ channels:
   - conda-forge
 
 dependencies:
-  - black # linting
   - flit>=3.4
-  - jupyter # to run examples
-  - matplotlib # to run examples
-  - nbsphinx # docs notebook examples
+  - geopandas
+  - hydromt>= 0.8.0
   - numpy
   - pandas
   - pip
-  - pre-commit # linting
-  - pydata-sphinx-theme # docs
+  - pyflwdir >=0.5.4
   - pyproj
-  - pytest # tests
-  - pytest-cov # tests
-  - pytest-mock # tests
-  - pytest-timeout # test
-  - responses # tests
-  - ruff # linting
+  - python=3.9.*
+  - scipy
   - shapely>=2.0.0
-  - sphinx # docs
-  - sphinx-design # docs
   - xarray
   - xugrid
   - networkx

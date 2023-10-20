@@ -2450,18 +2450,6 @@ class DFlowFMModel(MeshModel):
         self.set_config("external_forcing.rainfall", 1)
 
     # ## I/O
-    # TODO: remove after hydromt 0.6.1 release
-    @property
-    def _assert_write_mode(self):
-        if not self._write:
-            raise IOError("Model opened in read-only mode")
-
-    # TODO: remove after hydromt 0.6.1 release
-    @property
-    def _assert_read_mode(self):
-        if not self._read:
-            raise IOError("Model opened in write-only mode")
-
     def read(self):
         """Method to read the complete model schematization and configuration from file.
         # FIXME: where to read crs?.
@@ -2525,7 +2513,7 @@ class DFlowFMModel(MeshModel):
         """From config dict to Hydrolib MDU."""
         # Not sure if this is worth it compared to just calling write_config super method
         # advantage is the validator but the whole model is then read when initialising FMModel
-        self._assert_write_mode
+        self._assert_write_mode()
 
         cf_dict = self._config.copy()
         # Need to switch to dflowfm folder for files to be found and properly added
@@ -2543,7 +2531,7 @@ class DFlowFMModel(MeshModel):
 
     def read_maps(self) -> Dict[str, Union[xr.Dataset, xr.DataArray]]:
         """Read maps from initialfield and parse to dict of xr.DataArray."""
-        self._assert_read_mode
+        self._assert_read_mode()
         # Read initial fields
         inifield_model = self.dfmmodel.geometry.inifieldfile
         if inifield_model is not None:
@@ -2600,7 +2588,7 @@ class DFlowFMModel(MeshModel):
         if len(self._maps) == 0:
             self.logger.debug("No maps data found, skip writing.")
             return
-        self._assert_write_mode
+        self._assert_write_mode()
         # Global parameters
         mapsroot = join(self.root, "maps")
         inilist = []
@@ -2698,7 +2686,7 @@ class DFlowFMModel(MeshModel):
         For branches / boundaries etc... the reading of hydrolib-core objects happens in read_mesh
         There the geoms geojson copies are re-set based on dflowfm files content.
         """
-        self._assert_read_mode
+        self._assert_read_mode()
         super().read_geoms(fn="geoms/region.geojson")
 
         if self.dfmmodel.geometry.crosslocfile is not None:
@@ -2731,7 +2719,7 @@ class DFlowFMModel(MeshModel):
 
     def write_geoms(self, write_mesh_gdf=True) -> None:
         """Write model geometries to a GeoJSON file at <root>/<geoms>."""
-        self._assert_write_mode
+        self._assert_write_mode()
 
         # Optional: also write mesh_gdf object
         if write_mesh_gdf:
@@ -2789,7 +2777,7 @@ class DFlowFMModel(MeshModel):
         self,
     ) -> None:  # FIXME reading of forcing should include boundary, lateral and meteo
         """Read forcing at <root/?/> and parse to dict of xr.DataArray."""
-        self._assert_read_mode
+        self._assert_read_mode()
         # Read external forcing
         ext_model = self.dfmmodel.external_forcing.extforcefilenew
         if ext_model is not None:
@@ -2845,7 +2833,7 @@ class DFlowFMModel(MeshModel):
         if len(self._forcing) == 0:
             self.logger.debug("No forcing data found, skip writing.")
         else:
-            self._assert_write_mode
+            self._assert_write_mode()
             self.logger.info("Writting forcing files.")
             savedir = dirname(join(self.root, self._config_fn))
             # create new external forcing file
@@ -2859,7 +2847,7 @@ class DFlowFMModel(MeshModel):
 
     def read_mesh(self):
         """Read network file with Hydrolib-core and extract mesh/branches info."""
-        self._assert_read_mode
+        self._assert_read_mode()
 
         # Read mesh
         # hydrolib-core convention
@@ -2902,7 +2890,7 @@ class DFlowFMModel(MeshModel):
 
     def write_mesh(self, write_gui=True):
         """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc> in model ready format."""
-        self._assert_write_mode
+        self._assert_write_mode()
         savedir = dirname(join(self.root, self._config_fn))
         mesh_filename = "fm_net.nc"
 
@@ -2996,7 +2984,7 @@ class DFlowFMModel(MeshModel):
             self.logger.info(f"Reading mdu file at {mdu_fn}")
             self._dfmmodel = FMModel(filepath=mdu_fn)
         else:  # use hydrolib template
-            self._assert_write_mode
+            self._assert_write_mode()
             self.logger.info("Initialising empty mdu file")
             self._dfmmodel = FMModel()
             self._dfmmodel.filepath = mdu_fn
@@ -3018,7 +3006,7 @@ class DFlowFMModel(MeshModel):
             dimr = DIMR(filepath=Path(dimr_fn))
         # else initialise
         else:
-            self._assert_write_mode
+            self._assert_write_mode()
             self.logger.info("Initialising empty dimr file")
             dimr = DIMR()
         self._dimr = dimr

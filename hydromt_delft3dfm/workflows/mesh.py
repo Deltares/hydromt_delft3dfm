@@ -410,94 +410,8 @@ def links1d2d_add_links_1d_to_2d(
     npresent = len(network._link1d2d.link1d2d)
 
     # Generate links
-    network._link1d2d._link_from_1d_to_2d(node_mask, polygon=geometrylist)
-
-    # Filter the links that are longer than the max distance
-    id1d = network._link1d2d.link1d2d[npresent:, 0]
-    id2d = network._link1d2d.link1d2d[npresent:, 1]
-    nodes1d = np.stack(
-        [network._mesh1d.mesh1d_node_x[id1d], network._mesh1d.mesh1d_node_y[id1d]],
-        axis=1,
-    )
-    faces2d = np.stack(
-        [network._mesh2d.mesh2d_face_x[id2d], network._mesh2d.mesh2d_face_y[id2d]],
-        axis=1,
-    )
-    lengths = np.hypot(nodes1d[:, 0] - faces2d[:, 0], nodes1d[:, 1] - faces2d[:, 1])
-    keep = np.concatenate(
-        [np.arange(npresent), np.where(lengths < max_length)[0] + npresent]
-    )
-    _filter_links_on_idx(network, keep)
-
-    # extract links from network object
-    link1d2d = mutils.links1d2d_from_hydrolib_network(network)
-
-    return link1d2d
-
-
-def links1d2d_add_links_1d_to_2d_include_boundary(
-    network: Network,
-    branchids: List[str] = None,
-    within: Union[Polygon, MultiPolygon] = None,
-    max_length: float = np.inf,
-) -> None:
-    """Generate 1d2d links from 1d to 2d.
-
-    Branchids can be specified for 1d branches that need to be linked.
-    A (Multi)Polygon can be provided were links should be made.
-    Modified from links1d2d_add_links_1d_to_2d to include also boundary locations.
-
-    Note: The boundary nodes of Mesh1d (those sharing only one Mesh1d edge) are also
-    connected to Mesh2d face.
-
-    Args:
-        network (Network): Network in which the connections are made
-        branchids (List[str], optional): List of branchid's to connect.
-        If None, all branches are connected. Defaults to None.
-        within (Union[Polygon, MultiPolygon], optional): Area within which
-        connections are made. Defaults to None.
-        max_length (float, optional): Max edge length. Defaults to None.
-
-    See Also
-    --------
-        links1d2d_add_links_1d_to_2d
-    """
-    # Load 1d and 2d in meshkernel
-    network._mesh1d._set_mesh1d()
-    network._mesh2d._set_mesh2d()
-
-    if within is None:
-        # If not provided, create a box from the maximum bounds
-        xmin = min(
-            network._mesh1d.mesh1d_node_x.min(), network._mesh2d.mesh2d_node_x.min()
-        )
-        xmax = max(
-            network._mesh1d.mesh1d_node_x.max(), network._mesh2d.mesh2d_node_x.max()
-        )
-        ymin = min(
-            network._mesh1d.mesh1d_node_y.min(), network._mesh2d.mesh2d_node_y.min()
-        )
-        ymax = max(
-            network._mesh1d.mesh1d_node_y.max(), network._mesh2d.mesh2d_node_y.max()
-        )
-
-        within = box(xmin, ymin, xmax, ymax)
-
-    # If a 'within' polygon was provided, convert it to a geometrylist
-    geometrylist = polygon_to_geometrylist(within)
-
-    # Get the nodes for the specific branch ids
-    node_mask = network._mesh1d.get_node_mask(branchids)
-
-    # Get the already present links. These are not filtered on length
-    npresent = len(network._link1d2d.link1d2d)
-
-    # Generate links
-    network._link1d2d._link_from_1d_to_2d(node_mask, polygon=geometrylist)
-
-    # generate 1d2d links #FIXME does not work yet
-    network._link1d2d.meshkernel.contacts_compute_boundary(
-        node_mask=node_mask, polygons=geometrylist, search_radius=max_length * 10
+    network._link1d2d.meshkernel.contacts_compute_single(
+        node_mask=node_mask, polygons=geometrylist, projection_factor=1.0
     )
     network._link1d2d._process()
 
@@ -514,10 +428,14 @@ def links1d2d_add_links_1d_to_2d_include_boundary(
     )
     lengths = np.hypot(nodes1d[:, 0] - faces2d[:, 0], nodes1d[:, 1] - faces2d[:, 1])
     keep = np.concatenate(
-        [np.arange(npresent), np.where(lengths < max_length)[0] + npresent]
+        [np.arange(npresent), np.nonzero(lengths < max_length)[0] + npresent]
     )
     _filter_links_on_idx(network, keep)
 
+    # extract links from network object
+    link1d2d = mutils.links1d2d_from_hydrolib_network(network)
+
+    return link1d2d
 
 def _filter_links_on_idx(network: Network, keep: np.ndarray) -> None:
     # Select the remaining links
@@ -603,15 +521,13 @@ def links1d2d_add_links_2d_to_1d_embedded(
         area = [area]
     for subarea in area:
         subarea = polygon_to_geometrylist(subarea)
-        idx |= (
-            network.meshkernel.polygon_get_included_points(subarea, mpgl).values == 1.0
-        )
+        idx |= network.meshkernel.polygon_get_included_points(subarea, mpgl).values == 1
 
     # Check for each of the remaining faces, if it actually crosses the branches
     nodes2d = np.stack(
         [network._mesh2d.mesh2d_node_x, network._mesh2d.mesh2d_node_y], axis=1
     )
-    where = np.where(idx)[0]
+    where = np.nonzero(idx)[0]
     for i, face_crds in enumerate(nodes2d[network._mesh2d.mesh2d_face_nodes[idx]]):
         if not mls_prep.intersects(LineString(face_crds)):
             idx[where[i]] = False
@@ -625,7 +541,10 @@ def links1d2d_add_links_2d_to_1d_embedded(
     node_mask = network._mesh1d.get_node_mask(branchids)
 
     # Generate links
-    network._link1d2d._link_from_2d_to_1d_embedded(node_mask, points=multipoint)
+    network._link1d2d.meshkernel.contacts_compute_with_points(
+        node_mask=node_mask, points=multipoint
+    )
+    network._link1d2d._process()
 
     # extract links from network object
     link1d2d = mutils.links1d2d_from_hydrolib_network(network)
