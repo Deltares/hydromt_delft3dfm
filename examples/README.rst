@@ -56,7 +56,7 @@ You have two options:
      - mesh_model
      - network_model
 
-In the examples above, we see version 0.1.0 of hydromt_delft3dfm is installed and version 0.9.0 of hydromt.
+In the examples above, we see version 0.1.2 of hydromt_delft3dfm is installed and version 0.9.0 of hydromt.
 
 **Option 1: manual download and unzip**
 
