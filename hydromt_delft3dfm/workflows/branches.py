@@ -640,7 +640,6 @@ def generate_branchnodes(
     # remove duplicated geometry
     _nodes = nodes.copy()
     G = _nodes["geometry"].apply(lambda geom: geom.wkb)
-    len(G) - len(G.drop_duplicates().index)
     nodes = _nodes[_nodes.index.isin(G.drop_duplicates().index)]
     nodes = gpd.GeoDataFrame(nodes)
     nodes.crs = branches.crs
