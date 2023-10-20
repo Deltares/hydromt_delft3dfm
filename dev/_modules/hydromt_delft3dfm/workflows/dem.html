@@ -414,7 +414,7 @@
                 <article class="bd-article" role="main">
                   
   <h1>Source code for hydromt_delft3dfm.workflows.dem</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span></span><span class="sd">&quot;&quot;&quot;Workflows to process dem data for Delft3D-FM model.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
@@ -449,11 +449,13 @@
 <span class="sd">    gdf: gpd.GeoDataFrame</span>
 <span class="sd">        Pipes gdf.</span>
 
-<span class="sd">        * Required variables: [&quot;shape&quot;, &quot;diameter&quot;] or [&quot;shape&quot;, &quot;height&quot;] (circle or rectangle shape)</span>
+<span class="sd">        * Required variables: [&quot;shape&quot;, &quot;diameter&quot;] or [&quot;shape&quot;, &quot;height&quot;]</span>
+<span class="sd">          (circle or rectangle shape)</span>
 <span class="sd">    dem: xr.DataArray</span>
 <span class="sd">        DEM data array with elevation in m asl.</span>
 <span class="sd">    depth: float, optional</span>
-<span class="sd">        Depth of the pipes under the ground in meters. Should be a postive value. By default 2.0 meters</span>
+<span class="sd">        Depth of the pipes under the ground in meters. Should be a postive value.</span>
+<span class="sd">        By default 2.0 meters</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Upstream</span>
     <span class="n">upnodes</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
@@ -497,7 +499,9 @@
     <span class="n">nmin</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
     <span class="n">q</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">25.0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return river bank height estimated as from height above nearest drainage</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return river bank height.</span>
+
+<span class="sd">    River bank height is estimated as from height above nearest drainage</span>
 <span class="sd">    (HAND) values adjecent to river cells. For each feature in `gdf_riv` the nearest</span>
 <span class="sd">    river bank cells are identified and the bank heigth is estimated based on a quantile</span>
 <span class="sd">    value `q`.</span>
@@ -583,15 +587,17 @@
     <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimate river bedlevel zb using gradually varying flow (gvf), manning&#39;s equation</span>
-<span class="sd">    (manning) or a power-law relation (powlaw) rivdph_method. The river is based on flow</span>
-<span class="sd">    directions with and minimum upstream area threshold.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimate river bedlevel zb.</span>
+
+<span class="sd">    Bedlevel is estimated using gradually varying flow (gvf), manning&#39;s equation</span>
+<span class="sd">    (manning) or a power-law relation (powlaw) rivdph_method. The river is based</span>
+<span class="sd">    on flow directions with and minimum upstream area threshold.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    ds : xr.Dataset</span>
-<span class="sd">        Model map layers containing `elevnt_name`, `uparea_name` and `rivmsk_name` (optional)</span>
-<span class="sd">        variables.</span>
+<span class="sd">        Model map layers containing `elevnt_name`, `uparea_name`</span>
+<span class="sd">        and `rivmsk_name` (optional) variables.</span>
 <span class="sd">    flwdir : pyflwdir.FlwdirRaster</span>
 <span class="sd">        Flow direction object</span>
 <span class="sd">    gdf_riv : gpd.GeoDataFrame, optional</span>
@@ -605,7 +611,8 @@
 <span class="sd">    river_upa : float, optional</span>
 <span class="sd">        Minimum upstream area threshold for rivers [km2], by default 100.0</span>
 <span class="sd">    river_len: float, optional</span>
-<span class="sd">        Mimimum river length [m] within the model domain to define river cells, by default 1000.</span>
+<span class="sd">        Mimimum river length [m] within the model domain to define river cells,</span>
+<span class="sd">        by default 1000.</span>
 <span class="sd">    min_rivwth, min_rivdph: float, optional</span>
 <span class="sd">        Minimum river width [m] (by default 50.0 m) and depth [m] (by default 1.0 m)</span>
 <span class="sd">    segment_length : float, optional</span>
@@ -615,7 +622,8 @@
 <span class="sd">    min_convergence : float, optional</span>
 <span class="sd">        Minimum width convergence threshold to define estuaries [m/m], by default 0.01</span>
 <span class="sd">    max_dist : float, optional</span>
-<span class="sd">        Maximum distance threshold to spatially merge `gdf_riv` and `gdf_qbf`, by default 100.0</span>
+<span class="sd">        Maximum distance threshold to spatially merge `gdf_riv` and `gdf_qbf`,</span>
+<span class="sd">        by default 100.0</span>
 <span class="sd">    rivbank: bool, optional</span>
 <span class="sd">        If True (default), approximate the reference elevation for the river depth based</span>
 <span class="sd">        on the river bankfull elevation at cells neighboring river cells. Otherwise</span>
@@ -623,7 +631,8 @@
 <span class="sd">    rivbankq : float, optional</span>
 <span class="sd">        quantile [1-100] for river bank estimation, by default 25</span>
 <span class="sd">    constrain_estuary : bool, optional</span>
-<span class="sd">        If True (default) fix the river depth in estuaries based on the upstream river depth.</span>
+<span class="sd">        If True (default) fix the river depth in estuaries based on the upstream</span>
+<span class="sd">        river depth.</span>
 <span class="sd">    constrain_rivbed : bool, optional</span>
 <span class="sd">        If True (default) correct the river bed level to be hydrologically correct</span>
 <span class="sd">    Returns</span>

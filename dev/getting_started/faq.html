@@ -437,86 +437,24 @@
                   
   <section id="frequently-asked-questions">
 <span id="faq"></span><h1>Frequently asked questions<a class="headerlink" href="#frequently-asked-questions" title="Link to this heading">#</a></h1>
-<p>This page contains some FAQ / tips and tricks to work with HydroMT-Wflow.
+<p>This page contains some FAQ / tips and tricks to work with HydroMT-Delft3DFM.
 For more general questions on how to work with data or the HydroMT config and command line,
 you can visit the <a class="reference external" href="https://deltares.github.io/hydromt/latest/getting_started/faq.html">HydroMT core FAQ page</a></p>
-<section id="building-a-wflow-model">
-<h2>Building a Wflow model<a class="headerlink" href="#building-a-wflow-model" title="Link to this heading">#</a></h2>
-<blockquote>
-<div><div class="line-block">
-<div class="line"><strong>Q</strong>: Can I use other region arguments that <code class="docutils literal notranslate"><span class="pre">basin</span></code> or <code class="docutils literal notranslate"><span class="pre">subbasin</span></code> ?</div>
-</div>
-</div></blockquote>
-<p>To build a Wflow model, it is strongly recommended to use the <code class="docutils literal notranslate"><span class="pre">basin</span></code> or <code class="docutils literal notranslate"><span class="pre">subbasin</span></code> when defining your region of interest.
-This ensures that all upstream contributing cells are well taken into account. Using other options might cause your Wflow model
-run crash. If you are sure of what you are doing, you can optionnaly use the <code class="docutils literal notranslate"><span class="pre">geom</span></code> option and provide an exact shapefile of the
-basin/subbasins you want to derive, that was prepared using the same DEM source that you intend to use in the <code class="xref py py-func docutils literal notranslate"><span class="pre">setup_basemaps()</span></code>
-method.</p>
-<blockquote>
-<div><div class="line-block">
-<div class="line"><strong>Q</strong>: Can I derive several sub-basins at the same time using a bounding box or a geometry instead of a list of point corrdinates?</div>
-</div>
-</div></blockquote>
-<p>To derive subbasin with HydroMT, you also need to provide in your region options a snapping arguments so that HydroMT knows what type of
-subbasin you want to create. You can use either streamorder <em>strord</em> or upstream area <em>uparea</em> type of snapping:</p>
-<ul class="simple">
-<li><p>“{‘subbasin’: [xmin, ymin, xmax, ymax], ‘strord’: 3}”</p></li>
-<li><p>“{‘subbasin’: ‘path/to/geomtry.shp’, ‘uparea’: 100000}”</p></li>
-</ul>
-<blockquote>
-<div><div class="line-block">
-<div class="line"><strong>Q</strong>: Can I use a different dataset for precipitation and temperature forcing data?</div>
-</div>
-</div></blockquote>
-<p>Yes, that is one of the reason why the two were separated into two separate methods: <code class="xref py py-func docutils literal notranslate"><span class="pre">setup_precip_forcing()</span></code> and
-<code class="xref py py-func docutils literal notranslate"><span class="pre">setup_temp_pet_forcing()</span></code>, you can just use a different data source for <em>precip_fn</em> and <em>temp_pet_fn</em> and HydroMT
-will do its resampling magic!</p>
-<blockquote>
-<div><div class="line-block">
-<div class="line"><strong>Q</strong>: Can I add several gauges at the same time ?</div>
-</div>
-</div></blockquote>
-<p>Sure! HydroMT allows you to use several times the same method in your configuration file. For this, you just need to start
-enumerating the methods by adding a number to the end of the method name. For example:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[setup_gauges]</span>
-<span class="go">gauges_fn = my_gauges1</span>
-
-<span class="go">[setup_gauges2]</span>
-<span class="go">gauges_fn = my_gauges2</span>
-<span class="go">derive_outlets = False # To avoid deriving basin outlets twice</span>
-</pre></div>
-</div>
+<section id="building-a-dflowfm-model">
+<h2>Building a dflowfm model<a class="headerlink" href="#building-a-dflowfm-model" title="Link to this heading">#</a></h2>
 </section>
-<section id="updating-a-wflow-model">
-<h2>Updating a Wflow model<a class="headerlink" href="#updating-a-wflow-model" title="Link to this heading">#</a></h2>
+<section id="updating-a-dflowfm-model">
+<h2>Updating a dflowfm model<a class="headerlink" href="#updating-a-dflowfm-model" title="Link to this heading">#</a></h2>
 <blockquote>
 <div><div class="line-block">
-<div class="line"><strong>Q</strong>: Is there an easy way to update reservoirs or lakes parameters in my Wflow model ?</div>
+<div class="line"><strong>Q</strong>: Can I select a specific dflowfm MDU config file when updating my model ?</div>
 </div>
 </div></blockquote>
-<p>To easily update reservoirs or lakes parameters, you can directly use the <em>reservoirs.geojson</em> and <em>lakes.geojson</em> that are saved
-by HydroMT into the <em>staticgeoms</em> folder. Once you have updated the parameters with the new value, just use these geojson files as
-your new “local” input data!</p>
-<blockquote>
-<div><div class="line-block">
-<div class="line"><strong>Q</strong>: Can I select a specific Wflow TOML config file when updating my model ?</div>
-</div>
-</div></blockquote>
-<p>It is possible. In that case, you need to start your HydroMT configuration with a <code class="xref py py-func docutils literal notranslate"><span class="pre">read_config()</span></code> method
-where you can specify which TOML file to use using the <em>config_fn</em> argument.</p>
+<p>It is possible. In that case, you need to start your HydroMT configuration with a <strong>global</strong> section
+where you can specify which MDU file to use using the <em>config_fn</em> argument.</p>
 </section>
 <section id="others">
 <h2>Others<a class="headerlink" href="#others" title="Link to this heading">#</a></h2>
-<blockquote>
-<div><div class="line-block">
-<div class="line"><strong>Q</strong>: Can I convert my old Wflow python model to the new Wflow Julia version with HydroMT ?</div>
-</div>
-</div></blockquote>
-<p>HydroMT is still able to read the python PCRaster based maps of Wflow with the method <code class="xref py py-func docutils literal notranslate"><span class="pre">read_staticmaps_pcr()</span></code>.
-So actually just a read and write of your python model will do most of the job :) The intbl are however not taken into account so if
-you have single values intbl, you can use the <code class="xref py py-func docutils literal notranslate"><span class="pre">setup_constant_pars()</span></code> method. For lakes and reservoirs parameters,
-the best is to use a shapefile of yours lakes and reservoirs with the right columns for each parameters (see previous question on updating
-reservoir).</p>
 </section>
 </section>
 
@@ -563,8 +501,8 @@ reservoir).</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-a-wflow-model">Building a Wflow model</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#updating-a-wflow-model">Updating a Wflow model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-a-dflowfm-model">Building a dflowfm model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#updating-a-dflowfm-model">Updating a dflowfm model</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#others">Others</a></li>
 </ul>
   </nav></div>

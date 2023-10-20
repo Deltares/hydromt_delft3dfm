@@ -45,7 +45,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/intro';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="API reference" href="../api.html" />
+    <link rel="next" title="Working with the Delft3D FM model" href="dflowfm.html" />
     <link rel="prev" title="Frequently asked questions" href="../getting_started/faq.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -266,7 +266,7 @@
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -368,6 +368,27 @@
     
   </div>
   
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="dflowfm.html">Working with the Delft3D FM model</a><input checked class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="dflowfm_model_setup.html">Model methods and components</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="dflowfm_build.html">Building a model</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="dflowfm_update.html">Updating a model</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
@@ -419,21 +440,18 @@
                   
   <section id="user-guide">
 <span id="intro-user-guide"></span><h1>User guide<a class="headerlink" href="#user-guide" title="Link to this heading">#</a></h1>
-<p>With the <strong>Hydromt-Wflow plugin</strong>, users can easily benefit from the rich set of tools of the
+<p>With the <strong>Hydromt-Delft3DFM plugin</strong>, users can easily benefit from the rich set of tools of the
 <a class="reference external" href="https://deltares.github.io/hydromt/latest/index.html">HydroMT package</a> to build and update
-<a class="reference external" href="https://deltares.github.io/Wflow.jl/stable/">Wflow</a> models from available global and local data.</p>
-<p>This plugin assists the Wflow modeller in:</p>
+<a class="reference external" href="https://www.deltares.nl/en/software-and-data/products/sobek-and-delft3d-fm-suite-1d2d">Delft3D FM Suite</a> models from available global and local data.</p>
+<p>This plugin assists the Delft3D FM modeller in:</p>
 <ul class="simple">
-<li><p>Quickly setting up a base Wflow model and default parameter values</p></li>
+<li><p>Quickly setting up a base Delft3dFM model (1D2D) and default parameter values</p></li>
 <li><p>Making maximum use of the best available global or local data</p></li>
-<li><p>Adjusting and updating components of a Wflow model and their associated parameters in a consistent way</p></li>
-<li><p>Clipping existing Wflow models for a smaller extent</p></li>
-<li><p>Analysing Wflow model outputs</p></li>
+<li><p>Adjusting and updating components of a Delft3dFM model and their associated data in a consistent way</p></li>
 </ul>
-<p>Two Wflow Model classes are currently available:</p>
+<p>Two Delft3dFM Model classes are currently available:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">wflow</span></code> (WflowModel): class for the wflow_sbm + kinematic and wflow_sbm + local inertial concepts</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">wflow_sediment</span></code> (WflowSedimentModel): class for the wflow_sediment concept</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dflowfm</span></code> (DFlowFMModel): class for the Delft3d FM flow component.</p></li>
 </ul>
 <div class="toctree-wrapper compound">
 </div>
@@ -459,11 +477,11 @@
       </div>
     </a>
     <a class="right-next"
-       href="../api.html"
+       href="dflowfm.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">API reference</p>
+        <p class="prev-next-title">Working with the Delft3D FM model</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

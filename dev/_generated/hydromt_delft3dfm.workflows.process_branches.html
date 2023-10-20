@@ -607,15 +607,18 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="hydromt_delft3dfm.workflows.process_branches">
 <span class="sig-prename descclassname"><span class="pre">hydromt_delft3dfm.workflows.</span></span><span class="sig-name descname"><span class="pre">process_branches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branches:</span> <span class="pre">~geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_col:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'branchid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snap_offset:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_intersection_snapping:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth_branches:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">hydromt_delft3dfm.workflows.branches</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hydromt_delft3dfm/workflows/branches.html#process_branches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hydromt_delft3dfm.workflows.process_branches" title="Link to this definition">#</a></dt>
-<dd><p>Process the branches by cleaning up the branches, snapping them, splitting them and generating branchnodes.</p>
+<dd><p>Process the branches.</p>
+<p>Process by cleaning up the branches, snapping them, splitting them
+and generating branchnodes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>branches</strong> (<em>gpd.GeoDataFrame</em>) – The branches to process.</p></li>
 <li><p><strong>id_col</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Defalt to branchid.</p></li>
-<li><p><strong>snap_offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Maximum distance in meters between end points. If the distance is larger, they are not snapped. Defaults to 0.01.</p></li>
+<li><p><strong>snap_offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Maximum distance in meters between end points. If the distance
+is larger, they are not snapped. Defaults to 0.01.</p></li>
 <li><p><strong>allow_intersection_snapping</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Allow snapping at all branch ends, including intersections. Defaults to True.</p></li>
-<li><p><strong>smooth_branches</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – whether to return branches that are smoothed (straightend) , needed for pipes
+<li><p><strong>smooth_branches</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – whether to return branches that are smoothed (straightend), needed for pipes
 Default to False.</p></li>
 <li><p><strong>logger</strong> – The logger to log messages with.</p></li>
 </ul>

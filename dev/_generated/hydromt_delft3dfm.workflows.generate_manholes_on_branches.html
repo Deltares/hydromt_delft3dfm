@@ -608,11 +608,14 @@
 <dt class="sig sig-object py" id="hydromt_delft3dfm.workflows.generate_manholes_on_branches">
 <span class="sig-prename descclassname"><span class="pre">hydromt_delft3dfm.workflows.</span></span><span class="sig-name descname"><span class="pre">generate_manholes_on_branches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">branches:</span> <span class="pre">~geopandas.geodataframe.GeoDataFrame,</span> <span class="pre">use_branch_variables:</span> <span class="pre">list</span> <span class="pre">=</span> <span class="pre">['diameter',</span> <span class="pre">'width'],</span> <span class="pre">bedlevel_shift:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0,</span> <span class="pre">id_prefix:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'',</span> <span class="pre">id_suffix:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'',</span> <span class="pre">logger=&lt;module</span> <span class="pre">'logging'</span> <span class="pre">from</span> <span class="pre">'/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/logging/__init__.py'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hydromt_delft3dfm/workflows/manholes.html#generate_manholes_on_branches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hydromt_delft3dfm.workflows.generate_manholes_on_branches" title="Link to this definition">#</a></dt>
 <dd><p>Generate manhole location and bedlevel from branches.</p>
-<p>Manholes will be generated at locations upstream and downstream of each pipe. No manholes will be generated at pipe/tunnel outlets into the channels/rivers.</p>
+<p>Manholes will be generated at locations upstream and downstream of each pipe.
+No manholes will be generated at pipe/tunnel outlets into the channels/rivers.</p>
 <p>A new geom of manholes will be created.
-manholeid will be generated following the convension of id_prefix, id, and id_suffix.
+manholeid will be generated following the convension of id_prefix, id,
+and id_suffix.
 bedlevel will be generated from the lowest invert levels of the connecting pipes.
-Otehr attributes can be summersized from exisiting branch variables defined in ‘’use_branch_variables’’.</p>
+Otehr attributes can be summersized from exisiting branch variables defined in
+‘’use_branch_variables’’.</p>
 <dl class="simple">
 <dt>Adds:</dt><dd><ul class="simple">
 <li><p><strong>manholes</strong> geom: 1D manholes vector</p></li>
@@ -630,9 +633,11 @@ Otehr attributes can be summersized from exisiting branch variables defined in �
 Required columns: [‘branchid’, ‘branchtype’, ‘invlev_up’, ‘invlev_dn’]
 Optional columns: ones defined in use_branch_variables</p></li>
 <li><p><strong>use_branch_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>Optional</em>) – list of branch variables to include as attributes for manholes.
-If multiple branches connects to a single manhole, then the maximum will be taken.
+If multiple branches connects to a single manhole, then the maximum
+will be taken.
 By default [‘diameter’, ‘width’].</p></li>
-<li><p><strong>bedlevel_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Shift applied to lowest pipe invert levels to derive manhole bedlevels [m] (bedlevel = pipe invert + bedlevel shift).
+<li><p><strong>bedlevel_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Shift applied to lowest pipe invert levels to derive manhole bedlevels [m]
+(bedlevel = pipe invert + bedlevel shift).
 By default 0.0 m, no shift is applied.</p></li>
 <li><p><strong>id_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – prefix to add to the id convention
 By default “”, no prefix are used.</p></li>

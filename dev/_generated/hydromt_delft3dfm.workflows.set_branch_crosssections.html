@@ -607,22 +607,30 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="hydromt_delft3dfm.workflows.set_branch_crosssections">
 <span class="sig-prename descclassname"><span class="pre">hydromt_delft3dfm.workflows.</span></span><span class="sig-name descname"><span class="pre">set_branch_crosssections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame" title="(in GeoPandas v0.14.0)"><span class="pre">GeoDataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">midpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hydromt_delft3dfm/workflows/crosssections.html#set_branch_crosssections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hydromt_delft3dfm.workflows.set_branch_crosssections" title="Link to this definition">#</a></dt>
-<dd><p>Function to set regular cross-sections for each branch.
-Only support rectangle, trapezoid (for rivers) and circle (for pipes).
-Crosssections are derived at branches mid points if <code class="docutils literal notranslate"><span class="pre">midpoints</span></code> is True. Use this to setup crossections for rivers.
-Crosssections are derived at up and downstream of branches if <code class="docutils literal notranslate"><span class="pre">midpoints</span></code> is False. Use this to setup crossections for pipes.
-else at both upstream and downstream extremities of branches if False.</p>
+<dd><p>Set regular cross-sections for each branch.</p>
+<p>Only support rectangle, trapezoid (for rivers) and circle (for pipes).</p>
+<p>Crosssections are derived at branches mid points if <code class="docutils literal notranslate"><span class="pre">midpoints</span></code> is True.
+Use this to setup crossections for rivers.</p>
+<p>Crosssections are derived at up and downstream of branches if <code class="docutils literal notranslate"><span class="pre">midpoints</span></code>
+is False. Use this to setup crossections for pipes.</p>
+<p>Else at both upstream and downstream extremities of branches if False.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>branches</strong> (<em>gpd.GeoDataFrame</em>) – <p>The branches.
-* Required variables: branchid, shape, shift, frictionid, frictiontype, frictionvalue
-* Optional variables:</p>
+* Required variables: branchid, shape, shift, frictionid,</p>
 <blockquote>
-<div><p>if shape = ‘circle’: ‘diameter’
+<div><p>frictiontype, frictionvalue</p>
+</div></blockquote>
+<ul>
+<li><dl class="simple">
+<dt>Optional variables:</dt><dd><p>if shape = ‘circle’: ‘diameter’
 if shape = ‘rectangle’: ‘width’, ‘height’, ‘closed’
 if shape = ‘trapezoid’: ‘width’, ‘t_width’, ‘height’, ‘closed’</p>
-</div></blockquote>
+</dd>
+</dl>
+</li>
+</ul>
 </p></li>
 <li><p><strong>midpoint</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>Optional</em>) – <p>Whether the crossection should be derived at midpoint of the branches.
 if midpoint = True:</p>
@@ -640,7 +648,8 @@ if midpoint = True:</p>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><em>gpd.GeoDataFrame</em> – The cross sections.</p></li>
-<li><p><strong># FIXME</strong> (<em>upstream and downstream crosssection type needs further improvement for channels</em>)</p></li>
+<li><p><strong># FIXME</strong> (<em>upstream and downstream crosssection</em>)</p></li>
+<li><p><em>type needs further improvement for channels</em></p></li>
 </ul>
 </p>
 </dd>

@@ -414,7 +414,7 @@
                 <article class="bd-article" role="main">
                   
   <h1>Source code for hydromt_delft3dfm.workflows.manholes</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span></span><span class="sd">&quot;&quot;&quot;Workflows to prepare manholes for Delft3D-FM model.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
 
@@ -443,12 +443,15 @@
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate manhole location and bedlevel from branches.</span>
 
-<span class="sd">    Manholes will be generated at locations upstream and downstream of each pipe. No manholes will be generated at pipe/tunnel outlets into the channels/rivers.</span>
+<span class="sd">    Manholes will be generated at locations upstream and downstream of each pipe.</span>
+<span class="sd">    No manholes will be generated at pipe/tunnel outlets into the channels/rivers.</span>
 
 <span class="sd">    A new geom of manholes will be created.</span>
-<span class="sd">    manholeid will be generated following the convension of id_prefix, id, and id_suffix.</span>
+<span class="sd">    manholeid will be generated following the convension of id_prefix, id,</span>
+<span class="sd">    and id_suffix.</span>
 <span class="sd">    bedlevel will be generated from the lowest invert levels of the connecting pipes.</span>
-<span class="sd">    Otehr attributes can be summersized from exisiting branch variables defined in &#39;&#39;use_branch_variables&#39;&#39;.</span>
+<span class="sd">    Otehr attributes can be summersized from exisiting branch variables defined in</span>
+<span class="sd">    &#39;&#39;use_branch_variables&#39;&#39;.</span>
 
 <span class="sd">    Adds:</span>
 <span class="sd">        * **manholes** geom: 1D manholes vector</span>
@@ -463,10 +466,12 @@
 <span class="sd">        Optional columns: ones defined in use_branch_variables</span>
 <span class="sd">    use_branch_variables: list of str, Optional</span>
 <span class="sd">        list of branch variables to include as attributes for manholes.</span>
-<span class="sd">        If multiple branches connects to a single manhole, then the maximum will be taken.</span>
+<span class="sd">        If multiple branches connects to a single manhole, then the maximum</span>
+<span class="sd">        will be taken.</span>
 <span class="sd">        By default [&#39;diameter&#39;, &#39;width&#39;].</span>
 <span class="sd">    bedlevel_shift: float, optional</span>
-<span class="sd">        Shift applied to lowest pipe invert levels to derive manhole bedlevels [m] (bedlevel = pipe invert + bedlevel shift).</span>
+<span class="sd">        Shift applied to lowest pipe invert levels to derive manhole bedlevels [m]</span>
+<span class="sd">        (bedlevel = pipe invert + bedlevel shift).</span>
 <span class="sd">        By default 0.0 m, no shift is applied.</span>
 <span class="sd">    id_prefix: str, optional</span>
 <span class="sd">        prefix to add to the id convention</span>
@@ -583,7 +588,11 @@
 
 
 <span class="k">def</span> <span class="nf">_update_pipes_from_manholes</span><span class="p">(</span><span class="n">manholes</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">pipes</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Assign manholes &#39;manholeid&#39; to pipes [&#39;manhole_up&#39;, &#39;manhole_dn&#39;] based on geometry.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Assign manholes &#39;manholeid&#39; to pipes.</span>
+
+<span class="sd">    Id are assigned to [&#39;manhole_up&#39;, &#39;manhole_dn&#39;] based on geometry.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">manholes_dict</span> <span class="o">=</span> <span class="p">{</span>
         <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">y</span><span class="p">):</span> <span class="n">manholes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mi</span><span class="p">,</span> <span class="s2">&quot;manholeid&quot;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">mi</span><span class="p">,</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">manholes</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span>
@@ -612,7 +621,8 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    pipes_col: used to identify pipes connected to the manhole (multiple rows of pipes for a single manhole), e.g. BRANCH_ID.</span>
+<span class="sd">    pipes_col: used to identify pipes connected to the manhole (multiple</span>
+<span class="sd">    rows of pipes for a single manhole), e.g. BRANCH_ID.</span>
 <span class="sd">    stats_col: the column used to obtain the stats, e.g. DIAMETER</span>
 <span class="sd">    method: method used to obtain the stats: e.g. max</span>
 <span class="sd">    &quot;&quot;&quot;</span>

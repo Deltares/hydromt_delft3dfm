@@ -414,7 +414,7 @@
                 <article class="bd-article" role="main">
                   
   <h1>Source code for hydromt_delft3dfm.workflows.mesh</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span></span><span class="sd">&quot;&quot;&quot;Workflows to prepare mesh schematisation for Delft3D-FM model.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
@@ -426,7 +426,15 @@
 <span class="kn">import</span> <span class="nn">xugrid</span> <span class="k">as</span> <span class="nn">xu</span>
 <span class="kn">from</span> <span class="nn">hydrolib.core.dflowfm</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Network</span>
 <span class="kn">from</span> <span class="nn">meshkernel</span> <span class="kn">import</span> <span class="n">GeometryList</span>
-<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">MultiLineString</span><span class="p">,</span> <span class="n">MultiPolygon</span><span class="p">,</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">box</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">LineString</span><span class="p">,</span>
+    <span class="n">MultiLineString</span><span class="p">,</span>
+    <span class="n">MultiPoint</span><span class="p">,</span>
+    <span class="n">MultiPolygon</span><span class="p">,</span>
+    <span class="n">Point</span><span class="p">,</span>
+    <span class="n">Polygon</span><span class="p">,</span>
+    <span class="n">box</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">shapely.wkt</span> <span class="kn">import</span> <span class="n">dumps</span><span class="p">,</span> <span class="n">loads</span>
 
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">mesh_utils</span> <span class="k">as</span> <span class="n">mutils</span>
@@ -452,10 +460,10 @@
     <span class="n">openwater_computation_node_distance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">40.0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">xu</span><span class="o">.</span><span class="n">UgridDataset</span><span class="p">,</span> <span class="n">xu</span><span class="o">.</span><span class="n">UgridDataset</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns xugrid mesh1d and network1d UgridDataset from open and closed system branches.</span>
+<span class="sd">    Return xugrid mesh1d and network1d UgridDataset from branches.</span>
 
-<span class="sd">    Uses hydrolib-core network object and add_branch methods to build the network and then</span>
-<span class="sd">    converts back to xugrid.</span>
+<span class="sd">    Uses hydrolib-core network object and add_branch methods to build the</span>
+<span class="sd">    network and then converts back to xugrid.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -474,8 +482,8 @@
 <span class="sd">        Network1d UgridDataset.</span>
 <span class="sd">        Note that it is part of the Deltares-0.11 conventions.</span>
 <span class="sd">        These newly proposed conventions should currently be seen as an extension</span>
-<span class="sd">        on top of the regular CF-conventions (≥1.8) and, in particular, on top of the UGRID (1.0)</span>
-<span class="sd">        conventions.</span>
+<span class="sd">        on top of the regular CF-conventions (≥1.8) and, in particular, on top of</span>
+<span class="sd">        the UGRID (1.0) conventions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">crs</span> <span class="o">=</span> <span class="n">opensystem</span><span class="o">.</span><span class="n">crs</span>
 
@@ -524,15 +532,21 @@
     <span class="n">branch_orders</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add branch to 1d mesh, from a (list of) (Multi)LineString geometry.</span>
+
 <span class="sd">    The branch is discretized with the given node distance.</span>
-<span class="sd">    if node distance is given as infinity, no discretization will be performed at mid point of the branch, #TODO, if minimum node distance is given, no discretization will be performed at mid point of the branch</span>
-<span class="sd">    i.e. branch is treated as a pipe</span>
+<span class="sd">    if node distance is given as infinity, no discretization will be performed at</span>
+<span class="sd">    mid point of the branch,</span>
+<span class="sd">    #TODO, if minimum node distance is given, no discretization will be</span>
+<span class="sd">    performed at mid point of the branch i.e. branch is treated as a pipe</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        network (Network): Network to which the branch is added</span>
-<span class="sd">        branches (Union[ LineString, MultiLineString, List[Union[LineString, MultiLineString]] ]): Geometry object(s) for which the branch is created</span>
+<span class="sd">        branches (Union[ LineString, MultiLineString, List[Union[LineString,</span>
+<span class="sd">        MultiLineString]] ]): Geometry object(s) for which the branch is created</span>
 <span class="sd">        node_distance (Union[float, int]): Preferred node distance between branch nodes</span>
-<span class="sd">        branch_names (Union[str, list[str]]): Branch names to be used in the mesh1d object</span>
-<span class="sd">        branch_orders (Union[float, int, list[Union[float, int]]]): Branch orders to be used in the mesh1d object.</span>
+<span class="sd">        branch_names (Union[str, list[str]]): Branch names to be used in the mesh1d</span>
+<span class="sd">        object branch_orders (Union[float, int, list[Union[float, int]]]): Branch orders</span>
+<span class="sd">        to be used in the mesh1d object.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -578,16 +592,18 @@
     <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span> <span class="o">=</span> <span class="n">logger</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">xu</span><span class="o">.</span><span class="n">UgridDataArray</span><span class="p">,</span> <span class="n">xu</span><span class="o">.</span><span class="n">UgridDataset</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Refine mesh2d by adding new nodes and faces within a polygon or based on a sample array.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Refine mesh2d by adding new nodes and faces.</span>
 
 <span class="sd">    If a polygon is provided, the mesh is refined within the polygon.</span>
-<span class="sd">    The number of steps determines the number of times the mesh is refined when using polygon.</span>
+<span class="sd">    The number of steps determines the number of times the mesh is refined</span>
+<span class="sd">    when using polygon.</span>
 
 <span class="sd">    If a sample array is provided, the mesh is refined based on the sample array.</span>
-<span class="sd">    The sample array should contain values between 0 and 1, where 0 is not refined and 1 is refined.</span>
-<span class="sd">    The sample array is interpolated to the mesh2d and the mesh is refined at the locations where</span>
-<span class="sd">    the sample array is larger than 0.5. The number of steps  is determined by the maximum value</span>
-<span class="sd">    in the sample array and the new face size based on the previous resolution of the mesh.</span>
+<span class="sd">    The sample array should contain values between 0 and 1, where 0 is not refined</span>
+<span class="sd">    and 1 is refined. The sample array is interpolated to the mesh2d and the mesh is</span>
+<span class="sd">    refined at the locations where the sample array is larger than 0.5. The number of</span>
+<span class="sd">    steps  is determined by the maximum value in the sample array and the new face size</span>
+<span class="sd">    based on the previous resolution of the mesh.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -672,15 +688,16 @@
         <span class="n">steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">zv</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
         <span class="c1"># refine parameters</span>
         <span class="n">parameters</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshRefinementParameters</span><span class="p">(</span>
-            <span class="n">refinement_type</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># Enumerator describing the different refinement types (WaveCourant = 1, RefinementLevels = 2)</span>
-            <span class="n">max_refinement_iterations</span><span class="o">=</span><span class="n">steps</span><span class="p">,</span>  <span class="c1"># Maximum number of refinement iterations, set to 1 if only one refinement is wanted (default 10)</span>
-            <span class="n">min_face_size</span><span class="o">=</span><span class="n">res</span> <span class="o">/</span> <span class="mi">2</span><span class="o">**</span><span class="n">steps</span><span class="p">,</span>  <span class="c1"># calculate - Minimum cell size</span>
-            <span class="n">account_for_samples_outside_face</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># default, not useful - Take samples outside face into account , 1 yes 0 no</span>
-            <span class="n">connect_hanging_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># default, not useful - Connect hanging nodes at the end of the iteration, 1 yes or 0 no</span>
-            <span class="n">refine_intersected</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># default, not useful - Whether to compute faces intersected by polygon (yes=1/no=0)</span>
-            <span class="n">use_mass_center_when_refining</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># default, not useful - Whether to use the mass center when splitting a face in the refinement process (yes=1/no=0)</span>
+            <span class="n">refinement_type</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">max_refinement_iterations</span><span class="o">=</span><span class="n">steps</span><span class="p">,</span>
+            <span class="n">min_face_size</span><span class="o">=</span><span class="n">res</span> <span class="o">/</span> <span class="mi">2</span><span class="o">**</span><span class="n">steps</span><span class="p">,</span>
+            <span class="n">account_for_samples_outside_face</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">connect_hanging_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">refine_intersected</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">use_mass_center_when_refining</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="c1"># refine assuming sample spacing is the same as end result resolution (hence relative_search_radius=1, minimum_num_samples=1 )</span>
+        <span class="c1"># refine assuming sample spacing is the same as end result resolution</span>
+        <span class="c1"># (hence relative_search_radius=1, minimum_num_samples=1 )</span>
         <span class="n">mesh2d_mk</span><span class="o">.</span><span class="n">mesh2d_refine_based_on_samples</span><span class="p">(</span>
             <span class="n">samples</span><span class="p">,</span>
             <span class="n">relative_search_radius</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -704,7 +721,8 @@
     <span class="n">_new_size</span> <span class="o">=</span> <span class="n">mesh2d</span><span class="o">.</span><span class="n">ugrid</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">face_x</span><span class="o">.</span><span class="n">size</span>
     <span class="k">if</span> <span class="n">_new_size</span> <span class="o">!=</span> <span class="n">_old_size</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;2d mesh refined based on </span><span class="si">{</span><span class="n">refine_type</span><span class="si">}</span><span class="s2">. Number of faces before: </span><span class="si">{</span><span class="n">_old_size</span><span class="si">}</span><span class="s2"> and after: </span><span class="si">{</span><span class="n">_new_size</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;2d mesh refined based on </span><span class="si">{</span><span class="n">refine_type</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Number of faces before: </span><span class="si">{</span><span class="n">_old_size</span><span class="si">}</span><span class="s2"> and after: </span><span class="si">{</span><span class="n">_new_size</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;2d mesh unrefined.&quot;</span><span class="p">)</span>
@@ -761,18 +779,21 @@
     <span class="n">within</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Polygon</span><span class="p">,</span> <span class="n">MultiPolygon</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">max_length</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to add 1d2d links to network, by generating them from 1d to 2d.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate 1d2d links to network from 1d to 2d.</span>
+
 <span class="sd">    Branchids can be specified for 1d branches that need to be linked.</span>
 <span class="sd">    A (Multi)Polygon can be provided were links should be made.</span>
 
-<span class="sd">    Note: The boundary nodes of Mesh1d (those sharing only one Mesh1d edge) are not connected to any Mesh2d face.</span>
+<span class="sd">    Note: The boundary nodes of Mesh1d (those sharing only one Mesh1d edge) are not</span>
+<span class="sd">    connected to any Mesh2d face.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    mesh: xu.UgridDataset</span>
 <span class="sd">        Network in which the connections are made</span>
 <span class="sd">    branchids: List[str], optional</span>
-<span class="sd">        List of branchid&#39;s to connect. If None, all branches are connected. Defaults to None.</span>
+<span class="sd">        List of branchid&#39;s to connect. If None, all branches are connected.</span>
+<span class="sd">        Defaults to None.</span>
 <span class="sd">    within: Union[Polygon, MultiPolygon], optional</span>
 <span class="sd">        Area within which connections are made. Defaults to None.</span>
 <span class="sd">    max_length: float, optional</span>
@@ -844,7 +865,6 @@
     <span class="k">return</span> <span class="n">link1d2d</span></div>
 
 
-
 <span class="k">def</span> <span class="nf">_filter_links_on_idx</span><span class="p">(</span><span class="n">network</span><span class="p">:</span> <span class="n">Network</span><span class="p">,</span> <span class="n">keep</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># Select the remaining links</span>
     <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
@@ -862,12 +882,15 @@
     <span class="n">branchids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">within</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Polygon</span><span class="p">,</span> <span class="n">MultiPolygon</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates links from 2d to 1d, where the 2d mesh intersects the 1d mesh: the &#39;embedded&#39; links.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate embedded links from 2d to 1d.</span>
 
-<span class="sd">    To find the intersecting cells in an efficient way, we follow we the next steps. 1) Get the</span>
-<span class="sd">    maximum length of a face edge. 2) Buffer the branches with this length. 3) Find all face nodes</span>
-<span class="sd">    within this buffered geometry. 4) Check for each of the corresponding faces if it crossed the</span>
-<span class="sd">    branches.</span>
+<span class="sd">    Links are generated where the 2d mesh intersects the 1d mesh: the &#39;embedded&#39;</span>
+<span class="sd">    links.</span>
+
+<span class="sd">    To find the intersecting cells in an efficient way, we follow we the next steps.</span>
+<span class="sd">    1) Get the maximum length of a face edge. 2) Buffer the branches with this</span>
+<span class="sd">    length. 3) Find all face nodes within this buffered geometry. 4) Check for each</span>
+<span class="sd">    of the corresponding faces if it crossed the branches.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -905,11 +928,12 @@
     <span class="p">)</span>
 
     <span class="c1"># Create a prepared multilinestring of the 1d network, to check for intersections</span>
-    <span class="n">mls</span> <span class="o">=</span> <span class="n">MultiLineString</span><span class="p">(</span><span class="n">nodes1d</span><span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">mesh1d_edge_nodes</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
-    <span class="n">mls_prep</span> <span class="o">=</span> <span class="n">prep</span><span class="p">(</span><span class="n">mls</span><span class="p">)</span>
+    <span class="n">mls_prep</span> <span class="o">=</span> <span class="n">MultiLineString</span><span class="p">(</span><span class="n">nodes1d</span><span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">mesh1d_edge_nodes</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+    <span class="c1"># TODO where is prep coming from?</span>
+    <span class="c1"># mls_prep = prep(mls)</span>
 
     <span class="c1"># Buffer the branches with the max cell distances</span>
-    <span class="n">area</span> <span class="o">=</span> <span class="n">mls</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="n">maxdiff</span><span class="p">)</span>
+    <span class="n">area</span> <span class="o">=</span> <span class="n">mls_prep</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="n">maxdiff</span><span class="p">)</span>
 
     <span class="c1"># If a within polygon is provided, clip the buffered area with this polygon.</span>
     <span class="k">if</span> <span class="n">within</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -969,6 +993,7 @@
     <span class="n">max_length</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate 1d2d links from the 2d mesh to the 1d mesh, with a lateral connection.</span>
+
 <span class="sd">    If a link is kept, is determined based on the distance between the face center and</span>
 <span class="sd">    the intersection with the 2d mesh exterior. By default, links with an intersection</span>
 <span class="sd">    distance larger than 2 times the center to edge distance of the cell, are removed.</span>
@@ -987,7 +1012,8 @@
 <span class="sd">    mesh: xu.UgridDataset</span>
 <span class="sd">        Network in which the connections are made</span>
 <span class="sd">    dist_factor: Union[float, None], optional</span>
-<span class="sd">        Factor to determine which links are kept (see description above). Defaults to 2.0.</span>
+<span class="sd">        Factor to determine which links are kept (see description above).</span>
+<span class="sd">        Defaults to 2.0.</span>
 <span class="sd">    branchids: List[str], optional</span>
 <span class="sd">        List is branch id&#39;s for which the conncetions are made. Defaults to None.</span>
 <span class="sd">    within: Union[Polygon, MultiPolygon], optional</span>
@@ -1009,10 +1035,11 @@
     <span class="n">geometrylist</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_get_mesh_boundaries_as_polygons</span><span class="p">()</span>
     <span class="n">mpboundaries</span> <span class="o">=</span> <span class="n">GeometryList</span><span class="p">(</span><span class="o">**</span><span class="n">geometrylist</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span><span class="o">.</span><span class="n">to_geometry</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">within</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># If a &#39;within&#39; polygon was provided, get the intersection with the meshboundaries</span>
-        <span class="c1"># and convert it to a geometrylist</span>
-        <span class="c1"># Note that the provided meshboundaries is a (list of) polygon(s). Holes are provided</span>
-        <span class="c1"># as polygons as well, which dont make it a valid MultiPolygon</span>
+        <span class="c1"># If a &#39;within&#39; polygon was provided, get the intersection with</span>
+        <span class="c1"># the meshboundaries and convert it to a geometrylist</span>
+        <span class="c1"># Note that the provided meshboundaries is a (list of) polygon(s).</span>
+        <span class="c1"># Holes are provided as polygons as well, which dont make it a</span>
+        <span class="c1"># valid MultiPolygon</span>
         <span class="n">geometrylist</span> <span class="o">=</span> <span class="n">GeometryList</span><span class="o">.</span><span class="n">from_geometry</span><span class="p">(</span>
             <span class="n">MultiPolygon</span><span class="p">([</span><span class="n">geom</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">within</span><span class="p">)</span> <span class="k">for</span> <span class="n">geom</span> <span class="ow">in</span> <span class="n">mpboundaries</span><span class="o">.</span><span class="n">geoms</span><span class="p">])</span>
         <span class="p">)</span>
@@ -1028,7 +1055,8 @@
         <span class="n">node_mask</span><span class="p">,</span> <span class="n">polygon</span><span class="o">=</span><span class="n">geometrylist</span><span class="p">,</span> <span class="n">search_radius</span><span class="o">=</span><span class="n">max_length</span>
     <span class="p">)</span>
 
-    <span class="c1"># If the provided distance factor was None, no further selection is needed, all links are kept.</span>
+    <span class="c1"># If the provided distance factor was None,</span>
+    <span class="c1"># no further selection is needed, all links are kept.</span>
     <span class="k">if</span> <span class="n">dist_factor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span>
 

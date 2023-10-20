@@ -435,10 +435,9 @@
 <span class="kn">from</span> <span class="nn">hydromt.models</span> <span class="kn">import</span> <span class="n">MeshModel</span>
 <span class="kn">from</span> <span class="nn">hydromt.workflows</span> <span class="kn">import</span> <span class="n">create_mesh2d</span>
 <span class="kn">from</span> <span class="nn">pyproj</span> <span class="kn">import</span> <span class="n">CRS</span>
-<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">box</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">box</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">DATADIR</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">mesh_utils</span><span class="p">,</span> <span class="n">gis_utils</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">workflows</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">DATADIR</span><span class="p">,</span> <span class="n">gis_utils</span><span class="p">,</span> <span class="n">mesh_utils</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">workflows</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DFlowFMModel&quot;</span><span class="p">]</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -1977,7 +1976,6 @@
 <span class="sd">        --------</span>
 <span class="sd">        dflowfm._setup_1dstructures</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="n">snap_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network_snap_offset</span> <span class="k">if</span> <span class="n">snap_offset</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">snap_offset</span>
         <span class="n">_st_type</span> <span class="o">=</span> <span class="s2">&quot;bridge&quot;</span>
         <span class="n">_allowed_columns</span> <span class="o">=</span> <span class="p">[</span>
@@ -2618,7 +2616,7 @@
     <span class="k">def</span> <span class="nf">__set_map_parameters_based_on_variable</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">locationtype</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">interpolation_method</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set map parameters by updating user inputs to default self._MAP&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set map parameters by updating user inputs to default self._MAP.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s2">&quot;locationtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">locationtype</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s2">&quot;interpolation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolation_method</span>

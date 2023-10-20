@@ -607,20 +607,31 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="hydromt_delft3dfm.workflows.mesh1d_add_branch">
 <span class="sig-prename descclassname"><span class="pre">hydromt_delft3dfm.workflows.</span></span><span class="sig-name descname"><span class="pre">mesh1d_add_branch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LineString</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MultiLineString</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">LineString</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MultiLineString</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">branch_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branch_orders</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/hydromt_delft3dfm/workflows/mesh.html#mesh1d_add_branch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hydromt_delft3dfm.workflows.mesh1d_add_branch" title="Link to this definition">#</a></dt>
-<dd><p>Add branch to 1d mesh, from a (list of) (Multi)LineString geometry.
-The branch is discretized with the given node distance.
-if node distance is given as infinity, no discretization will be performed at mid point of the branch, #TODO, if minimum node distance is given, no discretization will be performed at mid point of the branch
-i.e. branch is treated as a pipe
-:param network: Network to which the branch is added
-:type network: Network
-:param branches: Geometry object(s) for which the branch is created
-:type branches: Union[ LineString, MultiLineString, List[Union[LineString, MultiLineString]] ]
+<dd><p>Add branch to 1d mesh, from a (list of) (Multi)LineString geometry.</p>
+<p>The branch is discretized with the given node distance.
+if node distance is given as infinity, no discretization will be performed at
+mid point of the branch,
+#TODO, if minimum node distance is given, no discretization will be
+performed at mid point of the branch i.e. branch is treated as a pipe</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>Network</em>) – Network to which the branch is added</p></li>
+<li><p><strong>LineString</strong> (<em>branches</em><em> (</em><em>Union</em><em>[</em>) – </p></li>
+<li><p><strong>MultiLineString</strong> – </p></li>
+<li><p><strong>List</strong><strong>[</strong><strong>Union</strong><strong>[</strong><strong>LineString</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+<p>:param :
+:param MultiLineString]] ]): Geometry object(s) for which the branch is created
 :param node_distance: Preferred node distance between branch nodes
 :type node_distance: Union[float, int]
-:param branch_names: Branch names to be used in the mesh1d object
+:param branch_names: Branch names to be used in the mesh1d
 :type branch_names: Union[str, list[str]]
-:param branch_orders: Branch orders to be used in the mesh1d object.
-:type branch_orders: Union[float, int, list[Union[float, int]]]</p>
+:param object branch_orders: Branch orders
+:type object branch_orders: Union[float, int, list[Union[float, int]]]
+:param to be used in the mesh1d object.:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><ul class="simple">

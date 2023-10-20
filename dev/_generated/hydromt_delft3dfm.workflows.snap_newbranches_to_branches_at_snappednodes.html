@@ -607,21 +607,28 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="hydromt_delft3dfm.workflows.snap_newbranches_to_branches_at_snappednodes">
 <span class="sig-prename descclassname"><span class="pre">hydromt_delft3dfm.workflows.</span></span><span class="sig-name descname"><span class="pre">snap_newbranches_to_branches_at_snappednodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_branches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame" title="(in GeoPandas v0.14.0)"><span class="pre">GeoDataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame" title="(in GeoPandas v0.14.0)"><span class="pre">GeoDataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">snappednodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame" title="(in GeoPandas v0.14.0)"><span class="pre">GeoDataFrame</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hydromt_delft3dfm/workflows/branches.html#snap_newbranches_to_branches_at_snappednodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hydromt_delft3dfm.workflows.snap_newbranches_to_branches_at_snappednodes" title="Link to this definition">#</a></dt>
-<dd><p>Function to snap new_branches to branches at snappednodes.
-snapnodes are located at branches. new branches will be snapped, and branches will be splitted.
-# NOTE: no interpolation of crosssection is needed because inter branch interpolation is turned on using branchorder.</p>
+<dd><p>Snap new_branches to branches at snappednodes.</p>
+<p>snapnodes are located at branches. new branches will be snapped,
+and branches will be splitted.</p>
+<p># NOTE: no interpolation of crosssection is needed because inter branch
+interpolation is turned on using branchorder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>new_branches</strong> (<a class="reference external" href="https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame" title="(in GeoPandas v0.14.0)"><em>geopandas.GeoDataFrame</em></a>) – Geodataframe of new branches whose geometry will be modified: end nodes will be snapped to snapnodes</p></li>
-<li><p><strong>branches</strong> (<a class="reference external" href="https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame" title="(in GeoPandas v0.14.0)"><em>geopandas.GeoDataFrame</em></a>) – Geodataframe who will be splitted at snapnodes to allow connection with the new_branches.</p></li>
-<li><p><strong>snapnodes</strong> (<a class="reference external" href="https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame" title="(in GeoPandas v0.14.0)"><em>geopandas.GeoDataFrame</em></a>) – Geodataframe which contiains the spatial relation of the new_branches and branches.</p></li>
+<li><p><strong>new_branches</strong> (<a class="reference external" href="https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame" title="(in GeoPandas v0.14.0)"><em>geopandas.GeoDataFrame</em></a>) – Geodataframe of new branches whose geometry will be modified:
+end nodes will be snapped to snapnodes</p></li>
+<li><p><strong>branches</strong> (<a class="reference external" href="https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame" title="(in GeoPandas v0.14.0)"><em>geopandas.GeoDataFrame</em></a>) – Geodataframe who will be splitted at snapnodes to allow connection
+with the new_branches.</p></li>
+<li><p><strong>snapnodes</strong> (<a class="reference external" href="https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame" title="(in GeoPandas v0.14.0)"><em>geopandas.GeoDataFrame</em></a>) – Geodataframe which contiains the spatial relation of the new_branches
+and branches.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>new_branches_snapped</strong> (<em>geopandas.GeoDataFrame</em>) – Geodataframe of new branches with endnodes be snapped to snapnodes in branches_snapped.</p></li>
-<li><p><strong>branches_snapped</strong> (<em>geopandas.GeoDataFrame</em>) – Geodataframe of branches splitted at snapnodes to allow connection with the new_branches_snapped.</p></li>
+<li><p><strong>new_branches_snapped</strong> (<em>geopandas.GeoDataFrame</em>) – Geodataframe of new branches with endnodes be snapped to snapnodes
+in branches_snapped.</p></li>
+<li><p><strong>branches_snapped</strong> (<em>geopandas.GeoDataFrame</em>) – Geodataframe of branches splitted at snapnodes to allow connection
+with the new_branches_snapped.</p></li>
 </ul>
 </p>
 </dd>

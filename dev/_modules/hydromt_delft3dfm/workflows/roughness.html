@@ -414,9 +414,11 @@
                 <article class="bd-article" role="main">
                   
   <h1>Source code for hydromt_delft3dfm.workflows.roughness</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span></span><span class="sd">&quot;&quot;&quot;Workflows to prepare roughness for Delft3D-FM model.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -426,8 +428,8 @@
 
 <div class="viewcode-block" id="generate_roughness">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.generate_roughness.html#hydromt_delft3dfm.workflows.generate_roughness">[docs]</a>
-<span class="k">def</span> <span class="nf">generate_roughness</span><span class="p">(</span><span class="n">roughness</span><span class="p">,</span> <span class="n">roughness_ini</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">generate_roughness</span><span class="p">(</span><span class="n">roughness</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate roughness ID column based on frictiontype and frictionvalue.&quot;&quot;&quot;</span>
     <span class="n">roughness</span><span class="p">[</span><span class="s2">&quot;frictionid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">roughness</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
         <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;frictiontype&quot;</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;frictionvalue&quot;</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
     <span class="p">)</span>

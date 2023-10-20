@@ -607,19 +607,22 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="hydromt_delft3dfm.workflows.compute_2dboundary_values">
 <span class="sig-prename descclassname"><span class="pre">hydromt_delft3dfm.workflows.</span></span><span class="sig-name descname"><span class="pre">compute_2dboundary_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">boundaries:</span> <span class="pre">~geopandas.geodataframe.GeoDataFrame</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_bnd:</span> <span class="pre">~pandas.core.frame.DataFrame</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_value:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_type:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'waterlevel'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_unit:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'m'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">hydromt_delft3dfm.workflows.boundaries</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hydromt_delft3dfm/workflows/boundaries.html#compute_2dboundary_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hydromt_delft3dfm.workflows.compute_2dboundary_values" title="Link to this definition">#</a></dt>
-<dd><p>Compute 2d boundary timeseries. Line geometry will be converted into supporting points.
-Note that All quantities are specified per support point, except for discharges which are specified per polyline.</p>
+<dd><p>Compute 2d boundary timeseries.</p>
+<p>Line geometry will be converted into supporting points.
+Note that All quantities are specified per support point,
+except for discharges which are specified per polyline.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>boundaries</strong> (<em>gpd.GeoDataFrame</em><em>, </em><em>optional</em>) – <p>line geometry type of locations of the 2D boundaries to which to add data.
-Must be combined with <code class="docutils literal notranslate"><span class="pre">df_bnd</span></code>.</p>
+<li><p><strong>boundaries</strong> (<em>gpd.GeoDataFrame</em><em>, </em><em>optional</em>) – <p>line geometry type of locations of the 2D boundaries to
+which to add data. Must be combined with <code class="docutils literal notranslate"><span class="pre">df_bnd</span></code>.</p>
 <ul>
 <li><p>Required variables: [“boundary_id”]</p></li>
 </ul>
 </p></li>
 <li><p><strong>df_bnd</strong> (<em>pd.DataFrame</em><em>, </em><em>optional</em>) – <p>pd.DataFrame containing the boundary timeseries values.
-Must be combined with <code class="docutils literal notranslate"><span class="pre">boundaries</span></code>. Columns must match the “boundary_id” in <code class="docutils literal notranslate"><span class="pre">boundaries</span></code>.</p>
+Must be combined with <code class="docutils literal notranslate"><span class="pre">boundaries</span></code>. Columns must match the
+“boundary_id” in <code class="docutils literal notranslate"><span class="pre">boundaries</span></code>.</p>
 <ul>
 <li><p>Required variables: [“time”]</p></li>
 </ul>

@@ -46,7 +46,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="hydromt_delft3dfm.DFlowFMModel" href="_generated/hydromt_delft3dfm.DFlowFMModel.html" />
-    <link rel="prev" title="User guide" href="user_guide/intro.html" />
+    <link rel="prev" title="Updating a model" href="user_guide/dflowfm_update.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -874,7 +874,7 @@
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.get_boundaries_with_nodeid.html#hydromt_delft3dfm.workflows.get_boundaries_with_nodeid" title="hydromt_delft3dfm.workflows.get_boundaries_with_nodeid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.get_boundaries_with_nodeid</span></code></a>(...)</p></td>
-<td><p>Get boundary locations from the network branches and associate them with node IDs.</p></td>
+<td><p>Get boundary locations from branches and associate with node IDs.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.generate_boundaries_from_branches.html#hydromt_delft3dfm.workflows.generate_boundaries_from_branches" title="hydromt_delft3dfm.workflows.generate_boundaries_from_branches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.generate_boundaries_from_branches</span></code></a>(...)</p></td>
 <td><p>Get the possible boundary locations from the branches with id.</p></td>
@@ -902,10 +902,10 @@
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.prepare_branches.html#hydromt_delft3dfm.workflows.prepare_branches" title="hydromt_delft3dfm.workflows.prepare_branches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.prepare_branches</span></code></a>(gdf_br, params, ...)</p></td>
-<td><p>This function is to set all common steps to add branches type of objects (ie channels, rivers, pipes...).</p></td>
+<td><p>Set all common steps to add branches type of objects.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.process_branches.html#hydromt_delft3dfm.workflows.process_branches" title="hydromt_delft3dfm.workflows.process_branches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.process_branches</span></code></a>(branches[, ...])</p></td>
-<td><p>Process the branches by cleaning up the branches, snapping them, splitting them and generating branchnodes.</p></td>
+<td><p>Process the branches.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.validate_branches.html#hydromt_delft3dfm.workflows.validate_branches" title="hydromt_delft3dfm.workflows.validate_branches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.validate_branches</span></code></a>(branches[, logger])</p></td>
 <td><p>Validate the branches.</p></td>
@@ -914,16 +914,16 @@
 <td><p>Add branches to exisitng open system branches at mesh1d node locations.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.find_nearest_branch.html#hydromt_delft3dfm.workflows.find_nearest_branch" title="hydromt_delft3dfm.workflows.find_nearest_branch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.find_nearest_branch</span></code></a>(branches, ...)</p></td>
-<td><p>Method to determine nearest branch for each geometry.</p></td>
+<td><p>Determine nearest branch for each geometry.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.update_data_columns_attributes.html#hydromt_delft3dfm.workflows.update_data_columns_attributes" title="hydromt_delft3dfm.workflows.update_data_columns_attributes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.update_data_columns_attributes</span></code></a>(...)</p></td>
-<td><p>Add or update columns in the branches geodataframe based on column and values in attributes (excluding 1st col branchtype used for query).</p></td>
+<td><p>Add or update columns in the branches geodataframe.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.update_data_columns_attribute_from_query.html#hydromt_delft3dfm.workflows.update_data_columns_attribute_from_query" title="hydromt_delft3dfm.workflows.update_data_columns_attribute_from_query"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.update_data_columns_attribute_from_query</span></code></a>(...)</p></td>
-<td><p>Update an attribute column of branches based on query on &quot;branchtype&quot;, &quot;shape&quot; and &quot;width&quot;/&quot;diameter&quot; values specified in attribute DataFrame.</p></td>
+<td><p>Update an attribute column of branches.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.snap_newbranches_to_branches_at_snappednodes.html#hydromt_delft3dfm.workflows.snap_newbranches_to_branches_at_snappednodes" title="hydromt_delft3dfm.workflows.snap_newbranches_to_branches_at_snappednodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.snap_newbranches_to_branches_at_snappednodes</span></code></a>(...)</p></td>
-<td><p>Function to snap new_branches to branches at snappednodes.</p></td>
+<td><p>Snap new_branches to branches at snappednodes.</p></td>
 </tr>
 </tbody>
 </table>
@@ -933,22 +933,22 @@
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.prepare_default_friction_and_crosssection.html#hydromt_delft3dfm.workflows.prepare_default_friction_and_crosssection" title="hydromt_delft3dfm.workflows.prepare_default_friction_and_crosssection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.prepare_default_friction_and_crosssection</span></code></a>(...)</p></td>
-<td><p>Prepare the default uniform friction type-value pairs and crosssection profiles for branches.</p></td>
+<td><p>Prepare the default uniform friction and crosssection for branches.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.init_crosssections_options.html#hydromt_delft3dfm.workflows.init_crosssections_options" title="hydromt_delft3dfm.workflows.init_crosssections_options"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.init_crosssections_options</span></code></a>(...)</p></td>
 <td><p>Initialise crosssection options from user input.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.set_branch_crosssections.html#hydromt_delft3dfm.workflows.set_branch_crosssections" title="hydromt_delft3dfm.workflows.set_branch_crosssections"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.set_branch_crosssections</span></code></a>(branches)</p></td>
-<td><p>Function to set regular cross-sections for each branch.</p></td>
+<td><p>Set regular cross-sections for each branch.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.set_xyz_crosssections.html#hydromt_delft3dfm.workflows.set_xyz_crosssections" title="hydromt_delft3dfm.workflows.set_xyz_crosssections"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.set_xyz_crosssections</span></code></a>(branches, ...)</p></td>
 <td><p>Set up xyz crosssections.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.set_point_crosssections.html#hydromt_delft3dfm.workflows.set_point_crosssections" title="hydromt_delft3dfm.workflows.set_point_crosssections"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.set_point_crosssections</span></code></a>(branches, ...)</p></td>
-<td><p>Function to set regular cross-sections from point.</p></td>
+<td><p>Set regular cross-sections from point.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.add_crosssections.html#hydromt_delft3dfm.workflows.add_crosssections" title="hydromt_delft3dfm.workflows.add_crosssections"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.add_crosssections</span></code></a>(crosssections, ...)</p></td>
-<td><p>Adds new_crossections to crosssections.</p></td>
+<td><p>Add new_crossections to crosssections.</p></td>
 </tr>
 </tbody>
 </table>
@@ -961,7 +961,7 @@
 <td><p>Compute up- and downstream invert levels for pipe lines in gdf.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.get_river_bathymetry.html#hydromt_delft3dfm.workflows.get_river_bathymetry" title="hydromt_delft3dfm.workflows.get_river_bathymetry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.get_river_bathymetry</span></code></a>(ds, flwdir[, ...])</p></td>
-<td><p>Estimate river bedlevel zb using gradually varying flow (gvf), manning's equation (manning) or a power-law relation (powlaw) rivdph_method.</p></td>
+<td><p>Estimate river bedlevel zb.</p></td>
 </tr>
 </tbody>
 </table>
@@ -981,19 +981,19 @@
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches.html#hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches" title="hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.mesh1d_network1d_from_branches</span></code></a>(...)</p></td>
-<td><p>Returns xugrid mesh1d and network1d UgridDataset from open and closed system branches.</p></td>
+<td><p>Return xugrid mesh1d and network1d UgridDataset from branches.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.mesh1d_add_branch.html#hydromt_delft3dfm.workflows.mesh1d_add_branch" title="hydromt_delft3dfm.workflows.mesh1d_add_branch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.mesh1d_add_branch</span></code></a>(network, ...[, ...])</p></td>
 <td><p>Add branch to 1d mesh, from a (list of) (Multi)LineString geometry.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.mesh2d_refine.html#hydromt_delft3dfm.workflows.mesh2d_refine" title="hydromt_delft3dfm.workflows.mesh2d_refine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.mesh2d_refine</span></code></a>(mesh2d, res[, ...])</p></td>
-<td><p>Refine mesh2d by adding new nodes and faces within a polygon or based on a sample array.</p></td>
+<td><p>Refine mesh2d by adding new nodes and faces.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.links1d2d_add_links_1d_to_2d.html#hydromt_delft3dfm.workflows.links1d2d_add_links_1d_to_2d" title="hydromt_delft3dfm.workflows.links1d2d_add_links_1d_to_2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.links1d2d_add_links_1d_to_2d</span></code></a>(mesh)</p></td>
-<td><p>Function to add 1d2d links to network, by generating them from 1d to 2d.</p></td>
+<td><p>Generate 1d2d links to network from 1d to 2d.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_embedded.html#hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_embedded" title="hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_embedded"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.links1d2d_add_links_2d_to_1d_embedded</span></code></a>(mesh)</p></td>
-<td><p>Generates links from 2d to 1d, where the 2d mesh intersects the 1d mesh: the 'embedded' links.</p></td>
+<td><p>Generate embedded links from 2d to 1d.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_lateral.html#hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_lateral" title="hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_lateral"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.links1d2d_add_links_2d_to_1d_lateral</span></code></a>(mesh)</p></td>
 <td><p>Generate 1d2d links from the 2d mesh to the 1d mesh, with a lateral connection.</p></td>
@@ -1015,8 +1015,8 @@
 <h3>Roughness<a class="headerlink" href="#roughness" title="Link to this heading">#</a></h3>
 <table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.generate_roughness.html#hydromt_delft3dfm.workflows.generate_roughness" title="hydromt_delft3dfm.workflows.generate_roughness"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.generate_roughness</span></code></a>(roughness, ...)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.workflows.generate_roughness.html#hydromt_delft3dfm.workflows.generate_roughness" title="hydromt_delft3dfm.workflows.generate_roughness"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflows.generate_roughness</span></code></a>(roughness)</p></td>
+<td><p>Generate roughness ID column based on frictiontype and frictionvalue.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1164,12 +1164,12 @@
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="user_guide/intro.html"
+       href="user_guide/dflowfm_update.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">User guide</p>
+        <p class="prev-next-title">Updating a model</p>
       </div>
     </a>
     <a class="right-next"

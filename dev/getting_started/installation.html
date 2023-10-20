@@ -442,12 +442,12 @@
 <p>For more information about the prerequisites for an installation of the HydroMT package
 and related dependencies, please visit the documentation of
 <a class="reference external" href="https://deltares.github.io/hydromt/latest/getting_started/installation.html#installation-guide">HydroMT core</a></p>
-<p>Compared to HydroMT, HydroMT-Wflow has additional dependencies, namely:</p>
+<p>Compared to HydroMT, HydroMT-delft3dfm has additional dependencies, namely:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/uiri/toml">toml</a></p></li>
-<li><p><a class="reference external" href="https://pcraster.geo.uu.nl">pcraster</a> (optional)</p></li>
-<li><p><a class="reference external" href="https://github.com/global-water-watch/gww-api">gwwapi</a> (optional)</p></li>
-<li><p><a class="reference external" href="https://github.com/openearth/hydro-engine">hydroengine</a> (optional)</p></li>
+<li><p><a class="reference external" href="https://github.com/Deltares/xugrid">xugrid</a></p></li>
+<li><p><a class="reference external" href="https://github.com/Deltares/HYDROLIB-core">hydrolib-core</a></p></li>
+<li><p><a class="reference external" href="https://github.com/Deltares/MeshKernelPy">meshkernel-py</a></p></li>
+<li><p><a class="reference external" href="https://networkx.org/">networkx</a></p></li>
 </ul>
 <p>If you already have a python &amp; conda installation but do not yet have mamba installed,
 we recommend installing it into your <em>base</em> environment using:</p>
@@ -457,54 +457,42 @@ we recommend installing it into your <em>base</em> environment using:</p>
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
-<p>HydroMT-Wflow is available from pypi and conda-forge.
-We recommend installing using mamba from conda-forge in a new environment.</p>
+<p>HydroMT-Delft3DFM is available from pypi.
+We recommend installing using mamba/conda from conda-forge in a new environment.
+If conda is prefered, we recommond install libmamba as the solver. See how to <a class="reference external" href="https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community">here</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>In the commands below you can exchange <cite>mamba</cite> for <cite>conda</cite>, see
 <a class="reference external" href="https://deltares.github.io/hydromt/latest/getting_started/installation.html#installation-guide">here</a>
 for the difference between both.</p>
 </div>
-<section id="install-hydromt-wflow-in-a-new-environment-recommended">
-<h3>Install HydroMT-Wflow in a new environment (recommended!)<a class="headerlink" href="#install-hydromt-wflow-in-a-new-environment-recommended" title="Link to this heading">#</a></h3>
-<p>You can install HydroMT-Wflow in a new environment called <cite>hydromt-wflow</cite> together with
-all optional (see above) and a few additional dependencies with:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>mamba<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>https://raw.githubusercontent.com/Deltares/hydromt_wflow/main/environment.yml
+<section id="install-hydromt-delft3dfm-in-a-new-environment-recommended">
+<h3>Install HydroMT-Delft3DFM in a new environment (recommended!)<a class="headerlink" href="#install-hydromt-delft3dfm-in-a-new-environment-recommended" title="Link to this heading">#</a></h3>
+<p>You can install HydroMT-Delft3DFM in a new environment called <cite>hydromt-delft3dfm</cite>.
+HydroMT-Delft3DFM is not yet available on conda-forge so we recommend installling HydroMT (core) first
+via conda-forge and then hydromt-delft3dfm and the additionnal libraries via pip.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>hydromt-delft3dfm<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>hydromt
 </pre></div>
 </div>
-<p>Then, activate the environment (as stated by mamba/conda) to start making use of HydroMT-Wflow:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">conda activate hydromt-wflow</span>
+<p>Then, activate the environment (as stated by mamba/conda) to start making use of HydroMT-delft3dfm:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">conda activate hydromt-delft3dfm</span>
+</pre></div>
+</div>
+<p>Finally, install Hydromt-Delft3DFM using pypi.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install hydromt-delft3dfm</span>
 </pre></div>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>If you already have this environment with this name either remove it with
-<cite>conda env remove -n hydromt-wflow</cite> <strong>or</strong> set a new name for the environment
+<cite>conda env remove -n hydromt-delft3dfm</cite> <strong>or</strong> set a new name for the environment
 by adding <cite>-n &lt;name&gt;</cite> to the line below.</p>
-</div>
-</section>
-<section id="install-hydromt-wflow-in-an-existing-environment">
-<h3>Install HydroMT-Wflow in an existing environment<a class="headerlink" href="#install-hydromt-wflow-in-an-existing-environment" title="Link to this heading">#</a></h3>
-<p>To install HydroMT-Wflow in an existing environment execute the command below
-where you replace <cite>&lt;environment_name&gt;</cite> with the name of the existing environment.
-Note that if some dependencies are not installed from conda-forge but from other
-channels the installation may fail.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>mamba<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>hydromt_wflow<span class="w"> </span>-n<span class="w"> </span>&lt;environment_name&gt;
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Please take into account that gwwapi or hydroengine packages are not available from conda and therefore have to be installed from pypi separately.</p>
-</div>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>gwwapi
-<span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>hydroengine
-</pre></div>
 </div>
 </section>
 </section>
 <section id="developer-install">
 <h2>Developer install<a class="headerlink" href="#developer-install" title="Link to this heading">#</a></h2>
-<p>To be able to test and develop the HydroMT-Wflow package see instructions in the <a class="reference internal" href="../dev_guide/dev_install.html#dev-env"><span class="std std-ref">Developer installation guide</span></a>.</p>
+<p>To be able to test and develop the HydroMT-delft3dfm package see instructions in the <a class="reference internal" href="../dev_guide/dev_install.html#dev-env"><span class="std std-ref">Developer installation guide</span></a>.</p>
 </section>
 </section>
 
@@ -553,8 +541,7 @@ channels the installation may fail.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-hydromt-wflow-in-a-new-environment-recommended">Install HydroMT-Wflow in a new environment (recommended!)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-hydromt-wflow-in-an-existing-environment">Install HydroMT-Wflow in an existing environment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-hydromt-delft3dfm-in-a-new-environment-recommended">Install HydroMT-Delft3DFM in a new environment (recommended!)</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#developer-install">Developer install</a></li>

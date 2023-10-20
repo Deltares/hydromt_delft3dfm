@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Working with the Wflow model &#8212; HydroMT Delft3D FM  documentation</title>
+    <title>Working with the Delft3D FM model &#8212; HydroMT Delft3D FM  documentation</title>
   
   
   
@@ -45,6 +45,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/dflowfm';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Model methods and components" href="dflowfm_model_setup.html" />
+    <link rel="prev" title="User guide" href="intro.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -148,7 +150,7 @@
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="intro.html">
                         User guide
                       </a>
@@ -264,7 +266,7 @@
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -289,7 +291,7 @@
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="intro.html">
                         User guide
                       </a>
@@ -366,6 +368,27 @@
     
   </div>
   
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Working with the Delft3D FM model</a><input checked class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="dflowfm_model_setup.html">Model methods and components</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="dflowfm_build.html">Building a model</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="dflowfm_update.html">Updating a model</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
@@ -398,6 +421,9 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
+    
+    <li class="breadcrumb-item"><a href="intro.html" class="nav-link">User guide</a></li>
+    
     <li class="breadcrumb-item active" aria-current="page">Working...</li>
   </ul>
 </nav>
@@ -415,14 +441,13 @@
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="working-with-the-wflow-model">
-<h1>Working with the Wflow model<a class="headerlink" href="#working-with-the-wflow-model" title="Link to this heading">#</a></h1>
-<p>With the Hydromt-Wflow plugin, you can easily work with Wflow SBM models.
+  <section id="working-with-the-delft3d-fm-model">
+<h1>Working with the Delft3D FM model<a class="headerlink" href="#working-with-the-delft3d-fm-model" title="Link to this heading">#</a></h1>
+<p>With the Hydromt-Delft3D FM plugin, you can easily work with Delft3D FM 1D2D models.
 This plugin contains relevant functions for setting up or adjusting models:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="dflowfm_build.html#wflow-build"><span class="std std-ref">building a model</span></a>: building a model from scratch.</p></li>
-<li><p><a class="reference internal" href="dflowfm_update.html#wflow-update"><span class="std std-ref">updating a model</span></a>: updating an existing model (e.g. update datafeeds).</p></li>
-<li><p><span class="xref std std-ref">clipping a model</span>: changing the spatial domain of an existing model (e.g. select subbasins from a larger model).</p></li>
+<li><p><a class="reference internal" href="dflowfm_build.html#dflowfm-build"><span class="std std-ref">building a model</span></a>: building a model from scratch.</p></li>
+<li><p><span class="xref std std-ref">updating a model</span>: updating an existing model (e.g. update datafeeds).</p></li>
 </ul>
 <div class="toctree-wrapper compound">
 </div>
@@ -438,6 +463,24 @@ This plugin contains relevant functions for setting up or adjusting models:</p>
                 <footer class="prev-next-footer">
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="intro.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">User guide</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="dflowfm_model_setup.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Model methods and components</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               

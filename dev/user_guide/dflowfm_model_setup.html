@@ -45,6 +45,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/dflowfm_model_setup';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Building a model" href="dflowfm_build.html" />
+    <link rel="prev" title="Working with the Delft3D FM model" href="dflowfm.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -148,7 +150,7 @@
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="intro.html">
                         User guide
                       </a>
@@ -264,7 +266,7 @@
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -289,7 +291,7 @@
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="intro.html">
                         User guide
                       </a>
@@ -366,6 +368,27 @@
     
   </div>
   
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="dflowfm.html">Working with the Delft3D FM model</a><input checked class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Model methods and components</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="dflowfm_build.html">Building a model</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="dflowfm_update.html">Updating a model</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
@@ -398,6 +421,12 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
+    
+    <li class="breadcrumb-item"><a href="intro.html" class="nav-link">User guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="dflowfm.html" class="nav-link">Working with the Delft3D FM model</a></li>
+    
     <li class="breadcrumb-item active" aria-current="page">Model...</li>
   </ul>
 </nav>
@@ -417,58 +446,115 @@
                   
   <section id="model-methods-and-components">
 <span id="model-set-up"></span><h1>Model methods and components<a class="headerlink" href="#model-methods-and-components" title="Link to this heading">#</a></h1>
-<p>The HydroMT-Wflow plugin helps you preparing or updating several methods of a Wflow model such as topography information, landuse, soil or forcing.
+<p>The HydroMT-Delft3D FM plugin helps you preparing or updating several methods of a Delft3D FM model such as model topology, map data and forcing.
 The main interactions are available from the HydroMT Command Line Interface and allow you to configure
-HydroMT in order to build or update or clip Wflow models.</p>
-<p>When building or updating a model from command line a
-<a class="reference external" href="https://deltares.github.io/hydromt/latest/user_guide/model_region">model region</a>; a model setup
-<a class="reference internal" href="dflowfm_build.html#model-config"><span class="std std-ref">configuration</span></a> (.ini file) with model methods and options and, optionally,
-a <a class="reference external" href="https://deltares.github.io/hydromt/latest/user_guide/data_main">data sources</a> (.yml) file should be prepared.</p>
+HydroMT in order to build or update Delft3D FM models.</p>
+<p>When building or updating a model from command line a model setup
+<a class="reference internal" href="dflowfm_build.html#model-config"><span class="std std-ref">configuration</span></a> (.yml/.ini file) with model methods and options and, optionally,
+a <a class="reference external" href="https://deltares.github.io/hydromt/latest/user_guide/data_prepare_cat.html">data sources</a> (.yml) file should be prepared.</p>
 <section id="model-setup-methods">
 <span id="model-methods"></span><h2>Model setup methods<a class="headerlink" href="#model-setup-methods" title="Link to this heading">#</a></h2>
-<p>An overview of the available Wflow model setup methods
+<p>An overview of the available Delft3D FM model setup methods
 is provided in the table below. When using HydroMT from the command line only the
 setup methods are exposed. Click on
 a specific method see its documentation.</p>
+<table class="table">
+<colgroup>
+<col style="width: 26.7%" />
+<col style="width: 73.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Method</p></th>
+<th class="head"><p>Explanation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.setup_config.html#hydromt_delft3dfm.DFlowFMModel.setup_config" title="hydromt_delft3dfm.DFlowFMModel.setup_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup_config()</span></code></a></p></th>
+<td><p>Update config with a dictionary</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.setup_rivers.html#hydromt_delft3dfm.DFlowFMModel.setup_rivers" title="hydromt_delft3dfm.DFlowFMModel.setup_rivers"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup_rivers()</span></code></a></p></th>
+<td><p>This component sets the 1D river branches with parameters.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.setup_channels.html#hydromt_delft3dfm.DFlowFMModel.setup_channels" title="hydromt_delft3dfm.DFlowFMModel.setup_channels"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup_channels()</span></code></a></p></th>
+<td><p>This component sets the 1D channel branches with parameters.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.setup_rivers_from_dem.html#hydromt_delft3dfm.DFlowFMModel.setup_rivers_from_dem" title="hydromt_delft3dfm.DFlowFMModel.setup_rivers_from_dem"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup_rivers_from_dem()</span></code></a></p></th>
+<td><p>This component sets the 1D river branches with parameters derived from hydrography.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.setup_pipes.html#hydromt_delft3dfm.DFlowFMModel.setup_pipes" title="hydromt_delft3dfm.DFlowFMModel.setup_pipes"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup_pipes()</span></code></a></p></th>
+<td><p>This component sets the 1D pipe branches with parameters.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.setup_manholes.html#hydromt_delft3dfm.DFlowFMModel.setup_manholes" title="hydromt_delft3dfm.DFlowFMModel.setup_manholes"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup_manholes()</span></code></a></p></th>
+<td><p>This component adds manholes with parameters to 1D pipes.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.setup_bridges.html#hydromt_delft3dfm.DFlowFMModel.setup_bridges" title="hydromt_delft3dfm.DFlowFMModel.setup_bridges"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup_bridges()</span></code></a></p></th>
+<td><p>This component adds bridges with parameters to 1D branches.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.setup_culverts.html#hydromt_delft3dfm.DFlowFMModel.setup_culverts" title="hydromt_delft3dfm.DFlowFMModel.setup_culverts"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup_culverts()</span></code></a></p></th>
+<td><p>This component adds culverts with parameters to 1D branches.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.setup_mesh2d.html#hydromt_delft3dfm.DFlowFMModel.setup_mesh2d" title="hydromt_delft3dfm.DFlowFMModel.setup_mesh2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup_mesh2d()</span></code></a></p></th>
+<td><p>This component sets a 2D mesh.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.setup_mesh2d_refine.html#hydromt_delft3dfm.DFlowFMModel.setup_mesh2d_refine" title="hydromt_delft3dfm.DFlowFMModel.setup_mesh2d_refine"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup_mesh2d_refine()</span></code></a></p></th>
+<td><p>This component refines the 2D mesh.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.setup_link1d2d.html#hydromt_delft3dfm.DFlowFMModel.setup_link1d2d" title="hydromt_delft3dfm.DFlowFMModel.setup_link1d2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup_link1d2d()</span></code></a></p></th>
+<td><p>This component sets 1d2d links that link the 1D branchs to the 2D mesh.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.setup_maps_from_rasterdataset.html#hydromt_delft3dfm.DFlowFMModel.setup_maps_from_rasterdataset" title="hydromt_delft3dfm.DFlowFMModel.setup_maps_from_rasterdataset"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup_maps_from_rasterdataset()</span></code></a></p></th>
+<td><p>This component adds parameter maps to the 2D mesh.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.setup_maps_from_raster_reclass.html#hydromt_delft3dfm.DFlowFMModel.setup_maps_from_raster_reclass" title="hydromt_delft3dfm.DFlowFMModel.setup_maps_from_raster_reclass"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup_maps_from_raster_reclass()</span></code></a></p></th>
+<td><p>This component adds parameter maps that are derived by reclass existing maps to the 2D mesh.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.setup_1dboundary.html#hydromt_delft3dfm.DFlowFMModel.setup_1dboundary" title="hydromt_delft3dfm.DFlowFMModel.setup_1dboundary"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup_1dboundary()</span></code></a></p></th>
+<td><p>Setup a 1D boundary forcing to the 1D branches.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.setup_2dboundary.html#hydromt_delft3dfm.DFlowFMModel.setup_2dboundary" title="hydromt_delft3dfm.DFlowFMModel.setup_2dboundary"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup_2dboundary()</span></code></a></p></th>
+<td><p>Setup a 2D boundary forcing to the 2D mesh.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.setup_rainfall_from_constant.html#hydromt_delft3dfm.DFlowFMModel.setup_rainfall_from_constant" title="hydromt_delft3dfm.DFlowFMModel.setup_rainfall_from_constant"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup_rainfall_from_constant()</span></code></a></p></th>
+<td><p>Setup a constant precipitation forcing to the 2D mesh.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.setup_rainfall_from_uniform_timeseries.html#hydromt_delft3dfm.DFlowFMModel.setup_rainfall_from_uniform_timeseries" title="hydromt_delft3dfm.DFlowFMModel.setup_rainfall_from_uniform_timeseries"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup_rainfall_from_uniform_timeseries()</span></code></a></p></th>
+<td><p>Setup a spatial uniform precipitation forcing to the 2D mesh.</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="model-components">
 <span id="id1"></span><h2>Model components<a class="headerlink" href="#model-components" title="Link to this heading">#</a></h2>
-<p>The following table provides an overview of which <code class="xref py py-class docutils literal notranslate"><span class="pre">WflowModel</span></code>
-component contains which Wflow in- and output files. The files are read and written with the associated
-read- and write- methods, i.e. <code class="xref py py-func docutils literal notranslate"><span class="pre">read_config()</span></code>
-and <code class="xref py py-func docutils literal notranslate"><span class="pre">write_config()</span></code> for the
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">config</span></code> component.</p>
+<p>The following table provides an overview of which <a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.html#hydromt_delft3dfm.DFlowFMModel" title="hydromt_delft3dfm.DFlowFMModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">DFlowFMModel</span></code></a>
+component contains which Delft3DFM in- and output files. The files are read and written with the associated
+read- and write- methods, i.e. <a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.read_config.html#hydromt_delft3dfm.DFlowFMModel.read_config" title="hydromt_delft3dfm.DFlowFMModel.read_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_config()</span></code></a>
+and <a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.write_config.html#hydromt_delft3dfm.DFlowFMModel.write_config" title="hydromt_delft3dfm.DFlowFMModel.write_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_config()</span></code></a> for the
+<a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.config.html#hydromt_delft3dfm.DFlowFMModel.config" title="hydromt_delft3dfm.DFlowFMModel.config"><code class="xref py py-attr docutils literal notranslate"><span class="pre">config</span></code></a> component.</p>
 <table class="table">
 <colgroup>
 <col style="width: 30.0%" />
 <col style="width: 70.0%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">WflowModel</span></code> component</p></th>
-<th class="head"><p>Wflow files</p></th>
+<tr class="row-odd"><th class="head"><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.html#hydromt_delft3dfm.DFlowFMModel" title="hydromt_delft3dfm.DFlowFMModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">DFlowFMModel</span></code></a> component</p></th>
+<th class="head"><p>Delft3DFM files, saved in dflowfm folder.</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">config</span></code></p></td>
-<td><p>wflow_sbm.toml</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.config.html#hydromt_delft3dfm.DFlowFMModel.config" title="hydromt_delft3dfm.DFlowFMModel.config"><code class="xref py py-attr docutils literal notranslate"><span class="pre">config</span></code></a></p></td>
+<td><p>DFlowFM.mdu, saved in dflowfm folder.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">staticmaps</span></code></p></td>
-<td><p>staticmaps.nc</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.geoms.html#hydromt_delft3dfm.DFlowFMModel.geoms" title="hydromt_delft3dfm.DFlowFMModel.geoms"><code class="xref py py-attr docutils literal notranslate"><span class="pre">geoms</span></code></a></p></td>
+<td><p>1D model geometries, saved in the geoms folder.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">staticgeoms</span></code></p></td>
-<td><p>geometries from the staticgeoms folder (basins.geojson, rivers.geojson etc.)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.maps.html#hydromt_delft3dfm.DFlowFMModel.maps" title="hydromt_delft3dfm.DFlowFMModel.maps"><code class="xref py py-attr docutils literal notranslate"><span class="pre">maps</span></code></a></p></td>
+<td><p>2D model data on regular grid, saved in the maps folder</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">forcing</span></code></p></td>
-<td><p>inmaps.nc</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.mesh.html#hydromt_delft3dfm.DFlowFMModel.mesh" title="hydromt_delft3dfm.DFlowFMModel.mesh"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mesh</span></code></a></p></td>
+<td><p>unstructured mesh schematisation and data, saved in the dflowfm folder</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">states</span></code></p></td>
-<td><p>instates.nc</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">tables</span></code></p></td>
-<td><p>tabular data (csv format, e.g. lake_hq.csv, lake_sh.csv)</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">results</span></code></p></td>
-<td><p>output.nc, output_scalar.nc, output.csv</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../_generated/hydromt_delft3dfm.DFlowFMModel.forcing.html#hydromt_delft3dfm.DFlowFMModel.forcing" title="hydromt_delft3dfm.DFlowFMModel.forcing"><code class="xref py py-attr docutils literal notranslate"><span class="pre">forcing</span></code></a></p></td>
+<td><p>1D and 2D forcing, saved in dflowfm  folder.</p></td>
 </tr>
 </tbody>
 </table>
@@ -485,6 +571,24 @@ and <code class="xref py py-func docutils literal notranslate"><span class="pre"
                 <footer class="prev-next-footer">
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="dflowfm.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Working with the Delft3D FM model</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="dflowfm_build.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Building a model</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               

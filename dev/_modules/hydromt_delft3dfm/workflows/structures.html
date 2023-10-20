@@ -414,18 +414,18 @@
                 <article class="bd-article" role="main">
                   
   <h1>Source code for hydromt_delft3dfm.workflows.structures</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span></span><span class="sd">&quot;&quot;&quot;Workflows to prepare 1D structures for Delft3D-FM model.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span>
 
 <span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
+<span class="kn">from</span> <span class="nn">..gis_utils</span> <span class="kn">import</span> <span class="n">update_data_columns_attributes_based_on_filter</span>
 <span class="kn">from</span> <span class="nn">.branches</span> <span class="kn">import</span> <span class="n">find_nearest_branch</span>
 <span class="kn">from</span> <span class="nn">.crosssections</span> <span class="kn">import</span> <span class="n">set_point_crosssections</span>
-<span class="kn">from</span> <span class="nn">..gis_utils</span> <span class="kn">import</span> <span class="n">update_data_columns_attributes_based_on_filter</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -449,11 +449,13 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare 1D structures from geodataframe.</span>
 
-<span class="sd">    Include the universal weir (Not Implemented) , culvert and bridge (``str_type`` = &#39;bridge&#39;), which can only be used in a single 1D channel.</span>
+<span class="sd">    Include the universal weir (Not Implemented) , culvert and bridge</span>
+<span class="sd">    (``str_type`` = &#39;bridge&#39;), which can only be used in a single 1D channel.</span>
 
-<span class="sd">    Structures are first filtered for value specified in ``filter`` on the column ``st_type``.</span>
-<span class="sd">    They are then snapped to the existing network within a max distance defined in ``snap_offset`` and will be dropped if not snapped.</span>
-<span class="sd">    Finally, crossections are read and set up for the remaining structures.</span>
+<span class="sd">    Structures are first filtered for value specified in ``filter`` on the column</span>
+<span class="sd">    ``st_type``. They are then snapped to the existing network within a max distance</span>
+<span class="sd">    defined in ``snap_offset`` and will be dropped if not snapped. Finally,</span>
+<span class="sd">    crossections are read and set up for the remaining structures.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -519,7 +521,8 @@
     <span class="p">)</span>
 
     <span class="c1"># 4. snap structures to branches</span>
-    <span class="c1"># setup branch_id - snap structures to branch (inplace of structures, will add branch_id and branch_offset columns)</span>
+    <span class="c1"># setup branch_id - snap structures to branch (inplace of structures,</span>
+    <span class="c1"># will add branch_id and branch_offset columns)</span>
     <span class="n">find_nearest_branch</span><span class="p">(</span><span class="n">branches</span><span class="o">=</span><span class="n">branches</span><span class="p">,</span> <span class="n">geometries</span><span class="o">=</span><span class="n">gdf_st</span><span class="p">,</span> <span class="n">maxdist</span><span class="o">=</span><span class="n">snap_offset</span><span class="p">)</span>
     <span class="c1"># setup failed - drop based on branch_offset that are not snapped to branch</span>
     <span class="n">_old_ids</span> <span class="o">=</span> <span class="n">gdf_st</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
@@ -527,7 +530,8 @@
     <span class="n">_new_ids</span> <span class="o">=</span> <span class="n">gdf_st</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_old_ids</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">_new_ids</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;structure with id: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">_old_ids</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">set</span><span class="p">(</span><span class="n">_new_ids</span><span class="p">))</span><span class="si">}</span><span class="s2"> are dropped: unable to find closest branch. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;structure with id: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">_old_ids</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">set</span><span class="p">(</span><span class="n">_new_ids</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;are dropped: unable to find closest branch. &quot;</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_new_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
@@ -540,7 +544,8 @@
         <span class="n">gdf_st</span><span class="p">[</span><span class="s2">&quot;structure_chainage&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf_st</span><span class="p">[</span><span class="s2">&quot;branch_offset&quot;</span><span class="p">]</span>
 
     <span class="c1"># 5. add structure crossections</span>
-    <span class="c1"># add a dummy &quot;shift&quot; for crossection locations if missing (e.g. culverts), because structures only needs crossection definitions.</span>
+    <span class="c1"># add a dummy &quot;shift&quot; for crossection locations if missing (e.g. culverts),</span>
+    <span class="c1"># because structures only needs crossection definitions.</span>
     <span class="k">if</span> <span class="s2">&quot;shift&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">gdf_st</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
         <span class="n">gdf_st</span><span class="p">[</span><span class="s2">&quot;shift&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
     <span class="c1"># derive crosssections</span>
