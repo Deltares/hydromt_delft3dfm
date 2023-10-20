@@ -10,7 +10,7 @@ authors = [
 	{ name = "Hélène Boisgontier", email = "helene.boisgontier@deltares.nl" },
 ]
 dependencies = [
-	"hydromt >=0.8.0",
+	"hydromt >=0.9.0",
 	"geopandas >=0.10",
 	"numpy",
 	"pandas",
