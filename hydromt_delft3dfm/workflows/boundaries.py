@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+"""Workflows to prepare boundaries for Delft3D-FM model."""
 
 import logging
 from pathlib import Path
@@ -29,7 +29,7 @@ __all__ = [
 def get_boundaries_with_nodeid(
     branches: gpd.GeoDataFrame, network1d_nodes: gpd.GeoDataFrame
 ) -> gpd.GeoDataFrame:
-    """Get boundary locations from the network branches and associate them with node IDs.
+    """Get boundary locations from branches and associate with node IDs.
 
     Parameters
     ----------
@@ -58,13 +58,16 @@ def generate_boundaries_from_branches(
     ----------
     where : {'both', 'upstream', 'downstream'}
         Where at the branches should the boundaries be derived.
-        An upstream end node is defined as a node which has 0 incoming branches and 1 outgoing branch.
-        A downstream end node is defined as a node which has 1 incoming branch and 0 outgoing branches.
+        An upstream end node is defined as a node which has 0 incoming
+        branches and 1 outgoing branch.
+        A downstream end node is defined as a node which has 1 incoming
+        branch and 0 outgoing branches.
 
     Returns
     -------
     gpd.GeoDataFrame
-        A data frame containing all the upstream and downstream end nodes of the branches
+        A data frame containing all the upstream and downstream
+        end nodes of the branches
     """
     # convert branches to graph
     G = graph_utils.gpd_to_digraph(branches)
@@ -139,7 +142,8 @@ def select_boundary_type(
     Returns
     -------
     pd.DataFrame
-        A data frame containing the boundary location per branch type and boundary type.
+        A data frame containing the boundary location per branch type
+        and boundary type.
     """
     boundaries_branch_type = boundaries.loc[boundaries["branchtype"] == branch_type, :]
     if branch_type == "river":
@@ -151,7 +155,8 @@ def select_boundary_type(
         elif boundary_type == "discharge":
             if boundary_locs != "upstream":
                 logger.warning(
-                    f"Applying boundary type {boundary_type} selected for {branch_type} boundaries might cause instabilities."
+                    f"Applying boundary type {boundary_type} selected"
+                    f"for {branch_type} boundaries might cause instabilities."
                 )
             if boundary_locs != "both":
                 boundaries_branch_type = boundaries_branch_type.loc[
@@ -159,7 +164,8 @@ def select_boundary_type(
                 ]
         else:
             logger.error(
-                f"Wrong boundary type {boundary_type} selected for {branch_type} boundaries."
+                f"Wrong boundary type {boundary_type} selected"
+                f"for {branch_type} boundaries."
             )
     # TODO: extend
     # for now only downstream boundaries not connected to openwater
@@ -171,7 +177,8 @@ def select_boundary_type(
             ]
         else:
             logger.error(
-                f"Wrong boundary type {boundary_type} selected for {branch_type} boundaries."
+                f"Wrong boundary type {boundary_type} selected"
+                f"for {branch_type} boundaries."
             )
 
     return boundaries_branch_type
@@ -179,6 +186,7 @@ def select_boundary_type(
 
 def validate_boundaries(boundaries: gpd.GeoDataFrame, branch_type: str = "river"):
     """Validate boundaries per branch type.
+
     Will log a warning if the validation fails.
 
     Parameters
@@ -194,7 +202,8 @@ def validate_boundaries(boundaries: gpd.GeoDataFrame, branch_type: str = "river"
             # TODO extended
             if bnd["where"] == "downstream" and bnd["boundary_type"] == "discharge":
                 logger.warning(
-                    f'Boundary type violates modeller suggestions: using downstream discharge boundary at branch {bnd["branchid"]}'
+                    "Boundary type violates modeller suggestions: using"
+                    f"downstream discharge boundary at branch {bnd['branchid']}"
                 )
 
     if branch_type == "pipe":  # TODO add other close system branch_type
@@ -202,7 +211,8 @@ def validate_boundaries(boundaries: gpd.GeoDataFrame, branch_type: str = "river"
             # TODO extended
             if bnd["where"] == "upstream":
                 logger.warning(
-                    f'Boundary type violates modeller suggestions: using upstream boundary at branch {bnd["branchid"]}'
+                    "Boundary type violates modeller suggestions:"
+                    f"using upstream boundary at branch {bnd['branchid']}"
                 )
 
 
@@ -225,12 +235,13 @@ def compute_boundary_values(
 
         * Required variables: ['nodeid']
     da_bnd : xr.DataArray, optional
-        xr.DataArray containing the boundary timeseries values. If None, uses a constant values for all boundaries.
+        xr.DataArray containing the boundary timeseries values.
+        If None, uses a constant values for all boundaries.
 
         * Required variables if netcdf: [``boundary_type``]
     boundary_value : float, optional
-        Constant value to use for all boundaries if ``da_bnd`` is None and to
-        fill in missing data. By default -2.5 m.
+        Constant value to use for all boundaries if ``da_bnd`` is
+        None and to fill in missing data. By default -2.5 m.
     boundary_type : {'waterlevel', 'discharge'}
         Type of boundary to use. By default "waterlevel".
     boundary_unit : {'m', 'm3/s'}
@@ -241,8 +252,9 @@ def compute_boundary_values(
             Allowed unit is [m3/s]
         By default m.
     snap_offset : float, optional
-        Snapping tolerance to automatically applying boundaries at the correct network nodes.
-        By default 0.1, a small snapping is applied to avoid precision errors.
+        Snapping tolerance to automatically applying boundaries
+        at the correct network nodes. By default 0.1,
+        a small snapping is applied to avoid precision errors.
     logger
         Logger to log messages.
     """
@@ -267,7 +279,8 @@ def compute_boundary_values(
         if freq == "D":
             logger.warning(
                 "time unit days is not supported by the current GUI version: 2022.04"
-            )  # converting to hours as temporary solution # FIXME: day is converted to hours temporarily
+            )  # converting to hours as temporary solution
+            # FIXME: day is converted to hours temporarily
             multiplier = 24
         if len(
             pd.date_range(da_bnd.time[0].values, da_bnd.time[-1].values, freq=dt)
@@ -297,7 +310,7 @@ def compute_boundary_values(
                 timeInterpolation="Linear",
                 quantity=f"{boundary_type}bnd",
                 units=f"{boundary_unit}",
-                time_unit=f"{freq_name} since {pd.to_datetime(da_bnd.time[0].values)}",  # support only yyyy-mm-dd HH:MM:SS
+                time_unit=f"{freq_name} since {pd.to_datetime(da_bnd.time[0].values)}",
             ),
         )
 
@@ -311,7 +324,8 @@ def compute_boundary_values(
         da_out.name = f"{boundary_type}bnd"
     else:
         logger.info(
-            f"Using constant value {boundary_value} {boundary_unit} for all {boundary_type} boundaries."
+            f"Using constant value {boundary_value} {boundary_unit}"
+            f"for all {boundary_type} boundaries."
         )
         # instantiate xr.DataArray for bnd data with boundary_value directly
         da_out = xr.DataArray(
@@ -344,19 +358,23 @@ def compute_2dboundary_values(
     logger=logger,
 ):
     """
-    Compute 2d boundary timeseries. Line geometry will be converted into supporting points.
-    Note that All quantities are specified per support point, except for discharges which are specified per polyline.
+    Compute 2d boundary timeseries.
+
+    Line geometry will be converted into supporting points.
+    Note that All quantities are specified per support point,
+    except for discharges which are specified per polyline.
 
     Parameters
     ----------
     boundaries : gpd.GeoDataFrame, optional
-        line geometry type of locations of the 2D boundaries to which to add data.
-        Must be combined with ``df_bnd``.
+        line geometry type of locations of the 2D boundaries to
+        which to add data. Must be combined with ``df_bnd``.
 
         * Required variables: ["boundary_id"]
     df_bnd : pd.DataFrame, optional
         pd.DataFrame containing the boundary timeseries values.
-        Must be combined with ``boundaries``. Columns must match the "boundary_id" in ``boundaries``.
+        Must be combined with ``boundaries``. Columns must match the
+        "boundary_id" in ``boundaries``.
 
         * Required variables: ["time"]
     boundary_value : float, optional
@@ -391,7 +409,9 @@ def compute_2dboundary_values(
         if freq == "D":
             logger.warning(
                 "time unit days is not supported by the current GUI version: 2022.04"
-            )  # converting to hours as temporary solution # FIXME: day is supported in version 2023.02, general question: where to indicate gui version?
+            )  # converting to hours as temporary solution
+            # FIXME: day is supported in version 2023.02,
+            # general question: where to indicate gui version?
             multiplier = 24
         if len(
             pd.date_range(df_bnd.iloc[0, :].time, df_bnd.iloc[-1, :].time, freq=dt)
@@ -456,9 +476,14 @@ def compute_2dboundary_values(
 
 
 def gpd_to_pli(gdf: gpd.GeoDataFrame, output_dir: Path):
-    """Function to convert geopandas GeoDataFrame (gdf) into pli files at 'output_dir' directory.
-    the geodataframe must has index as stations and geometry of the stations.
+    """Convert geopandas GeoDataFrame (gdf) into pli files.
+
+    Pli files at 'output_dir' directory.
+
+    the geodataframe must has index as stations and geometry
+    of the stations.
     each row of the geodataframe will be converted into a single pli file.
+
     the file name and the station name will be the index of that row.
     """
     for _, g in gdf.iterrows():
@@ -479,11 +504,17 @@ def df_to_bc(
     unit="m3/s",
     freq="H",
 ):
-    """Function to convert pandas timeseires 'df' into bc file at 'output_dir'/'output_filename'.bc
+    """Convert pandas timeseires 'df' into bc file.
+
+    bc file from 'output_dir'/'output_filename'.bc
+
     the time series must has time as index, columns names as stations.
-    the time series will be first converted into a equidistance timeseries with frequency specified in 'freq'. support [D, H,M,S]
+    the time series will be first converted into a equidistance timeseries
+    with frequency specified in 'freq'. support [D, H,M,S]
     each columns-wise array will be converted into one bc timeseries.
-    The time series has the quantity and unit as specified in 'quantity' nad 'unit'.
+
+    The time series has the quantity and unit as specified
+    in 'quantity' and 'unit'.
     """
     time_unit = {"D": "days", "H": "hours", "M": "minutes", "S": "seconds"}
 
@@ -524,15 +555,17 @@ def compute_meteo_forcings(
     Parameters
     ----------
     df_meteo : pd.DataFrame, optional
-        pd.DataFrame containing the meteo timeseries values. If None, uses ``fill_value``.
+        pd.DataFrame containing the meteo timeseries values.
+        If None, uses ``fill_value``.
 
         * Required variables: ["precip"]
     meteo_value : float, optional
         Constant value to use for global meteo if ``df_meteo`` is None and to
         fill in missing data in ``df_meteo``. By default 0.0 mm/day.
     is_rate : bool, optional
-        Specify if the type of meteo data is direct "rainfall" (False) or "rainfall_rate" (True).
-        By default True for "rainfall_rate". Note that Delft3DFM 1D2D Suite 2022.04 supports only "rainfall_rate".
+        Specify if the type of meteo data is direct "rainfall" (False)
+        or "rainfall_rate" (True). By default True for "rainfall_rate".
+        Note that Delft3DFM 1D2D Suite 2022.04 supports only "rainfall_rate".
         If rate, unit is expected to be in mm/day and else mm.
     meteo_location : tuple
         Global location for meteo timeseries
@@ -565,7 +598,8 @@ def compute_meteo_forcings(
     if freq == "D":
         logger.warning(
             "time unit days is not supported by the current GUI version: 2022.04"
-        )  # converting to hours as temporary solution # FIXME: day is converted to hours temporarily
+        )  # converting to hours as temporary solution
+        # FIXME: day is converted to hours temporarily
         multiplier = 24
     if len(
         pd.date_range(df_meteo.iloc[0, :].time, df_meteo.iloc[-1, :].time, freq=dt)
