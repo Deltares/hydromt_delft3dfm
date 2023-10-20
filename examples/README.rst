@@ -18,7 +18,9 @@ The next step is to install all the python dependencies required to run the note
 
 .. code-block:: console
 
-  $ mamba create -n hydromt-delft3dfm -c conda-forge hydromt
+  $ conda create -n hydromt-delft3dfm -c conda-forge hydromt
+
+Alternatively, you can also use mamba. Checkout more details in the `installation guide. <https://deltares.github.io/hydromt_delft3dfm/latest/getting_started/installation>`_
 
 To run the notebooks, you need to install the ``examples`` version of HydroMT Delft3D FM using pip. The examples version installs additional dependencies
 such as jupyter notebook to run the notebooks, matplotlib to plot etc. It is a more complete
