@@ -15,6 +15,7 @@ Added
 
 Changed
 -------
+- Upgraded hydromt dependency to version 0.8.0. (PR#100) 
 
 Fixed
 -----
