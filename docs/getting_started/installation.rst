@@ -12,10 +12,10 @@ and related dependencies, please visit the documentation of
 
 Compared to HydroMT, HydroMT-delft3dfm has additional dependencies, namely:
 
-- `toml <https://github.com/uiri/toml>`_
-- `pcraster <https://pcraster.geo.uu.nl>`_ (optional)
-- `gwwapi <https://github.com/global-water-watch/gww-api>`_ (optional)
-- `hydroengine <https://github.com/openearth/hydro-engine>`_ (optional)
+- `xugrid <https://github.com/Deltares/xugrid>`_
+- `hydrolib-core <https://github.com/Deltares/HYDROLIB-core>`_
+- `meshkernel-py <https://github.com/Deltares/MeshKernelPy>`_
+- `networkx <https://networkx.org/>`_ 
 
 If you already have a python & conda installation but do not yet have mamba installed,
 we recommend installing it into your *base* environment using:
@@ -39,14 +39,15 @@ If conda is prefered, we recommond install libmamba as the solver. See how to `h
     for the difference between both.
 
 Install HydroMT-Delft3DFM in a new environment (recommended!)
----------------------------------------------------------
+-------------------------------------------------------------
 
-You can install HydroMT-Delft3DFM in a new environment called `hydromt-delft3dfm` together with
-all optional (see above) and a few additional dependencies with:
+You can install HydroMT-Delft3DFM in a new environment called `hydromt-delft3dfm`.
+HydroMT-Delft3DFM is not yet available on conda-forge so we recommend installling HydroMT (core) first 
+via conda-forge and then hydromt-delft3dfm and the additionnal libraries via pip.
 
 .. code-block:: console
 
-  $ conda env create -f https://raw.githubusercontent.com/Deltares/hydromt_delft3dfm/54-examples/envs/hydromt-delft3dfm-min.yml
+  $ conda env create -n hydromt-delft3dfm -c conda-forge hydromt
 
 Then, activate the environment (as stated by mamba/conda) to start making use of HydroMT-delft3dfm:
 
@@ -66,26 +67,6 @@ Finally, install Hydromt-Delft3DFM using pypi.
     `conda env remove -n hydromt-delft3dfm` **or** set a new name for the environment
     by adding `-n <name>` to the line below.
 
-.. Install HydroMT-delft3dfm in an existing environment
-.. ------------------------------------------------
-
-.. To install HydroMT-Delft3DFM in an existing environment execute the command below
-.. where you replace `<environment_name>` with the name of the existing environment.
-.. Note that if some dependencies are not installed from conda-forge but from other
-.. channels the installation may fail.
-
-.. .. code-block:: console
-
-..    $ conda activate <environment_name>
-..    $ pip install hydromt_delft3dfm
-
-.. .. Note::
-
-..     Please take into account that hydromt is now installed from unreleased version on github.
-
-.. .. code-block:: console
-
-..   $ pip install git+https://github.com/Deltares/hydromt
 
 Developer install
 ==================

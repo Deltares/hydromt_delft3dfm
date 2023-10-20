@@ -31,17 +31,6 @@ a specific method see its documentation.
 
     * - Method
       - Explanation
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-
     * - :py:func:`~DFlowFMModel.setup_config`
       - Update config with a dictionary
     * - :py:func:`~DFlowFMModel.setup_rivers`
@@ -95,16 +84,14 @@ and :py:func:`~DFlowFMModel.write_config` for the
    :header-rows: 1
 
    * - :py:class:`~hydromt_delft3dfm.DFlowFMModel` component
-     - Delft3DFM files, saved in dflowfm model folder.
+     - Delft3DFM files, saved in dflowfm folder.
    * - :py:attr:`~hydromt_delft3dfm.DFlowFMModel.config`
-     - DFlowFM.mdu, saved in dflowfm model folder.
+     - DFlowFM.mdu, saved in dflowfm folder.
    * - :py:attr:`~hydromt_delft3dfm.DFlowFMModel.geoms`
      - 1D model geometries, saved in the geoms folder.
    * - :py:attr:`~hydromt_delft3dfm.DFlowFMModel.maps`
-     - 2D model data, saved in the maps folder
+     - 2D model data on regular grid, saved in the maps folder
+   * - :py:attr:`~hydromt_delft3dfm.DFlowFMModel.mesh`
+     - unstructured mesh schematisation and data, saved in the dflowfm folder
    * - :py:attr:`~hydromt_delft3dfm.DFlowFMModel.forcing`
-     - 1D and 2D forcing, saved in dflowfm model folder.
-  ..  * - :py:attr:`~hydromt_delft3dfm.DFlowFMModel.states`
-  ..    - Empty
-  ..  * - :py:attr:`~hydromt_delft3dfm.DFlowFMModel.results`
-  ..    - Empty
+     - 1D and 2D forcing, saved in dflowfm  folder.

@@ -8,7 +8,7 @@ data libraries are set, you can build a model by using:
 
 .. code-block:: console
 
-    hydromt build dflowfm path/to/built_model -i dflowfm_build.ini -d data_sources.yml -vvv
+    hydromt build dflowfm path/to/built_model -i dflowfm_build.yml -d data_sources.yml -vvv
 
 .. _model_config:
 
@@ -27,10 +27,10 @@ Note that the order in which the components are listed in the yml/ini file is im
  
 
 Below is an example yml file that can be used to build a complete Delft3DFM model
-:download:`.ini file <../_examples/delft3dfm_build.ini>`. Each section corresponds
+:download:`.yml file <../_examples/delft3dfm_build.yml>`. Each section corresponds
 to a model component with the same name.
 
-.. literalinclude:: ../_examples/delft3dfm_build.ini
+.. literalinclude:: ../_examples/delft3dfm_build.yml
    :language: yaml
 
 Selecting data

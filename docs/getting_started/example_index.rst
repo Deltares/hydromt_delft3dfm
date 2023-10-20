@@ -23,9 +23,5 @@ For a static (non-interactive) view of the examples follow one of the links belo
 
 **Postprocessing and visualization**
 
-In progress.
-
-.. *   `Plot Delft3DFM maps <../_examples/plot_Delft3DFM_maps.ipynb>`_
-.. *   `Plot Delft3DFM geoms <../_examples/plot_Delft3DFM_geoms.ipynb>`_
-.. *   `Plot Delft3DFM mesh <../_examples/plot_Delft3DFM_mesh.ipynb>`_
+*   `Plot Delft3DFM model: refine 2dgrid <../_examples/plot_dflowfm_mesh.ipynb>`_
 
