@@ -56,7 +56,7 @@ a specific method see its documentation.
     * - :py:func:`~DFlowFMModel.setup_maps_from_rasterdataset`
       - This component adds parameter maps to the 2D mesh.
     * - :py:func:`~DFlowFMModel.setup_maps_from_raster_reclass`
-      - This component adds parameter maps that are derived by reclass existing maps to the 2D mesh. 
+      - This component adds parameter maps that are derived by reclass existing maps to the 2D mesh.
     * - :py:func:`~DFlowFMModel.setup_1dboundary`
       -  Setup a 1D boundary forcing to the 1D branches.
     * - :py:func:`~DFlowFMModel.setup_2dboundary`

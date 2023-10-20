@@ -15,7 +15,7 @@ Compared to HydroMT, HydroMT-delft3dfm has additional dependencies, namely:
 - `xugrid <https://github.com/Deltares/xugrid>`_
 - `hydrolib-core <https://github.com/Deltares/HYDROLIB-core>`_
 - `meshkernel-py <https://github.com/Deltares/MeshKernelPy>`_
-- `networkx <https://networkx.org/>`_ 
+- `networkx <https://networkx.org/>`_
 
 If you already have a python & conda installation but do not yet have mamba installed,
 we recommend installing it into your *base* environment using:
@@ -30,7 +30,7 @@ Installation
 
 HydroMT-Delft3DFM is available from pypi.
 We recommend installing using mamba/conda from conda-forge in a new environment.
-If conda is prefered, we recommond install libmamba as the solver. See how to `here <https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community>`_. 
+If conda is prefered, we recommond install libmamba as the solver. See how to `here <https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community>`_.
 
 .. Note::
 
@@ -42,7 +42,7 @@ Install HydroMT-Delft3DFM in a new environment (recommended!)
 -------------------------------------------------------------
 
 You can install HydroMT-Delft3DFM in a new environment called `hydromt-delft3dfm`.
-HydroMT-Delft3DFM is not yet available on conda-forge so we recommend installling HydroMT (core) first 
+HydroMT-Delft3DFM is not yet available on conda-forge so we recommend installling HydroMT (core) first
 via conda-forge and then hydromt-delft3dfm and the additionnal libraries via pip.
 
 .. code-block:: console

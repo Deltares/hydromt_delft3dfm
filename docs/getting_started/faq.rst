@@ -23,4 +23,3 @@ where you can specify which MDU file to use using the *config_fn* argument.
 
 Others
 ------
-

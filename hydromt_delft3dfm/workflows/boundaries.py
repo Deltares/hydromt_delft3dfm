@@ -40,7 +40,6 @@ def get_boundaries_with_nodeid(
     -------
     A GeoDataFrame with boundary locations and their associated node IDs.
     """
-
     # generate all possible and allowed boundary locations
     _boundaries = generate_boundaries_from_branches(branches, where="both")
 

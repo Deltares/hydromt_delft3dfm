@@ -24,7 +24,7 @@ Note that the order in which the components are listed in the yml/ini file is im
 - When setting up a 1D model, one of the `setup_rivers`, `setup_channels` and `setup_pipes` should always be run first to determine the model topology.
 - When setting up a 2D model, `setup_mesh2d` should always be run first.
 - When setting up a 1D2D model, both of the above should be run first, before calling `setup_link1d2d`.
- 
+
 
 Below is an example yml file that can be used to build a complete Delft3DFM model
 :download:`.yml file <../_examples/delft3dfm_build.yml>`. Each section corresponds

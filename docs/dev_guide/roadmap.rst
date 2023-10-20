@@ -10,4 +10,3 @@ by making the best use of `current and future methods developped in HydroMT core
 
 Short-term plans
 ----------------
-

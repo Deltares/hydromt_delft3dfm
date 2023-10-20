@@ -24,4 +24,3 @@ For a static (non-interactive) view of the examples follow one of the links belo
 **Postprocessing and visualization**
 
 *   `Plot Delft3DFM model: refine 2dgrid <../_examples/plot_dflowfm_mesh.ipynb>`_
-

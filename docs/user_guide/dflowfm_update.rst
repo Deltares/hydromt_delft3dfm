@@ -34,4 +34,3 @@ To add or change one or more components of an existing Delft3DFM model the ``upd
     :hidden:
 
     Example: Update Delft3DFM model (refine 2dgrid) <../_examples/update_refine_2dgrid.ipynb>
-
