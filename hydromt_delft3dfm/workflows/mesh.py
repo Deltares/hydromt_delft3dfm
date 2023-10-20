@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+"""Workflows to prepare mesh schematisation for Delft3D-FM model."""
 
 import logging
 from typing import List, Tuple, Union
@@ -10,7 +10,15 @@ import xarray as xr
 import xugrid as xu
 from hydrolib.core.dflowfm import Branch, Network
 from meshkernel import GeometryList
-from shapely.geometry import LineString, MultiLineString, MultiPolygon, Polygon, box
+from shapely.geometry import (
+    LineString,
+    MultiLineString,
+    MultiPoint,
+    MultiPolygon,
+    Point,
+    Polygon,
+    box,
+)
 from shapely.wkt import dumps, loads
 
 from .. import mesh_utils as mutils
@@ -34,10 +42,10 @@ def mesh1d_network1d_from_branches(
     openwater_computation_node_distance: float = 40.0,
 ) -> Tuple[xu.UgridDataset, xu.UgridDataset]:
     """
-    Returns xugrid mesh1d and network1d UgridDataset from open and closed system branches.
+    Return xugrid mesh1d and network1d UgridDataset from branches.
 
-    Uses hydrolib-core network object and add_branch methods to build the network and then
-    converts back to xugrid.
+    Uses hydrolib-core network object and add_branch methods to build the
+    network and then converts back to xugrid.
 
     Parameters
     ----------
@@ -56,8 +64,8 @@ def mesh1d_network1d_from_branches(
         Network1d UgridDataset.
         Note that it is part of the Deltares-0.11 conventions.
         These newly proposed conventions should currently be seen as an extension
-        on top of the regular CF-conventions (≥1.8) and, in particular, on top of the UGRID (1.0)
-        conventions.
+        on top of the regular CF-conventions (≥1.8) and, in particular, on top of
+        the UGRID (1.0) conventions.
     """
     crs = opensystem.crs
 
@@ -103,15 +111,21 @@ def mesh1d_add_branch(
     branch_orders: Union[float, int, List[Union[float, int]]] = -1,
 ) -> List[str]:
     """Add branch to 1d mesh, from a (list of) (Multi)LineString geometry.
+
     The branch is discretized with the given node distance.
-    if node distance is given as infinity, no discretization will be performed at mid point of the branch, #TODO, if minimum node distance is given, no discretization will be performed at mid point of the branch
-    i.e. branch is treated as a pipe
+    if node distance is given as infinity, no discretization will be performed at
+    mid point of the branch,
+    #TODO, if minimum node distance is given, no discretization will be
+    performed at mid point of the branch i.e. branch is treated as a pipe
+
     Args:
         network (Network): Network to which the branch is added
-        branches (Union[ LineString, MultiLineString, List[Union[LineString, MultiLineString]] ]): Geometry object(s) for which the branch is created
+        branches (Union[ LineString, MultiLineString, List[Union[LineString,
+        MultiLineString]] ]): Geometry object(s) for which the branch is created
         node_distance (Union[float, int]): Preferred node distance between branch nodes
-        branch_names (Union[str, list[str]]): Branch names to be used in the mesh1d object
-        branch_orders (Union[float, int, list[Union[float, int]]]): Branch orders to be used in the mesh1d object.
+        branch_names (Union[str, list[str]]): Branch names to be used in the mesh1d
+        object branch_orders (Union[float, int, list[Union[float, int]]]): Branch orders
+        to be used in the mesh1d object.
 
     Returns
     -------
@@ -154,16 +168,18 @@ def mesh2d_refine(
     steps: int = 1,
     logger: logging.Logger = logger,
 ) -> Tuple[Union[xu.UgridDataArray, xu.UgridDataset], float]:
-    """Refine mesh2d by adding new nodes and faces within a polygon or based on a sample array.
+    """Refine mesh2d by adding new nodes and faces.
 
     If a polygon is provided, the mesh is refined within the polygon.
-    The number of steps determines the number of times the mesh is refined when using polygon.
+    The number of steps determines the number of times the mesh is refined
+    when using polygon.
 
     If a sample array is provided, the mesh is refined based on the sample array.
-    The sample array should contain values between 0 and 1, where 0 is not refined and 1 is refined.
-    The sample array is interpolated to the mesh2d and the mesh is refined at the locations where
-    the sample array is larger than 0.5. The number of steps  is determined by the maximum value
-    in the sample array and the new face size based on the previous resolution of the mesh.
+    The sample array should contain values between 0 and 1, where 0 is not refined
+    and 1 is refined. The sample array is interpolated to the mesh2d and the mesh is
+    refined at the locations where the sample array is larger than 0.5. The number of
+    steps  is determined by the maximum value in the sample array and the new face size
+    based on the previous resolution of the mesh.
 
     Parameters
     ----------
@@ -248,15 +264,16 @@ def mesh2d_refine(
         steps = int(zv.max())
         # refine parameters
         parameters = mk.MeshRefinementParameters(
-            refinement_type=2,  # Enumerator describing the different refinement types (WaveCourant = 1, RefinementLevels = 2)
-            max_refinement_iterations=steps,  # Maximum number of refinement iterations, set to 1 if only one refinement is wanted (default 10)
-            min_face_size=res / 2**steps,  # calculate - Minimum cell size
-            account_for_samples_outside_face=False,  # default, not useful - Take samples outside face into account , 1 yes 0 no
-            connect_hanging_nodes=True,  # default, not useful - Connect hanging nodes at the end of the iteration, 1 yes or 0 no
-            refine_intersected=False,  # default, not useful - Whether to compute faces intersected by polygon (yes=1/no=0)
-            use_mass_center_when_refining=False,  # default, not useful - Whether to use the mass center when splitting a face in the refinement process (yes=1/no=0)
+            refinement_type=2,
+            max_refinement_iterations=steps,
+            min_face_size=res / 2**steps,
+            account_for_samples_outside_face=False,
+            connect_hanging_nodes=True,
+            refine_intersected=False,
+            use_mass_center_when_refining=False,
         )
-        # refine assuming sample spacing is the same as end result resolution (hence relative_search_radius=1, minimum_num_samples=1 )
+        # refine assuming sample spacing is the same as end result resolution
+        # (hence relative_search_radius=1, minimum_num_samples=1 )
         mesh2d_mk.mesh2d_refine_based_on_samples(
             samples,
             relative_search_radius=1,
@@ -280,7 +297,8 @@ def mesh2d_refine(
     _new_size = mesh2d.ugrid.grid.face_x.size
     if _new_size != _old_size:
         logger.info(
-            f"2d mesh refined based on {refine_type}. Number of faces before: {_old_size} and after: {_new_size}"
+            f"2d mesh refined based on {refine_type}."
+            f"Number of faces before: {_old_size} and after: {_new_size}"
         )
     else:
         logger.warning("2d mesh unrefined.")
@@ -334,18 +352,21 @@ def links1d2d_add_links_1d_to_2d(
     within: Union[Polygon, MultiPolygon] = None,
     max_length: float = np.inf,
 ) -> xr.Dataset:
-    """Function to add 1d2d links to network, by generating them from 1d to 2d.
+    """Generate 1d2d links to network from 1d to 2d.
+
     Branchids can be specified for 1d branches that need to be linked.
     A (Multi)Polygon can be provided were links should be made.
 
-    Note: The boundary nodes of Mesh1d (those sharing only one Mesh1d edge) are not connected to any Mesh2d face.
+    Note: The boundary nodes of Mesh1d (those sharing only one Mesh1d edge) are not
+    connected to any Mesh2d face.
 
     Parameters
     ----------
     mesh: xu.UgridDataset
         Network in which the connections are made
     branchids: List[str], optional
-        List of branchid's to connect. If None, all branches are connected. Defaults to None.
+        List of branchid's to connect. If None, all branches are connected.
+        Defaults to None.
     within: Union[Polygon, MultiPolygon], optional
         Area within which connections are made. Defaults to None.
     max_length: float, optional
@@ -416,7 +437,6 @@ def links1d2d_add_links_1d_to_2d(
 
     return link1d2d
 
-
 def _filter_links_on_idx(network: Network, keep: np.ndarray) -> None:
     # Select the remaining links
     network._link1d2d.link1d2d = network._link1d2d.link1d2d[keep]
@@ -432,12 +452,15 @@ def links1d2d_add_links_2d_to_1d_embedded(
     branchids: List[str] = None,
     within: Union[Polygon, MultiPolygon] = None,
 ) -> xr.Dataset:
-    """Generates links from 2d to 1d, where the 2d mesh intersects the 1d mesh: the 'embedded' links.
+    """Generate embedded links from 2d to 1d.
 
-    To find the intersecting cells in an efficient way, we follow we the next steps. 1) Get the
-    maximum length of a face edge. 2) Buffer the branches with this length. 3) Find all face nodes
-    within this buffered geometry. 4) Check for each of the corresponding faces if it crossed the
-    branches.
+    Links are generated where the 2d mesh intersects the 1d mesh: the 'embedded'
+    links.
+
+    To find the intersecting cells in an efficient way, we follow we the next steps.
+    1) Get the maximum length of a face edge. 2) Buffer the branches with this
+    length. 3) Find all face nodes within this buffered geometry. 4) Check for each
+    of the corresponding faces if it crossed the branches.
 
     Parameters
     ----------
@@ -475,11 +498,12 @@ def links1d2d_add_links_2d_to_1d_embedded(
     )
 
     # Create a prepared multilinestring of the 1d network, to check for intersections
-    mls = MultiLineString(nodes1d[network._mesh1d.mesh1d_edge_nodes].tolist())
-    mls_prep = prep(mls)
+    mls_prep = MultiLineString(nodes1d[network._mesh1d.mesh1d_edge_nodes].tolist())
+    # TODO where is prep coming from?
+    # mls_prep = prep(mls)
 
     # Buffer the branches with the max cell distances
-    area = mls.buffer(maxdiff)
+    area = mls_prep.buffer(maxdiff)
 
     # If a within polygon is provided, clip the buffered area with this polygon.
     if within is not None:
@@ -536,6 +560,7 @@ def links1d2d_add_links_2d_to_1d_lateral(
     max_length: float = np.inf,
 ) -> xr.Dataset:
     """Generate 1d2d links from the 2d mesh to the 1d mesh, with a lateral connection.
+
     If a link is kept, is determined based on the distance between the face center and
     the intersection with the 2d mesh exterior. By default, links with an intersection
     distance larger than 2 times the center to edge distance of the cell, are removed.
@@ -554,7 +579,8 @@ def links1d2d_add_links_2d_to_1d_lateral(
     mesh: xu.UgridDataset
         Network in which the connections are made
     dist_factor: Union[float, None], optional
-        Factor to determine which links are kept (see description above). Defaults to 2.0.
+        Factor to determine which links are kept (see description above).
+        Defaults to 2.0.
     branchids: List[str], optional
         List is branch id's for which the conncetions are made. Defaults to None.
     within: Union[Polygon, MultiPolygon], optional
@@ -576,10 +602,11 @@ def links1d2d_add_links_2d_to_1d_lateral(
     geometrylist = network.meshkernel.mesh2d_get_mesh_boundaries_as_polygons()
     mpboundaries = GeometryList(**geometrylist.__dict__).to_geometry()
     if within is not None:
-        # If a 'within' polygon was provided, get the intersection with the meshboundaries
-        # and convert it to a geometrylist
-        # Note that the provided meshboundaries is a (list of) polygon(s). Holes are provided
-        # as polygons as well, which dont make it a valid MultiPolygon
+        # If a 'within' polygon was provided, get the intersection with
+        # the meshboundaries and convert it to a geometrylist
+        # Note that the provided meshboundaries is a (list of) polygon(s).
+        # Holes are provided as polygons as well, which dont make it a
+        # valid MultiPolygon
         geometrylist = GeometryList.from_geometry(
             MultiPolygon([geom.intersection(within) for geom in mpboundaries.geoms])
         )
@@ -595,7 +622,8 @@ def links1d2d_add_links_2d_to_1d_lateral(
         node_mask, polygon=geometrylist, search_radius=max_length
     )
 
-    # If the provided distance factor was None, no further selection is needed, all links are kept.
+    # If the provided distance factor was None,
+    # no further selection is needed, all links are kept.
     if dist_factor is None:
         return
 

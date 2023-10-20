@@ -19,10 +19,9 @@ from hydrolib.core.dimr import DIMR, FMComponent, Start
 from hydromt.models import MeshModel
 from hydromt.workflows import create_mesh2d
 from pyproj import CRS
-from shapely.geometry import LineString, box
+from shapely.geometry import box
 
-from . import DATADIR
-from . import mesh_utils, gis_utils, utils, workflows
+from . import DATADIR, gis_utils, mesh_utils, utils, workflows
 
 __all__ = ["DFlowFMModel"]
 logger = logging.getLogger(__name__)
@@ -1536,7 +1535,6 @@ class DFlowFMModel(MeshModel):
         --------
         dflowfm._setup_1dstructures
         """
-
         snap_offset = self._network_snap_offset if snap_offset is None else snap_offset
         _st_type = "bridge"
         _allowed_columns = [
@@ -2158,7 +2156,7 @@ class DFlowFMModel(MeshModel):
     def __set_map_parameters_based_on_variable(
         self, var: str, locationtype: str, interpolation_method: str
     ) -> None:
-        """Set map parameters by updating user inputs to default self._MAP"""
+        """Set map parameters by updating user inputs to default self._MAP."""
         if var in self._MAPS:
             self._MAPS[var]["locationtype"] = locationtype
             self._MAPS[var]["interpolation"] = interpolation_method

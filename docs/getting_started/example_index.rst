@@ -13,22 +13,14 @@ For a static (non-interactive) view of the examples follow one of the links belo
 
 **Build model from command line interface**
 
-*   `Build Wflow model <../_examples/build_model.ipynb>`_
-*   `Build Wflow sediment model <../_examples/build_sediment.ipynb>`_
+*   `Build Delft3DFM 1D model <../_examples/build_1dmodel.ipynb>`_
+*   `Build Delft3DFM 2D model <../_examples/build_2dmodel.ipynb>`_
+*   `Build Delft3DFM 1D2D model <../_examples/build_1d2dmodel.ipynb>`_
 
 **Update model from command line interface**
 
-*   `Update Wflow model: landuse <../_examples/update_model_landuse.ipynb>`_
-*   `Update Wflow model: forcing <../_examples/update_model_forcing.ipynb>`_
-*   `Update Wflow model: gauges <../_examples/update_model_gauges.ipynb>`_
-
-**Clip model from command line interface**
-
-*   `Clip Wflow model <../_examples/clip_model.ipynb>`_
+*   `Update Delft3DFM model: refine 2dgrid <../_examples/update_refine_2dgrid.ipynb>`_
 
 **Postprocessing and visualization**
 
-*   `Convert wflow staticmaps netcdf to raster files <../_examples/convert_staticmaps_to_mapstack.ipynb>`_
-*   `Plot Wflow static maps <../_examples/plot_wflow_staticmaps.ipynb>`_
-*   `Plot Wflow forcing data <../_examples/plot_wflow_forcing.ipynb>`_
-*   `Plot Wflow results data <../_examples/plot_wflow_results.ipynb>`_
+*   `Plot Delft3DFM model: refine 2dgrid <../_examples/plot_dflowfm_mesh.ipynb>`_

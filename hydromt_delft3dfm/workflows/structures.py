@@ -1,15 +1,15 @@
-# -*- coding: utf-8 -*-
+"""Workflows to prepare 1D structures for Delft3D-FM model."""
 
 import logging
-from typing import List, Literal
+from typing import Literal
 
 import geopandas as gpd
 import numpy as np
 import pandas as pd
 
+from ..gis_utils import update_data_columns_attributes_based_on_filter
 from .branches import find_nearest_branch
 from .crosssections import set_point_crosssections
-from ..gis_utils import update_data_columns_attributes_based_on_filter
 
 logger = logging.getLogger(__name__)
 
@@ -31,11 +31,13 @@ def prepare_1dstructures(
 ) -> gpd.GeoDataFrame:
     """Prepare 1D structures from geodataframe.
 
-    Include the universal weir (Not Implemented) , culvert and bridge (``str_type`` = 'bridge'), which can only be used in a single 1D channel.
+    Include the universal weir (Not Implemented) , culvert and bridge
+    (``str_type`` = 'bridge'), which can only be used in a single 1D channel.
 
-    Structures are first filtered for value specified in ``filter`` on the column ``st_type``.
-    They are then snapped to the existing network within a max distance defined in ``snap_offset`` and will be dropped if not snapped.
-    Finally, crossections are read and set up for the remaining structures.
+    Structures are first filtered for value specified in ``filter`` on the column
+    ``st_type``. They are then snapped to the existing network within a max distance
+    defined in ``snap_offset`` and will be dropped if not snapped. Finally,
+    crossections are read and set up for the remaining structures.
 
     Parameters
     ----------
@@ -101,7 +103,8 @@ def prepare_1dstructures(
     )
 
     # 4. snap structures to branches
-    # setup branch_id - snap structures to branch (inplace of structures, will add branch_id and branch_offset columns)
+    # setup branch_id - snap structures to branch (inplace of structures,
+    # will add branch_id and branch_offset columns)
     find_nearest_branch(branches=branches, geometries=gdf_st, maxdist=snap_offset)
     # setup failed - drop based on branch_offset that are not snapped to branch
     _old_ids = gdf_st.index.to_list()
@@ -109,7 +112,8 @@ def prepare_1dstructures(
     _new_ids = gdf_st.index.to_list()
     if len(_old_ids) != len(_new_ids):
         logger.warning(
-            f"structure with id: {list(set(_old_ids) - set(_new_ids))} are dropped: unable to find closest branch. "
+            f"structure with id: {list(set(_old_ids) - set(_new_ids))}"
+            "are dropped: unable to find closest branch. "
         )
     if len(_new_ids) == 0:
         logger.warning(
@@ -122,7 +126,8 @@ def prepare_1dstructures(
         gdf_st["structure_chainage"] = gdf_st["branch_offset"]
 
     # 5. add structure crossections
-    # add a dummy "shift" for crossection locations if missing (e.g. culverts), because structures only needs crossection definitions.
+    # add a dummy "shift" for crossection locations if missing (e.g. culverts),
+    # because structures only needs crossection definitions.
     if "shift" not in gdf_st.columns:
         gdf_st["shift"] = np.nan
     # derive crosssections
