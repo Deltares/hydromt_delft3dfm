@@ -437,22 +437,100 @@
                   
   <section id="examples">
 <span id="id1"></span><h1>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h1>
+<p>This folder contains several iPython notebook examples for <strong>HydroMT-Delft3D FM</strong>.</p>
+<p>These examples can be run on your local machine.</p>
+<section id="local-installation">
+<h2>Local installation<a class="headerlink" href="#local-installation" title="Link to this heading">#</a></h2>
+<p>To run these examples on your local machine you need a copy of the examples folder
+of the repository and an installation of HydroMT-Delft3D FM including some additional
+packages required to run the notebooks.</p>
+<section id="install-hydromt-delft3d-fm">
+<h3>1 - Install HydroMT-Delft3D FM<a class="headerlink" href="#install-hydromt-delft3d-fm" title="Link to this heading">#</a></h3>
+<p>The next step is to install all the python dependencies required to run the notebooks, including HydroMT and HydroMT-Delft3D FM.</p>
+<p><strong>If you do not have hydromt-delft3dfm yet installed</strong>, first create a new empty environment with the base hydromt installation:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>hydromt-delft3dfm<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>hydromt
+</pre></div>
+</div>
+<p>Alternatively, you can also use mamba. Checkout more details in the <a class="reference external" href="https://deltares.github.io/hydromt_delft3dfm/latest/getting_started/installation">installation guide.</a></p>
+<p>To run the notebooks, you need to install the <code class="docutils literal notranslate"><span class="pre">examples</span></code> version of HydroMT Delft3D FM using pip. The examples version installs additional dependencies
+such as jupyter notebook to run the notebooks, matplotlib to plot etc. It is a more complete
+installation of hydromt_delft3dfm. To install or update in an existing environment (example hydromt-delft3dfm environment), do:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>activate<span class="w"> </span>hydromt-delft3dfm
+<span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;hydromt_delft3dfm[examples]&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="download-the-content-of-the-examples-and-notebooks">
+<h3>2 - Download the content of the examples and notebooks<a class="headerlink" href="#download-the-content-of-the-examples-and-notebooks" title="Link to this heading">#</a></h3>
+<p>To run the examples locally, you will need to download the content of the hydromt_delft3dfm repository.
+You have two options:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Download and unzip the examples manually</p></li>
+<li><p>Clone the hydromt_delft3dfm GitHub repository</p></li>
+</ol>
+</div></blockquote>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Depending on your installed version of hydromt and hydromt_delft3dfm, you will need to download the correct versions of the examples.
+To check the version of hydromt_delft3dfm that you have installed, do:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>hydromt<span class="w"> </span>--models
+
+<span class="go">model plugins:</span>
+<span class="go"> - dflowfm (hydromt_delft3dfm 0.1.2)</span>
+<span class="go">generic models (hydromt 0.9.0)</span>
+<span class="go"> - grid_model</span>
+<span class="go"> - vector_model</span>
+<span class="go"> - mesh_model</span>
+<span class="go"> - network_model</span>
+</pre></div>
+</div>
+</div>
+<p>In the examples above, we see version 0.1.2 of hydromt_delft3dfm is installed and version 0.9.0 of hydromt.</p>
+<p><strong>Option 1: manual download and unzip</strong></p>
+<p>To manually download the examples on Windows, do (!replace with your own hydromt_delft3dfm version!):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>curl<span class="w"> </span>https://github.com/Deltares/hydromt_delft3dfm/archive/refs/tags/v0.1.2.zip<span class="w"> </span>-O<span class="w"> </span>-L
+<span class="gp">$ </span>tar<span class="w"> </span>-xf<span class="w"> </span>v0.1.2.zip
+<span class="gp">$ </span>ren<span class="w"> </span>hydromt_delft3dfm-0.1.2<span class="w"> </span>hydromt_delft3dfm
+</pre></div>
+</div>
+<p>You can also download, unzip and rename manually if you prefer, rather than using the windows command prompt.</p>
+<p><strong>Option 2: cloning the hydromt_delft3dfm repository</strong></p>
+<p>For git users, you can also get the examples by cloning the hydromt_delft3dfm github repository and checking the version
+you have installed:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Deltares/hydromt_delft3dfm.git
+<span class="gp">$ </span>git<span class="w"> </span>checkout<span class="w"> </span>v0.1.2
+</pre></div>
+</div>
+</section>
+<section id="running-the-examples">
+<h3>3 - Running the examples<a class="headerlink" href="#running-the-examples" title="Link to this heading">#</a></h3>
+<p>Finally, start a jupyter lab server inside the <strong>examples</strong> folder
+after activating the <strong>hydromt-delft3dfm</strong> environment, see below.</p>
+<p>Alternatively, you can run the notebooks from <a class="reference external" href="https://code.visualstudio.com/download">Visual Studio Code</a>.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>activate<span class="w"> </span>hydromt-delft3dfm
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>hydromt_delft3dfm/examples
+<span class="gp">$ </span>jupyter<span class="w"> </span>lab
+</pre></div>
+</div>
+</section>
+</section>
 <section id="list-of-examples">
 <h2>List of examples<a class="headerlink" href="#list-of-examples" title="Link to this heading">#</a></h2>
 <p>For a static (non-interactive) view of the examples follow one of the links below:</p>
 <p><strong>Build model from command line interface</strong></p>
 <ul class="simple">
-<li><p><a class="reference external" href="../_examples/build_1dmodel.ipynb">Build Delft3DFM 1D model</a></p></li>
-<li><p><a class="reference external" href="../_examples/build_2dmodel.ipynb">Build Delft3DFM 2D model</a></p></li>
-<li><p><a class="reference external" href="../_examples/build_1d2dmodel.ipynb">Build Delft3DFM 1D2D model</a></p></li>
+<li><p><a class="reference internal" href="../_examples/build_1dmodel.html"><span class="doc">Build Delft3DFM 1D model</span></a></p></li>
+<li><p><a class="reference internal" href="../_examples/build_2dmodel.html"><span class="doc">Build Delft3DFM 2D model</span></a></p></li>
+<li><p><a class="reference internal" href="../_examples/build_1d2dmodel.html"><span class="doc">Build Delft3DFM 1D2D model</span></a></p></li>
 </ul>
 <p><strong>Update model from command line interface</strong></p>
 <ul class="simple">
-<li><p><a class="reference external" href="../_examples/update_refine_2dgrid.ipynb">Update Delft3DFM model: refine 2dgrid</a></p></li>
+<li><p><a class="reference internal" href="../_examples/update_refine_2dgrid.html"><span class="doc">Update Delft3DFM model: refine 2dgrid</span></a></p></li>
 </ul>
 <p><strong>Postprocessing and visualization</strong></p>
 <ul class="simple">
-<li><p><a class="reference external" href="../_examples/plot_dflowfm_mesh.ipynb">Plot Delft3DFM model: refine 2dgrid</a></p></li>
+<li><p><a class="reference internal" href="../_examples/plot_dflowfm_mesh.html"><span class="doc">Plot Delft3DFM model: refine 2dgrid</span></a></p></li>
 </ul>
 </section>
 </section>
@@ -500,6 +578,12 @@
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#local-installation">Local installation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-hydromt-delft3d-fm">1 - Install HydroMT-Delft3D FM</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#download-the-content-of-the-examples-and-notebooks">2 - Download the content of the examples and notebooks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#running-the-examples">3 - Running the examples</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#list-of-examples">List of examples</a></li>
 </ul>
   </nav></div>

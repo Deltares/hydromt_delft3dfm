@@ -677,19 +677,17 @@
 <span class="sd">    uds_mesh2d : xu.UgridDataset</span>
 <span class="sd">        Mesh2d UgridDataset.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">mesh2d</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">_set_mesh2d</span><span class="p">()</span>
+    <span class="n">mk_mesh2d</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_get</span><span class="p">()</span>
 
     <span class="c1"># meshkernel to xugrid Ugrid2D</span>
-    <span class="n">uds_mesh2d</span> <span class="o">=</span> <span class="n">xu</span><span class="o">.</span><span class="n">Ugrid2d</span><span class="p">(</span>
-        <span class="n">node_x</span><span class="o">=</span><span class="n">mesh2d</span><span class="o">.</span><span class="n">mesh2d_node_x</span><span class="p">,</span>
-        <span class="n">node_y</span><span class="o">=</span><span class="n">mesh2d</span><span class="o">.</span><span class="n">mesh2d_node_y</span><span class="p">,</span>
-        <span class="n">fill_value</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">face_node_connectivity</span><span class="o">=</span><span class="n">mesh2d</span><span class="o">.</span><span class="n">mesh2d_face_nodes</span><span class="p">,</span>
-        <span class="n">edge_node_connectivity</span><span class="o">=</span><span class="n">mesh2d</span><span class="o">.</span><span class="n">mesh2d_edge_nodes</span><span class="p">,</span>
+    <span class="n">uds_mesh2d</span> <span class="o">=</span> <span class="n">xu</span><span class="o">.</span><span class="n">Ugrid2d</span><span class="o">.</span><span class="n">from_meshkernel</span><span class="p">(</span>
+        <span class="n">mk_mesh2d</span><span class="p">,</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mesh2d&quot;</span><span class="p">,</span>
         <span class="n">projected</span><span class="o">=</span><span class="n">crs</span><span class="o">.</span><span class="n">is_projected</span><span class="p">,</span>
         <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">,</span>
     <span class="p">)</span>
+
     <span class="c1"># Convert to UgridDataset</span>
     <span class="n">uds_mesh2d</span> <span class="o">=</span> <span class="n">xu</span><span class="o">.</span><span class="n">UgridDataset</span><span class="p">(</span><span class="n">uds_mesh2d</span><span class="o">.</span><span class="n">to_dataset</span><span class="p">())</span>
     <span class="n">uds_mesh2d</span> <span class="o">=</span> <span class="n">uds_mesh2d</span><span class="o">.</span><span class="n">ugrid</span><span class="o">.</span><span class="n">assign_face_coords</span><span class="p">()</span>

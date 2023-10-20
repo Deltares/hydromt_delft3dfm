@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Working with the Delft3D FM model &#8212; HydroMT Delft3D FM  documentation</title>
+    <title>Local installation &#8212; HydroMT Delft3D FM  documentation</title>
   
   
   
@@ -42,11 +42,9 @@
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=36754332"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/dflowfm';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_examples/README';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Model methods and components" href="dflowfm_model_setup.html" />
-    <link rel="prev" title="User guide" href="intro.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -150,8 +148,8 @@
                     </li>
                 
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="intro.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/intro.html">
                         User guide
                       </a>
                     </li>
@@ -266,7 +264,7 @@
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -291,8 +289,8 @@
                     </li>
                 
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="intro.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/intro.html">
                         User guide
                       </a>
                     </li>
@@ -368,29 +366,6 @@
     
   </div>
   
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
-     aria-label="Section Navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Working with the Delft3D FM model</a><input checked class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="dflowfm_model_setup.html">Model methods and components</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="dflowfm_build.html">Building a model</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../_examples/build_1d2dmodel.html">Example: Build Delft3DFM 1D2D model</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="dflowfm_update.html">Updating a model</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../_examples/update_refine_2dgrid.html">Example: Update Delft3DFM model (refine 2dgrid)</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</nav></div>
-    </div>
-  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
@@ -423,10 +398,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    
-    <li class="breadcrumb-item"><a href="intro.html" class="nav-link">User guide</a></li>
-    
-    <li class="breadcrumb-item active" aria-current="page">Working...</li>
+    <li class="breadcrumb-item active" aria-current="page">Local installation</li>
   </ul>
 </nav>
 </div>
@@ -443,16 +415,83 @@
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="working-with-the-delft3d-fm-model">
-<h1>Working with the Delft3D FM model<a class="headerlink" href="#working-with-the-delft3d-fm-model" title="Link to this heading">#</a></h1>
-<p>With the Hydromt-Delft3D FM plugin, you can easily work with Delft3D FM 1D2D models.
-This plugin contains relevant functions for setting up or adjusting models:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="dflowfm_build.html#dflowfm-build"><span class="std std-ref">building a model</span></a>: building a model from scratch.</p></li>
-<li><p><span class="xref std std-ref">updating a model</span>: updating an existing model (e.g. update datafeeds).</p></li>
-</ul>
-<div class="toctree-wrapper compound">
+  <p>This folder contains several iPython notebook examples for <strong>HydroMT-Delft3D FM</strong>.</p>
+<p>These examples can be run on your local machine.</p>
+<section id="local-installation">
+<h1>Local installation<a class="headerlink" href="#local-installation" title="Link to this heading">#</a></h1>
+<p>To run these examples on your local machine you need a copy of the examples folder
+of the repository and an installation of HydroMT-Delft3D FM including some additional
+packages required to run the notebooks.</p>
+<section id="install-hydromt-delft3d-fm">
+<h2>1 - Install HydroMT-Delft3D FM<a class="headerlink" href="#install-hydromt-delft3d-fm" title="Link to this heading">#</a></h2>
+<p>The next step is to install all the python dependencies required to run the notebooks, including HydroMT and HydroMT-Delft3D FM.</p>
+<p><strong>If you do not have hydromt-delft3dfm yet installed</strong>, first create a new empty environment with the base hydromt installation:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>hydromt-delft3dfm<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>hydromt
+</pre></div>
 </div>
+<p>Alternatively, you can also use mamba. Checkout more details in the <a class="reference external" href="https://deltares.github.io/hydromt_delft3dfm/latest/getting_started/installation">installation guide.</a></p>
+<p>To run the notebooks, you need to install the <code class="docutils literal notranslate"><span class="pre">examples</span></code> version of HydroMT Delft3D FM using pip. The examples version installs additional dependencies
+such as jupyter notebook to run the notebooks, matplotlib to plot etc. It is a more complete
+installation of hydromt_delft3dfm. To install or update in an existing environment (example hydromt-delft3dfm environment), do:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>activate<span class="w"> </span>hydromt-delft3dfm
+<span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;hydromt_delft3dfm[examples]&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="download-the-content-of-the-examples-and-notebooks">
+<h2>2 - Download the content of the examples and notebooks<a class="headerlink" href="#download-the-content-of-the-examples-and-notebooks" title="Link to this heading">#</a></h2>
+<p>To run the examples locally, you will need to download the content of the hydromt_delft3dfm repository.
+You have two options:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Download and unzip the examples manually</p></li>
+<li><p>Clone the hydromt_delft3dfm GitHub repository</p></li>
+</ol>
+</div></blockquote>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Depending on your installed version of hydromt and hydromt_delft3dfm, you will need to download the correct versions of the examples.
+To check the version of hydromt_delft3dfm that you have installed, do:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>hydromt<span class="w"> </span>--models
+
+<span class="go">model plugins:</span>
+<span class="go"> - dflowfm (hydromt_delft3dfm 0.1.2)</span>
+<span class="go">generic models (hydromt 0.9.0)</span>
+<span class="go"> - grid_model</span>
+<span class="go"> - vector_model</span>
+<span class="go"> - mesh_model</span>
+<span class="go"> - network_model</span>
+</pre></div>
+</div>
+</div>
+<p>In the examples above, we see version 0.1.2 of hydromt_delft3dfm is installed and version 0.9.0 of hydromt.</p>
+<p><strong>Option 1: manual download and unzip</strong></p>
+<p>To manually download the examples on Windows, do (!replace with your own hydromt_delft3dfm version!):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>curl<span class="w"> </span>https://github.com/Deltares/hydromt_delft3dfm/archive/refs/tags/v0.1.2.zip<span class="w"> </span>-O<span class="w"> </span>-L
+<span class="gp">$ </span>tar<span class="w"> </span>-xf<span class="w"> </span>v0.1.2.zip
+<span class="gp">$ </span>ren<span class="w"> </span>hydromt_delft3dfm-0.1.2<span class="w"> </span>hydromt_delft3dfm
+</pre></div>
+</div>
+<p>You can also download, unzip and rename manually if you prefer, rather than using the windows command prompt.</p>
+<p><strong>Option 2: cloning the hydromt_delft3dfm repository</strong></p>
+<p>For git users, you can also get the examples by cloning the hydromt_delft3dfm github repository and checking the version
+you have installed:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Deltares/hydromt_delft3dfm.git
+<span class="gp">$ </span>git<span class="w"> </span>checkout<span class="w"> </span>v0.1.2
+</pre></div>
+</div>
+</section>
+<section id="running-the-examples">
+<h2>3 - Running the examples<a class="headerlink" href="#running-the-examples" title="Link to this heading">#</a></h2>
+<p>Finally, start a jupyter lab server inside the <strong>examples</strong> folder
+after activating the <strong>hydromt-delft3dfm</strong> environment, see below.</p>
+<p>Alternatively, you can run the notebooks from <a class="reference external" href="https://code.visualstudio.com/download">Visual Studio Code</a>.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>activate<span class="w"> </span>hydromt-delft3dfm
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>hydromt_delft3dfm/examples
+<span class="gp">$ </span>jupyter<span class="w"> </span>lab
+</pre></div>
+</div>
+</section>
 </section>
 
 
@@ -465,24 +504,6 @@ This plugin contains relevant functions for setting up or adjusting models:</p>
                 <footer class="prev-next-footer">
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
-    <a class="left-prev"
-       href="intro.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">User guide</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="dflowfm_model_setup.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Model methods and components</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
 </div>
                 </footer>
               
@@ -493,9 +514,21 @@ This plugin contains relevant functions for setting up or adjusting models:</p>
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
   <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-hydromt-delft3d-fm">1 - Install HydroMT-Delft3D FM</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-the-content-of-the-examples-and-notebooks">2 - Download the content of the examples and notebooks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-the-examples">3 - Running the examples</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/Deltares/hydromt_delft3dfm/edit/main/docs/user_guide/dflowfm.rst">
+    <a href="https://github.com/Deltares/hydromt_delft3dfm/edit/main/docs/_examples/README.rst">
       <i class="fa-solid fa-pencil"></i>
       
       
@@ -509,7 +542,7 @@ This plugin contains relevant functions for setting up or adjusting models:</p>
 
   <div class="sidebar-secondary-item">
   <div class="tocsection sourcelink">
-    <a href="../_sources/user_guide/dflowfm.rst.txt">
+    <a href="../_sources/_examples/README.rst.txt">
       <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
   </div>

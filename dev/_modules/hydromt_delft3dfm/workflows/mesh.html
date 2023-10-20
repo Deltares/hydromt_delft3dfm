@@ -644,7 +644,6 @@
         <span class="n">parameters</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshRefinementParameters</span><span class="p">(</span>
             <span class="n">refine_intersected</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">use_mass_center_when_refining</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">min_face_size</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>  <span class="c1"># Does nothing?</span>
             <span class="n">refinement_type</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># No effect?</span>
             <span class="n">connect_hanging_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">account_for_samples_outside_face</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -690,7 +689,7 @@
         <span class="n">parameters</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshRefinementParameters</span><span class="p">(</span>
             <span class="n">refinement_type</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="n">max_refinement_iterations</span><span class="o">=</span><span class="n">steps</span><span class="p">,</span>
-            <span class="n">min_face_size</span><span class="o">=</span><span class="n">res</span> <span class="o">/</span> <span class="mi">2</span><span class="o">**</span><span class="n">steps</span><span class="p">,</span>
+            <span class="n">min_edge_size</span><span class="o">=</span><span class="n">res</span> <span class="o">/</span> <span class="mi">2</span><span class="o">**</span><span class="n">steps</span><span class="p">,</span>
             <span class="n">account_for_samples_outside_face</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">connect_hanging_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">refine_intersected</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -863,6 +862,7 @@
     <span class="n">link1d2d</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">links1d2d_from_hydrolib_network</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">link1d2d</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_filter_links_on_idx</span><span class="p">(</span><span class="n">network</span><span class="p">:</span> <span class="n">Network</span><span class="p">,</span> <span class="n">keep</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
