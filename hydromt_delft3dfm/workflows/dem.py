@@ -276,7 +276,7 @@ def get_river_bathymetry(
         gdf_riv[col] = np.maximum(0, data)
 
     # create river mask with river polygon
-    if rivmsk_name not in ds and "rivwth":
+    if rivmsk_name not in ds and "rivwth" in gdf_riv:
         if gdf_riv.crs.is_geographic:  # needed for length and splitting
             gdf_riv_buf = gdf_riv.copy().to_crs(3857)
         else:

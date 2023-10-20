@@ -220,7 +220,6 @@ def mesh2d_refine(
         parameters = mk.MeshRefinementParameters(
             refine_intersected=True,
             use_mass_center_when_refining=False,
-            min_face_size=10.0,  # Does nothing?
             refinement_type=1,  # No effect?
             connect_hanging_nodes=True,
             account_for_samples_outside_face=False,
@@ -266,7 +265,7 @@ def mesh2d_refine(
         parameters = mk.MeshRefinementParameters(
             refinement_type=2,
             max_refinement_iterations=steps,
-            min_face_size=res / 2**steps,
+            min_edge_size=res / 2**steps,
             account_for_samples_outside_face=False,
             connect_hanging_nodes=True,
             refine_intersected=False,
@@ -436,6 +435,7 @@ def links1d2d_add_links_1d_to_2d(
     link1d2d = mutils.links1d2d_from_hydrolib_network(network)
 
     return link1d2d
+
 
 def _filter_links_on_idx(network: Network, keep: np.ndarray) -> None:
     # Select the remaining links
