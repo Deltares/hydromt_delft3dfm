@@ -24,13 +24,18 @@ we recommend installing it into your *base* environment using:
 
   $ conda install mamba -n base -c conda-forge
 
+If conda is prefered, we recommond install libmamba as the solver. See explaination `here <https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community>`_.
+
+.. code-block:: console
+
+  $ conda install -n base conda-libmamba-solver
+  $ conda config --set solver libmamba
 
 Installation
 ============
 
 HydroMT-Delft3DFM is available from pypi.
 We recommend installing using mamba/conda from conda-forge in a new environment.
-If conda is prefered, we recommond install libmamba as the solver. See how to `here <https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community>`_.
 
 .. Note::
 

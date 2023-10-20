@@ -19,7 +19,8 @@ Updating a dflowfm model
  | **Q**: Can I select a specific dflowfm MDU config file when updating my model ?
 
 It is possible. In that case, you need to start your HydroMT configuration with a **global** section
-where you can specify which MDU file to use using the *config_fn* argument.
+where you can specify which MDU file to use using the *config_fn* argument. 
+Use relative path to the current working directory;.
 
 Others
 ------
