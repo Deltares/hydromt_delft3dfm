@@ -47,7 +47,7 @@ You have two options:
     $ hydromt --models
 
     model plugins:
-     - dflowfm (hydromt_delft3dfm 0.1.0)
+     - dflowfm (hydromt_delft3dfm 0.1.2)
     generic models (hydromt 0.8.0)
      - grid_model
      - vector_model
@@ -62,9 +62,9 @@ To manually download the examples on Windows, do (!replace with your own hydromt
 
 .. code-block:: console
 
-  $ curl https://github.com/Deltares/hydromt_delft3dfm/archive/refs/tags/v0.1.0.zip -O -L
-  $ tar -xf v0.1.0.zip
-  $ ren hydromt_delft3dfm-0.1.0 hydromt_delft3dfm
+  $ curl https://github.com/Deltares/hydromt_delft3dfm/archive/refs/tags/v0.1.2.zip -O -L
+  $ tar -xf v0.1.2.zip
+  $ ren hydromt_delft3dfm-0.1.2 hydromt_delft3dfm
 
 You can also download, unzip and rename manually if you prefer, rather than using the windows command prompt.
 
@@ -76,7 +76,7 @@ you have installed:
 .. code-block:: console
 
   $ git clone https://github.com/Deltares/hydromt_delft3dfm.git
-  $ git checkout v0.1.0
+  $ git checkout v0.1.2
 
 3 - Running the examples
 ************************
