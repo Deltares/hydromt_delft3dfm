@@ -11,6 +11,7 @@ Unreleased
 
 Added
 -----
+- Basic examples of building and updateing 1D, 2D and 1D2D models. (PR#85)
 
 Changed
 -------
