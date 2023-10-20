@@ -1,4 +1,4 @@
-.. _wflow_build:
+.. _dflowfm_build:
 
 Building a model
 ================
@@ -8,38 +8,30 @@ data libraries are set, you can build a model by using:
 
 .. code-block:: console
 
-    hydromt build wflow path/to/built_model -r "{'basin': [x, y]}" -i wflow_build.ini -d data_sources.yml -vvv
-
-
-.. Note::
-  From HydroMT version 0.7.0 onwards the region argument is optional and should be preceded by a -r or --region flag.
-  The resolution (previously -r) argument has been moved to the setup_basemaps section in the .ini configuration file.
-
-The recommended `region options <https://deltares.github.io/hydromt/latest/user_guide/model_region>`_
-for a proper implementation of this model are:
-
-- basin
-- subbasin
+    hydromt build dflowfm path/to/built_model -i dflowfm_build.yml -d data_sources.yml -vvv
 
 .. _model_config:
 
 Configuration file
 ------------------
-Settings to build or update a Wflow model are managed in a configuration file. In this file,
+Settings to build or update a Delft3DFM model are managed in a configuration file. In this file,
 every option from each :ref:`model method <model_methods>` can be changed by the user
 in its corresponding section.
 
-Note that the order in which the components are listed in the ini file is important:
+Note that the order in which the components are listed in the yml/ini file is important:
 
-- `setup_basemaps` should always be run first to determine the model domain
-- `setup_rivers` should be run right after `setup_basemaps` as it influences several other setup components (lakes, reservoirs, riverwidth, gauges)
 
-Below is an example ini file that can be used to build a complete Wflow model
-:download:`.ini file <../_examples/wflow_build.ini>`. Each section corresponds
+- When setting up a 1D model, one of the `setup_rivers`, `setup_channels` and `setup_pipes` should always be run first to determine the model topology.
+- When setting up a 2D model, `setup_mesh2d` should always be run first.
+- When setting up a 1D2D model, both of the above should be run first, before calling `setup_link1d2d`.
+
+
+Below is an example yml file that can be used to build a complete Delft3DFM model
+:download:`.yml file <../_examples/delft3dfm_build.yml>`. Each section corresponds
 to a model component with the same name.
 
-.. literalinclude:: ../_examples/wflow_build.ini
-   :language: Ini
+.. literalinclude:: ../_examples/delft3dfm_build.yml
+   :language: yaml
 
 Selecting data
 --------------
@@ -54,13 +46,11 @@ are three ways for the user to select which data libraries to use:
   P-drive). In the command lines examples below, this is done by adding either **--dd** or **--deltares-data**
   to the build / update command line.
 - Finally, the user can prepare its own yaml libary (or libraries) (see
-  `HydroMT documentation <https://deltares.github.io/hydromt/latest/index>`_ to check the guidelines).
-  These user libraries can be added either in the command line using the **-d** option and path/to/yaml or in the **ini file**
+  `HydroMT documentation <https://deltares.github.io/hydromt/latest/_examples/prep_data_catalog.html>`_ to check the guidelines).
+  These user libraries can be added either in the command line using the **-d** option and path/to/yaml or in the **yml/ini file**
   with the **data_libs** option in the [global] sections.
 
 .. toctree::
     :hidden:
 
-    Example: Build a Delft3D FM 1D model <../_examples/build_1dmodel.ipynb>
-    Example: Build a Delft3D FM 2D model <../_examples/build_2dmodel.ipynb>
-    Example: Build a Delft3D FM 1D2D model <../_examples/build_1d2dmodel.ipynb>
+    Example: Build Delft3DFM 1D2D model <../_examples/build_1d2dmodel.ipynb>
