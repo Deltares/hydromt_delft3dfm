@@ -454,12 +454,16 @@ we recommend installing it into your <em>base</em> environment using:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>install<span class="w"> </span>mamba<span class="w"> </span>-n<span class="w"> </span>base<span class="w"> </span>-c<span class="w"> </span>conda-forge
 </pre></div>
 </div>
+<p>If conda is prefered, we recommond install libmamba as the solver. See explaination <a class="reference external" href="https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community">here</a>.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>install<span class="w"> </span>-n<span class="w"> </span>base<span class="w"> </span>conda-libmamba-solver
+<span class="gp">$ </span>conda<span class="w"> </span>config<span class="w"> </span>--set<span class="w"> </span>solver<span class="w"> </span>libmamba
+</pre></div>
+</div>
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
 <p>HydroMT-Delft3DFM is available from pypi.
-We recommend installing using mamba/conda from conda-forge in a new environment.
-If conda is prefered, we recommond install libmamba as the solver. See how to <a class="reference external" href="https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community">here</a>.</p>
+We recommend installing using mamba/conda from conda-forge in a new environment.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>In the commands below you can exchange <cite>mamba</cite> for <cite>conda</cite>, see
