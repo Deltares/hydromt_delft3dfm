@@ -8,6 +8,7 @@ The format is based on `Keep a Changelog`_, and this project adheres to
 
 v0.1.2 (20 October 2023)
 ========================
+Added examples, updated documentation and Upgraded dependency.
 
 Added
 -----
