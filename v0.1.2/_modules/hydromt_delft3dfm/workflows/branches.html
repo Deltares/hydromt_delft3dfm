@@ -1,0 +1,1745 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>hydromt_delft3dfm.workflows.branches &#8212; HydroMT Delft3D FM  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/theme-deltares.css?v=17060807" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+
+    <script src="../../../_static/documentation_options.js?v=8a448e45"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/hydromt_delft3dfm/workflows/branches';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../../_static/hydromt-logo.jpg" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../../_static/hydromt-logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+    <p class="title logo__title">HydroMT Delft3D FM</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../getting_started/intro.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../user_guide/intro.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../api.html">
+                        API reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../dev_guide/intro.html">
+                        Developments
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
+                    HydroMT core
+                  </a>
+                </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../getting_started/intro.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../user_guide/intro.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../api.html">
+                        API reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../dev_guide/intro.html">
+                        Developments
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
+                    HydroMT core
+                  </a>
+                </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">hydromt_delf...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for hydromt_delft3dfm.workflows.branches</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Workflows to prepare branches for Delft3D-FM model.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pyproj</span>
+<span class="kn">import</span> <span class="nn">shapely</span>
+<span class="kn">from</span> <span class="nn">hydromt</span> <span class="kn">import</span> <span class="n">gis_utils</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">distance</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">MultiLineString</span><span class="p">,</span> <span class="n">Point</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">graph_utils</span><span class="p">,</span> <span class="n">mesh_utils</span>
+<span class="kn">from</span> <span class="nn">..gis_utils</span> <span class="kn">import</span> <span class="n">cut_pieces</span><span class="p">,</span> <span class="n">split_lines</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;prepare_branches&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;process_branches&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;validate_branches&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;add_branches&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;find_nearest_branch&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;update_data_columns_attributes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;update_data_columns_attribute_from_query&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;snap_newbranches_to_branches_at_snappednodes&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="prepare_branches">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.prepare_branches.html#hydromt_delft3dfm.workflows.prepare_branches">[docs]</a>
+<span class="k">def</span> <span class="nf">prepare_branches</span><span class="p">(</span>
+    <span class="n">gdf_br</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">params</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">br_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;river&quot;</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="s2">&quot;pipe&quot;</span><span class="p">],</span>
+    <span class="n">dst_crs</span><span class="p">:</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">CRS</span><span class="p">,</span>
+    <span class="nb">filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">id_start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">spacing</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">allow_intersection_snapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">allowed_columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span> <span class="o">=</span> <span class="n">logger</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set all common steps to add branches type of objects.</span>
+
+<span class="sd">    Example for ie channels, rivers, pipes... branches.</span>
+
+<span class="sd">    Default frictions and crossections will also be added.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gdf_br : gpd.GeoDataFrame</span>
+<span class="sd">        gpd.GeoDataFrame of branches.</span>
+<span class="sd">    params : pd.DataFrame</span>
+<span class="sd">        pd.Dataframe of defaults values for gdf_br.</span>
+<span class="sd">    br_type : str</span>
+<span class="sd">        branches type. Either &quot;river&quot;, &quot;channel&quot;, &quot;pipe&quot;.</span>
+<span class="sd">    dst_crs : pyproj.CRS</span>
+<span class="sd">        Destination crs for the branches and branch_nodes.</span>
+<span class="sd">    id_start: int, optional</span>
+<span class="sd">        Start index for branchid. By default 1.</span>
+<span class="sd">    filter: str, optional</span>
+<span class="sd">        Keyword in branchtype column of gdf_br used to filter lines. If None</span>
+<span class="sd">        all lines in br_fn are used (default).</span>
+<span class="sd">    spacing: float, optional</span>
+<span class="sd">        Spacing value in meters to split the long pipelines lines into shorter pipes.</span>
+<span class="sd">        By default inf - no splitting is applied.</span>
+<span class="sd">    snap_offset: float, optional</span>
+<span class="sd">        Snapping tolerance to automatically connecting branches. Tolerance</span>
+<span class="sd">        must be smaller than the shortest pipe length.</span>
+<span class="sd">        By default 0.0, no snapping is applied.</span>
+<span class="sd">    allow_intersection_snapping: bool, optional</span>
+<span class="sd">        Switch to choose whether snapping of multiple branch ends are</span>
+<span class="sd">        allowed when ``snap_offset`` is used.</span>
+<span class="sd">        By default True.</span>
+<span class="sd">    allowed_columns: list, optional</span>
+<span class="sd">        List of columns to filter in branches GeoDataFrame</span>
+<span class="sd">    logger: logging.Logger, optional</span>
+<span class="sd">        Logger.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    branches: gpd.GeoDataFrame</span>
+<span class="sd">        Prepared branches.</span>
+<span class="sd">    branches_nodes: gpd.GeoDataFrame</span>
+<span class="sd">        Nodes of the prepared branches.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 1. Filter features based on filter</span>
+    <span class="k">if</span> <span class="nb">filter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">&quot;branchtype&quot;</span> <span class="ow">in</span> <span class="n">gdf_br</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">gdf_br</span> <span class="o">=</span> <span class="n">gdf_br</span><span class="p">[</span><span class="n">gdf_br</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="nb">filter</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Set </span><span class="si">{</span><span class="nb">filter</span><span class="si">}</span><span class="s2"> locations filtered from branches as </span><span class="si">{</span><span class="n">br_type</span><span class="si">}</span><span class="s2"> .&quot;</span><span class="p">)</span>
+    <span class="c1"># Check if features are present</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gdf_br</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No 1D </span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2"> locations found within domain&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># 2. Add defaults</span>
+    <span class="c1"># Add branchtype and branchid attributes if does not exist</span>
+    <span class="n">gdf_br</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">br_type</span>
+    <span class="k">if</span> <span class="s2">&quot;branchid&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">gdf_br</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">br_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">id_start</span><span class="p">,</span> <span class="n">id_start</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">gdf_br</span><span class="p">))</span>
+        <span class="p">]</span>  <span class="c1"># avoid duplicated ids being generated</span>
+        <span class="n">gdf_br</span><span class="p">[</span><span class="s2">&quot;branchid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">gdf_br</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="n">gdf_br</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">gdf_br</span><span class="p">[</span><span class="s2">&quot;branchid&quot;</span><span class="p">]</span>
+    <span class="n">gdf_br</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;branchid&quot;</span>
+
+    <span class="c1"># filter for allowed columns</span>
+    <span class="n">allowed_columns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">allowed_columns</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">gdf_br</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+    <span class="n">gdf_br</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">gdf_br</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">allowed_columns</span><span class="p">)],</span> <span class="n">crs</span><span class="o">=</span><span class="n">gdf_br</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
+
+    <span class="c1"># Add spacing to defaults</span>
+    <span class="k">if</span> <span class="n">spacing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;spacing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spacing</span>
+
+    <span class="c1"># add params</span>
+    <span class="n">gdf_br</span> <span class="o">=</span> <span class="n">update_data_columns_attributes</span><span class="p">(</span><span class="n">gdf_br</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">brtype</span><span class="o">=</span><span class="n">br_type</span><span class="p">)</span>
+
+    <span class="c1"># 3. (geo-) process branches</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Processing branches&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">gdf_br</span><span class="o">.</span><span class="n">crs</span><span class="o">.</span><span class="n">is_geographic</span><span class="p">:</span>  <span class="c1"># needed for length and splitting</span>
+        <span class="n">gdf_br</span> <span class="o">=</span> <span class="n">gdf_br</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="mi">3857</span><span class="p">)</span>
+    <span class="n">branches</span><span class="p">,</span> <span class="n">branches_nodes</span> <span class="o">=</span> <span class="n">process_branches</span><span class="p">(</span>
+        <span class="n">gdf_br</span><span class="p">,</span>
+        <span class="n">id_col</span><span class="o">=</span><span class="s2">&quot;branchid&quot;</span><span class="p">,</span>
+        <span class="n">snap_offset</span><span class="o">=</span><span class="n">snap_offset</span><span class="p">,</span>
+        <span class="n">allow_intersection_snapping</span><span class="o">=</span><span class="n">allow_intersection_snapping</span><span class="p">,</span>
+        <span class="n">smooth_branches</span><span class="o">=</span><span class="n">br_type</span> <span class="o">==</span> <span class="s2">&quot;pipe&quot;</span><span class="p">,</span>
+        <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Validating branches&quot;</span><span class="p">)</span>
+    <span class="n">validate_branches</span><span class="p">(</span><span class="n">branches</span><span class="p">)</span>
+
+    <span class="c1"># 4. convert to model crs</span>
+    <span class="n">branches</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="n">dst_crs</span><span class="p">)</span>
+    <span class="n">branches_nodes</span> <span class="o">=</span> <span class="n">branches_nodes</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="n">dst_crs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">branches</span><span class="p">,</span> <span class="n">branches_nodes</span></div>
+
+
+
+<div class="viewcode-block" id="add_branches">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.add_branches.html#hydromt_delft3dfm.workflows.add_branches">[docs]</a>
+<span class="k">def</span> <span class="nf">add_branches</span><span class="p">(</span>
+    <span class="n">mesh1d</span><span class="p">,</span>
+    <span class="n">branches</span><span class="p">,</span>
+    <span class="n">new_branches</span><span class="p">,</span>
+    <span class="n">snap_newbranches_to_branches_at_snapnodes</span><span class="p">,</span>
+    <span class="n">snap_offset</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add branches to exisitng open system branches at mesh1d node locations.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">snap_newbranches_to_branches_at_snapnodes</span> <span class="ow">or</span> <span class="n">mesh1d</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># do not perform snap or no mesh nodes to perform snap</span>
+        <span class="n">branches</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">branches</span><span class="p">,</span> <span class="n">new_branches</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">crs</span><span class="o">=</span><span class="n">new_branches</span><span class="o">.</span><span class="n">crs</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">snap_branch_ends</span><span class="p">(</span><span class="n">branches</span><span class="p">)</span>
+
+    <span class="c1"># first snap nodes</span>
+    <span class="n">snappednodes</span> <span class="o">=</span> <span class="n">_snap_nodes</span><span class="p">(</span><span class="n">mesh1d</span><span class="p">,</span> <span class="n">branches</span><span class="p">,</span> <span class="n">new_branches</span><span class="p">,</span> <span class="n">snap_offset</span><span class="p">)</span>
+
+    <span class="c1"># snap branches</span>
+    <span class="p">(</span>
+        <span class="n">new_branches_snapped</span><span class="p">,</span>
+        <span class="n">branches_snapped</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">=</span> <span class="n">snap_newbranches_to_branches_at_snappednodes</span><span class="p">(</span>
+        <span class="n">new_branches</span><span class="p">,</span> <span class="n">branches</span><span class="p">,</span> <span class="n">snappednodes</span>
+    <span class="p">)</span>
+
+    <span class="c1"># update the branches</span>
+    <span class="n">branches</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">branches_snapped</span><span class="p">,</span> <span class="n">new_branches_snapped</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="n">crs</span><span class="o">=</span><span class="n">branches</span><span class="o">.</span><span class="n">crs</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">snap_branch_ends</span><span class="p">(</span><span class="n">branches</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_snap_nodes</span><span class="p">(</span><span class="n">mesh1d</span><span class="p">,</span> <span class="n">branches</span><span class="p">,</span> <span class="n">newbranches</span><span class="p">,</span> <span class="n">snap_offset</span><span class="p">):</span>
+    <span class="c1"># snap nodes</span>
+    <span class="c1"># get mesh1d nodes that allows to be snapped</span>
+    <span class="n">mesh1d_nodes</span> <span class="o">=</span> <span class="n">mesh_utils</span><span class="o">.</span><span class="n">mesh1d_nodes_geodataframe</span><span class="p">(</span><span class="n">mesh1d</span><span class="p">,</span> <span class="n">branches</span><span class="p">)</span>
+    <span class="n">mesh1d_nodes_open</span> <span class="o">=</span> <span class="n">mesh1d_nodes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="n">mesh1d_nodes</span><span class="o">.</span><span class="n">branch_name</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span>
+            <span class="n">branches</span><span class="p">[</span><span class="n">branches</span><span class="o">.</span><span class="n">branchtype</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s2">&quot;river&quot;</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">])]</span><span class="o">.</span><span class="n">branchid</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="c1"># get locations that needs to be snapped</span>
+    <span class="n">unsnappednodes</span> <span class="o">=</span> <span class="n">_get_possible_unsnappednodes</span><span class="p">(</span><span class="n">newbranches</span><span class="p">)</span>
+
+    <span class="c1"># snap the new endnodes to existing mesh1d_nodes_open</span>
+    <span class="n">snappednodes</span> <span class="o">=</span> <span class="n">_snap_unsnappednodes_to_nodes</span><span class="p">(</span>
+        <span class="n">unsnappednodes</span><span class="p">,</span> <span class="n">mesh1d_nodes_open</span><span class="p">,</span> <span class="n">snap_offset</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">snappednodes</span>
+
+
+<span class="k">def</span> <span class="nf">_get_possible_unsnappednodes</span><span class="p">(</span><span class="n">newbranches</span><span class="p">):</span>
+    <span class="n">branchtype</span> <span class="o">=</span> <span class="n">newbranches</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">branchtype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;pipe&quot;</span><span class="p">,</span> <span class="s2">&quot;tunnel&quot;</span><span class="p">]:</span>
+        <span class="c1"># add pipes - connect both ends to existing network</span>
+        <span class="n">endnodes</span> <span class="o">=</span> <span class="n">graph_utils</span><span class="o">.</span><span class="n">get_endnodes_from_lines</span><span class="p">(</span><span class="n">newbranches</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="s2">&quot;downstream&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># add rivers/channels - only connect downstream ends to existing network</span>
+        <span class="n">endnodes</span> <span class="o">=</span> <span class="n">graph_utils</span><span class="o">.</span><span class="n">get_endnodes_from_lines</span><span class="p">(</span><span class="n">newbranches</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">endnodes</span>
+
+
+<span class="k">def</span> <span class="nf">_snap_unsnappednodes_to_nodes</span><span class="p">(</span>
+    <span class="n">unsnapped_nodes</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
+    <span class="n">snapped_nodes</span> <span class="o">=</span> <span class="n">gis_utils</span><span class="o">.</span><span class="n">nearest_merge</span><span class="p">(</span>
+        <span class="n">unsnapped_nodes</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">max_dist</span><span class="o">=</span><span class="n">snap_offset</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+    <span class="n">snapped_nodes</span> <span class="o">=</span> <span class="n">snapped_nodes</span><span class="p">[</span><span class="n">snapped_nodes</span><span class="o">.</span><span class="n">index_right</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># drop not snapped</span>
+    <span class="n">snapped_nodes</span><span class="p">[</span><span class="s2">&quot;geometry_left&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">snapped_nodes</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span>
+    <span class="n">snapped_nodes</span><span class="p">[</span><span class="s2">&quot;geometry_right&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">nodes</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">snapped_nodes</span><span class="p">[</span><span class="s2">&quot;index_right&quot;</span><span class="p">]</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="n">snapped_nodes</span>
+
+
+<div class="viewcode-block" id="update_data_columns_attributes">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.update_data_columns_attributes.html#hydromt_delft3dfm.workflows.update_data_columns_attributes">[docs]</a>
+<span class="k">def</span> <span class="nf">update_data_columns_attributes</span><span class="p">(</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">brtype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add or update columns in the branches geodataframe.</span>
+
+<span class="sd">    UPdate is based on column and values in attributes</span>
+<span class="sd">    (excluding 1st col branchtype used for query).</span>
+
+<span class="sd">    If brtype is set, only update the attributes of the specified type of branches.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    branches : gpd.GeoDataFrame</span>
+<span class="sd">        Branches.</span>
+<span class="sd">    attribute : int or pd.DataFrame</span>
+<span class="sd">        Values of the attribute. Either int of float for fixed value for</span>
+<span class="sd">        all or a pd.DataFrame with values per &quot;branchtype&quot;, &quot;shape&quot; and &quot;width&quot;</span>
+<span class="sd">        (column names of the DataFrame).</span>
+<span class="sd">    attribute_name : str</span>
+<span class="sd">        Name of the new attribute column in branches.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    branches : gpd.GeoDataFrame</span>
+<span class="sd">        Branches with new attribute values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># If brtype is specified, only update attributes for this brtype</span>
+    <span class="k">if</span> <span class="n">brtype</span><span class="p">:</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">brtype</span><span class="p">]</span>
+    <span class="c1"># Update attributes</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">attributes</span><span class="o">.</span><span class="n">index</span><span class="p">)):</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">attributes</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">branch</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">colname</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="c1"># If attribute is not at all in branches, add a new column</span>
+            <span class="k">if</span> <span class="n">colname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">branches</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">branches</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">attributes</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="c1"># Then fill in empty or NaN values with defaults</span>
+            <span class="n">branches</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+                    <span class="n">branches</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">(),</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">branch</span>
+                <span class="p">),</span>
+                <span class="n">colname</span><span class="p">,</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">branches</span></div>
+
+
+
+<div class="viewcode-block" id="update_data_columns_attribute_from_query">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.update_data_columns_attribute_from_query.html#hydromt_delft3dfm.workflows.update_data_columns_attribute_from_query">[docs]</a>
+<span class="k">def</span> <span class="nf">update_data_columns_attribute_from_query</span><span class="p">(</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">attribute</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">attribute_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update an attribute column of branches.</span>
+
+<span class="sd">    Update is based on query on &quot;branchtype&quot;, &quot;shape&quot; and &quot;width&quot;/&quot;diameter&quot;</span>
+<span class="sd">    values specified in attribute DataFrame.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    branches : gpd.GeoDataFrame</span>
+<span class="sd">        Branches.</span>
+<span class="sd">    attribute : pd.DataFrame</span>
+<span class="sd">        pd.DataFrame with specific attribute values per</span>
+<span class="sd">        &quot;branchtype&quot;, &quot;shape&quot; and &quot;width&quot;/&quot;diameter&quot; (column names of the DataFrame).</span>
+<span class="sd">    attribute_name : str</span>
+<span class="sd">        Name of the new attribute column in branches.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    branches : gpd.GeoDataFrame</span>
+<span class="sd">        Branches with new attribute values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Add a new empty attribute column to be filled in</span>
+    <span class="n">branches</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">attribute</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="c1"># Iterate over the attribute DataFrame lines</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">attribute</span><span class="o">.</span><span class="n">itertuples</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># Width/diameter is not always mandatory</span>
+        <span class="k">if</span> <span class="s2">&quot;width&quot;</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">_fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">width</span><span class="p">):</span>
+                <span class="n">branches</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">]</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+                        <span class="n">branches</span><span class="o">.</span><span class="n">branchtype</span> <span class="o">!=</span> <span class="n">row</span><span class="o">.</span><span class="n">branchtype</span><span class="p">,</span>
+                        <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">row</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>  <span class="c1"># shape is reserved</span>
+                    <span class="p">),</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">branches</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">]</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+                        <span class="n">branches</span><span class="o">.</span><span class="n">branchtype</span> <span class="o">!=</span> <span class="n">row</span><span class="o">.</span><span class="n">branchtype</span><span class="p">,</span>
+                        <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">row</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>  <span class="c1"># shape is reserved</span>
+                        <span class="n">branches</span><span class="o">.</span><span class="n">width</span> <span class="o">!=</span> <span class="n">row</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
+                    <span class="p">),</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">),</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="s2">&quot;diameter&quot;</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">_fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">diameter</span><span class="p">):</span>
+                <span class="n">branches</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">]</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+                        <span class="n">branches</span><span class="o">.</span><span class="n">branchtype</span> <span class="o">!=</span> <span class="n">row</span><span class="o">.</span><span class="n">branchtype</span><span class="p">,</span>
+                        <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">row</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>  <span class="c1"># shape is reserved</span>
+                    <span class="p">),</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">branches</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">]</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+                        <span class="n">branches</span><span class="o">.</span><span class="n">branchtype</span> <span class="o">!=</span> <span class="n">row</span><span class="o">.</span><span class="n">branchtype</span><span class="p">,</span>
+                        <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">row</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>  <span class="c1"># shape is reserved</span>
+                        <span class="n">branches</span><span class="o">.</span><span class="n">diameter</span> <span class="o">!=</span> <span class="n">row</span><span class="o">.</span><span class="n">diameter</span><span class="p">,</span>
+                    <span class="p">),</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">),</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">branches</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">]</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+                    <span class="n">branches</span><span class="o">.</span><span class="n">branchtype</span> <span class="o">!=</span> <span class="n">row</span><span class="o">.</span><span class="n">branchtype</span><span class="p">,</span>
+                    <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">row</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>  <span class="c1"># shape is reserved</span>
+                <span class="p">),</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">),</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">branches</span></div>
+
+
+
+<div class="viewcode-block" id="process_branches">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.process_branches.html#hydromt_delft3dfm.workflows.process_branches">[docs]</a>
+<span class="k">def</span> <span class="nf">process_branches</span><span class="p">(</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">id_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;branchid&quot;</span><span class="p">,</span>
+    <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">allow_intersection_snapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">smooth_branches</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process the branches.</span>
+
+<span class="sd">    Process by cleaning up the branches, snapping them, splitting them</span>
+<span class="sd">    and generating branchnodes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    branches: gpd.GeoDataFrame</span>
+<span class="sd">        The branches to process.</span>
+<span class="sd">    id_col: str, optional</span>
+<span class="sd">        Defalt to branchid.</span>
+<span class="sd">    snap_offset : float, optional</span>
+<span class="sd">        Maximum distance in meters between end points. If the distance</span>
+<span class="sd">        is larger, they are not snapped. Defaults to 0.01.</span>
+<span class="sd">    allow_intersection_snapping : bool, optional</span>
+<span class="sd">        Allow snapping at all branch ends, including intersections. Defaults to True.</span>
+<span class="sd">    smooth_branches: bool, optional</span>
+<span class="sd">        whether to return branches that are smoothed (straightend), needed for pipes</span>
+<span class="sd">        Default to False.</span>
+<span class="sd">    logger</span>
+<span class="sd">        The logger to log messages with.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    branches : gpd.GeoDataFrame</span>
+<span class="sd">        Preprocessed branches.</span>
+<span class="sd">    branches_nodes : gpd.GeoDataFrame</span>
+<span class="sd">        Preprocessed branches&#39; nodes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Cleaning up branches&quot;</span><span class="p">)</span>
+    <span class="c1"># TODO: maybe add arguments,use branch cross sections</span>
+    <span class="c1"># global_controls = branches_ini.get(&quot;global&quot;, None)</span>
+
+    <span class="n">branches</span> <span class="o">=</span> <span class="n">cleanup_branches</span><span class="p">(</span>
+        <span class="n">branches</span><span class="p">,</span>
+        <span class="n">id_col</span><span class="o">=</span><span class="n">id_col</span><span class="p">,</span>
+        <span class="n">snap_offset</span><span class="o">=</span><span class="n">snap_offset</span><span class="p">,</span>
+        <span class="n">allow_intersection_snapping</span><span class="o">=</span><span class="n">allow_intersection_snapping</span><span class="p">,</span>
+        <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Splitting branches based on spacing&quot;</span><span class="p">)</span>
+    <span class="c1"># TODO: add check, if spacing is used,</span>
+    <span class="c1"># then in branch cross section cannot be setup later</span>
+    <span class="n">branches</span> <span class="o">=</span> <span class="n">space_branches</span><span class="p">(</span><span class="n">branches</span><span class="p">,</span> <span class="n">smooth_branches</span><span class="o">=</span><span class="n">smooth_branches</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Generating branchnodes&quot;</span><span class="p">)</span>
+    <span class="n">branch_nodes</span> <span class="o">=</span> <span class="n">generate_branchnodes</span><span class="p">(</span><span class="n">branches</span><span class="p">,</span> <span class="n">id_col</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">branches</span><span class="p">,</span> <span class="n">branch_nodes</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">cleanup_branches</span><span class="p">(</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">id_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;branchid&quot;</span><span class="p">,</span>
+    <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">allow_intersection_snapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Clean up the branches.</span>
+
+<span class="sd">    Steps:</span>
+<span class="sd">    * Removing null geomtry</span>
+<span class="sd">    * Exploding branches with multiline strings</span>
+<span class="sd">    * simply line geometry by removing Z coordinates</span>
+<span class="sd">    * Removing branches with duplicated geometry</span>
+<span class="sd">    * Removing branches that are shorter than 0.1 meters</span>
+<span class="sd">    * Renaming branches with duplicate IDs</span>
+<span class="sd">    * Reducing the precision of the branch geometry to 6 digits.</span>
+<span class="sd">    * Snapping the branches.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    branches : gpd.GeoDataFrame</span>
+<span class="sd">        The branches to clean up.</span>
+<span class="sd">    id_col : str, optional</span>
+<span class="sd">        The branch id column name. Defaults to &#39;BRANCH_ID&#39;.</span>
+<span class="sd">    snap_offset : float, optional</span>
+<span class="sd">        Maximum distance in meters between end points. If the distance</span>
+<span class="sd">        is larger, they are not snapped. Defaults to 0.01.</span>
+<span class="sd">    allow_intersection_snapping : bool, optional</span>
+<span class="sd">        Allow snapping at all branch ends, including intersections.</span>
+<span class="sd">        Defaults to True.</span>
+<span class="sd">    logger</span>
+<span class="sd">        The logger to log messages with.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gpd.GeoDataFrame</span>
+<span class="sd">        The cleanup branches.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># remove null geometry</span>
+    <span class="n">branches</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">branches</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">isna</span><span class="p">(),</span> <span class="p">:]</span>
+
+    <span class="c1"># explode multiline string</span>
+    <span class="n">_branches</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">explode</span><span class="p">(</span><span class="n">index_parts</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># 3 remove z coordinates</span>
+    <span class="n">_branches</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_branches</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">LineString</span><span class="p">([</span><span class="n">p</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">coords</span><span class="p">])</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Exploding branches.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># remove duplicated geometry</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">_branches</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">geom</span><span class="p">:</span> <span class="n">geom</span><span class="o">.</span><span class="n">wkb</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">branches</span> <span class="o">=</span> <span class="n">_branches</span><span class="p">[</span><span class="n">_branches</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removing </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> branches which have duplicated geometry.&quot;</span><span class="p">)</span>
+    <span class="c1"># remove branches that are too short</span>
+    <span class="k">if</span> <span class="n">branches</span><span class="o">.</span><span class="n">crs</span><span class="o">.</span><span class="n">is_geographic</span><span class="p">:</span>
+        <span class="n">branches_length</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="mi">3857</span><span class="p">)</span><span class="o">.</span><span class="n">length</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">branches_length</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">length</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">branches_length</span> <span class="o">&lt;=</span> <span class="mf">0.1</span><span class="p">))</span>
+    <span class="n">branches</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="n">branches_length</span> <span class="o">&gt;=</span> <span class="mf">0.1</span><span class="p">]</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removing </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> branches that are shorter than 0.1 meter.&quot;</span><span class="p">)</span>
+    <span class="c1"># remove branches with ring geometries</span>
+    <span class="n">branches</span> <span class="o">=</span> <span class="n">_remove_branches_with_ring_geometries</span><span class="p">(</span><span class="n">branches</span><span class="p">)</span>
+
+    <span class="c1"># sort index</span>
+    <span class="k">if</span> <span class="n">id_col</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="s2">&quot;None&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">]:</span>  <span class="c1"># TODO: id_column must be specified</span>
+        <span class="n">id_col</span> <span class="o">=</span> <span class="s2">&quot;BRANCH_ID&quot;</span>
+        <span class="c1"># regenerate ID based on ini</span>
+        <span class="c1"># # NOTE BMA: this is the step to ensure unique id cross the network</span>
+        <span class="c1"># TODO could not find anay example of this or default</span>
+        <span class="n">id_prefix</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># branches_ini[&quot;global&quot;][&quot;id_prefix&quot;]</span>
+        <span class="n">id_suffix</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># branches_ini[&quot;global&quot;][&quot;id_suffix&quot;]</span>
+        <span class="n">branches</span><span class="p">[</span><span class="n">id_col</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">id_prefix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">id_suffix</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">branches</span><span class="p">))</span>
+        <span class="p">]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;id_col is not specified. Branch id columns are&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;read/generated using default: </span><span class="si">{</span><span class="n">id_col</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># check duplicated id</span>
+    <span class="n">_branches</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">_branches</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">_branches</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">_branches</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">id_col</span><span class="p">)[</span><span class="n">id_col</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="s2">&quot;cumcount&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">bi</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">_branches</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">b</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">_branches</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+                <span class="n">index</span><span class="o">=</span><span class="p">{</span><span class="n">bi</span><span class="p">:</span> <span class="n">b</span><span class="p">[</span><span class="n">id_col</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">])},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_branches</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">{</span><span class="n">bi</span><span class="p">:</span> <span class="n">b</span><span class="p">[</span><span class="n">id_col</span><span class="p">]},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">_branches</span><span class="p">[</span><span class="n">id_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">_branches</span><span class="o">.</span><span class="n">index</span>
+    <span class="n">_branches</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">id_col</span>
+    <span class="n">branches</span> <span class="o">=</span> <span class="n">_branches</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">_branches</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">])</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Renaming </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> id_col duplicates. Convention:&quot;</span>
+        <span class="s2">&quot;BRANCH_1, BRANCH_1 --&gt; BRANCH_1, BRANCH_1-2.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># precision correction --&gt; check if needs to be changed by the user,</span>
+    <span class="c1"># if so move that into a func argument</span>
+    <span class="n">branches</span> <span class="o">=</span> <span class="n">reduce_gdf_precision</span><span class="p">(</span>
+        <span class="n">branches</span><span class="p">,</span> <span class="n">rounding_precision</span><span class="o">=</span><span class="mi">6</span>  <span class="c1"># branches_ini[&quot;global&quot;][&quot;rounding_precision&quot;]</span>
+    <span class="p">)</span>  <span class="c1"># recommned to be larger than e-8</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Reducing precision of the GeoDataFrame.&quot;</span> <span class="s2">&quot;Rounding precision (e-6) .&quot;</span><span class="p">)</span>
+
+    <span class="c1"># snap branches</span>
+    <span class="k">if</span> <span class="n">allow_intersection_snapping</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># snap points no matter it is at intersection or ends</span>
+        <span class="n">branches</span> <span class="o">=</span> <span class="n">snap_branch_ends</span><span class="p">(</span><span class="n">branches</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">snap_offset</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;Performing snapping at all branch ends, including intersections&quot;</span>
+            <span class="s2">&quot;(To avoid messy results, please use a lower snap_offset).&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># snap points at ends only</span>
+        <span class="n">branches</span> <span class="o">=</span> <span class="n">snap_branch_ends</span><span class="p">(</span><span class="n">branches</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">snap_offset</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;Performing snapping at all branch ends, excluding intersections&quot;</span>
+            <span class="s2">&quot;(To avoid messy results, please use a lower snap_offset)..&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Drop count column</span>
+    <span class="k">if</span> <span class="s2">&quot;count&quot;</span> <span class="ow">in</span> <span class="n">branches</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">branches</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">branches</span>
+
+
+<span class="k">def</span> <span class="nf">space_branches</span><span class="p">(</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">spacing_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;spacing&quot;</span><span class="p">,</span>
+    <span class="n">smooth_branches</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Space the branches based on the spacing_col on the branch.</span>
+
+<span class="sd">    Removes the spacing column from the branches afterwards.</span>
+
+<span class="sd">    # TODO: seperate situation where interpolation</span>
+<span class="sd">    is needed and interpolation is not needed</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    branches : gpd.GeoDataFrame</span>
+<span class="sd">        The branches to clean up.</span>
+<span class="sd">    spacing_col : str, optional</span>
+<span class="sd">        The branch id column name. Defaults to &#39;spacing&#39;.</span>
+<span class="sd">    logger</span>
+<span class="sd">        The logger to log messages with.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gpd.GeoDataFrame</span>
+<span class="sd">        The split branches.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># split branches based on spacing</span>
+    <span class="n">branches_</span> <span class="o">=</span> <span class="n">split_branches</span><span class="p">(</span>
+        <span class="n">branches</span><span class="p">,</span> <span class="n">spacing_col</span><span class="o">=</span><span class="n">spacing_col</span><span class="p">,</span> <span class="n">smooth_branches</span><span class="o">=</span><span class="n">smooth_branches</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;clipping branches into </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">branches_</span><span class="p">)</span><span class="si">}</span><span class="s2"> segments&quot;</span><span class="p">)</span>
+
+    <span class="c1"># remove spacing column</span>
+    <span class="n">branches_</span> <span class="o">=</span> <span class="n">branches_</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">spacing_col</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">branches_</span>
+
+
+<span class="k">def</span> <span class="nf">generate_branchnodes</span><span class="p">(</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">id_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate branch nodes at the branch ends.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    branches : gpd.GeoDataFrame</span>
+<span class="sd">        The branches to generate the end nodes for.</span>
+<span class="sd">    id_col : str, optional</span>
+<span class="sd">        The branch id column name. Defaults to None.</span>
+<span class="sd">    logger</span>
+<span class="sd">        The logger to log messages with.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gpd.GeoDataFrame</span>
+<span class="sd">        The branch nodes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># generate node up and downstream</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">li</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+        <span class="o">+</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">li</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()],</span>
+        <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">id_col</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">id_col</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">bi</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">branches</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">Point</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">b</span><span class="p">[</span><span class="n">id_col</span><span class="p">]])</span>  <span class="c1"># start</span>
+        <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">Point</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">b</span><span class="p">[</span><span class="n">id_col</span><span class="p">]])</span>  <span class="c1"># end</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">,</span> <span class="s2">&quot;branch_id&quot;</span><span class="p">])</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+        <span class="n">nodes</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="n">left_on</span><span class="o">=</span><span class="s2">&quot;branch_id&quot;</span><span class="p">,</span>
+        <span class="n">right_on</span><span class="o">=</span><span class="n">branches</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">suffixes</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;_b&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">&quot;geometry_b&quot;</span><span class="p">)</span>
+    <span class="c1"># remove duplicated geometry</span>
+    <span class="n">_nodes</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">_nodes</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">geom</span><span class="p">:</span> <span class="n">geom</span><span class="o">.</span><span class="n">wkb</span><span class="p">)</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">_nodes</span><span class="p">[</span><span class="n">_nodes</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">crs</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">crs</span>
+    <span class="c1"># give index</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;branchnodes_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">))]</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;branchnodeid&quot;</span>
+    <span class="c1"># nodes[nodes.index.name] = nodes.index # creates a duplicate column</span>
+    <span class="k">return</span> <span class="n">nodes</span>
+
+
+<div class="viewcode-block" id="validate_branches">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.validate_branches.html#hydromt_delft3dfm.workflows.validate_branches">[docs]</a>
+<span class="k">def</span> <span class="nf">validate_branches</span><span class="p">(</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span>
+<span class="p">):</span>  <span class="c1"># TODO: add more content and maybe make a seperate module</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate the branches.</span>
+
+<span class="sd">    Logs an error when one or more branches have a length of 0 meter.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    branches : gpd.GeoDataFrame</span>
+<span class="sd">        The branches to validate.</span>
+<span class="sd">    logger</span>
+<span class="sd">        The logger to log messages with.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># validate pipe geometry</span>
+    <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">branches</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">length</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Branches are valid.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Branches </span><span class="si">{</span><span class="n">branches</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">branches</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">length</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;have length of 0 meter. &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;Issue might have been caused by using a snap_offset&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;that is too large. Please revise or modify the branches data layer. &quot;</span>
+        <span class="p">)</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">split_branches</span><span class="p">(</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">spacing_const</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span>
+    <span class="n">spacing_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">smooth_branches</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Split branches based on a given spacing.</span>
+
+<span class="sd">    If spacing_col is used (default), apply spacing as a categorical</span>
+<span class="sd">    variable-distance used to split branches.</span>
+<span class="sd">    If spacing_const is used (overwrite), apply spacing as a</span>
+<span class="sd">    constant -  distance used to split branches.</span>
+<span class="sd">    Raise Error if neither exist.</span>
+
+<span class="sd">    If ``smooth_branches``, split branches generated will be straight line.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    branches : gpd.GeoDataFrame</span>
+<span class="sd">    spacing_const : float</span>
+<span class="sd">        Constent spacing which will overwrite the spacing_col.</span>
+<span class="sd">        Defaults to float(&quot;inf&quot;).</span>
+<span class="sd">    spacing_col: str</span>
+<span class="sd">        Name of the column in branchs that contains spacing information.</span>
+<span class="sd">        Default to None.</span>
+<span class="sd">    smooth_branches: bool, optional</span>
+<span class="sd">        Switch to split branches into straight lines. By default False.</span>
+<span class="sd">    logger</span>
+<span class="sd">        The logger to log messages with.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    split_branches : gpd.GeoDataFrame</span>
+<span class="sd">        Branches after split, new ids will be overwritten for</span>
+<span class="sd">        the branch index. Old ids are stored in &quot;OLD_&quot; + index.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">id_col</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">if</span> <span class="n">spacing_col</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Splitting branches with spacing of </span><span class="si">{</span><span class="n">spacing_const</span><span class="si">}</span><span class="s2"> [m]&quot;</span><span class="p">)</span>
+        <span class="n">split_branches</span> <span class="o">=</span> <span class="n">_split_branches_by_spacing_const</span><span class="p">(</span>
+            <span class="n">branches</span><span class="p">,</span>
+            <span class="n">spacing_const</span><span class="p">,</span>
+            <span class="n">id_col</span><span class="o">=</span><span class="n">id_col</span><span class="p">,</span>
+            <span class="n">smooth_branches</span><span class="o">=</span><span class="n">smooth_branches</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">branches</span><span class="p">[</span><span class="n">spacing_col</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;Splitting branches with spacing specifed&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;in datamodel branches[</span><span class="si">{</span><span class="n">spacing_col</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="p">)</span>
+        <span class="n">split_branches</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">spacing_subset</span><span class="p">,</span> <span class="n">branches_subset</span> <span class="ow">in</span> <span class="n">branches</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">spacing_col</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">spacing_subset</span><span class="p">:</span>
+                <span class="n">split_branches_subset</span> <span class="o">=</span> <span class="n">_split_branches_by_spacing_const</span><span class="p">(</span>
+                    <span class="n">branches_subset</span><span class="p">,</span>
+                    <span class="n">spacing_subset</span><span class="p">,</span>
+                    <span class="n">id_col</span><span class="o">=</span><span class="n">id_col</span><span class="p">,</span>
+                    <span class="n">smooth_branches</span><span class="o">=</span><span class="n">smooth_branches</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">branches_subset</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;ORIG_</span><span class="si">{</span><span class="n">id_col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches_subset</span><span class="p">[</span><span class="n">id_col</span><span class="p">]</span>
+                <span class="n">split_branches_subset</span> <span class="o">=</span> <span class="n">branches_subset</span>
+            <span class="n">split_branches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">split_branches_subset</span><span class="p">)</span>
+        <span class="n">split_branches</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">split_branches</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># no spacing information specified anywhere, do not apply splitting</span>
+        <span class="n">branches</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;ORIG_</span><span class="si">{</span><span class="n">id_col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="n">id_col</span><span class="p">]</span>
+        <span class="n">split_branches</span> <span class="o">=</span> <span class="n">branches</span>
+
+    <span class="c1"># reassign branch id for the generated</span>
+    <span class="n">split_branches</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">split_branches</span><span class="p">[</span><span class="n">id_col</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">split_branches</span>
+
+
+<span class="k">def</span> <span class="nf">_split_branches_by_spacing_const</span><span class="p">(</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">spacing_const</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">id_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;BRANCH_ID&quot;</span><span class="p">,</span>
+    <span class="n">smooth_branches</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Split branches based on a given spacing constant.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    branches : gpd.GeoDataFrame</span>
+<span class="sd">    spacing_const : float</span>
+<span class="sd">        Constant spacing which will overwrite the spacing_col.</span>
+<span class="sd">    id_col: str</span>
+<span class="sd">        Name of the column in branches that contains the id of the branches.</span>
+<span class="sd">    smooth_branches: bool, optional</span>
+<span class="sd">        Swith to split branches into straight lines. By default False.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    split_branches : gpd.GeoDataFrame</span>
+<span class="sd">        Branches after split, new ids will be stored in id_col.</span>
+<span class="sd">        Original ids are stored in &quot;ORIG_&quot; + id_col.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">spacing_const</span> <span class="o">==</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">):</span>
+        <span class="n">branches</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ORIG_</span><span class="si">{</span><span class="n">id_col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="n">id_col</span><span class="p">]</span>
+        <span class="n">branches</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="n">id_col</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">branches</span>
+
+    <span class="n">edge_geom</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">edge_offset</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">edge_invertup</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">edge_invertdn</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">edge_bedlevup</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">edge_bedlevdn</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">edge_index</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">branch_index</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Check for attributes</span>
+    <span class="n">interp_invlev</span> <span class="o">=</span> <span class="s2">&quot;invlev_up&quot;</span> <span class="ow">and</span> <span class="s2">&quot;invlev_dn&quot;</span> <span class="ow">in</span> <span class="n">branches</span><span class="o">.</span><span class="n">columns</span>
+    <span class="n">interp_bedlev</span> <span class="o">=</span> <span class="s2">&quot;bedlev_up&quot;</span> <span class="ow">and</span> <span class="s2">&quot;bedlev_dn&quot;</span> <span class="ow">in</span> <span class="n">branches</span><span class="o">.</span><span class="n">columns</span>
+
+    <span class="k">for</span> <span class="n">bid</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">branches</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="c1"># prepare for splitting</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">geometry</span>
+        <span class="n">num_new_lines</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">length</span> <span class="o">/</span> <span class="n">spacing_const</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">num_new_lines</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># interpolate geometry</span>
+        <span class="n">new_edges</span> <span class="o">=</span> <span class="n">split_lines</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">num_new_lines</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">smooth_branches</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">new_edges</span><span class="p">)):</span>
+                <span class="n">ed</span> <span class="o">=</span> <span class="n">new_edges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">new_edges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">LineString</span><span class="p">([</span><span class="n">Point</span><span class="p">(</span><span class="n">ed</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">Point</span><span class="p">(</span><span class="n">ed</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])])</span>
+        <span class="n">offsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">length</span><span class="p">,</span> <span class="n">num_new_lines</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># interpolate values</span>
+        <span class="n">edge_geom</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">new_edges</span><span class="p">)</span>
+        <span class="n">edge_offset</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">offsets</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="k">if</span> <span class="n">interp_invlev</span><span class="p">:</span>
+            <span class="n">edge_invertup</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span>
+                    <span class="n">offsets</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">offsets</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">invlev_up</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">invlev_dn</span><span class="p">]</span>
+                <span class="p">)</span>  <span class="c1"># TODO: renaming needed</span>
+            <span class="p">)</span>
+            <span class="n">edge_invertdn</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">offsets</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">offsets</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">invlev_up</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">invlev_dn</span><span class="p">])</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">interp_bedlev</span><span class="p">:</span>
+            <span class="n">edge_bedlevup</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">offsets</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">offsets</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">bedlev_up</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">bedlev_dn</span><span class="p">])</span>
+            <span class="p">)</span>
+            <span class="n">edge_bedlevdn</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">offsets</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">offsets</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">bedlev_up</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">bedlev_dn</span><span class="p">])</span>
+            <span class="p">)</span>
+        <span class="n">edge_index</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">bid</span> <span class="o">+</span> <span class="s2">&quot;_E&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">new_edges</span><span class="p">))])</span>
+        <span class="n">branch_index</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">bid</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_edges</span><span class="p">))</span>
+
+    <span class="n">edges</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;EDGE_ID&quot;</span><span class="p">:</span> <span class="n">edge_index</span><span class="p">,</span>
+            <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="n">edge_geom</span><span class="p">,</span>
+            <span class="n">id_col</span><span class="p">:</span> <span class="n">branch_index</span><span class="p">,</span>
+            <span class="c1"># &quot;invlev_up&quot;: edge_invertup,</span>
+            <span class="c1"># &quot;invlev_dn&quot;: edge_invertdn,</span>
+            <span class="c1"># &quot;bedlev_up&quot;: edge_bedlevup,</span>
+            <span class="c1"># &quot;bedlev_dn&quot;: edge_bedlevdn,</span>
+        <span class="p">},</span>
+        <span class="n">crs</span><span class="o">=</span><span class="n">branches</span><span class="o">.</span><span class="n">crs</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">interp_invlev</span><span class="p">:</span>
+        <span class="n">edges</span><span class="p">[</span><span class="s2">&quot;invlev_up&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_invertup</span>
+        <span class="n">edges</span><span class="p">[</span><span class="s2">&quot;invlev_dn&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_invertdn</span>
+    <span class="k">if</span> <span class="n">interp_bedlev</span><span class="p">:</span>
+        <span class="n">edges</span><span class="p">[</span><span class="s2">&quot;bedlev_up&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_bedlevup</span>
+        <span class="n">edges</span><span class="p">[</span><span class="s2">&quot;bedlev_dn&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_bedlevdn</span>
+    <span class="n">edges_attr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">branches</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">branch_index</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">edges</span><span class="p">,</span>
+            <span class="n">edges_attr</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
+                <span class="n">columns</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">edges</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;EDGE_ID&quot;</span><span class="p">]))</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(),</span>
+        <span class="p">],</span>
+        <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">edges</span> <span class="o">=</span> <span class="n">edges</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">id_col</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;ORIG_</span><span class="si">{</span><span class="n">id_col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">})</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="n">edges</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;EDGE_ID&quot;</span><span class="p">:</span> <span class="n">id_col</span><span class="p">})</span>
+    <span class="n">edges</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">id_col</span><span class="p">]</span>
+    <span class="n">split_branches</span> <span class="o">=</span> <span class="n">edges</span>
+
+    <span class="k">return</span> <span class="n">split_branches</span>
+
+
+<span class="k">def</span> <span class="nf">reduce_gdf_precision</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">rounding_precision</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reduce the geometry coordinate precision with the provided number of digits.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gdf : gpd.GeoDataFrame</span>
+<span class="sd">        The geo data frame to reduce the precision for.</span>
+<span class="sd">    rounding_precision : int, optional</span>
+<span class="sd">        The number of digits to round the coordinates with. Defaults to 8.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gpd.GeoDataFrame</span>
+<span class="sd">        The geo data frame with the rounded geometry.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NotImplementedError</span>
+<span class="sd">        If the geometry is not a LineString or Point.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gdf</span><span class="o">.</span><span class="n">geometry</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">LineString</span><span class="p">):</span>
+        <span class="n">branches</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i_branch</span><span class="p">,</span> <span class="n">branch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">branches</span><span class="o">.</span><span class="n">itertuples</span><span class="p">()):</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="n">shapely</span><span class="o">.</span><span class="n">wkt</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
+                <span class="n">shapely</span><span class="o">.</span><span class="n">wkt</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+                    <span class="n">branch</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="n">rounding_precision</span><span class="o">=</span><span class="n">rounding_precision</span>
+                <span class="p">)</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">[:]</span>
+            <span class="n">branches</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i_branch</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">LineString</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gdf</span><span class="o">.</span><span class="n">geometry</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Point</span><span class="p">):</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i_point</span><span class="p">,</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">points</span><span class="o">.</span><span class="n">itertuples</span><span class="p">()):</span>
+            <span class="n">new_point</span> <span class="o">=</span> <span class="n">shapely</span><span class="o">.</span><span class="n">wkt</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
+                <span class="n">shapely</span><span class="o">.</span><span class="n">wkt</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="n">rounding_precision</span><span class="o">=</span><span class="n">rounding_precision</span><span class="p">)</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">[:]</span>
+            <span class="n">points</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i_point</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">new_point</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">return</span> <span class="n">gdf</span>
+
+
+<span class="k">def</span> <span class="nf">snap_branch_ends</span><span class="p">(</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">subsets</span><span class="o">=</span><span class="p">[],</span>
+    <span class="n">max_points</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
+    <span class="n">id_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;BRANCH_ID&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Snap branch ends to other branch ends within a given offset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    branches : gpd.GeoDataFrame</span>
+<span class="sd">    offset : float, optional</span>
+<span class="sd">        Maximum distance in meters between end points. If the distance is larger,</span>
+<span class="sd">        they are not snapped. Default to 0.01.</span>
+<span class="sd">    subsets : list, optional</span>
+<span class="sd">        A list of branch id subset to perform snapping (forced snapping).</span>
+<span class="sd">        Default to an empty list.</span>
+<span class="sd">    max_points : int, optional</span>
+<span class="sd">        maximum points allowed in a group.</span>
+<span class="sd">        if snapping branch ends only, use max_points = 2</span>
+<span class="sd">        if not specified, branch intersections will also be snapped</span>
+<span class="sd">        Defaults to np.inf.</span>
+<span class="sd">    id_col : str, optional</span>
+<span class="sd">        The branch id column name. Defaults to &#39;BRANCH_ID&#39;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    branches : gpd.GeoDataFrame</span>
+<span class="sd">        Branches updated with snapped geometry.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Collect endpoints</span>
+    <span class="n">_endpoints</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">branches</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
+        <span class="n">_endpoints</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">branch</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">branch</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">_endpoints</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">branch</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">branch</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># determine which branches should be included</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">subsets</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">_endpoints</span> <span class="o">=</span> <span class="p">[[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">_endpoints</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">subsets</span><span class="p">]]</span>
+
+    <span class="c1"># # group branch ends based on off set</span>
+    <span class="n">groups</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">_endpoints</span><span class="p">]</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="n">distance</span><span class="o">.</span><span class="n">squareform</span><span class="p">(</span><span class="n">distance</span><span class="o">.</span><span class="n">pdist</span><span class="p">(</span><span class="n">coords</span><span class="p">))</span>
+    <span class="n">bdist</span> <span class="o">=</span> <span class="n">dist</span> <span class="o">&lt;=</span> <span class="n">offset</span>
+    <span class="k">for</span> <span class="n">row_i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bdist</span><span class="p">):</span>
+        <span class="n">groups</span><span class="p">[</span><span class="n">_endpoints</span><span class="p">[</span><span class="n">row_i</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">col_i</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">col</span><span class="p">:</span>
+                <span class="n">groups</span><span class="p">[</span><span class="n">_endpoints</span><span class="p">[</span><span class="n">row_i</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_endpoints</span><span class="p">[</span><span class="n">col_i</span><span class="p">])</span>
+
+    <span class="c1"># remove duplicated group, group that does not satisfy max_points in groups.</span>
+    <span class="c1"># Assign endpoints</span>
+    <span class="n">endpoints</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">k</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">groups</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="n">max_points</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="s2">&quot;Limit snapping to allow a max number of </span><span class="si">{max_points}</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;contact points. If max number == 2, it means 1 to 1 snapping.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Create a counter</span>
+    <span class="n">snapped</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># snap each group (list) in endpoints together,</span>
+    <span class="c1"># by using the coords from the first point</span>
+    <span class="k">for</span> <span class="n">point_reference</span><span class="p">,</span> <span class="n">points_to_snap</span> <span class="ow">in</span> <span class="n">endpoints</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="c1"># get the point_reference coords as reference point</span>
+        <span class="n">ref_crd</span> <span class="o">=</span> <span class="n">point_reference</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># for each of the rest</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">branchid</span><span class="p">,</span> <span class="n">side</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">points_to_snap</span><span class="p">):</span>
+            <span class="c1"># Change coordinates of branch</span>
+            <span class="n">crds</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">branchid</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">coords</span><span class="p">[:]</span>
+            <span class="k">if</span> <span class="n">crds</span><span class="p">[</span><span class="n">side</span><span class="p">]</span> <span class="o">!=</span> <span class="n">ref_crd</span><span class="p">:</span>
+                <span class="n">crds</span><span class="p">[</span><span class="n">side</span><span class="p">]</span> <span class="o">=</span> <span class="n">ref_crd</span>
+                <span class="n">branches</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">branchid</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">LineString</span><span class="p">(</span><span class="n">crds</span><span class="p">)</span>
+                <span class="n">snapped</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Snapped </span><span class="si">{</span><span class="n">snapped</span><span class="si">}</span><span class="s2"> points.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">branches</span>
+
+
+<span class="c1"># TODO copied from dhydamo geometry.py, update when available in main</span>
+<span class="k">def</span> <span class="nf">possibly_intersecting</span><span class="p">(</span>
+    <span class="n">dataframebounds</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">geometry</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">buffer</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find intersecting profiles.</span>
+
+<span class="sd">    Finding intersecting profiles for each branch is a slow</span>
+<span class="sd">    process in case of large datasets. To speed this up, we first determine</span>
+<span class="sd">    which profile intersect a square box around the branch</span>
+
+<span class="sd">    With the selection, the intersecting profiles can be determines much faster.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataframebounds : numpy.array</span>
+<span class="sd">    geometry : shapely.geometry.Polygon</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">geobounds</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">bounds</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">dataframebounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">buffer</span> <span class="o">&lt;</span> <span class="n">geobounds</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="o">&amp;</span> <span class="p">(</span><span class="n">dataframebounds</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">buffer</span> <span class="o">&gt;</span> <span class="n">geobounds</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="o">&amp;</span> <span class="p">(</span><span class="n">dataframebounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">buffer</span> <span class="o">&lt;</span> <span class="n">geobounds</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="o">&amp;</span> <span class="p">(</span><span class="n">dataframebounds</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">buffer</span> <span class="o">&gt;</span> <span class="n">geobounds</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="p">)</span>
+    <span class="c1"># Get intersecting profiles</span>
+    <span class="k">return</span> <span class="n">idx</span>
+
+
+<span class="c1"># TODO copied from dhydamo geometry.py, update when available in main</span>
+<span class="c1"># NOTE add option to write distance to nearest branch</span>
+<div class="viewcode-block" id="find_nearest_branch">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.find_nearest_branch.html#hydromt_delft3dfm.workflows.find_nearest_branch">[docs]</a>
+<span class="k">def</span> <span class="nf">find_nearest_branch</span><span class="p">(</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">geometries</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;overal&quot;</span><span class="p">,</span>
+    <span class="n">maxdist</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determine nearest branch for each geometry.</span>
+
+<span class="sd">    The nearest branch can be found by finding t from both ends (ends) or the</span>
+<span class="sd">    nearest branch from the geometry as a whole (overal), the centroid (centroid),</span>
+<span class="sd">    or intersecting (intersect).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    branches : geopandas.GeoDataFrame</span>
+<span class="sd">        Geodataframe with branches.</span>
+<span class="sd">    geometries : geopandas.GeoDataFrame</span>
+<span class="sd">        Geodataframe with geometries to snap.</span>
+<span class="sd">    method : {&#39;overal&#39;,&#39;intersecting&#39;,&#39;centroid&#39;,&#39;ends&#39;}</span>
+<span class="sd">        Method for determine branch. Defaults to &#39;overal&#39;.</span>
+<span class="sd">    maxdist: int or float</span>
+<span class="sd">        Maximum distance for finding nearest geometry. Defaults to 5.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check if method is in allowed methods</span>
+    <span class="n">allowed_methods</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;intersecting&quot;</span><span class="p">,</span> <span class="s2">&quot;overal&quot;</span><span class="p">,</span> <span class="s2">&quot;centroid&quot;</span><span class="p">,</span> <span class="s2">&quot;ends&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_methods</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Method &quot;</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s1">&quot; not implemented.&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Add columns if not present</span>
+    <span class="k">if</span> <span class="s2">&quot;branch_id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">geometries</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">geometries</span><span class="p">[</span><span class="s2">&quot;branch_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;branch_offset&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">geometries</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">geometries</span><span class="p">[</span><span class="s2">&quot;branch_offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;intersecting&quot;</span><span class="p">:</span>
+        <span class="c1"># Determine intersection geometries per branch</span>
+        <span class="n">geobounds</span> <span class="o">=</span> <span class="n">geometries</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">branches</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
+            <span class="n">selectie</span> <span class="o">=</span> <span class="n">geometries</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">possibly_intersecting</span><span class="p">(</span><span class="n">geobounds</span><span class="p">,</span> <span class="n">branch</span><span class="o">.</span><span class="n">geometry</span><span class="p">)</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">intersecting</span> <span class="o">=</span> <span class="n">selectie</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">selectie</span><span class="o">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">branch</span><span class="o">.</span><span class="n">geometry</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">]</span>
+
+            <span class="c1"># For each geometrie, determine offset along branch</span>
+            <span class="k">for</span> <span class="n">geometry</span> <span class="ow">in</span> <span class="n">intersecting</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
+                <span class="c1"># Determine distance of profile line along branch</span>
+                <span class="n">geometries</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">geometry</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="s2">&quot;branch_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branch</span><span class="o">.</span><span class="n">Index</span>
+
+                <span class="c1"># Calculate offset</span>
+                <span class="n">branchgeo</span> <span class="o">=</span> <span class="n">branch</span><span class="o">.</span><span class="n">geometry</span>
+                <span class="n">mindist</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">branchgeo</span><span class="o">.</span><span class="n">length</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span>
+                    <span class="n">branchgeo</span><span class="o">.</span><span class="n">project</span><span class="p">(</span>
+                        <span class="n">branchgeo</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">geometry</span><span class="o">.</span><span class="n">geometry</span><span class="p">)</span><span class="o">.</span><span class="n">centroid</span>
+                    <span class="p">),</span>
+                    <span class="mi">3</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">mindist</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">branchgeo</span><span class="o">.</span><span class="n">length</span> <span class="o">-</span> <span class="n">mindist</span><span class="p">,</span> <span class="n">offset</span><span class="p">))</span>
+                <span class="n">geometries</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">geometry</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="s2">&quot;branch_offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">offset</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">branch_bounds</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">T</span>
+        <span class="c1"># In case of looking for the nearest, it is easier to iteratie over</span>
+        <span class="c1"># the geometries instead of the branches</span>
+        <span class="k">for</span> <span class="n">geometry</span> <span class="ow">in</span> <span class="n">geometries</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
+            <span class="c1"># Find near branches</span>
+            <span class="n">nearidx</span> <span class="o">=</span> <span class="n">possibly_intersecting</span><span class="p">(</span>
+                <span class="n">branch_bounds</span><span class="p">,</span> <span class="n">geometry</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="n">maxdist</span>
+            <span class="p">)</span>
+            <span class="n">selectie</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nearidx</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;overal&quot;</span><span class="p">:</span>
+                <span class="c1"># Determine distances to branches</span>
+                <span class="n">dist</span> <span class="o">=</span> <span class="n">selectie</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">geometry</span><span class="o">.</span><span class="n">geometry</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;centroid&quot;</span><span class="p">:</span>
+                <span class="c1"># Determine distances to branches</span>
+                <span class="n">dist</span> <span class="o">=</span> <span class="n">selectie</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">geometry</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">centroid</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;ends&quot;</span><span class="p">:</span>
+                <span class="c1"># Since a culvert can cross a channel, it is</span>
+                <span class="n">crds</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">coords</span><span class="p">[:]</span>
+                <span class="n">dist</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">selectie</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="o">*</span><span class="n">crds</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                    <span class="o">+</span> <span class="n">selectie</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="o">*</span><span class="n">crds</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+                <span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span>
+
+            <span class="c1"># Determine nearest</span>
+            <span class="k">if</span> <span class="n">dist</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">maxdist</span><span class="p">:</span>
+                <span class="n">branchidxmin</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()</span>
+                <span class="n">geometries</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">geometry</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="s2">&quot;branch_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()</span>
+                <span class="n">geometries</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">geometry</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="s2">&quot;branch_distance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geometry</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="n">Point</span><span class="p">):</span>
+                    <span class="n">geo</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">geometry</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">geo</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">centroid</span>
+
+                <span class="c1"># Calculate offset</span>
+                <span class="n">branchgeo</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">branchidxmin</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]</span>
+                <span class="n">mindist</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">branchgeo</span><span class="o">.</span><span class="n">length</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+                    <span class="n">mindist</span><span class="p">,</span>
+                    <span class="nb">min</span><span class="p">(</span><span class="n">branchgeo</span><span class="o">.</span><span class="n">length</span> <span class="o">-</span> <span class="n">mindist</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">branchgeo</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">geo</span><span class="p">),</span> <span class="mi">3</span><span class="p">)),</span>
+                <span class="p">)</span>
+                <span class="n">geometries</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">geometry</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="s2">&quot;branch_offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">offset</span></div>
+
+
+
+<div class="viewcode-block" id="snap_newbranches_to_branches_at_snappednodes">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.snap_newbranches_to_branches_at_snappednodes.html#hydromt_delft3dfm.workflows.snap_newbranches_to_branches_at_snappednodes">[docs]</a>
+<span class="k">def</span> <span class="nf">snap_newbranches_to_branches_at_snappednodes</span><span class="p">(</span>
+    <span class="n">new_branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">snappednodes</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Snap new_branches to branches at snappednodes.</span>
+
+<span class="sd">    snapnodes are located at branches. new branches will be snapped,</span>
+<span class="sd">    and branches will be splitted.</span>
+
+<span class="sd">    # NOTE: no interpolation of crosssection is needed because inter branch</span>
+<span class="sd">    interpolation is turned on using branchorder.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    new_branches : geopandas.GeoDataFrame</span>
+<span class="sd">        Geodataframe of new branches whose geometry will be modified:</span>
+<span class="sd">        end nodes will be snapped to snapnodes</span>
+<span class="sd">    branches : geopandas.GeoDataFrame</span>
+<span class="sd">        Geodataframe who will be splitted at snapnodes to allow connection</span>
+<span class="sd">        with the new_branches.</span>
+<span class="sd">    snapnodes : geopandas.GeoDataFrame</span>
+<span class="sd">        Geodataframe which contiains the spatial relation of the new_branches</span>
+<span class="sd">        and branches.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    new_branches_snapped : geopandas.GeoDataFrame</span>
+<span class="sd">        Geodataframe of new branches with endnodes be snapped to snapnodes</span>
+<span class="sd">        in branches_snapped.</span>
+<span class="sd">    branches_snapped : geopandas.GeoDataFrame</span>
+<span class="sd">        Geodataframe of branches splitted at snapnodes to allow connection</span>
+<span class="sd">        with the new_branches_snapped.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">new_branches</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">new_branches</span><span class="o">.</span><span class="n">branchid</span>
+    <span class="n">branches</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">branchid</span>
+
+    <span class="c1"># for each snapped endnodes</span>
+    <span class="n">new_branches_snapped</span> <span class="o">=</span> <span class="n">new_branches</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">branches_snapped</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># modify new branches</span>
+    <span class="k">for</span> <span class="n">snapnode</span> <span class="ow">in</span> <span class="n">snappednodes</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
+        <span class="n">new_branch</span> <span class="o">=</span> <span class="n">new_branches</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">snapnode</span><span class="o">.</span><span class="n">branchid</span><span class="p">]</span>
+        <span class="n">snapped_line</span> <span class="o">=</span> <span class="n">LineString</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">snapnode</span><span class="o">.</span><span class="n">geometry_right</span>
+                <span class="k">if</span> <span class="n">Point</span><span class="p">(</span><span class="n">xy</span><span class="p">)</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">snapnode</span><span class="o">.</span><span class="n">geometry_left</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">Point</span><span class="p">(</span><span class="n">xy</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">xy</span> <span class="ow">in</span> <span class="n">new_branch</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">coords</span><span class="p">[:]</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">new_branches_snapped</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">snapnode</span><span class="o">.</span><span class="n">branchid</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">snapped_line</span>
+
+    <span class="c1"># modify old branches</span>
+    <span class="n">_branch_order_base</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">branches_snapped</span><span class="o">.</span><span class="n">branchorder</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">branch_order</span><span class="p">,</span> <span class="n">branch_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">snappednodes</span><span class="o">.</span><span class="n">branch_name</span><span class="p">))):</span>
+        <span class="n">branch</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">branch_name</span><span class="p">]</span>
+        <span class="n">branch_order</span> <span class="o">=</span> <span class="n">_branch_order_base</span> <span class="o">+</span> <span class="n">branch_order</span>
+        <span class="n">distances</span> <span class="o">=</span> <span class="n">snappednodes</span><span class="p">[</span>
+            <span class="n">snappednodes</span><span class="o">.</span><span class="n">branch_name</span> <span class="o">==</span> <span class="n">branch_name</span>
+        <span class="p">]</span><span class="o">.</span><span class="n">branch_chainage</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+        <span class="n">snapped_line</span> <span class="o">=</span> <span class="n">MultiLineString</span><span class="p">(</span><span class="n">cut_pieces</span><span class="p">(</span><span class="n">branch</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="n">distances</span><span class="p">))</span>
+        <span class="n">branches_snapped</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">branch_name</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">snapped_line</span>
+        <span class="n">branches_snapped</span><span class="o">.</span><span class="n">at</span><span class="p">[</span>
+            <span class="n">branch_name</span><span class="p">,</span> <span class="s2">&quot;branchorder&quot;</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">branch_order</span>  <span class="c1"># allow interpolation on the snapped branch</span>
+
+    <span class="c1"># explode multilinestring after snapping</span>
+    <span class="n">branches_snapped</span> <span class="o">=</span> <span class="n">branches_snapped</span><span class="o">.</span><span class="n">explode</span><span class="p">(</span><span class="n">index_parts</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># reset the idex</span>
+    <span class="n">branches_snapped</span> <span class="o">=</span> <span class="n">cleanup_branches</span><span class="p">(</span><span class="n">branches_snapped</span><span class="p">)</span>
+
+    <span class="c1"># precision correction</span>
+    <span class="n">branches_snapped</span> <span class="o">=</span> <span class="n">reduce_gdf_precision</span><span class="p">(</span><span class="n">branches_snapped</span><span class="p">,</span> <span class="n">rounding_precision</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_branches_snapped</span><span class="p">,</span> <span class="n">branches_snapped</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_remove_branches_with_ring_geometries</span><span class="p">(</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
+    <span class="n">first_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">branches</span><span class="o">.</span><span class="n">geometry</span><span class="p">]</span>
+    <span class="n">last_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">branches</span><span class="o">.</span><span class="n">geometry</span><span class="p">]</span>
+    <span class="n">duplicate_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">first_nodes</span><span class="p">,</span> <span class="n">last_nodes</span><span class="p">)</span>
+    <span class="n">duplicate_ids</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">branches</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">branches</span><span class="p">))</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">duplicate_ids</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="p">]</span>
+    <span class="n">branches</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">duplicate_ids</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Removing branches with ring geometries.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">branches</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright Deltares.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

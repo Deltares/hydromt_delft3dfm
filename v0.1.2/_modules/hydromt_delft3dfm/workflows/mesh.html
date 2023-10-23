@@ -1,0 +1,1202 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>hydromt_delft3dfm.workflows.mesh &#8212; HydroMT Delft3D FM  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/theme-deltares.css?v=17060807" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+
+    <script src="../../../_static/documentation_options.js?v=8a448e45"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/hydromt_delft3dfm/workflows/mesh';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../../_static/hydromt-logo.jpg" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../../_static/hydromt-logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+    <p class="title logo__title">HydroMT Delft3D FM</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../getting_started/intro.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../user_guide/intro.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../api.html">
+                        API reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../dev_guide/intro.html">
+                        Developments
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
+                    HydroMT core
+                  </a>
+                </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../getting_started/intro.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../user_guide/intro.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../api.html">
+                        API reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../dev_guide/intro.html">
+                        Developments
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
+                    HydroMT core
+                  </a>
+                </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">hydromt_delf...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for hydromt_delft3dfm.workflows.mesh</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Workflows to prepare mesh schematisation for Delft3D-FM model.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">import</span> <span class="nn">meshkernel</span> <span class="k">as</span> <span class="nn">mk</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">import</span> <span class="nn">xugrid</span> <span class="k">as</span> <span class="nn">xu</span>
+<span class="kn">from</span> <span class="nn">hydrolib.core.dflowfm</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Network</span>
+<span class="kn">from</span> <span class="nn">meshkernel</span> <span class="kn">import</span> <span class="n">GeometryList</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">LineString</span><span class="p">,</span>
+    <span class="n">MultiLineString</span><span class="p">,</span>
+    <span class="n">MultiPoint</span><span class="p">,</span>
+    <span class="n">MultiPolygon</span><span class="p">,</span>
+    <span class="n">Point</span><span class="p">,</span>
+    <span class="n">Polygon</span><span class="p">,</span>
+    <span class="n">box</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">shapely.wkt</span> <span class="kn">import</span> <span class="n">dumps</span><span class="p">,</span> <span class="n">loads</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">mesh_utils</span> <span class="k">as</span> <span class="n">mutils</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;mesh1d_network1d_from_branches&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mesh1d_add_branch&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mesh2d_refine&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;links1d2d_add_links_1d_to_2d&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;links1d2d_add_links_2d_to_1d_embedded&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;links1d2d_add_links_2d_to_1d_lateral&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="mesh1d_network1d_from_branches">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches.html#hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches">[docs]</a>
+<span class="k">def</span> <span class="nf">mesh1d_network1d_from_branches</span><span class="p">(</span>
+    <span class="n">opensystem</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">closedsystem</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">openwater_computation_node_distance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">40.0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">xu</span><span class="o">.</span><span class="n">UgridDataset</span><span class="p">,</span> <span class="n">xu</span><span class="o">.</span><span class="n">UgridDataset</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return xugrid mesh1d and network1d UgridDataset from branches.</span>
+
+<span class="sd">    Uses hydrolib-core network object and add_branch methods to build the</span>
+<span class="sd">    network and then converts back to xugrid.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    opensystem : gpd.GeoDataFrame</span>
+<span class="sd">        GeoDataFrame containing open system branches.</span>
+<span class="sd">    closedsystem : gpd.GeoDataFrame</span>
+<span class="sd">        GeoDataFrame containing closed system branches.</span>
+<span class="sd">    openwater_computation_node_distance : float, optional</span>
+<span class="sd">        Node distance for open water computation, by default 40.0.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    uds_mesh1d : xu.UgridDataset</span>
+<span class="sd">        Mesh1d UgridDataset.</span>
+<span class="sd">    uds_network1d : xu.UgridDataset</span>
+<span class="sd">        Network1d UgridDataset.</span>
+<span class="sd">        Note that it is part of the Deltares-0.11 conventions.</span>
+<span class="sd">        These newly proposed conventions should currently be seen as an extension</span>
+<span class="sd">        on top of the regular CF-conventions (≥1.8) and, in particular, on top of</span>
+<span class="sd">        the UGRID (1.0) conventions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">crs</span> <span class="o">=</span> <span class="n">opensystem</span><span class="o">.</span><span class="n">crs</span>
+
+    <span class="c1"># create network</span>
+    <span class="n">dfm_network</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">is_geographic</span><span class="o">=</span><span class="n">crs</span><span class="o">.</span><span class="n">is_geographic</span><span class="p">)</span>
+    <span class="c1"># add open system mesh1d</span>
+    <span class="n">node_distance</span> <span class="o">=</span> <span class="n">openwater_computation_node_distance</span>
+    <span class="n">dfm_network</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">mesh1d_add_branch</span><span class="p">(</span>
+        <span class="n">dfm_network</span><span class="p">,</span>
+        <span class="n">opensystem</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+        <span class="n">node_distance</span><span class="o">=</span><span class="n">node_distance</span><span class="p">,</span>
+        <span class="n">branch_names</span><span class="o">=</span><span class="n">opensystem</span><span class="o">.</span><span class="n">branchid</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+        <span class="n">branch_orders</span><span class="o">=</span><span class="n">opensystem</span><span class="o">.</span><span class="n">branchorder</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+    <span class="p">)</span>
+    <span class="c1"># add closed system mesh1d</span>
+    <span class="n">node_distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">dfm_network</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">mesh1d_add_branch</span><span class="p">(</span>
+        <span class="n">dfm_network</span><span class="p">,</span>
+        <span class="n">closedsystem</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+        <span class="n">node_distance</span><span class="o">=</span><span class="n">node_distance</span><span class="p">,</span>
+        <span class="n">branch_names</span><span class="o">=</span><span class="n">closedsystem</span><span class="o">.</span><span class="n">branchid</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+        <span class="n">branch_orders</span><span class="o">=</span><span class="n">closedsystem</span><span class="o">.</span><span class="n">branchorder</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+    <span class="p">)</span>
+
+    <span class="c1"># derive mesh1d</span>
+    <span class="n">dfm_network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">_set_mesh1d</span><span class="p">()</span>
+
+    <span class="c1"># Mesh1d to mesh1d and network1d xugrid</span>
+    <span class="n">uds_mesh1d</span><span class="p">,</span> <span class="n">uds_network1d</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">mesh1d_network1d_from_hydrolib_network</span><span class="p">(</span>
+        <span class="n">dfm_network</span><span class="p">,</span> <span class="n">crs</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">uds_mesh1d</span><span class="p">,</span> <span class="n">uds_network1d</span></div>
+
+
+
+<div class="viewcode-block" id="mesh1d_add_branch">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.mesh1d_add_branch.html#hydromt_delft3dfm.workflows.mesh1d_add_branch">[docs]</a>
+<span class="k">def</span> <span class="nf">mesh1d_add_branch</span><span class="p">(</span>
+    <span class="n">network</span><span class="p">:</span> <span class="n">Network</span><span class="p">,</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
+        <span class="n">LineString</span><span class="p">,</span> <span class="n">MultiLineString</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">LineString</span><span class="p">,</span> <span class="n">MultiLineString</span><span class="p">]]</span>
+    <span class="p">],</span>
+    <span class="n">node_distance</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">branch_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">branch_orders</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add branch to 1d mesh, from a (list of) (Multi)LineString geometry.</span>
+
+<span class="sd">    The branch is discretized with the given node distance.</span>
+<span class="sd">    if node distance is given as infinity, no discretization will be performed at</span>
+<span class="sd">    mid point of the branch,</span>
+<span class="sd">    #TODO, if minimum node distance is given, no discretization will be</span>
+<span class="sd">    performed at mid point of the branch i.e. branch is treated as a pipe</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        network (Network): Network to which the branch is added</span>
+<span class="sd">        branches (Union[ LineString, MultiLineString, List[Union[LineString,</span>
+<span class="sd">        MultiLineString]] ]): Geometry object(s) for which the branch is created</span>
+<span class="sd">        node_distance (Union[float, int]): Preferred node distance between branch nodes</span>
+<span class="sd">        branch_names (Union[str, list[str]]): Branch names to be used in the mesh1d</span>
+<span class="sd">        object branch_orders (Union[float, int, list[Union[float, int]]]): Branch orders</span>
+<span class="sd">        to be used in the mesh1d object.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        Network: Network with added branches</span>
+<span class="sd">        List[str]: List of names of added branches</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">node_distance</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+        <span class="n">force_midpoint</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">force_midpoint</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">branchids</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">branch_names</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">branch_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">branch_names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">branch_names</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">branches</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">branch_orders</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">branch_orders</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="n">branch_orders</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">branch_orders</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">branches</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">line</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">,</span> <span class="n">branch_order</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">branches</span><span class="p">,</span> <span class="n">branch_names</span><span class="p">,</span> <span class="n">branch_orders</span><span class="p">):</span>
+        <span class="n">branch</span> <span class="o">=</span> <span class="n">Branch</span><span class="p">(</span>
+            <span class="n">geometry</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">round_geometry</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">[:])</span>
+        <span class="p">)</span>  <span class="c1"># avoid error caused by rounding precision</span>
+        <span class="n">branch</span><span class="o">.</span><span class="n">generate_nodes</span><span class="p">(</span><span class="n">node_distance</span><span class="p">)</span>
+        <span class="n">branchid</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">mesh1d_add_branch</span><span class="p">(</span>
+            <span class="n">branch</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">branch_name</span><span class="p">,</span>
+            <span class="n">branch_order</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">branch_order</span><span class="p">),</span>
+            <span class="n">force_midpoint</span><span class="o">=</span><span class="n">force_midpoint</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">branchids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">branchid</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">network</span><span class="p">,</span> <span class="n">branchids</span></div>
+
+
+
+<div class="viewcode-block" id="mesh2d_refine">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.mesh2d_refine.html#hydromt_delft3dfm.workflows.mesh2d_refine">[docs]</a>
+<span class="k">def</span> <span class="nf">mesh2d_refine</span><span class="p">(</span>
+    <span class="n">mesh2d</span><span class="p">:</span> <span class="n">xu</span><span class="o">.</span><span class="n">Ugrid2d</span><span class="p">,</span>
+    <span class="n">res</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gdf_polygon</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">da_sample</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span> <span class="o">=</span> <span class="n">logger</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">xu</span><span class="o">.</span><span class="n">UgridDataArray</span><span class="p">,</span> <span class="n">xu</span><span class="o">.</span><span class="n">UgridDataset</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Refine mesh2d by adding new nodes and faces.</span>
+
+<span class="sd">    If a polygon is provided, the mesh is refined within the polygon.</span>
+<span class="sd">    The number of steps determines the number of times the mesh is refined</span>
+<span class="sd">    when using polygon.</span>
+
+<span class="sd">    If a sample array is provided, the mesh is refined based on the sample array.</span>
+<span class="sd">    The sample array should contain values between 0 and 1, where 0 is not refined</span>
+<span class="sd">    and 1 is refined. The sample array is interpolated to the mesh2d and the mesh is</span>
+<span class="sd">    refined at the locations where the sample array is larger than 0.5. The number of</span>
+<span class="sd">    steps  is determined by the maximum value in the sample array and the new face size</span>
+<span class="sd">    based on the previous resolution of the mesh.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mesh2d: xu.Ugrid2d</span>
+<span class="sd">        Mesh2d object to be refined.</span>
+<span class="sd">    gdf_polygon: gpd.GeoDataframe, optional</span>
+<span class="sd">        Polygon to refine mesh within. Defaults to None.</span>
+<span class="sd">    da_sample: xr.DataArray, optional</span>
+<span class="sd">        Sample array to refine mesh based on. Defaults to None.</span>
+<span class="sd">    steps: int, optional</span>
+<span class="sd">        Number of steps to refine mesh when using polygon. Defaults to 1.</span>
+<span class="sd">    res: float, optional</span>
+<span class="sd">        Resolution of the mesh used to get the minimum face size when refining</span>
+<span class="sd">        with samples. Defaults to None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mesh2d: xu.UgridDataArray or xu.UgridDataset</span>
+<span class="sd">        Refined mesh2d object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Refine type</span>
+    <span class="k">if</span> <span class="n">gdf_polygon</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">refine_type</span> <span class="o">=</span> <span class="s2">&quot;polygon&quot;</span>
+    <span class="k">elif</span> <span class="n">da_sample</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">refine_type</span> <span class="o">=</span> <span class="s2">&quot;samples&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either polygon or samples should be provided.&quot;</span><span class="p">)</span>
+
+    <span class="n">crs</span> <span class="o">=</span> <span class="n">mesh2d</span><span class="o">.</span><span class="n">crs</span>
+    <span class="c1"># Get old mesh size</span>
+    <span class="n">_old_size</span> <span class="o">=</span> <span class="n">mesh2d</span><span class="o">.</span><span class="n">face_x</span><span class="o">.</span><span class="n">size</span>
+    <span class="c1"># Get mk.Mesh2d object</span>
+    <span class="n">mesh2d_mk</span> <span class="o">=</span> <span class="n">mesh2d</span><span class="o">.</span><span class="n">meshkernel</span>
+
+    <span class="c1"># Refine mesh</span>
+    <span class="k">if</span> <span class="n">refine_type</span> <span class="o">==</span> <span class="s2">&quot;polygon&quot;</span><span class="p">:</span>
+        <span class="c1"># refine parameters</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshRefinementParameters</span><span class="p">(</span>
+            <span class="n">refine_intersected</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">use_mass_center_when_refining</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">refinement_type</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># No effect?</span>
+            <span class="n">connect_hanging_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">account_for_samples_outside_face</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">max_refinement_iterations</span><span class="o">=</span><span class="n">steps</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># iterate over gdf_polygons</span>
+        <span class="n">gdf_polygon</span> <span class="o">=</span> <span class="n">gdf_polygon</span><span class="o">.</span><span class="n">explode</span><span class="p">()</span>  <span class="c1"># explode multipolygons to polygons</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">polygon</span> <span class="ow">in</span> <span class="n">gdf_polygon</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="c1"># Create a list of coordinate lists</span>
+            <span class="n">polygon</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">geometry</span>  <span class="c1"># .unary_union</span>
+            <span class="bp">cls</span> <span class="o">=</span> <span class="n">GeometryList</span><span class="p">(</span>
+                <span class="n">x_coordinates</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">),</span>
+                <span class="n">y_coordinates</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="c1"># Add exterior</span>
+            <span class="n">x_ext</span><span class="p">,</span> <span class="n">y_ext</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">exterior</span><span class="o">.</span><span class="n">coords</span><span class="p">[:])</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">x_crds</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_ext</span><span class="p">]</span>
+            <span class="n">y_crds</span> <span class="o">=</span> <span class="p">[</span><span class="n">y_ext</span><span class="p">]</span>
+            <span class="c1"># Add interiors, seperated by inner_outer_separator</span>
+            <span class="k">for</span> <span class="n">interior</span> <span class="ow">in</span> <span class="n">polygon</span><span class="o">.</span><span class="n">interiors</span><span class="p">:</span>
+                <span class="n">x_int</span><span class="p">,</span> <span class="n">y_int</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">interior</span><span class="o">.</span><span class="n">coords</span><span class="p">[:])</span><span class="o">.</span><span class="n">T</span>
+                <span class="n">x_crds</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="bp">cls</span><span class="o">.</span><span class="n">inner_outer_separator</span><span class="p">])</span>
+                <span class="n">x_crds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x_int</span><span class="p">)</span>
+                <span class="n">y_crds</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="bp">cls</span><span class="o">.</span><span class="n">inner_outer_separator</span><span class="p">])</span>
+                <span class="n">y_crds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_int</span><span class="p">)</span>
+            <span class="n">gl</span> <span class="o">=</span> <span class="n">GeometryList</span><span class="p">(</span>
+                <span class="n">x_coordinates</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">x_crds</span><span class="p">),</span>
+                <span class="n">y_coordinates</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">y_crds</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="c1"># Refine</span>
+            <span class="n">mesh2d_mk</span><span class="o">.</span><span class="n">mesh2d_refine_based_on_polygon</span><span class="p">(</span><span class="n">gl</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">refine_type</span> <span class="o">==</span> <span class="s2">&quot;samples&quot;</span><span class="p">:</span>
+        <span class="c1"># get sample point</span>
+        <span class="n">xv</span><span class="p">,</span> <span class="n">yv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">da_sample</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">da_sample</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">zv</span> <span class="o">=</span> <span class="n">da_sample</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">zv</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="n">GeometryList</span><span class="p">(</span>
+            <span class="n">xv</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">yv</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">zv</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="c1"># get steps</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">zv</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="c1"># refine parameters</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshRefinementParameters</span><span class="p">(</span>
+            <span class="n">refinement_type</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">max_refinement_iterations</span><span class="o">=</span><span class="n">steps</span><span class="p">,</span>
+            <span class="n">min_edge_size</span><span class="o">=</span><span class="n">res</span> <span class="o">/</span> <span class="mi">2</span><span class="o">**</span><span class="n">steps</span><span class="p">,</span>
+            <span class="n">account_for_samples_outside_face</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">connect_hanging_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">refine_intersected</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">use_mass_center_when_refining</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># refine assuming sample spacing is the same as end result resolution</span>
+        <span class="c1"># (hence relative_search_radius=1, minimum_num_samples=1 )</span>
+        <span class="n">mesh2d_mk</span><span class="o">.</span><span class="n">mesh2d_refine_based_on_samples</span><span class="p">(</span>
+            <span class="n">samples</span><span class="p">,</span>
+            <span class="n">relative_search_radius</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">minimum_num_samples</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">mesh_refinement_params</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># meshkernel to xugrid Ugrid2D</span>
+    <span class="n">mesh2d</span> <span class="o">=</span> <span class="n">xu</span><span class="o">.</span><span class="n">ugrid</span><span class="o">.</span><span class="n">ugrid2d</span><span class="o">.</span><span class="n">Ugrid2d</span><span class="o">.</span><span class="n">from_meshkernel</span><span class="p">(</span>
+        <span class="n">mesh2d_mk</span><span class="o">.</span><span class="n">mesh2d_get</span><span class="p">(),</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mesh2d&quot;</span><span class="p">,</span>
+        <span class="n">projected</span><span class="o">=</span><span class="n">crs</span><span class="o">.</span><span class="n">is_projected</span><span class="p">,</span>
+        <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># Convert to UgridDataset</span>
+    <span class="n">mesh2d</span> <span class="o">=</span> <span class="n">xu</span><span class="o">.</span><span class="n">UgridDataset</span><span class="p">(</span><span class="n">mesh2d</span><span class="o">.</span><span class="n">to_dataset</span><span class="p">())</span>
+    <span class="n">mesh2d</span> <span class="o">=</span> <span class="n">mesh2d</span><span class="o">.</span><span class="n">ugrid</span><span class="o">.</span><span class="n">assign_face_coords</span><span class="p">()</span>
+    <span class="n">mesh2d</span><span class="o">.</span><span class="n">ugrid</span><span class="o">.</span><span class="n">set_crs</span><span class="p">(</span><span class="n">crs</span><span class="p">)</span>
+
+    <span class="c1"># Check refinement</span>
+    <span class="n">_new_size</span> <span class="o">=</span> <span class="n">mesh2d</span><span class="o">.</span><span class="n">ugrid</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">face_x</span><span class="o">.</span><span class="n">size</span>
+    <span class="k">if</span> <span class="n">_new_size</span> <span class="o">!=</span> <span class="n">_old_size</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;2d mesh refined based on </span><span class="si">{</span><span class="n">refine_type</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Number of faces before: </span><span class="si">{</span><span class="n">_old_size</span><span class="si">}</span><span class="s2"> and after: </span><span class="si">{</span><span class="n">_new_size</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;2d mesh unrefined.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mesh2d</span><span class="p">,</span> <span class="n">res</span> <span class="o">/</span> <span class="mi">2</span><span class="o">**</span><span class="n">steps</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">round_geometry</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">rounding_precision</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Round the coordinates of the geometry object to the provided precision.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    geometry</span>
+<span class="sd">        The geometry object.</span>
+<span class="sd">    rounding_preicision: int, optional</span>
+<span class="sd">        Round coordinates to the specified number of digits.</span>
+<span class="sd">        Defaults to 6.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A shapely geometry object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">loads</span><span class="p">(</span><span class="n">dumps</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">rounding_precision</span><span class="o">=</span><span class="n">rounding_precision</span><span class="p">))</span>
+
+
+<span class="c1"># below function is a copy of functions from hydrolib, to avoid installation error.</span>
+
+
+<span class="k">def</span> <span class="nf">polygon_to_geometrylist</span><span class="p">(</span><span class="n">polygon</span><span class="p">):</span>
+    <span class="c1"># Create a list of coordinate lists</span>
+    <span class="bp">cls</span> <span class="o">=</span> <span class="n">GeometryList</span>
+    <span class="c1"># Add exterior</span>
+    <span class="n">x_ext</span><span class="p">,</span> <span class="n">y_ext</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">exterior</span><span class="o">.</span><span class="n">coords</span><span class="p">[:])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">x_crds</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_ext</span><span class="p">]</span>
+    <span class="n">y_crds</span> <span class="o">=</span> <span class="p">[</span><span class="n">y_ext</span><span class="p">]</span>
+    <span class="c1"># Add interiors, seperated by inner_outer_separator</span>
+    <span class="k">for</span> <span class="n">interior</span> <span class="ow">in</span> <span class="n">polygon</span><span class="o">.</span><span class="n">interiors</span><span class="p">:</span>
+        <span class="n">x_int</span><span class="p">,</span> <span class="n">y_int</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">interior</span><span class="o">.</span><span class="n">coords</span><span class="p">[:])</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">x_crds</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="bp">cls</span><span class="o">.</span><span class="n">inner_outer_separator</span><span class="p">])</span>
+        <span class="n">x_crds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x_int</span><span class="p">)</span>
+        <span class="n">y_crds</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="bp">cls</span><span class="o">.</span><span class="n">inner_outer_separator</span><span class="p">])</span>
+        <span class="n">y_crds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_int</span><span class="p">)</span>
+    <span class="n">gl</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">x_coordinates</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">x_crds</span><span class="p">),</span> <span class="n">y_coordinates</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">y_crds</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">gl</span>
+
+
+<div class="viewcode-block" id="links1d2d_add_links_1d_to_2d">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.links1d2d_add_links_1d_to_2d.html#hydromt_delft3dfm.workflows.links1d2d_add_links_1d_to_2d">[docs]</a>
+<span class="k">def</span> <span class="nf">links1d2d_add_links_1d_to_2d</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="p">:</span> <span class="n">xu</span><span class="o">.</span><span class="n">UgridDataset</span><span class="p">,</span>
+    <span class="n">branchids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">within</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Polygon</span><span class="p">,</span> <span class="n">MultiPolygon</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">max_length</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate 1d2d links to network from 1d to 2d.</span>
+
+<span class="sd">    Branchids can be specified for 1d branches that need to be linked.</span>
+<span class="sd">    A (Multi)Polygon can be provided were links should be made.</span>
+
+<span class="sd">    Note: The boundary nodes of Mesh1d (those sharing only one Mesh1d edge) are not</span>
+<span class="sd">    connected to any Mesh2d face.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mesh: xu.UgridDataset</span>
+<span class="sd">        Network in which the connections are made</span>
+<span class="sd">    branchids: List[str], optional</span>
+<span class="sd">        List of branchid&#39;s to connect. If None, all branches are connected.</span>
+<span class="sd">        Defaults to None.</span>
+<span class="sd">    within: Union[Polygon, MultiPolygon], optional</span>
+<span class="sd">        Area within which connections are made. Defaults to None.</span>
+<span class="sd">    max_length: float, optional</span>
+<span class="sd">        Max edge length. Defaults to None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    link1d2d: xr.Dataset</span>
+<span class="sd">        Link1d2d Dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Initialise hydrolib network object</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">hydrolib_network_from_mesh</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+    <span class="c1"># Load 1d and 2d in meshkernel</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">_set_mesh1d</span><span class="p">()</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">_set_mesh2d</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">within</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># If not provided, create a box from the maximum bounds</span>
+        <span class="n">xmin</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+            <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">mesh1d_node_x</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_node_x</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">xmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">mesh1d_node_x</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_node_x</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">ymin</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+            <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">mesh1d_node_y</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_node_y</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">ymax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">mesh1d_node_y</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_node_y</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="n">within</span> <span class="o">=</span> <span class="n">box</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
+
+    <span class="c1"># If a &#39;within&#39; polygon was provided, convert it to a geometrylist</span>
+    <span class="n">geometrylist</span> <span class="o">=</span> <span class="n">polygon_to_geometrylist</span><span class="p">(</span><span class="n">within</span><span class="p">)</span>
+
+    <span class="c1"># Get the nodes for the specific branch ids</span>
+    <span class="n">node_mask</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">get_node_mask</span><span class="p">(</span><span class="n">branchids</span><span class="p">)</span>
+
+    <span class="c1"># Get the already present links. These are not filtered on length</span>
+    <span class="n">npresent</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">)</span>
+
+    <span class="c1"># Generate links</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">contacts_compute_single</span><span class="p">(</span>
+        <span class="n">node_mask</span><span class="o">=</span><span class="n">node_mask</span><span class="p">,</span> <span class="n">polygons</span><span class="o">=</span><span class="n">geometrylist</span><span class="p">,</span> <span class="n">projection_factor</span><span class="o">=</span><span class="mf">1.0</span>
+    <span class="p">)</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">_process</span><span class="p">()</span>
+
+    <span class="c1"># Filter the links that are longer than the max distance</span>
+    <span class="n">id1d</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">[</span><span class="n">npresent</span><span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">id2d</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">[</span><span class="n">npresent</span><span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">nodes1d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">mesh1d_node_x</span><span class="p">[</span><span class="n">id1d</span><span class="p">],</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">mesh1d_node_y</span><span class="p">[</span><span class="n">id1d</span><span class="p">]],</span>
+        <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">faces2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_face_x</span><span class="p">[</span><span class="n">id2d</span><span class="p">],</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_face_y</span><span class="p">[</span><span class="n">id2d</span><span class="p">]],</span>
+        <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">lengths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">nodes1d</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">faces2d</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">nodes1d</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">faces2d</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">npresent</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">lengths</span> <span class="o">&lt;</span> <span class="n">max_length</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">npresent</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">_filter_links_on_idx</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="p">)</span>
+
+    <span class="c1"># extract links from network object</span>
+    <span class="n">link1d2d</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">links1d2d_from_hydrolib_network</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">link1d2d</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_filter_links_on_idx</span><span class="p">(</span><span class="n">network</span><span class="p">:</span> <span class="n">Network</span><span class="p">,</span> <span class="n">keep</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1"># Select the remaining links</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_contact_type</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_contact_type</span><span class="p">[</span>
+        <span class="n">keep</span>
+    <span class="p">]</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_id</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_id</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_long_name</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_long_name</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="links1d2d_add_links_2d_to_1d_embedded">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_embedded.html#hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_embedded">[docs]</a>
+<span class="k">def</span> <span class="nf">links1d2d_add_links_2d_to_1d_embedded</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="p">:</span> <span class="n">xu</span><span class="o">.</span><span class="n">UgridDataset</span><span class="p">,</span>
+    <span class="n">branchids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">within</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Polygon</span><span class="p">,</span> <span class="n">MultiPolygon</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate embedded links from 2d to 1d.</span>
+
+<span class="sd">    Links are generated where the 2d mesh intersects the 1d mesh: the &#39;embedded&#39;</span>
+<span class="sd">    links.</span>
+
+<span class="sd">    To find the intersecting cells in an efficient way, we follow we the next steps.</span>
+<span class="sd">    1) Get the maximum length of a face edge. 2) Buffer the branches with this</span>
+<span class="sd">    length. 3) Find all face nodes within this buffered geometry. 4) Check for each</span>
+<span class="sd">    of the corresponding faces if it crossed the branches.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mesh: xu.UgridDataset</span>
+<span class="sd">        Network in which the connections are made</span>
+<span class="sd">    branchids: List[str], optional</span>
+<span class="sd">        List is branch id&#39;s for which the connections are made. Defaults to None.</span>
+<span class="sd">    within: Union[Polygon, MultiPolygon], optional</span>
+<span class="sd">        Clipping polygon for 2d mesh that is. Defaults to None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    link1d2d: xr.Dataset</span>
+<span class="sd">        Link1d2d Dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Initialise hydrolib network object</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">hydrolib_network_from_mesh</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+    <span class="c1"># Load 1d and 2d in meshkernel</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">_set_mesh1d</span><span class="p">()</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">_set_mesh2d</span><span class="p">()</span>
+
+    <span class="c1"># Get the max edge distance</span>
+    <span class="n">nodes2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_node_x</span><span class="p">,</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_node_y</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+    <span class="p">)</span>
+    <span class="n">edge_node_crds</span> <span class="o">=</span> <span class="n">nodes2d</span><span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_edge_nodes</span><span class="p">]</span>
+
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">edge_node_crds</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">edge_node_crds</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">maxdiff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">diff</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">diff</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="c1"># Create multilinestring from branches</span>
+    <span class="c1"># branchnrs = np.unique(network._mesh1d.mesh1d_node_branch_id)</span>
+    <span class="n">nodes1d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">mesh1d_node_x</span><span class="p">,</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">mesh1d_node_y</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Create a prepared multilinestring of the 1d network, to check for intersections</span>
+    <span class="n">mls_prep</span> <span class="o">=</span> <span class="n">MultiLineString</span><span class="p">(</span><span class="n">nodes1d</span><span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">mesh1d_edge_nodes</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+    <span class="c1"># TODO where is prep coming from?</span>
+    <span class="c1"># mls_prep = prep(mls)</span>
+
+    <span class="c1"># Buffer the branches with the max cell distances</span>
+    <span class="n">area</span> <span class="o">=</span> <span class="n">mls_prep</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="n">maxdiff</span><span class="p">)</span>
+
+    <span class="c1"># If a within polygon is provided, clip the buffered area with this polygon.</span>
+    <span class="k">if</span> <span class="n">within</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">area</span> <span class="o">=</span> <span class="n">area</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">within</span><span class="p">)</span>
+
+    <span class="c1"># Create an array with 2d facecenters and check which intersect the (clipped) area</span>
+    <span class="n">faces2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_face_x</span><span class="p">,</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_face_y</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+    <span class="p">)</span>
+    <span class="n">mpgl</span> <span class="o">=</span> <span class="n">GeometryList</span><span class="p">(</span><span class="o">*</span><span class="n">faces2d</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">faces2d</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">MultiPolygon</span><span class="p">):</span>
+        <span class="n">area</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">area</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">area</span> <span class="o">=</span> <span class="p">[</span><span class="n">area</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">subarea</span> <span class="ow">in</span> <span class="n">area</span><span class="p">:</span>
+        <span class="n">subarea</span> <span class="o">=</span> <span class="n">polygon_to_geometrylist</span><span class="p">(</span><span class="n">subarea</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">|=</span> <span class="n">network</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">polygon_get_included_points</span><span class="p">(</span><span class="n">subarea</span><span class="p">,</span> <span class="n">mpgl</span><span class="p">)</span><span class="o">.</span><span class="n">values</span> <span class="o">==</span> <span class="mi">1</span>
+
+    <span class="c1"># Check for each of the remaining faces, if it actually crosses the branches</span>
+    <span class="n">nodes2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_node_x</span><span class="p">,</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_node_y</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+    <span class="p">)</span>
+    <span class="n">where</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">idx</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">face_crds</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">nodes2d</span><span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_face_nodes</span><span class="p">[</span><span class="n">idx</span><span class="p">]]):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">mls_prep</span><span class="o">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">LineString</span><span class="p">(</span><span class="n">face_crds</span><span class="p">)):</span>
+            <span class="n">idx</span><span class="p">[</span><span class="n">where</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># Use the remaining points to create the links</span>
+    <span class="n">multipoint</span> <span class="o">=</span> <span class="n">GeometryList</span><span class="p">(</span>
+        <span class="n">x_coordinates</span><span class="o">=</span><span class="n">faces2d</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">y_coordinates</span><span class="o">=</span><span class="n">faces2d</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Get the nodes for the specific branch ids</span>
+    <span class="n">node_mask</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">get_node_mask</span><span class="p">(</span><span class="n">branchids</span><span class="p">)</span>
+
+    <span class="c1"># Generate links</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">contacts_compute_with_points</span><span class="p">(</span>
+        <span class="n">node_mask</span><span class="o">=</span><span class="n">node_mask</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">multipoint</span>
+    <span class="p">)</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">_process</span><span class="p">()</span>
+
+    <span class="c1"># extract links from network object</span>
+    <span class="n">link1d2d</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">links1d2d_from_hydrolib_network</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">link1d2d</span></div>
+
+
+
+<div class="viewcode-block" id="links1d2d_add_links_2d_to_1d_lateral">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_lateral.html#hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_lateral">[docs]</a>
+<span class="k">def</span> <span class="nf">links1d2d_add_links_2d_to_1d_lateral</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="p">:</span> <span class="n">xu</span><span class="o">.</span><span class="n">UgridDataset</span><span class="p">,</span>
+    <span class="n">dist_factor</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">branchids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">within</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Polygon</span><span class="p">,</span> <span class="n">MultiPolygon</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">max_length</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate 1d2d links from the 2d mesh to the 1d mesh, with a lateral connection.</span>
+
+<span class="sd">    If a link is kept, is determined based on the distance between the face center and</span>
+<span class="sd">    the intersection with the 2d mesh exterior. By default, links with an intersection</span>
+<span class="sd">    distance larger than 2 times the center to edge distance of the cell, are removed.</span>
+<span class="sd">    Note that for a square cell with a direct link out of the cell (without passing any</span>
+<span class="sd">    other cells) this max distance is sqrt(2) = 1.414. The default value of 2 provides</span>
+<span class="sd">    some flexibility. Note that a link with more than 1 intersection with the 2d mesh</span>
+<span class="sd">    boundary is removed anyway.</span>
+
+<span class="sd">    Furthermore:</span>
+<span class="sd">    - Branch ids can be specified to connect only specific branches.</span>
+<span class="sd">    - A &#39;within&#39; polygon can be given to only connect 2d cells within this polygon.</span>
+<span class="sd">    - A max link length can be given to limit the link length.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mesh: xu.UgridDataset</span>
+<span class="sd">        Network in which the connections are made</span>
+<span class="sd">    dist_factor: Union[float, None], optional</span>
+<span class="sd">        Factor to determine which links are kept (see description above).</span>
+<span class="sd">        Defaults to 2.0.</span>
+<span class="sd">    branchids: List[str], optional</span>
+<span class="sd">        List is branch id&#39;s for which the conncetions are made. Defaults to None.</span>
+<span class="sd">    within: Union[Polygon, MultiPolygon], optional</span>
+<span class="sd">        Clipping polygon for 2d mesh that is. Defaults to None.</span>
+<span class="sd">    max_length: float, optional</span>
+<span class="sd">        Max edge length. Defaults to None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    link1d2d: xr.Dataset</span>
+<span class="sd">        Link1d2d Dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Initialise hydrolib network object</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">hydrolib_network_from_mesh</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+    <span class="c1"># Load 1d and 2d in meshkernel</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">_set_mesh1d</span><span class="p">()</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">_set_mesh2d</span><span class="p">()</span>
+
+    <span class="n">geometrylist</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_get_mesh_boundaries_as_polygons</span><span class="p">()</span>
+    <span class="n">mpboundaries</span> <span class="o">=</span> <span class="n">GeometryList</span><span class="p">(</span><span class="o">**</span><span class="n">geometrylist</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span><span class="o">.</span><span class="n">to_geometry</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">within</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># If a &#39;within&#39; polygon was provided, get the intersection with</span>
+        <span class="c1"># the meshboundaries and convert it to a geometrylist</span>
+        <span class="c1"># Note that the provided meshboundaries is a (list of) polygon(s).</span>
+        <span class="c1"># Holes are provided as polygons as well, which dont make it a</span>
+        <span class="c1"># valid MultiPolygon</span>
+        <span class="n">geometrylist</span> <span class="o">=</span> <span class="n">GeometryList</span><span class="o">.</span><span class="n">from_geometry</span><span class="p">(</span>
+            <span class="n">MultiPolygon</span><span class="p">([</span><span class="n">geom</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">within</span><span class="p">)</span> <span class="k">for</span> <span class="n">geom</span> <span class="ow">in</span> <span class="n">mpboundaries</span><span class="o">.</span><span class="n">geoms</span><span class="p">])</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Get the nodes for the specific branch ids</span>
+    <span class="n">node_mask</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">get_node_mask</span><span class="p">(</span><span class="n">branchids</span><span class="p">)</span>
+
+    <span class="c1"># Get the already present links. These are not filtered subsequently</span>
+    <span class="n">npresent</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">)</span>
+
+    <span class="c1"># Generate links</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">_link_from_2d_to_1d_lateral</span><span class="p">(</span>
+        <span class="n">node_mask</span><span class="p">,</span> <span class="n">polygon</span><span class="o">=</span><span class="n">geometrylist</span><span class="p">,</span> <span class="n">search_radius</span><span class="o">=</span><span class="n">max_length</span>
+    <span class="p">)</span>
+
+    <span class="c1"># If the provided distance factor was None,</span>
+    <span class="c1"># no further selection is needed, all links are kept.</span>
+    <span class="k">if</span> <span class="n">dist_factor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="c1"># Create multilinestring</span>
+    <span class="n">multilinestring</span> <span class="o">=</span> <span class="n">MultiLineString</span><span class="p">([</span><span class="n">poly</span><span class="o">.</span><span class="n">exterior</span> <span class="k">for</span> <span class="n">poly</span> <span class="ow">in</span> <span class="n">mpboundaries</span><span class="o">.</span><span class="n">geoms</span><span class="p">])</span>
+
+    <span class="c1"># Find the links that intersect the boundary close to the origin</span>
+    <span class="n">id1d</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">[</span><span class="n">npresent</span><span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">id2d</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">[</span><span class="n">npresent</span><span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">nodes1d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">mesh1d_node_x</span><span class="p">[</span><span class="n">id1d</span><span class="p">],</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">mesh1d_node_y</span><span class="p">[</span><span class="n">id1d</span><span class="p">]],</span>
+        <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">faces2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_face_x</span><span class="p">[</span><span class="n">id2d</span><span class="p">],</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_face_y</span><span class="p">[</span><span class="n">id2d</span><span class="p">]],</span>
+        <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">nodes2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_node_x</span><span class="p">,</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_node_y</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+    <span class="p">)</span>
+    <span class="n">face_node_crds</span> <span class="o">=</span> <span class="n">nodes2d</span><span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">mesh2d_face_nodes</span><span class="p">[</span><span class="n">id2d</span><span class="p">]]</span>
+
+    <span class="c1"># Calculate distance between face edge and face center</span>
+    <span class="n">x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">face_node_crds</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">y1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">face_node_crds</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">face_node_crds</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">face_node_crds</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">face_node_crds</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">y2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">face_node_crds</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="n">faces2d</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">faces2d</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">distance</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">((</span><span class="n">x2</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y0</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x0</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span><span class="p">))</span>
+        <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">x2</span> <span class="o">-</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Check which links to keep</span>
+    <span class="n">keep</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">npresent</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">node1d</span><span class="p">,</span> <span class="n">face2d</span><span class="p">,</span> <span class="n">comp_dist</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+        <span class="nb">zip</span><span class="p">(</span><span class="n">nodes1d</span><span class="p">,</span> <span class="n">faces2d</span><span class="p">,</span> <span class="n">distance</span> <span class="o">*</span> <span class="n">dist_factor</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="n">isect</span> <span class="o">=</span> <span class="n">multilinestring</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">LineString</span><span class="p">([</span><span class="n">face2d</span><span class="p">,</span> <span class="n">node1d</span><span class="p">]))</span>
+
+        <span class="c1"># If the intersection is for some reason not a Point of Multipoint, skip it.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">isect</span><span class="p">,</span> <span class="p">(</span><span class="n">Point</span><span class="p">,</span> <span class="n">MultiPoint</span><span class="p">)):</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># Skip the link if it has more than one intersection with the boundary</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">isect</span><span class="p">,</span> <span class="n">MultiPoint</span><span class="p">):</span>
+            <span class="n">isect_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">isect</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">isect_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">isect</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">isect_list</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># If the distance to the mesh 2d exterior intersection is smaller than</span>
+        <span class="c1"># the compared distance, keep it.</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">face2d</span> <span class="o">-</span> <span class="n">isect_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="n">dist</span> <span class="o">&lt;</span> <span class="n">comp_dist</span><span class="p">:</span>
+            <span class="n">keep</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="c1"># Select the remaining links</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_contact_type</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_contact_type</span><span class="p">[</span>
+        <span class="n">keep</span>
+    <span class="p">]</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_id</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_id</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_long_name</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_long_name</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+
+    <span class="c1"># extract links from network object</span>
+    <span class="n">link1d2d</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">links1d2d_from_hydrolib_network</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">link1d2d</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright Deltares.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
