@@ -19,9 +19,9 @@ from hydrolib.core.dimr import DIMR, FMComponent, Start
 from hydromt.models import MeshModel
 from hydromt.workflows import create_mesh2d
 from pyproj import CRS
-from shapely.geometry import LineString, box
+from shapely.geometry import box
 
-from . import DATADIR, mesh_utils, utils, workflows
+from . import DATADIR, gis_utils, mesh_utils, utils, workflows
 
 __all__ = ["DFlowFMModel"]
 logger = logging.getLogger(__name__)
@@ -107,7 +107,7 @@ class DFlowFMModel(MeshModel):
             "frictype": 3,
         },
     }
-    _FOLDERS = ["dflowfm", "geoms", "mesh", "maps"]
+    _FOLDERS = ["dflowfm", "geoms", "maps"]
     _CLI_ARGS = {"region": "setup_region"}
     _CATALOGS = join(_DATADIR, "parameters_data.yml")
 
@@ -192,6 +192,7 @@ class DFlowFMModel(MeshModel):
         self._check_crs()
 
     def setup_region(self, region):
+    def setup_region(self, region):
         """HYDROMT CORE METHOD NOT USED FOR DFlowFMModel."""
         raise ValueError(
             "setup_region() method not implemented for DFlowFMModel."
@@ -200,197 +201,11 @@ class DFlowFMModel(MeshModel):
             "Pass the region argument to these methods directly and not in the command line."
         )
 
-    def _setup_branches(
-        self,
-        br_fn: Union[str, Path, gpd.GeoDataFrame],
-        defaults_fn: Union[str, Path, pd.DataFrame],
-        br_type: str,
-        friction_type: str,
-        friction_value: float,
-        region: dict = None,
-        crosssections_shape: str = None,
-        crosssections_value: Union[List[float], float] = None,
-        spacing: pd.DataFrame = None,
-        snap_offset: float = 0.0,
-        allow_intersection_snapping: bool = True,
-        allowed_columns: List[str] = [],
-        filter: str = None,
-    ):
-        """This function is to set all common steps to add branches type of objects (ie channels, rivers, pipes...).
-        Default frictions and crossections will also be added.
-
-        Parameters
-        ----------
-        br_fn : str, gpd.GeoDataFrame
-            Either data source in data catalogue or Path for branches file or branches gpd.GeoDataFrame directly.
-        defaults_fn : str Path
-            Either data source in data catalogue or path to a csv file containing all defaults values per "branchtype" or defaults pd.DataFRame directly.
-        br_type : str
-            branches type. Either "river", "channel", "pipe".
-        friction_type : str
-            Type of friction to use. One of ["Manning", "Chezy", "wallLawNikuradse", "WhiteColebrook", "StricklerNikuradse", "Strickler", "deBosBijkerk"].
-        friction_value : float
-            Value corresponding to ''friction_type''. Units are ["Chézy C [m 1/2 /s]", "Manning n [s/m 1/3 ]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Strickler k_s [m 1/3 /s]", "De Bos-Bijkerk γ [1/s]"]
-        region : dict, optional
-            Dictionary describing region of interest for extracting 1D branches, e.g.:
-
-            * {'bbox': [xmin, ymin, xmax, ymax]}
-
-            * {'geom': 'path/to/polygon_geometry'}
-            Note that only crs=4326 is supported for 'bbox'.
-        crosssections_shape : str, optional
-            Shape of branch crosssections to overwrite defaults. Either "circle" or "rectangle".
-        crosssections_value : float or list of float, optional
-            Crosssections parameter value to overwrite defaults.
-            If ``crosssections_shape`` = "circle", expects a diameter [m], used for br_type == "pipe"
-            If ``crosssections_shape`` = "rectangle", expects a list with [width, height] (e.g. [1.0, 1.0]) [m]. used for br_type == "river" or "channel".
-        spacing: float, optional
-            Spacing value in meters to split the long pipelines lines into shorter pipes. By default inf - no splitting is applied.
-        snap_offset: float, optional
-            Snapping tolerance to automatically connecting branches. Tolerance must be smaller than the shortest pipe length.
-            By default 0.0, no snapping is applied.
-        allow_intersection_snapping: bool, optional
-            Switch to choose whether snapping of multiple branch ends are allowed when ``snap_offset`` is used.
-            By default True.
-        allowed_columns: list, optional
-            List of columns to filter in branches GeoDataFrame
-        filter: str, optional
-            Keyword in branchtype column of br_fn used to filter lines. If None all lines in br_fn are used (default).
-
-
-        See Also
-        --------
-         dflowfm.setup_rivers
-         dflowfm.setup_pipes
-        """  # noqa: D205
-        # 1. Read data and filter within region
-
-        # If needed read the branches GeoDataFrame
-        if isinstance(br_fn, str) or isinstance(br_fn, Path):
-            # parse region argument
-            region = workflows.parse_region_geometry(region, self.crs)
-            gdf_br = self.data_catalog.get_geodataframe(
-                br_fn, geom=region, buffer=0, predicate="intersects"
-            )
-        else:
-            gdf_br = br_fn
-        # Filter features based on filter
-        if filter is not None and "branchtype" in gdf_br.columns:
-            gdf_br = gdf_br[gdf_br["branchtype"].str.lower() == filter.lower()]
-            self.logger.info(
-                f"Set {filter} locations filtered from {br_fn} as {br_type} ."
-            )
-        # Check if features in region
-        if len(gdf_br) == 0:
-            self.logger.warning(f"No 1D {type} locations found within domain")
-            return None
-
-        # Read defaults table
-        if isinstance(defaults_fn, pd.DataFrame):
-            defaults = defaults_fn
-        else:
-            if defaults_fn is None:
-                self.logger.warning(
-                    f"defaults_fn ({defaults_fn}) does not exist. Fall back choice to defaults. "
-                )
-                defaults_fn = Path(self._DATADIR).joinpath(
-                    f"{br_type}s", f"{br_type}s_defaults.csv"
-                )
-            defaults = self.data_catalog.get_dataframe(defaults_fn, time_tuple=())
-            self.logger.info(f"{br_type} default settings read from {defaults_fn}.")
-
-        # 2. Add defaults
-        # Add branchtype and branchid attributes if does not exist
-        # overwrite branchtype if exist
-        gdf_br["branchtype"] = pd.Series(
-            data=np.repeat(br_type, len(gdf_br)), index=gdf_br.index, dtype=str
-        )
-        if "branchid" not in gdf_br.columns:
-            data = [
-                f"{br_type}_{i}"
-                for i in np.arange(
-                    len(self.branches) + 1, len(self.branches) + len(gdf_br) + 1
-                )
-            ]  # avoid duplicated ids being generated
-            gdf_br["branchid"] = pd.Series(data, index=gdf_br.index, dtype=str)
-
-        # assign id
-        id_col = "branchid"
-        gdf_br.index = gdf_br[id_col]
-        gdf_br.index.name = id_col
-
-        # filter for allowed columns
-        allowed_columns = set(allowed_columns).intersection(gdf_br.columns)
-        gdf_br = gpd.GeoDataFrame(gdf_br[list(allowed_columns)], crs=gdf_br.crs)
-
-        # Add spacing to defaults
-        if spacing is not None:
-            defaults["spacing"] = spacing
-        # Add friction to defaults
-        defaults["frictiontype"] = friction_type
-        defaults["frictionvalue"] = friction_value
-        # Add crosssections to defaults
-        if crosssections_shape == "circle":
-            if isinstance(crosssections_value, float):
-                defaults["shape"] = crosssections_shape
-                defaults["diameter"] = crosssections_value
-            else:
-                self.logger.warning(
-                    "If crosssections_shape is circle, crosssections_value should be a single float for diameter. Keeping defaults"
-                )
-        elif crosssections_shape == "rectangle":
-            if isinstance(crosssections_value, list) and len(crosssections_value) == 2:
-                defaults["shape"] = crosssections_shape
-                defaults["width"], defaults["height"] = crosssections_value
-                defaults["closed"] = "no"
-            else:
-                self.logger.warning(
-                    "If crosssections_shape is rectangle, crosssections_value should be a list with [width, height] values. Keeping defaults"
-                )
-
-        self.logger.info("Adding/Filling branches attributes values")
-        gdf_br = workflows.update_data_columns_attributes(
-            gdf_br, defaults, brtype=br_type
-        )
-
-        # 4. Split and prepare branches
-        if gdf_br.crs.is_geographic:  # needed for length and splitting
-            gdf_br = gdf_br.to_crs(3857)
-        # Line smoothing for pipes
-        smooth_branches = br_type == "pipe"
-
-        self.logger.info("Processing branches")
-        branches, branches_nodes = workflows.process_branches(
-            gdf_br,
-            id_col="branchid",
-            snap_offset=snap_offset,
-            allow_intersection_snapping=allow_intersection_snapping,
-            smooth_branches=smooth_branches,
-            logger=self.logger,
-        )
-
-        self.logger.info("Validating branches")
-        workflows.validate_branches(branches)
-
-        # convert to model crs
-        branches = branches.to_crs(self.crs)
-        branches_nodes = branches_nodes.to_crs(self.crs)
-
-        # 5. Add friction id
-        branches["frictionid"] = [
-            f"{ftype}_{fvalue}"
-            for ftype, fvalue in zip(
-                branches["frictiontype"], branches["frictionvalue"]
-            )
-        ]
-
-        return branches, branches_nodes
-
     def setup_channels(
         self,
         region: dict,
         channels_fn: str,
-        channels_defaults_fn: str = None,
+        channels_defaults_fn: str = "channels_defaults",
         channel_filter: str = None,
         friction_type: str = "Manning",
         friction_value: float = 0.023,
@@ -455,6 +270,7 @@ class DFlowFMModel(MeshModel):
         self.logger.info("Preparing 1D channels.")
 
         # filter for allowed columns
+        br_type = "channel"
         _allowed_columns = [
             "geometry",
             "branchid",
@@ -472,19 +288,34 @@ class DFlowFMModel(MeshModel):
             "friction_value",
         ]
 
-        # Build the channels branches and nodes and fill with attributes and spacing
-        channels, channel_nodes = self._setup_branches(
-            region=region,
-            br_fn=channels_fn,
-            defaults_fn=channels_defaults_fn,
-            br_type="channel",
-            friction_type=friction_type,
-            friction_value=friction_value,
+        # Read data and filter within region
+        region = workflows.parse_region_geometry(region, self.crs)
+        gdf_br = self.data_catalog.get_geodataframe(
+            channels_fn, geom=region, buffer=0, predicate="intersects"
+        )
+        # Read defaults table
+        defaults = self.data_catalog.get_dataframe(channels_defaults_fn)
+        # Prepare branches
+        channels, channel_nodes = workflows.prepare_branches(
+            gdf_br,
+            params=defaults,
+            br_type=br_type,
+            dst_crs=self.crs,
+            id_start=len(self.branches) + 1,
+            filter=channel_filter,
             spacing=spacing,
             snap_offset=snap_offset,
             allow_intersection_snapping=allow_intersection_snapping,
             allowed_columns=_allowed_columns,
-            filter=channel_filter,
+            logger=self.logger,
+        )
+        # Prepare friction and crosssections
+        channels = workflows.prepare_default_friction_and_crosssection(
+            channels,
+            br_type=br_type,
+            friction_type=friction_type,
+            friction_value=friction_value,
+            logger=self.logger,
         )
 
         # setup crosssections
@@ -493,7 +324,7 @@ class DFlowFMModel(MeshModel):
         assert {crosssections_type}.issubset({"xyzpoints", "branch"})
         crosssections = self._setup_crosssections(
             branches=channels,
-            region=workflows.parse_region_geometry(region, self.crs),
+            region=region,
             crosssections_fn=crosssections_fn,
             crosssections_type=crosssections_type,
         )
@@ -536,7 +367,7 @@ class DFlowFMModel(MeshModel):
         region: dict,
         hydrography_fn: str,
         river_geom_fn: str = None,
-        rivers_defaults_fn: str = None,
+        rivers_defaults_fn: str = "rivers_defaults",
         rivdph_method="gvf",
         rivwth_method="geom",
         river_upa=25.0,
@@ -653,7 +484,8 @@ class DFlowFMModel(MeshModel):
 
         # read data
         ds_hydro = self.data_catalog.get_rasterdataset(
-            hydrography_fn, geom=region, buffer=10
+            hydrography_fn,
+            geom=region,
         )
         if isinstance(ds_hydro, xr.DataArray):
             ds_hydro = ds_hydro.to_dataset()
@@ -662,7 +494,7 @@ class DFlowFMModel(MeshModel):
         gdf_riv = None
         if river_geom_fn is not None:
             gdf_riv = self.data_catalog.get_geodataframe(
-                river_geom_fn, geom=region
+                river_geom_fn, geom=region, buffer=1
             ).to_crs(ds_hydro.raster.crs)
 
         # check if flwdir and uparea in ds_hydro
@@ -712,20 +544,8 @@ class DFlowFMModel(MeshModel):
         rm_dict = {"rivwth": "width", "rivdph": "height", "zb": "bedlev"}
         gdf_riv = gdf_riv.rename(columns=rm_dict).to_crs(self.crs)
 
-        # assign default attributes
-        if rivers_defaults_fn is None or not rivers_defaults_fn.is_file():
-            self.logger.warning(
-                f"rivers_defaults_fn ({rivers_defaults_fn}) does not exist. Fall back choice to defaults. "
-            )
-            rivers_defaults_fn = Path(self._DATADIR).joinpath(
-                "rivers", "rivers_defaults.csv"
-            )
-        defaults = pd.read_csv(rivers_defaults_fn)
-        # Make sure default shape is rectangle
-        defaults["shape"] = np.array(["rectangle"])
-        self.logger.info(f"river default settings read from {rivers_defaults_fn}.")
-
         # filter for allowed columns
+        br_type = "river"
         _allowed_columns = [
             "geometry",
             "branchid",
@@ -743,17 +563,29 @@ class DFlowFMModel(MeshModel):
             "friction_value",
         ]
 
-        # Build the rivers branches and nodes and fill with attributes and spacing
-        rivers, river_nodes = self._setup_branches(
-            br_fn=gdf_riv,
-            defaults_fn=defaults,
-            br_type="river",
+        # assign default attributes
+        # Read defaults table
+        defaults = self.data_catalog.get_dataframe(rivers_defaults_fn)
+        # Make sure default shape is rectangle
+        defaults["shape"] = np.array(["rectangle"])
+
+        # Prepare branches
+        rivers, river_nodes = workflows.prepare_branches(
+            gdf_riv,
+            params=defaults,
+            br_type=br_type,
+            dst_crs=self.crs,
+            id_start=len(self.branches) + 1,
+            allowed_columns=_allowed_columns,
+            logger=self.logger,
+        )
+        # Prepare friction
+        branches = workflows.prepare_default_friction_and_crosssection(
+            rivers,
+            br_type=br_type,
             friction_type=friction_type,
             friction_value=friction_value,
-            spacing=None,  # does not allow spacing for rivers
-            snap_offset=0.0,
-            allow_intersection_snapping=True,
-            allowed_columns=_allowed_columns,
+            logger=self.logger,
         )
 
         # setup crosssections
@@ -800,7 +632,7 @@ class DFlowFMModel(MeshModel):
         self,
         region: dict,
         rivers_fn: str,
-        rivers_defaults_fn: str = None,
+        rivers_defaults_fn: str = "rivers_defaults",
         river_filter: str = None,
         friction_type: str = "Manning",
         friction_value: float = 0.023,
@@ -881,6 +713,7 @@ class DFlowFMModel(MeshModel):
         """
         self.logger.info("Preparing 1D rivers.")
         # filter for allowed columns
+        br_type = "river"
         _allowed_columns = [
             "geometry",
             "branchid",
@@ -897,19 +730,33 @@ class DFlowFMModel(MeshModel):
             "friction_value",
         ]
 
-        # Build the rivers branches and nodes and fill with attributes and spacing
-        rivers, river_nodes = self._setup_branches(
-            region=region,
-            br_fn=rivers_fn,
-            defaults_fn=rivers_defaults_fn,
-            br_type="river",
-            friction_type=friction_type,
-            friction_value=friction_value,
-            spacing=None,  # does not allow spacing for rivers
+        # Read data and filter within region
+        region = workflows.parse_region_geometry(region, self.crs)
+        gdf_br = self.data_catalog.get_geodataframe(
+            rivers_fn, geom=region, buffer=0, predicate="intersects"
+        )
+        # Read defaults table
+        defaults = self.data_catalog.get_dataframe(rivers_defaults_fn)
+        # Prepare branches
+        rivers, river_nodes = workflows.prepare_branches(
+            gdf_br,
+            params=defaults,
+            br_type=br_type,
+            dst_crs=self.crs,
+            id_start=len(self.branches) + 1,
+            filter=river_filter,
             snap_offset=snap_offset,
             allow_intersection_snapping=allow_intersection_snapping,
             allowed_columns=_allowed_columns,
-            filter=river_filter,
+            logger=self.logger,
+        )
+        # Prepare friction and crosssections
+        rivers = workflows.prepare_default_friction_and_crosssection(
+            rivers,
+            br_type=br_type,
+            friction_type=friction_type,
+            friction_value=friction_value,
+            logger=self.logger,
         )
 
         # setup crosssections
@@ -919,7 +766,7 @@ class DFlowFMModel(MeshModel):
         for crs_fn, crs_type in zip(crosssections_fn, crosssections_type):
             crosssections = self._setup_crosssections(
                 branches=rivers,
-                region=workflows.parse_region_geometry(region, self.crs),
+                region=region,
                 crosssections_fn=crs_fn,
                 crosssections_type=crs_type,
             )
@@ -972,7 +819,7 @@ class DFlowFMModel(MeshModel):
         self,
         region: dict,
         pipes_fn: str,
-        pipes_defaults_fn: Union[str, None] = None,
+        pipes_defaults_fn: str = "pipes_defaults",
         pipe_filter: Union[str, None] = None,
         spacing: float = np.inf,
         friction_type: str = "WhiteColebrook",
@@ -1063,6 +910,7 @@ class DFlowFMModel(MeshModel):
         self.logger.info("Preparing 1D pipes.")
 
         # filter for allowed columns
+        br_type = "pipe"
         _allowed_columns = [
             "geometry",
             "branchid",
@@ -1079,25 +927,41 @@ class DFlowFMModel(MeshModel):
             "invlev_up",
             "inlev_dn",
         ]
-        _region = workflows.parse_region_geometry(region, self.crs)
-        # Build the pipe branches and nodes and fill with attributes and spacing
-        pipes, pipe_nodes = self._setup_branches(
-            region=region,
-            br_fn=pipes_fn,
-            defaults_fn=pipes_defaults_fn,
-            br_type="pipe",
+
+        # Read data and filter within region
+        region = workflows.parse_region_geometry(region, self.crs)
+        gdf_br = self.data_catalog.get_geodataframe(
+            pipes_fn, geom=region, buffer=0, predicate="intersects"
+        )
+        # Read defaults table
+        defaults = self.data_catalog.get_dataframe(pipes_defaults_fn)
+        # Prepare branches
+        pipes, pipe_nodes = workflows.prepare_branches(
+            gdf_br,
+            params=defaults,
+            br_type=br_type,
+            dst_crs=self.crs,
+            id_start=len(self.branches) + 1,
+            filter=pipe_filter,
+            spacing=spacing,
+            snap_offset=snap_offset,
+            allow_intersection_snapping=allow_intersection_snapping,
+            allowed_columns=_allowed_columns,
+            logger=self.logger,
+        )
+        # Prepare friction and crosssections
+        pipes = workflows.prepare_default_friction_and_crosssection(
+            pipes,
+            br_type=br_type,
             friction_type=friction_type,
             friction_value=friction_value,
             crosssections_shape=crosssections_shape,
             crosssections_value=crosssections_value,
-            spacing=spacing,  # for now only single default value implemented, use "spacing" column
-            snap_offset=snap_offset,
-            allow_intersection_snapping=allow_intersection_snapping,
-            allowed_columns=_allowed_columns,
-            filter=pipe_filter,
+            logger=self.logger,
         )
         # filter extra time for geting clipped pipes within the region (better match)
-        pipes = gpd.sjoin(pipes, _region, predicate="within")
+        pipes = gpd.sjoin(pipes, region, predicate="within")
+
         # setup crosssections
         # setup invert levels
         # 1. check if invlev up and dn are fully filled in (nothing needs to be done)
@@ -1119,7 +983,7 @@ class DFlowFMModel(MeshModel):
         if fill_invlev and dem_fn is not None:
             dem = self.data_catalog.get_rasterdataset(
                 dem_fn,
-                geom=_region,
+                geom=region,
                 buffer=self._network_snap_offset,
                 variables=["elevtn"],
             )
@@ -1275,7 +1139,7 @@ class DFlowFMModel(MeshModel):
                     f"No {crosssections_fn} 1D xyz crosssections found within domain"
                 )
                 return None
-            valid_attributes = workflows.helper.check_gpd_attributes(
+            valid_attributes = gis_utils.check_gpd_attributes(
                 gdf_cs, required_columns=["crsid", "order", "z"]
             )
             if not valid_attributes:
@@ -1311,7 +1175,7 @@ class DFlowFMModel(MeshModel):
                     f"No {crosssections_fn} 1D point crosssections found within domain"
                 )
                 return None
-            valid_attributes = workflows.helper.check_gpd_attributes(
+            valid_attributes = gis_utils.check_gpd_attributes(
                 gdf_cs, required_columns=["crsid", "shape", "shift"]
             )
             if not valid_attributes:
@@ -1344,7 +1208,7 @@ class DFlowFMModel(MeshModel):
     def setup_manholes(
         self,
         manholes_fn: str = None,
-        manhole_defaults_fn: str = None,
+        manhole_defaults_fn: str = "manholes_defaults",
         bedlevel_shift: float = -0.5,
         dem_fn: str = None,
         snap_offset: float = 1e-3,
@@ -1417,15 +1281,8 @@ class DFlowFMModel(MeshModel):
         self.set_branches(branches)
 
         # add manhole attributes from defaults
-        if manhole_defaults_fn is None or not manhole_defaults_fn.is_file():
-            self.logger.warning(
-                f"manhole_defaults_fn ({manhole_defaults_fn}) does not exist. Fall back choice to defaults. "
-            )
-            manhole_defaults_fn = Path(self._DATADIR).joinpath(
-                "manholes", "manholes_defaults.csv"
-            )
-        defaults = pd.read_csv(manhole_defaults_fn)
-        self.logger.info(f"manhole default settings read from {manhole_defaults_fn}.")
+        defaults = self.data_catalog.get_dataframe(manhole_defaults_fn)
+
         # add defaults
         manholes = workflows.update_data_columns_attributes(manholes, defaults)
 
@@ -1984,7 +1841,7 @@ class DFlowFMModel(MeshModel):
     def setup_bridges(
         self,
         bridges_fn: Optional[str] = None,
-        bridges_defaults_fn: Optional[str] = None,
+        bridges_defaults_fn: Optional[str] = "1D_bridges_defaults",
         bridge_filter: Optional[str] = None,
         snap_offset: Optional[float] = None,
     ):
@@ -2030,7 +1887,7 @@ class DFlowFMModel(MeshModel):
         --------
         dflowfm._setup_1dstructures
         """
-        # keywords in hydrolib-core
+        snap_offset = self._network_snap_offset if snap_offset is None else snap_offset
         _st_type = "bridge"
         _allowed_columns = [
             "id",
@@ -2049,9 +1906,20 @@ class DFlowFMModel(MeshModel):
             "length",
         ]
 
+        # read data
+        gdf_bridges = self.data_catalog.get_geodataframe(
+            bridges_fn, geom=self.region, buffer=0, predicate="contains"
+        )
+        defaults = self.data_catalog.get_dataframe(bridges_defaults_fn)
+
         # setup general 1d structures
-        bridges = self._setup_1dstructures(
-            _st_type, bridges_fn, bridges_defaults_fn, bridge_filter, snap_offset
+        bridges = workflows.prepare_1dstructures(
+            self.branches,
+            gdf_bridges,
+            params=defaults,
+            filter=bridge_filter,
+            snap_offset=snap_offset,
+            st_type=_st_type,
         )
 
         # setup crossection definitions
@@ -2061,7 +1929,7 @@ class DFlowFMModel(MeshModel):
         )
         self.set_geoms(crosssections, "crosssections")
 
-        # setup bridges
+        # setup bridges (note the allowed columns are different per structure)
         bridges.columns = bridges.columns.str.lower()
         bridges.rename(
             columns={
@@ -2084,7 +1952,7 @@ class DFlowFMModel(MeshModel):
     def setup_culverts(
         self,
         culverts_fn: Optional[str] = None,
-        culverts_defaults_fn: Optional[str] = None,
+        culverts_defaults_fn: Optional[str] = "1D_culverts_defaults",
         culvert_filter: Optional[str] = None,
         snap_offset: Optional[float] = None,
     ):
@@ -2139,7 +2007,7 @@ class DFlowFMModel(MeshModel):
         --------
         dflowfm._setup_1dstructures
         """
-        # keywords in hydrolib-core
+        snap_offset = self._network_snap_offset if snap_offset is None else snap_offset
         _st_type = "culvert"
         _allowed_columns = [
             "id",
@@ -2162,9 +2030,20 @@ class DFlowFMModel(MeshModel):
             "bedfriction",
         ]
 
+        # read data
+        gdf_culverts = self.data_catalog.get_geodataframe(
+            culverts_fn, geom=self.region, buffer=0, predicate="contains"
+        )
+        defaults = self.data_catalog.get_dataframe(culverts_defaults_fn)
+
         # setup general 1d structures
-        culverts = self._setup_1dstructures(
-            _st_type, culverts_fn, culverts_defaults_fn, culvert_filter, snap_offset
+        culverts = workflows.prepare_1dstructures(
+            self.branches,
+            gdf_culverts,
+            params=defaults,
+            filter=culvert_filter,
+            snap_offset=snap_offset,
+            st_type=_st_type,
         )
 
         # setup crossection definitions
@@ -2176,7 +2055,7 @@ class DFlowFMModel(MeshModel):
         )
         self.set_geoms(crosssections, "crosssections")
 
-        # setup culverts
+        # setup culverts (note the allowed columns are different per structure)
         culverts.columns = culverts.columns.str.lower()
         culverts.rename(
             columns={
@@ -2629,7 +2508,7 @@ class DFlowFMModel(MeshModel):
     def __set_map_parameters_based_on_variable(
         self, var: str, locationtype: str, interpolation_method: str
     ) -> None:
-        """Set map parameters by updating user inputs to default self._MAP"""
+        """Set map parameters by updating user inputs to default self._MAP."""
         if var in self._MAPS:
             self._MAPS[var]["locationtype"] = locationtype
             self._MAPS[var]["interpolation"] = interpolation_method
@@ -3033,7 +2912,7 @@ class DFlowFMModel(MeshModel):
                     name = inidict.quantity
                     # Need to get branchid from config
                     if name == "frictioncoefficient":
-                        frictype = self.get_config("physics.UniFrictType", 1)
+                        frictype = self.get_config("physics.uniffricttype", fallback=1)
                         fricname = [
                             n
                             for n in self._MAPS
@@ -3058,9 +2937,8 @@ class DFlowFMModel(MeshModel):
                         # Rename to hydromt name
                         name = rm_dict[name]
                     # Add to maps
+                    inimap.name = name
                     self.set_maps(inimap, name)
-
-            return self._maps
 
     def write_maps(self) -> None:
         """Write maps as tif files in maps folder and update initial fields."""

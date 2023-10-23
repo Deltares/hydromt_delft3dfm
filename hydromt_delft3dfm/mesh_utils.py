@@ -254,19 +254,17 @@ def mesh2d_from_hydrolib_network(
     uds_mesh2d : xu.UgridDataset
         Mesh2d UgridDataset.
     """
-    mesh2d = network._mesh2d
+    network._mesh2d._set_mesh2d()
+    mk_mesh2d = network._mesh2d.meshkernel.mesh2d_get()
 
     # meshkernel to xugrid Ugrid2D
-    uds_mesh2d = xu.Ugrid2d(
-        node_x=mesh2d.mesh2d_node_x,
-        node_y=mesh2d.mesh2d_node_y,
-        fill_value=-1,
-        face_node_connectivity=mesh2d.mesh2d_face_nodes,
-        edge_node_connectivity=mesh2d.mesh2d_edge_nodes,
+    uds_mesh2d = xu.Ugrid2d.from_meshkernel(
+        mk_mesh2d,
         name="mesh2d",
         projected=crs.is_projected,
         crs=crs,
     )
+
     # Convert to UgridDataset
     uds_mesh2d = xu.UgridDataset(uds_mesh2d.to_dataset())
     uds_mesh2d = uds_mesh2d.ugrid.assign_face_coords()

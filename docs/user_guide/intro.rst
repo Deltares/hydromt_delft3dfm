@@ -3,26 +3,23 @@
 User guide
 ==========
 
-With the **Hydromt-Wflow plugin**, users can easily benefit from the rich set of tools of the
+With the **Hydromt-Delft3DFM plugin**, users can easily benefit from the rich set of tools of the
 `HydroMT package <https://deltares.github.io/hydromt/latest/index.html>`_ to build and update
-`Wflow <https://deltares.github.io/Wflow.jl/stable/>`_ models from available global and local data.
+`Delft3D FM Suite <https://www.deltares.nl/en/software-and-data/products/sobek-and-delft3d-fm-suite-1d2d>`_ models from available global and local data.
 
-This plugin assists the Wflow modeller in:
+This plugin assists the Delft3D FM modeller in:
 
-- Quickly setting up a base Wflow model and default parameter values
+- Quickly setting up a base Delft3dFM model (1D2D) and default parameter values
 - Making maximum use of the best available global or local data
-- Adjusting and updating components of a Wflow model and their associated parameters in a consistent way
-- Clipping existing Wflow models for a smaller extent
-- Analysing Wflow model outputs
+- Adjusting and updating components of a Delft3dFM model and their associated data in a consistent way
 
-Two Wflow Model classes are currently available:
+Two Delft3dFM Model classes are currently available:
 
-- ``wflow`` (WflowModel): class for the wflow_sbm + kinematic and wflow_sbm + local inertial concepts
-- ``wflow_sediment`` (WflowSedimentModel): class for the wflow_sediment concept
+- ``dflowfm`` (DFlowFMModel): class for the Delft3d FM flow component.
 
 .. toctree::
    :caption: Table of Contents
    :maxdepth: 2
    :hidden:
 
-   wflow.rst
+   dflowfm.rst
