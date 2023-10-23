@@ -2,7 +2,7 @@
 
 from os.path import abspath, dirname, join
 
-__version__ = "0.1.2"
+__version__ = "0.1.3.dev"
 
 DATADIR = join(dirname(abspath(__file__)), "data")
 
