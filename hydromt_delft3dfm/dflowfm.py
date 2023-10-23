@@ -192,7 +192,6 @@ class DFlowFMModel(MeshModel):
         self._check_crs()
 
     def setup_region(self, region):
-    def setup_region(self, region):
         """HYDROMT CORE METHOD NOT USED FOR DFlowFMModel."""
         raise ValueError(
             "setup_region() method not implemented for DFlowFMModel."
