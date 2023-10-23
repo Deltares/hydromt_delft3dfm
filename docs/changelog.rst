@@ -6,8 +6,9 @@ All notable changes to this project will be documented in this page.
 The format is based on `Keep a Changelog`_, and this project adheres to
 `Semantic Versioning`_.
 
-Unreleased
-==========
+v0.1.2 (20 October 2023)
+========================
+Added examples, updated documentation and Upgraded dependency.
 
 Added
 -----
@@ -16,9 +17,7 @@ Added
 Changed
 -------
 - Upgraded hydromt dependency to version 0.9.0. (PR#100) 
-
-Fixed
------
+- Updated documentation. (PR #97)
 
 v0.1.1 (13 October 2023)
 ========================
