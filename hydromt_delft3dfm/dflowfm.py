@@ -1435,7 +1435,7 @@ class DFlowFMModel(MeshModel):
             self.branches,
             mesh_utils.network1d_nodes_geodataframe(self.mesh_datasets["network1d"]),
         )
-        refdate, tstart, tstop = self.get_model_time()  # time slice
+        refdate, tstart, tstop = self.get_model_time()
 
         # 1. get potential boundary locations based on branch_type and boundary_type
         boundaries_branch_type = workflows.select_boundary_type(
@@ -1443,33 +1443,9 @@ class DFlowFMModel(MeshModel):
         )
 
         # 2. read boundary from user data
-        if boundaries_geodataset_fn is not None:
-            da_bnd = self.data_catalog.get_geodataset(
-                boundaries_geodataset_fn,
-                geom=boundaries.buffer(
-                    snap_offset
-                ),  # only select data close to the boundary of the model region
-                variables=[boundary_type],
-                time_tuple=(tstart, tstop),
-                crs=self.crs.to_epsg(),  # assume model crs if none defined
-            ).rename(boundary_type)
-            # error if time mismatch
-            if np.logical_and(
-                pd.to_datetime(da_bnd.time.values[0]) == pd.to_datetime(tstart),
-                pd.to_datetime(da_bnd.time.values[-1]) == pd.to_datetime(tstop),
-            ):
-                pass
-            else:
-                self.logger.error(
-                    "forcing has different start and end time. Please check the forcing file. support yyyy-mm-dd HH:MM:SS. "
-                )
-            # reproject if needed and convert to location
-            if da_bnd.vector.crs != self.crs:
-                da_bnd.vector.to_crs(self.crs)
-        elif boundaries_timeseries_fn is not None:
-            raise NotImplementedError()
-        else:
-            da_bnd = None
+        _, da_bnd = self._read_forcing_geodataset(
+            boundaries_geodataset_fn, boundary_type
+        )
 
         # 3. Derive DataArray with boundary values at boundary locations in boundaries_branch_type
         da_out = workflows.compute_boundary_values(
@@ -1486,6 +1462,394 @@ class DFlowFMModel(MeshModel):
         self.set_forcing(
             da_out, name=f"boundary1d_{da_out.name}_{branch_type}"
         )  # FIXME: this format cannot be read back due to lack of branch type info from model files
+
+    def _read_forcing_geodataset(
+        self,
+        forcing_geodataset_fn: Union[str, Path],
+        forcing_name: str = "discharge",
+        buffer: float = 1000.0,
+    ):
+        """Read forcing geodataset."""
+
+        refdate, tstart, tstop = self.get_model_time()  # time slice
+
+        if (
+            forcing_geodataset_fn is not None
+            and self.data_catalog[forcing_geodataset_fn].data_type == "GeoDataset"
+        ):
+            da = self.data_catalog.get_geodataset(
+                forcing_geodataset_fn,
+                geom=self.region.buffer(
+                    buffer
+                ),  # only select data within region of interest (large region for forcing)
+                variables=[forcing_name],
+                time_tuple=(
+                    tstart,
+                    tstop
+                    + timedelta(
+                        seconds=1
+                    ),  # extend with 1 seconds to include the last timestep
+                ),
+            ).rename(forcing_name)
+            # error if time mismatch
+            if np.logical_and(
+                pd.to_datetime(da.time.values[0]) == pd.to_datetime(tstart),
+                pd.to_datetime(da.time.values[-1]) == pd.to_datetime(tstop),
+            ):
+                pass
+            else:
+                self.logger.error(
+                    "forcing has different start and end time. Please check the forcing file. support yyyy-mm-dd HH:MM:SS. "
+                )
+            # reproject if needed and convert to location
+            if da.vector.crs != self.crs:
+                da = da.vector.to_crs(self.crs)
+            # get geom
+            gdf = da.vector.to_gdf(reducer=np.mean)
+        elif (
+            forcing_geodataset_fn is not None
+            and self.data_catalog[forcing_geodataset_fn].data_type == "GeoDataFrame"
+        ):
+            gdf = self.data_catalog.get_geodataframe(
+                forcing_geodataset_fn,
+                geom=self.region.buffer(self._network_snap_offset),
+            )
+            da = None
+        else:
+            gdf = None
+            da = None
+        return gdf, da
+
+    def _snap_geom_to_branches_and_drop_nonsnapped(
+        self, branches: gpd.GeoDataFrame, geoms: gpd.GeoDataFrame, snap_offset=0.0
+    ):
+        """Snaps geoms to branches and drop the ones that are not snapped.
+        Returns snapped geoms with branchid and chainage.
+        branches must have branchid.
+        """
+        workflows.find_nearest_branch(
+            branches=branches,
+            geometries=geoms,
+            maxdist=snap_offset,
+        )
+        geoms = geoms.rename(
+            columns={"branch_id": "branchid", "branch_offset": "chainage"}
+        )
+
+        # drop ones non snapped
+        _drop_geoms = geoms["chainage"].isna()
+        if any(_drop_geoms):
+            self.logger.debug(f"Unable to snap to branches: {geoms[_drop_geoms].index}")
+
+        return geoms[~_drop_geoms]
+
+    def setup_1dlateral_from_points(
+        self,
+        laterals_geodataset_fn: str = None,
+        lateral_value: float = 0.0,
+        snap_offset: float = 1.0,
+        branch_type: str = "river",
+    ):
+        """
+        Prepares the 1D lateral discharge from geodataset of point geometries.
+        E.g. '1' m3/s for all lateral locations.
+
+        Use ``laterals_geodataset_fn`` to set the lateral values from a geodataset
+        of point locations.
+        Support also geodataframe of point locations in combination of `lateral_value`.
+
+        Only locations that are snapped to the network of `branch_type`
+        within a max distance defined in ``snap_offset`` are used.
+
+        The discharge can either be a constant using ``lateral_value`` (default) or
+        a timeseries read from ``laterals_geodataset_fn``.
+        If the timeseries has missing values, the constant ``lateral_value`` will be used.
+
+        The timeseries are clipped to the model time based on the model config
+        tstart and tstop entries.
+
+        Adds/Updates model layers:
+            * ** lateral1d_points** forcing: 1D laterals DataArray with points coordinates.
+
+        Parameters
+        ----------
+        laterals_geodataset_fn : str, Path
+            Path or data source name for geospatial point location file.
+            * Required variables if geodataset is provided ['laterals_discharge']
+            NOTE: Require equidistant time series
+        lateral_value : float, optional
+            Constant value to use for all laterals if ``laterals_geodataset_fn`` is a geodataframe,
+            or for filling in missing data.
+            By default 0 [m3/s].
+        snap_offset : float, optional
+            Snapping tolerance to automatically applying boundaries at the correct network nodes.
+            By default 0.1, a small snapping is applied to avoid precision errors.
+        branch_type: str, optional
+            Type of branch to apply laterals on. One of ["river", "pipe"].
+            If None, all branches are used.
+            By defalt None.
+        """
+        self.logger.info(f"Preparing 1D laterals for {branch_type}.")
+        network_by_branchtype = self.staticgeoms[f"{branch_type}s"]
+
+        # 1. read lateral geodataset and snap to network
+        gdf_laterals, da_lat = self._read_forcing_geodataset(
+            laterals_geodataset_fn, "lateral_discharge"
+        )
+
+        # snap laterlas to selected branches
+        gdf_laterals = self._snap_geom_to_branches_and_drop_nonsnapped(
+            branches=network_by_branchtype.set_index("branchid"),
+            geoms=gdf_laterals,
+            snap_offset=snap_offset,
+        )
+
+        if len(gdf_laterals) == 0:
+            return None
+
+        # 2. Compute lateral dataarray
+        da_out = workflows.compute_forcing_values_points(
+            gdf=gdf_laterals,
+            da=da_lat,
+            forcing_value=lateral_value,
+            forcing_type="lateral_discharge",
+            forcing_unit="m3/s",
+            logger=self.logger,
+        )
+
+        # 4. set laterals
+        self.set_forcing(da_out, name="lateral1d_points")
+
+    def setup_1dlateral_from_polygons(
+        self,
+        laterals_geodataset_fn: str = None,
+        lateral_value: float = -2.5,
+    ):
+        """
+        Prepares the 1D lateral discharge from geodataset of polygons.
+        E.g. '1' m3/s for all lateral locations.
+
+        Use ``laterals_geodataset_fn`` to set the lateral values from a geodatasets
+        of polygons.
+        Support also geodataframe of polygons in combination of `lateral_value`.
+
+        The discharge can either be a constant using ``lateral_value`` (default) or
+        a timeseries read from ``laterals_geodataset_fn``.
+        If the timeseries has missing values, the constant ``lateral_value`` will be used.
+
+        The timeseries are clipped to the model time based on the model config
+        tstart and tstop entries.
+
+        Adds/Updates model layers:
+            * ** lateral1d_polygons** forcing: 1D laterals DataArray with polygon coordinates.
+
+        Parameters
+        ----------
+        laterals_geodataset_fn : str, Path
+            Path or data source name for geospatial point location file.
+            * Required variables if geodataset is provided ['laterals_discharge']
+            NOTE: Require equidistant time series
+        lateral_value : float, optional
+            Constant value to use for all laterals if ``laterals_geodataset_fn`` is a geodataframe,
+            or for filling in missing data.
+            By default 0 [m3/s].
+        """
+        self.logger.info("Preparing 1D laterals for polygons.")
+
+        # 1. read lateral geodataset
+        gdf_laterals, da_lat = self._read_forcing_geodataset(
+            laterals_geodataset_fn, "lateral_discharge"
+        )
+
+        if len(gdf_laterals) == 0:
+            return None
+
+        # 2. Compute lateral dataarray
+        da_out = workflows.compute_forcing_values_polygon(
+            gdf=gdf_laterals,
+            da=da_lat,
+            forcing_value=lateral_value,
+            forcing_type="lateral_discharge",
+            forcing_unit="m3/s",
+            logger=self.logger,
+        )
+
+        # 3. set laterals
+        self.set_forcing(da_out, name="lateral1d_polygons")
+
+    def _setup_1dstructures(
+        self,
+        st_type: str,
+        st_fn: Union[str, Path, gpd.GeoDataFrame] = None,
+        defaults_fn: Union[str, Path, pd.DataFrame] = None,
+        filter: Optional[str] = None,
+        snap_offset: Optional[float] = None,
+    ):
+        """Setup 1D structures.
+        Include the universal weir (Not Implemented) , culvert and bridge (``str_type`` = 'bridge'), which can only be used in a single 1D channel.
+
+        The structures are first read from ``st_fn`` (only locations within the region will be read), and if any missing, filled with information provided in ``defaults_fn``.
+        Read locations are then filtered for value specified in ``filter`` on the column ``st_type``.
+        They are then snapped to the existing network within a max distance defined in ``snap_offset`` and will be dropped if not snapped.
+        Finally, crossections are read and set up for the remaining structures.
+
+        Parameters
+        ----------
+        st_type: str, required
+            Name of structure type
+
+        st_fn: str Path, optional
+            Path or data source name for structures, see data/data_sources.yml.
+            Note only the points that are within the region polygon will be used.
+
+            * Optional variables: see the setup function for each ``st_type``
+
+        defaults_fn : str Path, optional
+            Path to a csv file containing all defaults values per "structure_type".
+            By default `hydrolib.hydromt_delft3dfm.data.bridges.bridges_defaults.csv` is used. This file describes a minimum rectangle bridge profile.
+
+            * Allowed variables: see the setup function for each ``st_type``
+
+        filter: str, optional
+            Keyword in "structure_type" column of ``st_fn`` used to filter features. If None all features are used (default).
+
+        snap_offset: float, optional
+            Snapping tolenrance to automatically snap bridges to network and add ['branchid', 'chainage'] attributes.
+            By default None. In this case, global variable "network_snap_offset" will be used.
+
+        Returns
+        -------
+        gdf_st: geopandas.GeoDataFrame
+            geodataframe of the structures and crossections
+
+
+        See Also
+        --------
+        dflowfm.setup_bridges
+        dflowfm.setup_culverts
+        """
+        if snap_offset is None:
+            snap_offset = self._network_snap_offset
+            self.logger.info(
+                f"Snap_offset is set to global network snap offset: {snap_offset}"
+            )
+
+        type_col = "structure_type"
+        id_col = "structure_id"
+
+        branches = self.branches.set_index("branchid")
+
+        # 1. Read data and filter within region
+        # If needed read the structures GeoDataFrame
+        if isinstance(st_fn, str) or isinstance(st_fn, Path):
+            gdf_st = self.data_catalog.get_geodataframe(
+                st_fn, geom=self.region, buffer=0, predicate="contains"
+            )
+        else:
+            gdf_st = st_fn
+        # Filter features based on filter on type_col
+        if filter is not None and type_col in gdf_st.columns:
+            gdf_st = gdf_st[gdf_st[type_col].str.lower() == filter.lower()]
+            self.logger.info(
+                f"Set {filter} locations filtered from {st_fn} as {st_type} ."
+            )
+        # Check if features in region
+        if len(gdf_st) == 0:
+            self.logger.warning(f"No 1D {type} locations found within domain")
+            return None
+        # reproject to model crs
+        gdf_st.to_crs(self.crs)
+
+        # 2.  Read defaults table
+        if isinstance(defaults_fn, pd.DataFrame):
+            defaults = defaults_fn
+        else:
+            if defaults_fn is None:
+                self.logger.warning(
+                    f"defaults_fn ({defaults_fn}) does not exist. Fall back choice to defaults. "
+                )
+                defaults_fn = Path(self._DATADIR).joinpath(
+                    f"{st_type}s", f"{st_type}s_defaults.csv"
+                )
+            defaults = self.data_catalog.get_dataframe(defaults_fn)
+            self.logger.info(f"{st_type} default settings read from {defaults_fn}.")
+
+        # 3. Add defaults
+        # overwrite type and add id attributes if does not exist
+        gdf_st[type_col] = pd.Series(
+            data=np.repeat(st_type, len(gdf_st)), index=gdf_st.index, dtype=str
+        )
+        if id_col not in gdf_st.columns:
+            data = [
+                f"{st_type}_{i}"
+                for i in np.arange(
+                    len(self.structures) + 1, len(self.structures) + len(gdf_st) + 1
+                )
+            ]  # avoid duplicated ids being generated
+            gdf_st[id_col] = pd.Series(data, index=gdf_st.index, dtype=str)
+        # assign id
+        gdf_st.index = gdf_st[id_col]
+        gdf_st.index.name = id_col
+        # filter for allowed columns
+        allowed_columns = set(defaults.columns).intersection(gdf_st.columns)
+        allowed_columns.update({"geometry"})
+        gdf_st = gpd.GeoDataFrame(gdf_st[list(allowed_columns)], crs=gdf_st.crs)
+        self.logger.info("Adding/Filling default attributes values")
+        gdf_st = workflows.update_data_columns_attributes_based_on_filter(
+            gdf_st, defaults, type_col, st_type
+        )
+
+        # 4. snap structures to branches
+        # setup branch_id - snap structures to branch (inplace of structures, will add branch_id and branch_offset columns)
+        workflows.find_nearest_branch(
+            branches=branches, geometries=gdf_st, maxdist=snap_offset
+        )
+        # setup failed - drop based on branch_offset that are not snapped to branch
+        _old_ids = gdf_st.index.to_list()
+        gdf_st.dropna(axis=0, inplace=True, subset=["branch_offset"])
+        _new_ids = gdf_st.index.to_list()
+        if len(_old_ids) != len(_new_ids):
+            logger.warning(
+                f"structure with id: {list(set(_old_ids) - set(_new_ids))} are dropped: unable to find closest branch. "
+            )
+        if len(_new_ids) == 0:
+            self.logger.warning(
+                f"No 1D {type} locations found within the proximity of the network"
+            )
+            return None
+        else:
+            # setup success, add branchid and chainage
+            gdf_st["structure_branchid"] = gdf_st["branch_id"]
+            gdf_st["structure_chainage"] = gdf_st["branch_offset"]
+
+        # 5. add structure crossections
+        # add a dummy "shift" for crossection locations if missing (e.g. culverts), because structures only needs crossection definitions.
+        if "shift" not in gdf_st.columns:
+            gdf_st["shift"] = np.nan
+        # derive crosssections
+        gdf_st_crossections = workflows.set_point_crosssections(
+            branches, gdf_st, maxdist=snap_offset
+        )
+        # remove crossection locations and any friction from the setup
+        gdf_st_crsdefs = gdf_st_crossections.drop(
+            columns=[
+                c
+                for c in gdf_st_crossections.columns
+                if c.startswith("crsloc") or "friction" in c
+            ]
+        )
+        # add to structures
+        gdf_st = gdf_st.merge(
+            gdf_st_crsdefs.drop(columns="geometry"), left_index=True, right_index=True
+        )
+
+        # 6. replace np.nan as None
+        gdf_st = gdf_st.replace(np.nan, None)
+
+        # 7. remove index
+        gdf_st = gdf_st.reset_index()
+
+        return gdf_st
 
     def setup_bridges(
         self,
@@ -2173,44 +2537,36 @@ class DFlowFMModel(MeshModel):
                     relsize = 1.01
                 self._MAPS[var]["averagingrelsize"] = relsize
 
-    def setup_2dboundary(
+    def setup_2dboundary_from_lines(
         self,
-        boundaries_fn: str = None,
-        boundaries_timeseries_fn: str = None,
+        boundaries_geodataset_fn: str = None,
         boundary_value: float = 0.0,
         boundary_type: str = "waterlevel",
         tolerance: float = 3.0,
     ):
         """
-        Prepares the 2D boundaries from line geometries.
+        Prepares the 2D boundaries from geodataset of line geometries.
+        E.g. `boundary_value` m3/s `boundary_type` boundary for all lines in `boundaries_geodataset_fn`.
 
-        The values can either be a spatially-uniform constant using ``boundaries_fn`` and ``boundary_value`` (default),
-        or spatially-varying timeseries using ``boundaries_fn`` and  ``boundaries_timeseries_fn``
-        The ``boundary_type`` can either be "waterlevel" or "discharge".
+        Use ``boundaries_geodataset_fn`` to set the boundary timeseries from a geodataset
+        of line geometries.
+        Support also geodataframe of line geometries in combination of ``boundary_value`` and ``boundary_type``.
 
-        If ``boundaries_timeseries_fn`` has missing values, the constant ``boundary_value`` will be used.
+        Only lines that are within a max distance defined in ``tolerance`` are used.
 
-        The dataset/timeseries are clipped to the model region (see below note), and model time based on the model config
+        The timeseries are clipped to the model time based on the model config
         tstart and tstop entries.
-
-        Note that:
-        (1) Only line geometry that are contained within the distance of ``tolenrance`` to grid cells are allowed.
-        (2) Because of the above, this function must be called before the mesh refinement. #FIXME: check this after deciding on mesh refinement being a workflow or function
-        (3) when using constant boundary, the output forcing will be written to time series with constant values.
+        If the timeseries has missing values, the constant ``boundary_value`` will be used.
 
         Adds/Updates model layers:
             * **boundary2d_{boundary_name}** forcing: 2D boundaries DataArray
 
         Parameters
         ----------
-        boundaries_fn: str Path
-            Path or data source name for line geometry file.
-            * Required variables if a combined time series data csv file: ["boundary_id"] with type int
-        boundaries_timeseries_fn: str, Path
-            Path to tabulated timeseries csv file with time index in first column
-            and location index with type int in the first row, matching "boundary_id" in ``boundaries_fn`.
-            see :py:meth:`hydromt.get_dataframe`, for details.
-            NOTE: Require equidistant time series
+        boundaries_geodataset_fn : str, Path
+            Path or data source name for geospatial point location file.
+            * Required variables if geodataset is provided [``boundary_type``]
+            NOTE: Use universal datetime format e.g. yyyy-mm-dd to avoid ambiguity when using a csv timeseries.
         boundary_value : float, optional
             Constant value to use for all boundaries, and to
             fill in missing data. By default 0.0 m.
@@ -2222,11 +2578,6 @@ class DFlowFMModel(MeshModel):
             Unit: in cell size units (i.e., not meters)
             By default, 3.0
 
-        Raises
-        ------
-        AssertionError
-            if "boundary_id" in "boundaries_fn" does not match the columns of ``boundaries_timeseries_fn``.
-
         """
         self.logger.info("Preparing 2D boundaries.")
 
@@ -2235,91 +2586,30 @@ class DFlowFMModel(MeshModel):
         if boundary_type == "discharge":
             boundary_unit = "m3/s"
 
-        _mesh = self.mesh_grids["mesh2d"]
-        _mesh_region = gpd.GeoDataFrame(
-            geometry=_mesh.to_shapely(dim=_mesh.face_dimension)
-        ).unary_union
-        _boundary_region = _mesh_region.buffer(tolerance * self.res).difference(
-            _mesh_region
-        )  # region where 2d boundary is allowed
-        _boundary_region = gpd.GeoDataFrame(
-            {"geometry": [_boundary_region]}, crs=self.crs
+        # 1. read boundary geodataset
+        gdf_bnd, da_bnd = self._read_forcing_geodataset(
+            boundaries_geodataset_fn,
+            boundary_type,
+            buffer=self.res * tolerance,
         )
+        if len(gdf_bnd) == 0:
+            return None
 
-        refdate, tstart, tstop = self.get_model_time()  # time slice
+        # set boundary index -> name of the pli line
+        gdf_bnd.index = [f"{boundary_type}bnd_{i}" for i in gdf_bnd.index]
 
-        # 1. read boundary geometries
-        if boundaries_fn is not None:
-            gdf_bnd = self.data_catalog.get_geodataframe(
-                boundaries_fn,
-                geom=_boundary_region,
-                crs=self.crs,
-                predicate="contains",
-            )
-            if len(gdf_bnd) == 0:
-                self.logger.error(
-                    "Boundaries are not found. Check if the boundary are outside of recognisable boundary region (cell size * tolerance to the mesh). "
-                )
-            # preprocess
-            gdf_bnd = gdf_bnd.explode()
-            # set index
-            if "boundary_id" not in gdf_bnd:
-                gdf_bnd["boundary_id"] = [
-                    f"2dboundary_{i}" for i in range(len(gdf_bnd))
-                ]
-            else:
-                gdf_bnd["boundary_id"] = gdf_bnd["boundary_id"].astype(str)
-        else:
-            gdf_bnd = None
-        # 2. read timeseries boundaries
-        if boundaries_timeseries_fn is not None:
-            self.logger.info("reading timeseries boundaries")
-            df_bnd = self.data_catalog.get_dataframe(
-                boundaries_timeseries_fn, time_tuple=(tstart, tstop)
-            )  # could not use open_geodataset due to line geometry
-            # error if time mismatch or wrong parsing of dates
-            if np.dtype(df_bnd.index).type != np.datetime64:
-                raise ValueError(
-                    "Dates in boundaries_timeseries_fn were not parsed correctly. "
-                    "Update the source kwargs in the DataCatalog based on the driver function arguments (eg pandas.read_csv for csv driver)."
-                )
-            if (df_bnd.index[-1] - df_bnd.index[0]) < (tstop - tstart):
-                raise ValueError(
-                    "Time in boundaries_timeseries_fn were shorter than model simulation time. "
-                    "Update the source kwargs in the DataCatalog based on the driver function arguments (eg pandas.read_csv for csv driver)."
-                )
-            if gdf_bnd is not None:
-                # check if all boundary_id are in df_bnd
-                assert all(
-                    [bnd in df_bnd.columns for bnd in gdf_bnd["boundary_id"].unique()]
-                ), "Not all boundary_id are in df_bnd"
-        else:
-            # default timeseries
-            d_bnd = {bnd_id: np.nan for bnd_id in gdf_bnd["boundary_id"].unique()}
-            d_bnd.update(
-                {
-                    "time": pd.date_range(
-                        start=pd.to_datetime(tstart),
-                        end=pd.to_datetime(tstop),
-                        freq="D",
-                    )
-                }
-            )
-            df_bnd = pd.DataFrame(d_bnd).set_index("time")
-
-        # 4. Derive DataArray with boundary values at boundary locations in boundaries_branch_type
-        da_out_dict = workflows.compute_2dboundary_values(
-            boundaries=gdf_bnd,
-            df_bnd=df_bnd.reset_index(),
-            boundary_value=boundary_value,
-            boundary_type=boundary_type,
-            boundary_unit=boundary_unit,
+        # 2. Compute boundary dataarray
+        da_out = workflows.compute_forcing_values_lines(
+            gdf=gdf_bnd,
+            da=da_bnd,
+            forcing_value=boundary_value,
+            forcing_type=boundary_type + "bnd",
+            forcing_unit=boundary_unit,
             logger=self.logger,
         )
 
-        # 5. set boundaries
-        for da_out_name, da_out in da_out_dict.items():
-            self.set_forcing(da_out, name=f"boundary2d_{da_out_name}")
+        # 3. set laterals
+        self.set_forcing(da_out, name=f"boundary2d_lines_{boundary_type+'bnd'}")
 
         # adjust parameters
         self.set_config("geometry.openboundarytolerance", tolerance)
@@ -2514,7 +2804,7 @@ class DFlowFMModel(MeshModel):
         """From config dict to Hydrolib MDU."""
         # Not sure if this is worth it compared to just calling write_config super method
         # advantage is the validator but the whole model is then read when initialising FMModel
-        self._assert_write_mode()
+        self._assert_write_mode
 
         cf_dict = self._config.copy()
         # Need to switch to dflowfm folder for files to be found and properly added
@@ -2532,13 +2822,23 @@ class DFlowFMModel(MeshModel):
 
     def read_maps(self) -> Dict[str, Union[xr.Dataset, xr.DataArray]]:
         """Read maps from initialfield and parse to dict of xr.DataArray."""
-        self._assert_read_mode()
+        self._assert_read_mode
         # Read initial fields
         inifield_model = self.dfmmodel.geometry.inifieldfile
-        if inifield_model is not None:
+        # seperate 1d and 2d
+        # inifield_model_1d = [
+        #     i for i in inifield_model.initial if "1d" in i.locationtype
+        # ] # not supported yet
+        inifield_model_2dinitial = [
+            i for i in inifield_model.initial if "2d" in i.locationtype
+        ]
+        inifield_model_2dparameter = [
+            i for i in inifield_model.parameter if "2d" in i.locationtype
+        ]
+        inifield_model_2d = inifield_model_2dinitial + inifield_model_2dparameter
+        if any(inifield_model_2d):
             # Loop over initial / parameter to read the geotif
-            inilist = inifield_model.initial.copy()
-            inilist.extend(inifield_model.parameter)
+            inilist = inifield_model_2d
 
             if len(inilist) > 0:
                 # DFM map names
@@ -2588,7 +2888,7 @@ class DFlowFMModel(MeshModel):
         if len(self._maps) == 0:
             self.logger.debug("No maps data found, skip writing.")
             return
-        self._assert_write_mode()
+        self._assert_write_mode
         # Global parameters
         mapsroot = join(self.root, "maps")
         inilist = []
@@ -2686,7 +2986,7 @@ class DFlowFMModel(MeshModel):
         For branches / boundaries etc... the reading of hydrolib-core objects happens in read_mesh
         There the geoms geojson copies are re-set based on dflowfm files content.
         """
-        self._assert_read_mode()
+        self._assert_read_mode
         super().read_geoms(fn="geoms/region.geojson")
 
         if self.dfmmodel.geometry.crosslocfile is not None:
@@ -2697,7 +2997,7 @@ class DFlowFMModel(MeshModel):
             crosssections = utils.read_crosssections(self.branches, self.dfmmodel)
 
             # Add friction properties from roughness files
-            self.logger.info("Reading friction files")
+            # self.logger.info("Reading friction files")
             crosssections = utils.read_friction(crosssections, self.dfmmodel)
             self.set_geoms(crosssections, "crosssections")
 
@@ -2719,15 +3019,7 @@ class DFlowFMModel(MeshModel):
 
     def write_geoms(self, write_mesh_gdf=True) -> None:
         """Write model geometries to a GeoJSON file at <root>/<geoms>."""
-        self._assert_write_mode()
-
-        # Optional: also write mesh_gdf object
-        if write_mesh_gdf:
-            for name, gdf in self.mesh_gdf.items():
-                self.set_geoms(gdf, name)
-
-        # Write geojson equivalent of all objects. Note that these files are not directly used when updating the model
-        super().write_geoms(fn="geoms/{name}.geojson")
+        self._assert_write_mode
 
         # Write dfm files
         savedir = dirname(join(self.root, self._config_fn))
@@ -2773,11 +3065,32 @@ class DFlowFMModel(MeshModel):
             )
             self.set_config("geometry.structurefile", structures_fn)
 
+        # write hydromt
+        # Optional: also write mesh_gdf object
+        if write_mesh_gdf:
+            for name, gdf in self.mesh_gdf.items():
+                self.set_geoms(gdf, name)
+
+        # Write geojson equivalent of all objects. Note that these files are not directly used when updating the model
+        # convert any list in geoms to strings
+        def convert_lists_to_strings(df):
+            for column_name in df.columns:
+                if df[column_name].apply(isinstance, args=(list,)).any():
+                    df[column_name] = df[column_name].apply(
+                        lambda x: " ".join(f"{x}") if isinstance(x, list) else x
+                    )
+            return df
+
+        for name in self.geoms:
+            self.set_geoms(convert_lists_to_strings(self.geoms[name]), name)
+
+        super().write_geoms(fn="geoms/{name}.geojson")
+
     def read_forcing(
         self,
     ) -> None:  # FIXME reading of forcing should include boundary, lateral and meteo
         """Read forcing at <root/?/> and parse to dict of xr.DataArray."""
-        self._assert_read_mode()
+        self._assert_read_mode
         # Read external forcing
         ext_model = self.dfmmodel.external_forcing.extforcefilenew
         if ext_model is not None:
@@ -2808,12 +3121,21 @@ class DFlowFMModel(MeshModel):
                 # 2d boundary
                 df_ext_2d = df_ext.loc[df_ext.nodeid.isna(), :]
                 if len(df_ext_2d) > 0:
-                    for _, df in df_ext_2d.iterrows():
+                    for quantity in df_ext_2d.quantity.unique():
                         da_out = utils.read_2dboundary(
-                            df, workdir=self.dfmmodel.filepath.parent
+                            df_ext_2d[df_ext_2d.quantity == quantity],
+                            workdir=self.dfmmodel.filepath.parent,
                         )
                         # Add to forcing
-                        self.set_forcing(da_out)
+                        self.set_forcing(da_out, name=f"boundary2d_{da_out.name}")
+            # lateral
+            if len(ext_model.lateral) > 0:
+                df_ext = pd.DataFrame([f.__dict__ for f in ext_model.lateral])
+                da_out = utils.read_1dlateral(
+                    df_ext, branches=self.branches
+                )  # TODO extend support to get laterals on nodes #78
+                # Add to forcing
+                self.set_forcing(da_out)
             # meteo
             if len(ext_model.meteo) > 0:
                 df_ext = pd.DataFrame([f.__dict__ for f in ext_model.meteo])
@@ -2833,7 +3155,7 @@ class DFlowFMModel(MeshModel):
         if len(self._forcing) == 0:
             self.logger.debug("No forcing data found, skip writing.")
         else:
-            self._assert_write_mode()
+            self._assert_write_mode
             self.logger.info("Writting forcing files.")
             savedir = dirname(join(self.root, self._config_fn))
             # create new external forcing file
@@ -2842,12 +3164,13 @@ class DFlowFMModel(MeshModel):
             # populate external forcing file
             utils.write_1dboundary(self.forcing, savedir, ext_fn=ext_fn)
             utils.write_2dboundary(self.forcing, savedir, ext_fn=ext_fn)
+            utils.write_1dlateral(self.forcing, savedir, ext_fn=ext_fn)
             utils.write_meteo(self.forcing, savedir, ext_fn=ext_fn)
             self.set_config("external_forcing.extforcefilenew", ext_fn)
 
     def read_mesh(self):
         """Read network file with Hydrolib-core and extract mesh/branches info."""
-        self._assert_read_mode()
+        self._assert_read_mode
 
         # Read mesh
         # hydrolib-core convention
@@ -2855,10 +3178,11 @@ class DFlowFMModel(MeshModel):
         # FIXME: crs info is not available in dfmmodel, so get it from region.geojson
         # Cannot use read_geoms yet because for some some geoms (crosssections, manholes) mesh needs to be read first...
         region_fn = join(self.root, "geoms", "region.geojson")
-        if isfile(region_fn):
+        if (not self._crs) and isfile(region_fn):
             crs = gpd.read_file(region_fn).crs
-        else:
-            crs = None
+            self._crs = crs
+
+        crs = self.crs
 
         # convert to xugrid
         mesh = mesh_utils.mesh_from_hydrolib_network(network, crs=crs)
@@ -2872,12 +3196,10 @@ class DFlowFMModel(MeshModel):
 
         # creates branches geometry from network1d
         if "network1d" in self.mesh_names:
-            network1d_geometry = self.mesh_gdf["network1d"]
             network1d_dataset = self.mesh_datasets["network1d"]
-            # Create the branches GeoDataFrame
-            branches = network1d_geometry
-            branches["branchid"] = network1d_dataset["network1d_branch_id"]
-            branches["branchorder"] = network1d_dataset["network1d_branch_order"]
+            # Create the branches GeoDataFrame (from geom)
+            # network1d_geometry = self.mesh_gdf["network1d"] this returns the network
+            branches = mesh_utils.network1d_geoms_geodataframe(network1d_dataset)
             # branches["branchtype"] = network1d_dataset["network1d_branch_type"] # might support in the future https://github.com/Deltares/HYDROLIB-core/issues/561
 
             # Add branchtype, properties from branches.gui file
@@ -2885,12 +3207,11 @@ class DFlowFMModel(MeshModel):
             branches = utils.read_branches_gui(branches, self.dfmmodel)
 
             # Set branches
-            self._branches = branches
-            self.set_geoms(branches, "branches")
+            self.set_branches(branches)
 
     def write_mesh(self, write_gui=True):
         """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc> in model ready format."""
-        self._assert_write_mode()
+        self._assert_write_mode
         savedir = dirname(join(self.root, self._config_fn))
         mesh_filename = "fm_net.nc"
 
@@ -2984,7 +3305,7 @@ class DFlowFMModel(MeshModel):
             self.logger.info(f"Reading mdu file at {mdu_fn}")
             self._dfmmodel = FMModel(filepath=mdu_fn)
         else:  # use hydrolib template
-            self._assert_write_mode()
+            self._assert_write_mode
             self.logger.info("Initialising empty mdu file")
             self._dfmmodel = FMModel()
             self._dfmmodel.filepath = mdu_fn
@@ -3006,7 +3327,7 @@ class DFlowFMModel(MeshModel):
             dimr = DIMR(filepath=Path(dimr_fn))
         # else initialise
         else:
-            self._assert_write_mode()
+            self._assert_write_mode
             self.logger.info("Initialising empty dimr file")
             dimr = DIMR()
         self._dimr = dimr
@@ -3126,6 +3447,20 @@ class DFlowFMModel(MeshModel):
         else:
             gdf = gpd.GeoDataFrame()
         return gdf
+
+    @property
+    def boundaries(self):
+        if "boundaries" not in self.geoms:
+            self.set_geoms(
+                workflows.get_boundaries_with_nodeid(
+                    self.branches,
+                    mesh_utils.network1d_nodes_geodataframe(
+                        self.mesh_datasets["network1d"]
+                    ),
+                ),
+                "boundaries",
+            )
+        return self.geoms["boundaries"]
 
     def get_model_time(self):
         """Return (refdate, tstart, tstop) tuple with parsed model reference datem start and end time."""

@@ -11,12 +11,15 @@ Unreleased
 
 Added
 -----
+- Setup 1D laterals at branches from points and polygons. (PR #81)
 
 Changed
 -------
+- Setup 2D boundaries from geodatasets of line geometries. (PR #93)
 
 Fixed
 -----
+- Bugfixing of reading of frictions (global), crosssections and boundaries when update. (PR #81)
 
 v0.1.2 (20 October 2023)
 ========================

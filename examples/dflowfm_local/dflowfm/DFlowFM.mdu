@@ -9,59 +9,59 @@ autoStart             = 0             # Autostart simulation after loading MDU o
 pathsRelativeToParent = 0             # Whether or not (1/0) to resolve file names (e.g. inside the *.ext file) relative to their direct parent, instead of to the toplevel MDU working dir
 
 [Geometry]
-netFile                    = fm_net.nc                                   # The net file <*_net.nc>
-bathymetryFile             =                                             # Removed since March 2022. See [geometry] keyword BedLevelFile.
-dryPointsFile              =                                             # Dry points file <*.xyz>, third column dummy z values, or polygon file <*.pol>.
-structureFile              = structures.ini                              # File <*.ini> containing list of hydraulic structures.
-iniFieldFile               = fieldFile.ini                               # Initial and parameter field file <*.ini>.
-waterLevIniFile            =                                             # Initial water levels sample file <*.xyz>.
-landBoundaryFile           =                                             # Only for plotting.
-thinDamFile                =                                             # <*_thd.pli>, Polyline(s) for tracing thin dams.
-fixedWeirFile              =                                             # <*_fxw.pliz>, Polyline(s) x, y, z, z = fixed weir top levels (formerly fixed weir).
-pillarFile                 =                                             # <*_pillar.pliz>, Polyline file containing four colums with x, y, diameter and Cd coefficient for bridge pillars.
-useCaching                 = 0                                           # Use caching for geometrical/network-related items (0: no, 1: yes) (section C.19).
-vertPlizFile               =                                             # <*_vlay.pliz>), = pliz with x, y, Z, first Z = nr of layers, second Z = laytyp.
-frictFile                  = roughness_M-0p023.ini;roughness_W-0p003.ini # Location of the files with roughness data for 1D.
-crossDefFile               = crsdef.ini                                  # Cross section definitions for all cross section shapes.
-crossLocFile               = crsloc.ini                                  # Location definitions of the cross sections on a 1D network.
-storageNodeFile            = nodeFile.ini                                # File containing the specification of storage nodes and/or manholes to add extra storage to 1D models.
-1d2dLinkFile               =                                             # File containing the custom parameterization of 1D-2D links.
-profLocFile                =                                             # <*_proflocation.xyz>) x, y, z, z = profile refnumber.
-profDefFile                =                                             # <*_profdefinition.def>) definition for all profile nrs.
-profDefXyzFile             =                                             # <*_profdefinition.def>) definition for all profile nrs.
-manholeFile                =                                             # File containing manholes (e.g. <*.dat>).
-partitionFile              =                                             # <*_part.pol>, polyline(s) x, y.
+netFile                    = fm_net.nc                                                      # The net file <*_net.nc>
+bathymetryFile             =                                                                # Removed since March 2022. See [geometry] keyword BedLevelFile.
+dryPointsFile              =                                                                # Dry points file <*.xyz>, third column dummy z values, or polygon file <*.pol>.
+structureFile              = structures.ini                                                 # File <*.ini> containing list of hydraulic structures.
+iniFieldFile               = fieldFile.ini                                                  # Initial and parameter field file <*.ini>.
+waterLevIniFile            =                                                                # Initial water levels sample file <*.xyz>.
+landBoundaryFile           =                                                                # Only for plotting.
+thinDamFile                =                                                                # <*_thd.pli>, Polyline(s) for tracing thin dams.
+fixedWeirFile              =                                                                # <*_fxw.pliz>, Polyline(s) x, y, z, z = fixed weir top levels (formerly fixed weir).
+pillarFile                 =                                                                # <*_pillar.pliz>, Polyline file containing four colums with x, y, diameter and Cd coefficient for bridge pillars.
+useCaching                 = 0                                                              # Use caching for geometrical/network-related items (0: no, 1: yes) (section C.19).
+vertPlizFile               =                                                                # <*_vlay.pliz>), = pliz with x, y, Z, first Z = nr of layers, second Z = laytyp.
+frictFile                  = roughness_Manning_0.023.ini;roughness_WhiteColeBrook_0.003.ini # Location of the files with roughness data for 1D.
+crossDefFile               = crsdef.ini                                                     # Cross section definitions for all cross section shapes.
+crossLocFile               = crsloc.ini                                                     # Location definitions of the cross sections on a 1D network.
+storageNodeFile            = nodeFile.ini                                                   # File containing the specification of storage nodes and/or manholes to add extra storage to 1D models.
+1d2dLinkFile               =                                                                # File containing the custom parameterization of 1D-2D links.
+profLocFile                =                                                                # <*_proflocation.xyz>) x, y, z, z = profile refnumber.
+profDefFile                =                                                                # <*_profdefinition.def>) definition for all profile nrs.
+profDefXyzFile             =                                                                # <*_profdefinition.def>) definition for all profile nrs.
+manholeFile                =                                                                # File containing manholes (e.g. <*.dat>).
+partitionFile              =                                                                # <*_part.pol>, polyline(s) x, y.
 uniformWidth1D             = 2.0
-dxWuiMin2D                 = 0.0                                         # Smallest fraction dx/wu , set dx > Dxwuimin2D*wu
-waterLevIni                = 0.0                                         # Initial water level.
-bedLevUni                  = -5.0                                        # Uniform bed level [m], (only if bedlevtype>=3), used at missing z values in netfile.
-bedSlope                   = 0.0                                         # Bed slope inclination, sets zk = bedlevuni + x*bedslope ans sets zbndz = xbndz*bedslope.
-bedLevType                 = 3                                           # 1: at cell center (tiles xz,yz,bl,bob=max(bl)), 2: at face (tiles xu,yu,blu,bob=blu), 3: at face (using mean node values), 4: at face (using min node values), 5: at face (using max node values), 6: with bl based on node values.
-blMeanBelow                = -999.0                                      # if not -999d0, below this level [m] the cell centre bedlevel is the mean of surrouding netnodes.
-blMinAbove                 = -999.0                                      # if not -999d0, above this level [m] the cell centre bedlevel is the min of surrouding netnodes.
-angLat                     = 0.0                                         # Angle of latitude S-N [deg], 0=no Coriolis.
-angLon                     = 0.0                                         # Angle of longitude E-W [deg], 0=Greenwich Mean Time.
-conveyance2D               = -1                                          # -1:R=HU, 0:R=H, 1:R=A/P, 2:K=analytic-1D conv, 3:K=analytic-2D conv.
-nonlin1D                   = 1                                           # Non-linear 1D volumes, applicable for models with closed cross sections. 1=treat closed sections as partially open by using a Preissmann slot, 2=Nested Newton approach, 3=Partial Nested Newton approach.
-nonlin2D                   = 0                                           # Non-linear 2D volumes, only i.c.m. ibedlevtype = 3 and Conveyance2D>=1.
-sillHeightMin              = 0.0                                         # Fixed weir only active if both ground heights are larger than this value [m].
-makeOrthoCenters           = 0                                           # (1: yes, 0: no) switch from circumcentres to orthocentres in geominit.
-dCenterInside              = 1.0                                         # limit cell center; 1.0:in cell <-> 0.0:on c/g.
-baMin                      = 1e-06                                       # Minimum grid cell area [m2], i.c.m. cutcells.
-openBoundaryTolerance      = 3.0                                         # Search tolerance factor between boundary polyline and grid cells. [Unit: in cell size units (i.e., not meters)].
-renumberFlowNodes          = 1                                           # Renumber the flow nodes (1: yes, 0: no).
-kmx                        = 0                                           # Number of vertical layers.
-layerType                  = 1                                           # Number of vertical layers.
-numTopSig                  = 0                                           # Number of sigma-layers on top of z-layers.
-numTopSigUniform           = 1                                           # Spatially constant number of sigma layers above z-layers in a z-sigma model (1: yes, 0: no, spatially varying)
-sigmaGrowthFactor          = 1.0                                         # layer thickness growth factor from bed up.
-dzTop                      =                                             # Z-layer thickness of layers above level Dztopuniabovez
-floorLevTopLay             =                                             # Floor level of top layer
-dzTopUniAboveZ             =                                             # Above this level layers will have uniform dzTop, below we use sigmaGrowthFactor
-keepZLayeringAtBed         = 2                                           # 0:possibly very thin layer at bed, 1:bedlayerthickness == zlayerthickness, 2=equal thickness first two layers
-dxDoubleAt1DEndNodes       = 1                                           # Whether a 1D grid cell at the end of a network has to be extended with 0.5Δx.
-changeVelocityAtStructures = 0                                           # Ignore structure dimensions for the velocity at hydraulic structures, when calculating the surrounding cell centered flow velocities.
-changeStructureDimensions  = 1                                           # Change the structure dimensions in case these are inconsistent with the channel dimensions.
+dxWuiMin2D                 = 0.0                                                            # Smallest fraction dx/wu , set dx > Dxwuimin2D*wu
+waterLevIni                = 0.0                                                            # Initial water level.
+bedLevUni                  = -5.0                                                           # Uniform bed level [m], (only if bedlevtype>=3), used at missing z values in netfile.
+bedSlope                   = 0.0                                                            # Bed slope inclination, sets zk = bedlevuni + x*bedslope ans sets zbndz = xbndz*bedslope.
+bedLevType                 = 3                                                              # 1: at cell center (tiles xz,yz,bl,bob=max(bl)), 2: at face (tiles xu,yu,blu,bob=blu), 3: at face (using mean node values), 4: at face (using min node values), 5: at face (using max node values), 6: with bl based on node values.
+blMeanBelow                = -999.0                                                         # if not -999d0, below this level [m] the cell centre bedlevel is the mean of surrouding netnodes.
+blMinAbove                 = -999.0                                                         # if not -999d0, above this level [m] the cell centre bedlevel is the min of surrouding netnodes.
+angLat                     = 0.0                                                            # Angle of latitude S-N [deg], 0=no Coriolis.
+angLon                     = 0.0                                                            # Angle of longitude E-W [deg], 0=Greenwich Mean Time.
+conveyance2D               = -1                                                             # -1:R=HU, 0:R=H, 1:R=A/P, 2:K=analytic-1D conv, 3:K=analytic-2D conv.
+nonlin1D                   = 1                                                              # Non-linear 1D volumes, applicable for models with closed cross sections. 1=treat closed sections as partially open by using a Preissmann slot, 2=Nested Newton approach, 3=Partial Nested Newton approach.
+nonlin2D                   = 0                                                              # Non-linear 2D volumes, only i.c.m. ibedlevtype = 3 and Conveyance2D>=1.
+sillHeightMin              = 0.0                                                            # Fixed weir only active if both ground heights are larger than this value [m].
+makeOrthoCenters           = 0                                                              # (1: yes, 0: no) switch from circumcentres to orthocentres in geominit.
+dCenterInside              = 1.0                                                            # limit cell center; 1.0:in cell <-> 0.0:on c/g.
+baMin                      = 1e-06                                                          # Minimum grid cell area [m2], i.c.m. cutcells.
+openBoundaryTolerance      = 3.0                                                            # Search tolerance factor between boundary polyline and grid cells. [Unit: in cell size units (i.e., not meters)].
+renumberFlowNodes          = 1                                                              # Renumber the flow nodes (1: yes, 0: no).
+kmx                        = 0                                                              # Number of vertical layers.
+layerType                  = 1                                                              # Number of vertical layers.
+numTopSig                  = 0                                                              # Number of sigma-layers on top of z-layers.
+numTopSigUniform           = 1                                                              # Spatially constant number of sigma layers above z-layers in a z-sigma model (1: yes, 0: no, spatially varying)
+sigmaGrowthFactor          = 1.0                                                            # layer thickness growth factor from bed up.
+dzTop                      =                                                                # Z-layer thickness of layers above level Dztopuniabovez
+floorLevTopLay             =                                                                # Floor level of top layer
+dzTopUniAboveZ             =                                                                # Above this level layers will have uniform dzTop, below we use sigmaGrowthFactor
+keepZLayeringAtBed         = 2                                                              # 0:possibly very thin layer at bed, 1:bedlayerthickness == zlayerthickness, 2=equal thickness first two layers
+dxDoubleAt1DEndNodes       = 1                                                              # Whether a 1D grid cell at the end of a network has to be extended with 0.5Δx.
+changeVelocityAtStructures = 0                                                              # Ignore structure dimensions for the velocity at hydraulic structures, when calculating the surrounding cell centered flow velocities.
+changeStructureDimensions  = 1                                                              # Change the structure dimensions in case these are inconsistent with the channel dimensions.
 
 [VolumeTables]
 useVolumeTables    = 0   # Use volume tables for 1D grid cells (1: yes, 0 = no).

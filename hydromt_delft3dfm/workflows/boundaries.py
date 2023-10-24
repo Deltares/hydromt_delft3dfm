@@ -8,7 +8,7 @@ import hydromt.io
 import numpy as np
 import pandas as pd
 import xarray as xr
-from shapely.geometry import Point
+from shapely.geometry import Point, Polygon
 
 from hydromt_delft3dfm import graph_utils
 
@@ -23,6 +23,11 @@ __all__ = [
     "compute_boundary_values",
     "compute_2dboundary_values",
     "compute_meteo_forcings",
+    "compute_forcing_values_points",
+    "compute_forcing_values_polygon",
+    "compute_forcing_values_lines",
+    "get_geometry_coords_for_linestrings",
+    "get_geometry_coords_for_polygons",
 ]
 
 
@@ -264,36 +269,20 @@ def compute_boundary_values(
 
         # snap user boundary to potential boundary locations to get nodeid
         gdf_bnd = da_bnd.vector.to_gdf()
+        gdf_bnd.crs = (
+            boundaries.crs
+        )  # FIXME temp fix for hydromt reprojection issue #613
         gdf_bnd = hydromt.gis_utils.nearest_merge(
             gdf_bnd,
             boundaries,
             max_dist=snap_offset,
             overwrite=True,
         )
+        gdf_bnd = gdf_bnd[~gdf_bnd["nodeid"].isna()]
+        da_bnd = da_bnd.sel(index=gdf_bnd.index)
 
-        # get boundary data freq in seconds
-        _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
-        dt = pd.to_timedelta((da_bnd.time[1].values - da_bnd.time[0].values))
-        freq = dt.resolution_string
-        multiplier = 1
-        if freq == "D":
-            logger.warning(
-                "time unit days is not supported by the current GUI version: 2022.04"
-            )  # converting to hours as temporary solution
-            # FIXME: day is converted to hours temporarily
-            multiplier = 24
-        if len(
-            pd.date_range(da_bnd.time[0].values, da_bnd.time[-1].values, freq=dt)
-        ) != len(da_bnd.time):
-            logger.error("does not support non-equidistant time-series.")
-        freq_name = _TIMESTR[freq]
-        freq_step = getattr(dt.components, freq_name)
-        bd_times = np.array([(i * freq_step) for i in range(len(da_bnd.time))])
-        if multiplier == 24:
-            bd_times = np.array(
-                [(i * freq_step * multiplier) for i in range(len(da_bnd.time))]
-            )
-            freq_name = "hours"
+        # get forcing data time indes
+        bd_times, freq_name = _standardize_forcing_timeindexes(da_bnd)
 
         # instantiate xr.DataArray for bnd data
         da_out = xr.DataArray(
@@ -475,6 +464,211 @@ def compute_2dboundary_values(
     return da_out_dict
 
 
+def _standardize_forcing_timeindexes(da):
+    """Standardize timeindexes frequency based on forcing DataArray"""
+    _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
+    dt = pd.to_timedelta((da.time[1].values - da.time[0].values))
+    freq = dt.resolution_string
+    multiplier = 1
+    if freq == "D":
+        logger.warning(
+            "time unit days is not supported by the current GUI version: 2022.04"
+        )  # converting to hours as temporary solution # FIXME: day is converted to hours temporarily
+        multiplier = 24
+    if len(pd.date_range(da.time[0].values, da.time[-1].values, freq=dt)) != len(
+        da.time
+    ):
+        logger.error("does not support non-equidistant time-series.")
+    freq_name = _TIMESTR[freq]
+    freq_step = getattr(dt.components, freq_name)
+    bd_times = np.array([float(i * freq_step) for i in range(len(da.time))])
+    if multiplier == 24:
+        bd_times = np.array([(i * freq_step * multiplier) for i in range(len(da.time))])
+        freq_name = "hours"
+    return bd_times, freq_name
+
+
+def get_geometry_coords_for_linestrings(gdf):
+    """Gets xarray DataArray coordinates that describes linestring geometries.
+    Inlcudes numcoordinates, xcoordinates and ycoordinates"""
+    if gdf.geometry.type.iloc[0] == "LineString":
+        # Get the maximum number of coordinates for any polygon
+        max_coords = gdf["geometry"].apply(lambda x: len(x.coords[:])).max()
+
+        def get_xcoords(geom):
+            coords = [xy[0] for xy in geom.coords[:]]
+            return np.pad(
+                coords,
+                (0, max_coords - len(coords)),
+                "constant",
+                constant_values=np.nan,
+            )
+
+        def get_ycoords(geom):
+            coords = [xy[1] for xy in geom.coords[:]]
+            return np.pad(
+                coords,
+                (0, max_coords - len(coords)),
+                "constant",
+                constant_values=np.nan,
+            )
+
+        # Create the 2D arrays
+        x_2d = np.vstack(gdf["geometry"].apply(get_xcoords))
+        y_2d = np.vstack(gdf["geometry"].apply(get_ycoords))
+
+        return dict(
+            index=gdf.index,
+            numcoordinates=np.arange(max_coords),
+            xcoordinates=(("index", "numcoordinates"), x_2d),
+            ycoordinates=(("index", "numcoordinates"), y_2d),
+        )
+
+
+def _expand_2d_to_3d(data_2d, third_dim_length, fill_value=np.nan):
+    """
+    Expand a 2D numpy array to a 3D array, filling the new dimension with a specified value.
+
+    Parameters
+    ----------
+    data_2d (numpy.ndarray): The 2D array to expand.
+    third_dim_length (int): The size of the third dimension.
+    fill_value (float or int): The value to fill the new dimension. Default is NaN.
+
+    Returns
+    -------
+    numpy.ndarray: The expanded 3D array.
+    """
+
+    # Create the 3D array filled with the desired fill value
+    shape_3d = (data_2d.shape[0], data_2d.shape[1], third_dim_length)
+    data_3d = np.full(shape_3d, fill_value)
+
+    # Fill the 3D array's first slice along the third dimension with the original 2D data
+    data_3d[:, :, 0] = data_2d
+
+    return data_3d
+
+
+def compute_forcing_values_lines(
+    gdf: gpd.GeoDataFrame,
+    da: xr.DataArray = None,
+    forcing_value: float = 0.0,
+    forcing_type: str = "dischargebnd",
+    forcing_unit: str = "m3/s",
+    logger=logger,
+):
+    """
+    Compute 2d forcing values.
+
+    Used for 2d boundaries from line geometries.
+
+    Parameters
+    ----------
+    gdf : gpd.GeoDataFrame
+        GeoDataFrame of lines to add 2D forcing data.
+
+        * Required variables: ['geometry']
+    da : xr.DataArray, optional
+        xr.DataArray containing the forcing timeseries values.
+        If None, uses a constant ``forcing_value`` for all forcings.
+
+        * Required variables: ['forcing_type']
+
+    forcing_value : float, optional
+        Constant value to use for all forcings if ``da`` is None and to
+        fill in missing data.
+        By default 0.0 ``forcing_unit``
+    forcing_type : {'dischargebnd', 'waterlevelbnd'}
+        Type of forcing to use.
+        For now only support 'dischargebnd' and 'waterlevelbnd'.
+        By default 'discharge'
+    forcing_unit : {'m3/s', 'm'}
+        Unit corresponding to ``forcing_type``.
+        For now only support 'm3/s' and 'm'.
+        By default 'm3/s'
+    logger
+        Logger to log messages.
+    """
+
+    # first process data based on either timeseries or constant
+    # then update data based on either nodes or branches
+    # Timeseries forcing values
+    if da is not None:
+        logger.info(f"Preparing 1D forcing type {forcing_type} from timeseries.")
+
+        # fill in na using default
+        da = da.fillna(forcing_value)
+
+        # instantiate xr.DataArray for forcing data
+        # get forcing data freq in seconds (required by writing into bc)
+        bd_times, freq_name = _standardize_forcing_timeindexes(da)
+
+        # get coordinates in correct dimentions
+        coords_dict = get_geometry_coords_for_linestrings(gdf)
+
+        # get data in correct dimentions
+        data_3d = _expand_2d_to_3d(da.data, len(coords_dict["numcoordinates"]))
+
+        # instantiate xr.DataArray for forcing data
+        # NOTE only support points on branches
+        da_out = xr.DataArray(
+            data=data_3d,
+            dims=("index", "time", "numcoordinates"),
+            coords=dict(
+                index=coords_dict["index"],
+                time=bd_times,
+                numcoordinates=coords_dict["numcoordinates"],
+                x=coords_dict["xcoordinates"],
+                y=coords_dict["ycoordinates"],
+            ),
+            attrs=dict(
+                function="TimeSeries",
+                timeInterpolation="Linear",
+                quantity=f"{forcing_type}",
+                units=f"{forcing_unit}",
+                time_unit=f"{freq_name} since {pd.to_datetime(da.time[0].values)}",  # support only yyyy-mm-dd HH:MM:SS
+            ),
+        )
+
+        # drop na in time
+        da_out.dropna(dim="time")
+
+        # add name
+        da_out.name = f"{forcing_type}"
+    else:
+        logger.info(
+            f"Using constant value {forcing_value} {forcing_unit} for all {forcing_type} forcings."
+        )
+        # instantiate xr.DataArray for forcing data with forcing_type directly
+        coords_dict = get_geometry_coords_for_linestrings(gdf)
+        data_3d = np.full(
+            (len(coords_dict["index"]), len(coords_dict["numcoordinates"])),
+            forcing_value,
+            dtype=np.float32,
+        )
+        da_out = xr.DataArray(
+            data=data_3d,
+            dims=("index", "numcoordinates"),
+            coords={
+                "index": coords_dict["index"],
+                "numcoordinates": coords_dict["numcoordinates"],
+                "x": coords_dict["xcoordinates"],
+                "y": coords_dict["ycoordinates"],
+            },
+            attrs=dict(
+                function="constant",
+                offset=0.0,
+                factor=1.0,
+                quantity=f"{forcing_type}",
+                units=f"{forcing_unit}",
+            ),
+        )
+        da_out.name = f"{forcing_type}"
+
+    return da_out.drop_duplicates(dim=...)
+
+
 def gpd_to_pli(gdf: gpd.GeoDataFrame, output_dir: Path):
     """Convert geopandas GeoDataFrame (gdf) into pli files.
 
@@ -638,3 +832,280 @@ def compute_meteo_forcings(
     da_out.dropna(dim="time")
 
     return da_out
+
+
+def _standardize_forcing_timeindexes(da):
+    """Standardize timeindexes frequency based on forcing DataArray"""
+    _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
+    dt = pd.to_timedelta((da.time[1].values - da.time[0].values))
+    freq = dt.resolution_string
+    multiplier = 1
+    if freq == "D":
+        logger.warning(
+            "time unit days is not supported by the current GUI version: 2022.04"
+        )  # converting to hours as temporary solution # FIXME: day is converted to hours temporarily
+        multiplier = 24
+    if len(pd.date_range(da.time[0].values, da.time[-1].values, freq=dt)) != len(
+        da.time
+    ):
+        logger.error("does not support non-equidistant time-series.")
+    freq_name = _TIMESTR[freq]
+    freq_step = getattr(dt.components, freq_name)
+    bd_times = np.array([float(i * freq_step) for i in range(len(da.time))])
+    if multiplier == 24:
+        bd_times = np.array([(i * freq_step * multiplier) for i in range(len(da.time))])
+        freq_name = "hours"
+    return bd_times, freq_name
+
+
+def compute_forcing_values_points(
+    gdf: gpd.GeoDataFrame,
+    da: xr.DataArray = None,
+    forcing_value: float = 0.0,
+    forcing_type: str = "lateral_discharge",
+    forcing_unit: str = "m3/s",
+    logger=logger,
+):
+    """
+    Compute 1d forcing values.
+
+    Used for 1D lateral point locations.
+
+    Parameters
+    ----------
+    gdf : gpd.GeoDataFrame
+        GeoDataFrame of points to add 1D forcing data.
+
+        * Required variables: ['geometry']
+    da : xr.DataArray, optional
+        xr.DataArray containing the forcing timeseries values.
+        If None, uses a constant ``forcing_value`` for all forcings.
+
+        * Required variables: ['forcing_type']
+
+    forcing_value : float, optional
+        Constant value to use for all forcings if ``da`` is None and to
+        fill in missing data.
+        By default 0.0 ``forcing_unit``
+    forcing_type : {'lateral_discharge'}
+        Type of forcing to use.
+        For now only support 'lateral_discharge'.
+        By default 'lateral_discharge'
+    forcing_unit : {'m3/s'}
+        Unit corresponding to ``forcing_type``.
+        By default 'm3/s'
+    logger
+        Logger to log messages.
+    """
+    # TODO: harmonize for other point forcing #21
+    # first process data based on either timeseries or constant
+    # then update data based on either nodes or branches
+    # Timeseries forcing values
+    if da is not None:
+        logger.info(f"Preparing 1D forcing type {forcing_type} from timeseries.")
+
+        # get forcing data freq in seconds
+        bd_times, freq_name = _standardize_forcing_timeindexes(da)
+
+        # instantiate xr.DataArray for forcing data
+        # NOTE only support points on branches
+        da_out = xr.DataArray(
+            data=da.data,
+            dims=["index", "time"],
+            coords=dict(
+                index=gdf.index,
+                time=bd_times,
+                x=("index", gdf.geometry.x.values),
+                y=("index", gdf.geometry.y.values),
+                branchid=("index", gdf.branchid.values),
+                chainage=("index", gdf.chainage.values),
+            ),
+            attrs=dict(
+                function="TimeSeries",
+                timeInterpolation="Linear",
+                quantity=f"{forcing_type}",
+                units=f"{forcing_unit}",
+                time_unit=f"{freq_name} since {pd.to_datetime(da.time[0].values)}",  # support only yyyy-mm-dd HH:MM:SS
+            ),
+        )
+        # fill in na using default
+        da_out = da_out.fillna(forcing_value)
+
+        # drop na in time
+        da_out.dropna(dim="time")
+
+        # add name
+        da_out.name = f"{forcing_type}"
+    else:
+        logger.info(
+            f"Using constant value {forcing_value} {forcing_unit} for all {forcing_type} forcings."
+        )
+        # instantiate xr.DataArray for bnd data with forcing_type directly
+        da_out = xr.DataArray(
+            data=np.full((len(gdf.index)), forcing_value, dtype=np.float32),
+            dims=["index"],
+            coords=dict(
+                index=gdf.index,
+                x=("index", gdf.geometry.x.values),
+                y=("index", gdf.geometry.y.values),
+                branchid=("index", gdf.branchid.values),
+                chainage=("index", gdf.chainage.values),
+            ),
+            attrs=dict(
+                function="constant",
+                offset=0.0,
+                factor=1.0,
+                quantity=f"{forcing_type}",
+                units=f"{forcing_unit}",
+            ),
+        )
+        da_out.name = f"{forcing_type}"
+    return da_out
+
+
+def get_geometry_coords_for_polygons(gdf):
+    """Gets xarray DataArray coordinates that describes polygon geometries.
+    Inlcudes numcoordinates, xcoordinates and ycoordinates"""
+    if gdf.geometry.type.iloc[0] == "Polygon":
+        # Get the maximum number of coordinates for any polygon
+        max_coords = gdf["geometry"].apply(lambda x: len(x.exterior.coords[:])).max()
+
+        def get_xcoords(geom):
+            coords = [xy[0] for xy in geom.exterior.coords[:]]
+            return np.pad(
+                coords,
+                (0, max_coords - len(coords)),
+                "constant",
+                constant_values=np.nan,
+            )
+
+        def get_ycoords(geom):
+            coords = [xy[1] for xy in geom.exterior.coords[:]]
+            return np.pad(
+                coords,
+                (0, max_coords - len(coords)),
+                "constant",
+                constant_values=np.nan,
+            )
+
+        # Create the 2D arrays
+        x_2d = np.vstack(gdf["geometry"].apply(get_xcoords))
+        y_2d = np.vstack(gdf["geometry"].apply(get_ycoords))
+
+        return dict(
+            index=gdf.index,
+            numcoordinates=np.arange(max_coords),
+            xcoordinates=(("index", "numcoordinates"), x_2d),
+            ycoordinates=(("index", "numcoordinates"), y_2d),
+        )
+
+
+def compute_forcing_values_polygon(
+    gdf: gpd.GeoDataFrame,
+    da: xr.DataArray = None,
+    forcing_value: float = 0.0,
+    forcing_type: str = "waterlevelbnd",
+    forcing_unit: str = "m",
+    logger=logger,
+):
+    """
+    Compute 1d forcing values.
+
+    Used for 1D lateral polygon locations.
+
+    Parameters
+    ----------
+    gdf : gpd.GeoDataFrame
+        GeoDataFrame of polygons to add 1D forcing data.
+
+        * Required variables: ['geometry']
+    da : xr.DataArray, optional
+        xr.DataArray containing the forcing timeseries values.
+        If None, uses a constant ``forcing_value`` for all forcings.
+
+        * Required variables: ['forcing_type']
+
+    forcing_value : float, optional
+        Constant value to use for all forcings if ``da`` is None and to
+        fill in missing data.
+        By default 0.0 ``forcing_unit``
+    forcing_type : {'lateral_discharge'}
+        Type of forcing to use.
+        For now only support 'lateral_discharge'.
+        By default 'lateral_discharge'
+    forcing_unit : {'m3/s'}
+        Unit corresponding to ``forcing_type``.
+        By default 'm3/s'
+    logger
+        Logger to log messages.
+    """
+    # Timeseries forcing values
+    if da is not None:
+        logger.info(f"Preparing 1D forcing type {forcing_type} from timeseries.")
+
+        # get forcing data time indes
+        bd_times, freq_name = _standardize_forcing_timeindexes(da)
+
+        # instantiate xr.DataArray for forcing data
+        coords_dict = get_geometry_coords_for_polygons(gdf)
+        # Prepare the data
+        data_3d = np.tile(
+            np.expand_dims(da.data, axis=-1), (1, 1, len(coords_dict["numcoordinates"]))
+        )
+        # Create the DataArray
+        da_out = xr.DataArray(
+            data=data_3d,
+            dims=("index", "time", "numcoordinates"),
+            coords={
+                "index": coords_dict["index"],
+                "numcoordinates": coords_dict["numcoordinates"],
+                "xcoordinates": coords_dict["xcoordinates"],
+                "ycoordinates": coords_dict["ycoordinates"],
+                "time": bd_times,
+            },
+            attrs=dict(
+                function="TimeSeries",
+                timeInterpolation="Linear",
+                quantity=f"{forcing_type}",
+                units=f"{forcing_unit}",
+                time_unit=f"{freq_name} since {pd.to_datetime(da.time[0].values)}",  # support only yyyy-mm-dd HH:MM:SS
+            ),
+        )
+        # fill in na using default
+        da_out = da_out.fillna(forcing_value)
+
+        # drop na in time
+        da_out.dropna(dim="time")
+
+        # add name
+        da_out.name = f"{forcing_type}"
+    else:
+        logger.info(
+            f"Using constant value {forcing_value} {forcing_unit} for all {forcing_type} forcings."
+        )
+        # instantiate xr.DataArray for forcing data with forcing_type directly
+        coords_dict = get_geometry_coords_for_polygons(gdf)
+        data_3d = np.full(
+            (len(coords_dict["index"]), len(coords_dict["numcoordinates"])),
+            forcing_value,
+            dtype=np.float32,
+        )
+        da_out = xr.DataArray(
+            data=data_3d,
+            coords={
+                "index": coords_dict["index"],
+                "numcoordinates": coords_dict["numcoordinates"],
+                "xcoordinates": coords_dict["xcoordinates"],
+                "ycoordinates": coords_dict["ycoordinates"],
+            },
+            attrs=dict(
+                function="constant",
+                offset=0.0,
+                factor=1.0,
+                quantity=f"{forcing_type}",
+                units=f"{forcing_unit}",
+            ),
+        )
+        da_out.name = f"{forcing_type}"
+
+    return da_out.drop_duplicates(dim=...)
