@@ -1077,12 +1077,12 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
     da_out: xr.DataArray
         External and forcing values combined into a DataArray with name starts with "boundary2d".
     """
-    quantity = df.quantity[0]
+    quantity = df.quantity.iloc[0]
 
     # Initialise dataarray attributes
 
     # Assume one forcing file (hydromt writer) and read
-    forcing = df.forcingfile[0]
+    forcing = df.forcingfile.iloc[0]
     _da_forcing = _forcingmodel_to_dataarray(forcing)
 
     # Add location
@@ -1126,13 +1126,13 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
     return da_out
 
 
-def _write_ncdicts(ncdicts: Dict[str : xr.DataArray], savedir: str):
+def _write_ncdicts(ncdicts: Dict[str, xr.DataArray], savedir: str):
     """
     Save forcing dictionaries of xr.DataArray to netCDF conventions.
 
     Parameters
     ----------
-    ncdicts: Dict[str : xr.DataArray]
+    ncdicts: Dict[str, xr.DataArray]
         key: str, the identifier of the boundary, must match with pli file
         value: xr.DataArray, The DataArray that has certain forcing quantity as data.
 
@@ -1293,7 +1293,7 @@ def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[di
                 datablock = da_i_tsvalid.sel(numcoordinates=0).drop_vars(
                     "numcoordinates"
                 )
-                datablock.attrs["name"] = bndid + "0001"
+                datablock.attrs["name"] = bndid + "_0001"
             bc = datablock.attrs.copy()
             # get quantityunitpair
             if bc["function"] == "constant":
@@ -1337,17 +1337,17 @@ def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[di
     _write_ncdicts(ncdicts, savedir=savedir)
 
     # add forcingfile and locationfile
-    extdicts = []
+    extdicts_ = []
     for ext in extdicts:
         ext["forcingfile"] = ext["_bcfilename"]
         # ext["forcingfile"] = ext["_ncfilename"] # switch after hydrolib-core support
-        extdicts.append(ext)
+        extdicts_.append(ext)
 
     # write external forcing file
     if ext_fn is not None:
         # write to external forcing file
         write_ext(
-            extdicts, savedir, ext_fn=ext_fn, block_name="boundary", mode="append"
+            extdicts_, savedir, ext_fn=ext_fn, block_name="boundary", mode="append"
         )
 
     return forcing_fn, ext_fn

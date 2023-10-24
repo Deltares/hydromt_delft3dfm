@@ -15,6 +15,7 @@ Added
 
 Changed
 -------
+- Setup 2D boundaries from geodatasets of line geometries. (PR #93)
 
 Fixed
 -----

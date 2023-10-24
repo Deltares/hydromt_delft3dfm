@@ -43,7 +43,7 @@ Setup components
    DFlowFMModel.setup_link1d2d
    DFlowFMModel.setup_maps_from_rasterdataset
    DFlowFMModel.setup_maps_from_raster_reclass
-   DFlowFMModel.setup_2dboundary
+   DFlowFMModel.setup_2dboundary_from_lines
    DFlowFMModel.setup_rainfall_from_constant
    DFlowFMModel.setup_rainfall_from_uniform_timeseries
 
