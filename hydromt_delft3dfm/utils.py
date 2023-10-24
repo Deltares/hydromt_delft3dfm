@@ -1126,6 +1126,105 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
     return da_out
 
 
+def _write_ncdicts(ncdicts: Dict[str : xr.DataArray], savedir: str):
+    """
+    Save forcing dictionaries of xr.DataArray to netCDF conventions.
+
+    Parameters
+    ----------
+    ncdicts: Dict[str : xr.DataArray]
+        key: str, the identifier of the boundary, must match with pli file
+        value: xr.DataArray, The DataArray that has certain forcing quantity as data.
+
+        Required variables: ["x", "y", "time"]
+    savedir : str
+        Directory where the netCDF file will be saved.
+
+    Returns
+    -------
+    None, but writes a netCDF file to 'savedir'.
+    """
+    for ncdict in ncdicts:
+        # use bndid as output name
+        bndid = list(ncdict.keys())[0]
+        da = ncdict.get(bndid)
+
+        # Extract values from the DataArray
+        x_values = da["x"].values
+        y_values = da["y"].values
+        node_values = range(1, 1 + len(x_values))
+        time_values = da.time.values
+        da_values = da.data
+        # Create location labels from x and y pairs
+        location_labels = [f"{bndid}_{str(i).zfill(4)}" for i in node_values]
+        location_strlen = max(
+            map(len, location_labels)
+        )  # Determine the max string length
+        location_values = np.array(
+            location_labels, dtype=("U1", location_strlen)
+        )  # convert location labels to structured numpy array
+
+        # Construct the Dataset
+        ds = xr.Dataset(
+            {
+                "location": (("node", "strlen"), location_values),
+                da.attrs["quantity"]: (["time", "node"], da_values),
+                "x": ("node", x_values),
+                "y": ("node", y_values),
+            },
+            coords={
+                "time": time_values,
+                "node": node_values,
+            },
+        )
+
+        # Set attributes for variables and coordinates
+        ds.location.attrs["cf_role"] = "timeseries_id"
+        ds.time.attrs["units"] = da.attrs["time_unit"]
+        ds.x.attrs.update(
+            dict(
+                axis="x",
+                units="m",
+                long_name="x coordinate of projection",
+                standard_name="projection_x_coordinate",
+            )
+        )
+        ds.y.attrs.update(
+            dict(
+                axis="y",
+                units="m",
+                long_name="y coordinate of projection",
+                standard_name="projection_y_coordinate",
+            )
+        )
+        ds[da.attrs["quantity"]].attrs.update(
+            {
+                "long_name": da.attrs["quantity"],
+                "standard_name": da.attrs[
+                    "quantity"
+                ],  # Assuming the quantity attribute can be used as standard_name
+                "units": da.attrs["units"],
+                "_FillValue": -999.9,
+            }
+        )
+
+        # Save to netCDF
+        ds.to_netcdf(join(savedir, f"{bndid}.nc"))
+
+
+def _create_pliobj_from_xy(xs: list, ys: list, name: str):
+    """Creates hydrolib-core pli objecti from list of x and y coordinates"""
+
+    xs = [x for x in xs if not np.isnan(x)]
+    ys = [y for y in ys if not np.isnan(y)]
+    _points = [{"x": x, "y": y, "data": []} for x, y in zip(xs, ys)]
+    pli_object = {
+        "metadata": {"name": name, "n_rows": len(xs), "n_columns": 2},
+        "points": _points,
+    }
+    return pli_object
+
+
 def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     """
     write 2 boundary forcings from forcing dict.
@@ -1153,87 +1252,95 @@ def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[di
     if len(forcing) == 0:
         return
 
-    extdict = list()
-    bcdict = list()
-    plidict = list()
+    extdicts = list()
+    bcdicts = list()
+    ncdicts = list()
+    plidicts = list()
     # Loop over forcing dict
-    for name, da in forcing.items():
+    for _, da in forcing.items():
         for i in da.index.values:
-            # boundary
-            bndid = f"{da.name}_{i}"
+            # initialise for boundary
+            bndid = da.sel(index=i).index.item()
+
+            # drop invalid xy locations
+            da_i = da.sel(index=i)
+            da_i = da_i.sel(numcoordinates=~np.isnan(da_i["x"]) & ~np.isnan(da_i["y"]))
+
+            # drop invalid timeseries
+            da_i_tsvalid = da_i.dropna(dim="numcoordinates", how="all")
+
+            # Ext file
+            ext = dict(
+                quantity=da_i.attrs["quantity"],
+                locationfile=bndid + ".pli",
+                _bcfilename=_bcfilename,
+                _ncfilename=bndid + ".nc",
+            )
+            extdicts.append(ext)
+
             # Pli file
-            if "numcoordinates" in da.coords:
-                xs = da.sel(index=i)["x"].values.tolist()
-                ys = da.sel(index=i)["y"].values.tolist()
-                xs = [x for x in xs if not np.isnan(x)]
-                ys = [y for y in ys if not np.isnan(y)]
-                _points = [{"x": x, "y": y, "data": []} for x, y in zip(xs, ys)]
-                pli_object = {
-                    "metadata": {"name": bndid, "n_rows": len(xs), "n_columns": 2},
-                    "points": _points,
-                }
-            else:
-                raise ValueError("Not supported.")
-            plidict.append(pli_object)
-            # Ext
-            ext = dict()
-            ext["quantity"] = da.attrs["quantity"]
-            ext["locationfile"] = bndid + ".pli"
-            extdict.append(ext)
-            # Forcing (bc/netcdf)
-            bc = da.attrs.copy()
-            # get datablock, use first point if spatial uniform
-            if np.any(
-                da.sel(index=i).max(dim="numcoordinates")
-                != da.sel(index=i).min(dim="numcoordinates")
-            ):
+            pli = _create_pliobj_from_xy(da_i["x"].values, da_i["y"].values, name=bndid)
+            plidicts.append(pli)
+
+            # Bc file
+            # check if only one support point
+            if da_i_tsvalid.sizes["numcoordinates"] > 1:
                 raise NotImplementedError(
-                    f"Varing values at support points are not yet implemented."
+                    f"Timeseries at multiple support points are not yet implemented."
                 )
             else:
-                # Now squeeze and drop the 'numcoordinates' dimension
-                datablock = da.sel(index=i, numcoordinates=0).drop_vars(
+                # flaten data for bc file
+                datablock = da_i_tsvalid.sel(numcoordinates=0).drop_vars(
                     "numcoordinates"
                 )
-                bc["name"] = bndid + "_0001"
+                datablock.attrs["name"] = bndid + "0001"
+            bc = datablock.attrs.copy()
             # get quantityunitpair
             if bc["function"] == "constant":
                 # one quantityunitpair
-                bc["quantityunitpair"] = [{"quantity": da.name, "unit": bc["units"]}]
+                bc["quantityunitpair"] = [
+                    {"quantity": datablock.name, "unit": bc["units"]}
+                ]
                 # only one value column (no times)
                 bc["datablock"] = [[datablock.values.item()]]
             else:
                 # two quantityunitpair
                 bc["quantityunitpair"] = [
                     {"quantity": "time", "unit": bc["time_unit"]},
-                    {"quantity": da.name, "unit": bc["units"]},
+                    {"quantity": datablock.name, "unit": bc["units"]},
                 ]
                 bc.pop("time_unit")
                 # time/value datablock
                 bc["datablock"] = [
-                    [t, x] for t, x in zip(da.time.values, datablock.values)
+                    [t, x] for t, x in zip(datablock.time.values, datablock.values)
                 ]
 
             bc.pop("quantity")
             bc.pop("units")
-            bcdict.append(bc)
+            bcdicts.append(bc)
+
+            # Ncfiles
+            ncdicts.append({bndid: da_i_tsvalid})
 
     # write polyfile (allow single pli per external forcing block)
-    for _pliitem in plidict:
+    for _pliitem in plidicts:
         pli_model = PolyFile(objects=[_pliitem])
         pli_fn = _pliitem["metadata"]["name"] + ".pli"
         pli_model.save(join(savedir, pli_fn), recurse=True)
 
     # write forcing file (as bc)
-    forcing_model = ForcingModel(forcing=bcdict)
+    forcing_model = ForcingModel(forcing=bcdicts)
     forcing_fn = _bcfilename
     forcing_model.save(join(savedir, forcing_fn), recurse=True)
+
     # write forcing file (as netcdf)
+    _write_ncdicts(ncdicts, savedir=savedir)
 
     # add forcingfile and locationfile
     extdicts = []
-    for ext in extdict:
-        ext["forcingfile"] = forcing_fn
+    for ext in extdicts:
+        ext["forcingfile"] = ext["_bcfilename"]
+        # ext["forcingfile"] = ext["_ncfilename"] # switch after hydrolib-core support
         extdicts.append(ext)
 
     # write external forcing file
