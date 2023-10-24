@@ -1438,7 +1438,7 @@ class DFlowFMModel(MeshModel):
         )
 
         # 2. read boundary from user data
-        gdf_bnds, da_bnd = self._read_forcing_geodataset(
+        _, da_bnd = self._read_forcing_geodataset(
             boundaries_geodataset_fn, boundary_type
         )
 
@@ -1604,7 +1604,7 @@ class DFlowFMModel(MeshModel):
         )
 
         # 4. set laterals
-        self.set_forcing(da_out, name=f"lateral1d_points")
+        self.set_forcing(da_out, name="lateral1d_points")
 
     def setup_1dlateral_from_polygons(
         self,
@@ -1640,7 +1640,7 @@ class DFlowFMModel(MeshModel):
             or for filling in missing data.
             By default 0 [m3/s].
         """
-        self.logger.info(f"Preparing 1D laterals for polygons.")
+        self.logger.info("Preparing 1D laterals for polygons.")
 
         # 1. read lateral geodataset
         gdf_laterals, da_lat = self._read_forcing_geodataset(
@@ -1661,7 +1661,7 @@ class DFlowFMModel(MeshModel):
         )
 
         # 3. set laterals
-        self.set_forcing(da_out, name=f"lateral1d_polygons")
+        self.set_forcing(da_out, name="lateral1d_polygons")
 
     def _setup_1dstructures(
         self,
@@ -3237,10 +3237,9 @@ class DFlowFMModel(MeshModel):
         # FIXME: crs info is not available in dfmmodel, so get it from region.geojson
         # Cannot use read_geoms yet because for some some geoms (crosssections, manholes) mesh needs to be read first...
         region_fn = join(self.root, "geoms", "region.geojson")
-        if not self._crs:
-            if isfile(region_fn):
-                crs = gpd.read_file(region_fn).crs
-                self._crs = crs
+        if (not self._crs) and isfile(region_fn):
+            crs = gpd.read_file(region_fn).crs
+            self._crs = crs
 
         crs = self.crs
 
