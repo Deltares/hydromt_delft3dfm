@@ -2595,7 +2595,10 @@ class DFlowFMModel(MeshModel):
         if len(gdf_bnd) == 0:
             return None
 
-        # 2. Compute lateral dataarray
+        # set boundary index -> name of the pli line
+        gdf_bnd.index = [f"{boundary_type}_{i}" for i in gdf_bnd.index]
+
+        # 2. Compute boundary dataarray
         da_out = workflows.compute_forcing_values_lines(
             gdf=gdf_bnd,
             da=da_bnd,
