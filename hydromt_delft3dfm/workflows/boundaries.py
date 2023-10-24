@@ -525,6 +525,31 @@ def get_geometry_coords_for_linestrings(gdf):
         )
 
 
+def _expand_2d_to_3d(data_2d, third_dim_length, fill_value=np.nan):
+    """
+    Expand a 2D numpy array to a 3D array, filling the new dimension with a specified value.
+
+    Parameters
+    ----------
+    data_2d (numpy.ndarray): The 2D array to expand.
+    third_dim_length (int): The size of the third dimension.
+    fill_value (float or int): The value to fill the new dimension. Default is NaN.
+
+    Returns
+    -------
+    numpy.ndarray: The expanded 3D array.
+    """
+
+    # Create the 3D array filled with the desired fill value
+    shape_3d = (data_2d.shape[0], data_2d.shape[1], third_dim_length)
+    data_3d = np.full(shape_3d, fill_value)
+
+    # Fill the 3D array's first slice along the third dimension with the original 2D data
+    data_3d[:, :, 0] = data_2d
+
+    return data_3d
+
+
 def compute_forcing_values_lines(
     gdf: gpd.GeoDataFrame,
     da: xr.DataArray = None,
@@ -572,16 +597,19 @@ def compute_forcing_values_lines(
     if da is not None:
         logger.info(f"Preparing 1D forcing type {forcing_type} from timeseries.")
 
-        # get forcing data freq in seconds
-        bd_times, freq_name = _standardize_forcing_timeindexes(da)
+        # fill in na using default
+        da = da.fillna(forcing_value)
 
         # instantiate xr.DataArray for forcing data
+        # get forcing data freq in seconds (required by writing into bc)
+        bd_times, freq_name = _standardize_forcing_timeindexes(da)
+
+        # get coordinates in correct dimentions
         coords_dict = get_geometry_coords_for_linestrings(gdf)
 
-        # Prepare the data
-        data_3d = np.tile(
-            np.expand_dims(da.data, axis=-1), (1, 1, len(coords_dict["numcoordinates"]))
-        )
+        # get data in correct dimentions
+        data_3d = _expand_2d_to_3d(da.data, len(coords_dict["numcoordinates"]))
+
         # instantiate xr.DataArray for forcing data
         # NOTE only support points on branches
         da_out = xr.DataArray(
@@ -602,8 +630,6 @@ def compute_forcing_values_lines(
                 time_unit=f"{freq_name} since {pd.to_datetime(da.time[0].values)}",  # support only yyyy-mm-dd HH:MM:SS
             ),
         )
-        # fill in na using default
-        da_out = da_out.fillna(forcing_value)
 
         # drop na in time
         da_out.dropna(dim="time")
