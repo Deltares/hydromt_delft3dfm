@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+"""Workflows to process dem data for Delft3D-FM model."""
 
 import logging
 from typing import Tuple
@@ -31,11 +31,13 @@ def invert_levels_from_dem(
     gdf: gpd.GeoDataFrame
         Pipes gdf.
 
-        * Required variables: ["shape", "diameter"] or ["shape", "height"] (circle or rectangle shape)
+        * Required variables: ["shape", "diameter"] or ["shape", "height"]
+          (circle or rectangle shape)
     dem: xr.DataArray
         DEM data array with elevation in m asl.
     depth: float, optional
-        Depth of the pipes under the ground in meters. Should be a postive value. By default 2.0 meters
+        Depth of the pipes under the ground in meters. Should be a postive value.
+        By default 2.0 meters
     """
     # Upstream
     upnodes = gpd.GeoDataFrame(
@@ -78,7 +80,9 @@ def get_rivbank_dz(
     nmin: int = 20,
     q: float = 25.0,
 ) -> np.ndarray:
-    """Return river bank height estimated as from height above nearest drainage
+    """Return river bank height.
+
+    River bank height is estimated as from height above nearest drainage
     (HAND) values adjecent to river cells. For each feature in `gdf_riv` the nearest
     river bank cells are identified and the bank heigth is estimated based on a quantile
     value `q`.
@@ -162,15 +166,17 @@ def get_river_bathymetry(
     logger=logger,
     **kwargs,
 ) -> Tuple[gpd.GeoDataFrame, xr.DataArray]:
-    """Estimate river bedlevel zb using gradually varying flow (gvf), manning's equation
-    (manning) or a power-law relation (powlaw) rivdph_method. The river is based on flow
-    directions with and minimum upstream area threshold.
+    """Estimate river bedlevel zb.
+
+    Bedlevel is estimated using gradually varying flow (gvf), manning's equation
+    (manning) or a power-law relation (powlaw) rivdph_method. The river is based
+    on flow directions with and minimum upstream area threshold.
 
     Parameters
     ----------
     ds : xr.Dataset
-        Model map layers containing `elevnt_name`, `uparea_name` and `rivmsk_name` (optional)
-        variables.
+        Model map layers containing `elevnt_name`, `uparea_name`
+        and `rivmsk_name` (optional) variables.
     flwdir : pyflwdir.FlwdirRaster
         Flow direction object
     gdf_riv : gpd.GeoDataFrame, optional
@@ -184,7 +190,8 @@ def get_river_bathymetry(
     river_upa : float, optional
         Minimum upstream area threshold for rivers [km2], by default 100.0
     river_len: float, optional
-        Mimimum river length [m] within the model domain to define river cells, by default 1000.
+        Mimimum river length [m] within the model domain to define river cells,
+        by default 1000.
     min_rivwth, min_rivdph: float, optional
         Minimum river width [m] (by default 50.0 m) and depth [m] (by default 1.0 m)
     segment_length : float, optional
@@ -194,7 +201,8 @@ def get_river_bathymetry(
     min_convergence : float, optional
         Minimum width convergence threshold to define estuaries [m/m], by default 0.01
     max_dist : float, optional
-        Maximum distance threshold to spatially merge `gdf_riv` and `gdf_qbf`, by default 100.0
+        Maximum distance threshold to spatially merge `gdf_riv` and `gdf_qbf`,
+        by default 100.0
     rivbank: bool, optional
         If True (default), approximate the reference elevation for the river depth based
         on the river bankfull elevation at cells neighboring river cells. Otherwise
@@ -202,7 +210,8 @@ def get_river_bathymetry(
     rivbankq : float, optional
         quantile [1-100] for river bank estimation, by default 25
     constrain_estuary : bool, optional
-        If True (default) fix the river depth in estuaries based on the upstream river depth.
+        If True (default) fix the river depth in estuaries based on the upstream
+        river depth.
     constrain_rivbed : bool, optional
         If True (default) correct the river bed level to be hydrologically correct
     Returns
@@ -267,7 +276,7 @@ def get_river_bathymetry(
         gdf_riv[col] = np.maximum(0, data)
 
     # create river mask with river polygon
-    if rivmsk_name not in ds and "rivwth":
+    if rivmsk_name not in ds and "rivwth" in gdf_riv:
         if gdf_riv.crs.is_geographic:  # needed for length and splitting
             gdf_riv_buf = gdf_riv.copy().to_crs(3857)
         else:

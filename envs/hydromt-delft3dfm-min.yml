@@ -8,7 +8,7 @@ channels:
 dependencies:
   - flit>=3.4
   - geopandas
-  - hydromt>= 0.8.0
+  - hydromt>= 0.9.0
   - numpy
   - pandas
   - pip
@@ -22,6 +22,5 @@ dependencies:
   - networkx
   - llvmlite>=0.39.1 # hydrolib-core
   - pip:
-      - git+https://github.com/Deltares/hydromt.git
       - hydrolib-core==0.5.2
-      - meshkernel==2.0.2 # temp pin because of hydrolib-core
+      - meshkernel>=2.1.0

@@ -34,6 +34,8 @@ Setup components
    DFlowFMModel.setup_pipes
    DFlowFMModel.setup_manholes
    DFlowFMModel.setup_1dboundary
+   DFlowFMModel.setup_1dlateral_from_points
+   DFlowFMModel.setup_1dlateral_from_polygons
    DFlowFMModel.setup_bridges
    DFlowFMModel.setup_culverts
    DFlowFMModel.setup_mesh2d
@@ -154,6 +156,9 @@ Boundaries
    workflows.compute_boundary_values
    workflows.compute_2dboundary_values
    workflows.compute_meteo_forcings
+   workflows.compute_forcing_values_points
+   workflows.compute_forcing_values_polygon
+   workflows.get_geometry_coords_for_polygons
 
 Branches
 --------
@@ -260,6 +265,8 @@ Input/Output methods
    utils.write_manholes
    utils.read_1dboundary
    utils.write_1dboundary
+   utils.read_1dlateral
+   utils.write_1dlateral
    utils.read_2dboundary
    utils.write_2dboundary
    utils.read_meteo

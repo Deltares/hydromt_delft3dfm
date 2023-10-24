@@ -19,10 +19,9 @@ from hydrolib.core.dimr import DIMR, FMComponent, Start
 from hydromt.models import MeshModel
 from hydromt.workflows import create_mesh2d
 from pyproj import CRS
-from shapely.geometry import LineString, box
+from shapely.geometry import box
 
-from . import DATADIR
-from . import mesh_utils, gis_utils, utils, workflows
+from . import DATADIR, gis_utils, mesh_utils, utils, workflows
 
 __all__ = ["DFlowFMModel"]
 logger = logging.getLogger(__name__)
@@ -108,7 +107,7 @@ class DFlowFMModel(MeshModel):
             "frictype": 3,
         },
     }
-    _FOLDERS = ["dflowfm", "geoms", "mesh", "maps"]
+    _FOLDERS = ["dflowfm", "geoms", "maps"]
     _CLI_ARGS = {"region": "setup_region"}
     _CATALOGS = join(_DATADIR, "parameters_data.yml")
 
@@ -484,7 +483,8 @@ class DFlowFMModel(MeshModel):
 
         # read data
         ds_hydro = self.data_catalog.get_rasterdataset(
-            hydrography_fn, geom=region, buffer=10
+            hydrography_fn,
+            geom=region,
         )
         if isinstance(ds_hydro, xr.DataArray):
             ds_hydro = ds_hydro.to_dataset()
@@ -493,7 +493,7 @@ class DFlowFMModel(MeshModel):
         gdf_riv = None
         if river_geom_fn is not None:
             gdf_riv = self.data_catalog.get_geodataframe(
-                river_geom_fn, geom=region
+                river_geom_fn, geom=region, buffer=1
             ).to_crs(ds_hydro.raster.crs)
 
         # check if flwdir and uparea in ds_hydro
@@ -1443,7 +1443,7 @@ class DFlowFMModel(MeshModel):
         )
 
         # 2. read boundary from user data
-        gdf_bnds, da_bnd = self._read_forcing_geodataset(
+        _, da_bnd = self._read_forcing_geodataset(
             boundaries_geodataset_fn, boundary_type
         )
 
@@ -1618,7 +1618,7 @@ class DFlowFMModel(MeshModel):
         )
 
         # 4. set laterals
-        self.set_forcing(da_out, name=f"lateral1d_points")
+        self.set_forcing(da_out, name="lateral1d_points")
 
     def setup_1dlateral_from_polygons(
         self,
@@ -1654,7 +1654,7 @@ class DFlowFMModel(MeshModel):
             or for filling in missing data.
             By default 0 [m3/s].
         """
-        self.logger.info(f"Preparing 1D laterals for polygons.")
+        self.logger.info("Preparing 1D laterals for polygons.")
 
         # 1. read lateral geodataset
         gdf_laterals, da_lat = self._read_forcing_geodataset(
@@ -1675,7 +1675,7 @@ class DFlowFMModel(MeshModel):
         )
 
         # 3. set laterals
-        self.set_forcing(da_out, name=f"lateral1d_polygons")
+        self.set_forcing(da_out, name="lateral1d_polygons")
 
     def _setup_1dstructures(
         self,
@@ -1900,7 +1900,6 @@ class DFlowFMModel(MeshModel):
         --------
         dflowfm._setup_1dstructures
         """
-
         snap_offset = self._network_snap_offset if snap_offset is None else snap_offset
         _st_type = "bridge"
         _allowed_columns = [
@@ -2522,7 +2521,7 @@ class DFlowFMModel(MeshModel):
     def __set_map_parameters_based_on_variable(
         self, var: str, locationtype: str, interpolation_method: str
     ) -> None:
-        """Set map parameters by updating user inputs to default self._MAP"""
+        """Set map parameters by updating user inputs to default self._MAP."""
         if var in self._MAPS:
             self._MAPS[var]["locationtype"] = locationtype
             self._MAPS[var]["interpolation"] = interpolation_method
@@ -2824,12 +2823,16 @@ class DFlowFMModel(MeshModel):
         # Read initial fields
         inifield_model = self.dfmmodel.geometry.inifieldfile
         # seperate 1d and 2d
-        inifield_model_1d = [
-            i for i in inifield_model.initial if "1d" in i.datafiletype
+        # inifield_model_1d = [
+        #     i for i in inifield_model.initial if "1d" in i.locationtype
+        # ] # not supported yet
+        inifield_model_2dinitial = [
+            i for i in inifield_model.initial if "2d" in i.locationtype
         ]
-        inifield_model_2d = [
-            i for i in inifield_model.initial if "2d" in i.datafiletype
+        inifield_model_2dparameter = [
+            i for i in inifield_model.parameter if "2d" in i.locationtype
         ]
+        inifield_model_2d = inifield_model_2dinitial + inifield_model_2dparameter
         if any(inifield_model_2d):
             # Loop over initial / parameter to read the geotif
             inilist = inifield_model_2d
@@ -2849,7 +2852,7 @@ class DFlowFMModel(MeshModel):
                     name = inidict.quantity
                     # Need to get branchid from config
                     if name == "frictioncoefficient":
-                        frictype = self.get_config("physics.UniFrictType", 1)
+                        frictype = self.get_config("physics.uniffricttype", fallback=1)
                         fricname = [
                             n
                             for n in self._MAPS
@@ -2874,9 +2877,8 @@ class DFlowFMModel(MeshModel):
                         # Rename to hydromt name
                         name = rm_dict[name]
                     # Add to maps
+                    inimap.name = name
                     self.set_maps(inimap, name)
-
-            return self._maps
 
     def write_maps(self) -> None:
         """Write maps as tif files in maps folder and update initial fields."""
@@ -3173,10 +3175,9 @@ class DFlowFMModel(MeshModel):
         # FIXME: crs info is not available in dfmmodel, so get it from region.geojson
         # Cannot use read_geoms yet because for some some geoms (crosssections, manholes) mesh needs to be read first...
         region_fn = join(self.root, "geoms", "region.geojson")
-        if not self._crs:
-            if isfile(region_fn):
-                crs = gpd.read_file(region_fn).crs
-                self._crs = crs
+        if (not self._crs) and isfile(region_fn):
+            crs = gpd.read_file(region_fn).crs
+            self._crs = crs
 
         crs = self.crs
 

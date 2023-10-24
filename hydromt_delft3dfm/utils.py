@@ -1,7 +1,7 @@
 from enum import Enum
 from os.path import join
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 import geopandas as gpd
 import numpy as np
@@ -740,7 +740,7 @@ def write_1dboundary(forcing: Dict, savedir: str = None, ext_fn: str = None) -> 
 
     # write forcing file
     forcing_model = ForcingModel(forcing=bcdict)
-    forcing_fn = f"boundarycondition1d.bc"
+    forcing_fn = "boundarycondition1d.bc"
     forcing_model.save(join(savedir, forcing_fn), recurse=True)
 
     # add forcingfile to ext, note each node needs a forcingfile
@@ -762,7 +762,6 @@ def write_1dboundary(forcing: Dict, savedir: str = None, ext_fn: str = None) -> 
 def read_1dlateral(
     df: pd.DataFrame,
     quantity: str = "lateral_discharge",
-    nodes: gpd.GeoDataFrame = None,
     branches: gpd.GeoDataFrame = None,
 ) -> xr.DataArray:
     """
@@ -858,7 +857,7 @@ def read_1dlateral(
             coords=coords,
             attrs=bc,
         )
-        da_out.name = f"lateral1d_polygons"
+        da_out.name = "lateral1d_polygons"
     else:
         # points
         if any(df.nodeid.values):
@@ -886,12 +885,14 @@ def read_1dlateral(
                 coords=coords,
                 attrs=bc,
             )
-            da_out.name = f"lateral1d_points"
+            da_out.name = "lateral1d_points"
 
     return da_out
 
 
-def write_1dlateral(forcing: Dict, savedir: str = None, ext_fn: str = None) -> Tuple:
+def write_1dlateral(
+    forcing: Dict, savedir: str = None, ext_fn: str = None
+) -> Union[None, Tuple]:
     """ "
     write 1dlateral ext and bc files from forcing dict.
 
@@ -984,7 +985,7 @@ def write_1dlateral(forcing: Dict, savedir: str = None, ext_fn: str = None) -> T
 
     # write forcing file
     forcing_model = ForcingModel(forcing=bcdict)
-    forcing_fn = f"lateral1d.bc"
+    forcing_fn = "lateral1d.bc"
     forcing_model.save(join(savedir, forcing_fn), recurse=True)
 
     # add forcingfile to ext, note forcing file is called discharge for lateral
@@ -1400,7 +1401,7 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
 
 
 def write_ext(
-    extdicts: Dict,
+    extdicts: List,
     savedir: Path,
     ext_fn: str = None,
     block_name: str = "boundary",

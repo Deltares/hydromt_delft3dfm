@@ -1,0 +1,9 @@
+global:
+  crs: 3857
+
+setup_mesh2d_refine:
+  polygon_fn: ./data/refine.geojson
+  steps: 2
+
+setup_link1d2d:
+  link_direction: 1d_to_2d

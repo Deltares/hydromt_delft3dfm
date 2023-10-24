@@ -10,21 +10,21 @@ authors = [
 	{ name = "Hélène Boisgontier", email = "helene.boisgontier@deltares.nl" },
 ]
 dependencies = [
-	"hydromt >=0.8.0",
+	"hydromt >=0.9.0",
 	"geopandas >=0.10",
 	"numpy",
 	"pandas",
 	"xarray",
 	"hydrolib-core >=0.5.2",
-	"xugrid",
-	"meshkernel <=2.0.2",
+	"xugrid >=0.6.5",
+	"meshkernel >= 2.1.0",
 	"pyproj",
-	"shapely >=0.2.0",
+	"shapely >=2.0.0",
 	"scipy",
 	"pyflwdir >=0.5.4",
 	"networkx",
 ]
-requires-python = ">=3.9,<3.11" # support 3.11 after new meshkernelpy releases
+requires-python = ">=3.9"
 readme = "README.rst"
 classifiers = [
 	# https://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -36,6 +36,7 @@ classifiers = [
 	"Programming Language :: Python :: 3",
 	"Programming Language :: Python :: 3.9",
 	"Programming Language :: Python :: 3.10",
+	"Programming Language :: Python :: 3.11",
 ]
 dynamic = ['version', 'description']
 
@@ -53,6 +54,11 @@ doc = [
 	"sphinx_design",
 	"pydata-sphinx-theme",
 	"sphinx_autosummary_accessors",
+]
+examples = [
+  "jupyterlab",      # run examples in jupyter notebook
+  "notebook",        # jupyter integration
+  "cartopy",		 # plot examples
 ]
 
 [project.urls]

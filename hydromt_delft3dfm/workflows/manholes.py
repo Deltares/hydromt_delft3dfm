@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+"""Workflows to prepare manholes for Delft3D-FM model."""
 
 import logging
 
@@ -25,12 +25,15 @@ def generate_manholes_on_branches(
 ):
     """Generate manhole location and bedlevel from branches.
 
-    Manholes will be generated at locations upstream and downstream of each pipe. No manholes will be generated at pipe/tunnel outlets into the channels/rivers.
+    Manholes will be generated at locations upstream and downstream of each pipe.
+    No manholes will be generated at pipe/tunnel outlets into the channels/rivers.
 
     A new geom of manholes will be created.
-    manholeid will be generated following the convension of id_prefix, id, and id_suffix.
+    manholeid will be generated following the convension of id_prefix, id,
+    and id_suffix.
     bedlevel will be generated from the lowest invert levels of the connecting pipes.
-    Otehr attributes can be summersized from exisiting branch variables defined in ''use_branch_variables''.
+    Otehr attributes can be summersized from exisiting branch variables defined in
+    ''use_branch_variables''.
 
     Adds:
         * **manholes** geom: 1D manholes vector
@@ -45,10 +48,12 @@ def generate_manholes_on_branches(
         Optional columns: ones defined in use_branch_variables
     use_branch_variables: list of str, Optional
         list of branch variables to include as attributes for manholes.
-        If multiple branches connects to a single manhole, then the maximum will be taken.
+        If multiple branches connects to a single manhole, then the maximum
+        will be taken.
         By default ['diameter', 'width'].
     bedlevel_shift: float, optional
-        Shift applied to lowest pipe invert levels to derive manhole bedlevels [m] (bedlevel = pipe invert + bedlevel shift).
+        Shift applied to lowest pipe invert levels to derive manhole bedlevels [m]
+        (bedlevel = pipe invert + bedlevel shift).
         By default 0.0 m, no shift is applied.
     id_prefix: str, optional
         prefix to add to the id convention
@@ -164,7 +169,11 @@ def generate_manholes_on_branches(
 
 
 def _update_pipes_from_manholes(manholes: gpd.GeoDataFrame, pipes: gpd.GeoDataFrame):
-    """Assign manholes 'manholeid' to pipes ['manhole_up', 'manhole_dn'] based on geometry."""
+    """
+    Assign manholes 'manholeid' to pipes.
+
+    Id are assigned to ['manhole_up', 'manhole_dn'] based on geometry.
+    """
     manholes_dict = {
         (m.geometry.x, m.geometry.y): manholes.loc[mi, "manholeid"]
         for mi, m in manholes.iterrows()
@@ -193,7 +202,8 @@ def _get_pipe_stats_for_manholes(
 
     Parameters
     ----------
-    pipes_col: used to identify pipes connected to the manhole (multiple rows of pipes for a single manhole), e.g. BRANCH_ID.
+    pipes_col: used to identify pipes connected to the manhole (multiple
+    rows of pipes for a single manhole), e.g. BRANCH_ID.
     stats_col: the column used to obtain the stats, e.g. DIAMETER
     method: method used to obtain the stats: e.g. max
     """
