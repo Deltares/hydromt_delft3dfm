@@ -8,6 +8,7 @@ import xarray as xr
 import xugrid as xu
 from hydrolib.core.dflowfm import Network
 from pyproj import CRS
+import meshkernel
 
 logger = logging.getLogger(__name__)
 
@@ -45,9 +46,9 @@ def hydrolib_network_from_mesh(
 
     # create network
     if mesh.ugrid.grids[0].crs.is_geographic:
-        projection = mk.ProjectionType.SPHERICAL
+        projection = meshkernel.ProjectionType.SPHERICAL
     else:
-        projection = mk.ProjectionType.CARTESIAN
+        projection = meshkernel.ProjectionType.CARTESIAN
     dfm_network = Network(projection=projection)
     _mesh1d_attrs = dfm_network._mesh1d.__dict__.keys()
 
