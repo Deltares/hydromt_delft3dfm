@@ -18,9 +18,9 @@ dependencies:
   - scipy
   - shapely>=2.0.0
   - xarray
-  - xugrid
+  - xugrid>=0.6.5 # TODO: will require new xugrid release that includes xugrid branch 169-update-meshkernel-api-calls-after-new-release
   - networkx
   - llvmlite>=0.39.1 # hydrolib-core
   - pip:
-      - hydrolib-core==0.5.2
-      - meshkernel>=2.1.0
+      - hydrolib-core==0.5.2 # TODO: currently requires branch 569-bumping-meshkernel-version-to-latest-v300
+      - meshkernel>=3.0.0
