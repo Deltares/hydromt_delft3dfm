@@ -15,8 +15,10 @@ dependencies = [
 	"numpy",
 	"pandas",
 	"xarray",
-	"hydrolib-core >=0.5.2",
-	"xugrid >=0.6.5", # TODO: will require new xugrid release that includes xugrid branch 169-update-meshkernel-api-calls-after-new-release
+	#"hydrolib-core >=0.5.2",# TODO: currently requires branch below
+	"hydrolib-core@git+https://github.com/deltares/hydrolib-core@569-bumping-meshkernel-version-to-latest-v300",
+	#"xugrid >=0.6.5", # TODO: currently requires branch below
+	"xugrid@git+https://github.com/deltares/xugrid@169-update-meshkernel-api-calls-after-new-release",
 	"meshkernel >= 3.0.0",
 	"pyproj",
 	"shapely >=2.0.0",

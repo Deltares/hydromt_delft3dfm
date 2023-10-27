@@ -70,7 +70,11 @@ def mesh1d_network1d_from_branches(
     crs = opensystem.crs
 
     # create network
-    dfm_network = Network(is_geographic=crs.is_geographic)
+    if opensystem.crs.is_geographic:
+        projection = mk.ProjectionType.SPHERICAL
+    else:
+        projection = mk.ProjectionType.CARTESIAN
+    dfm_network = Network(projection=projection)
     # add open system mesh1d
     node_distance = openwater_computation_node_distance
     dfm_network, _ = mesh1d_add_branch(

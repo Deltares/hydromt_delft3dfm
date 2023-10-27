@@ -44,7 +44,11 @@ def hydrolib_network_from_mesh(
         grids[grid.name] = grid
 
     # create network
-    dfm_network = Network(is_geographic=mesh.ugrid.grids[0].crs.is_geographic)
+    if mesh.ugrid.grids[0].crs.is_geographic:
+        projection = mk.ProjectionType.SPHERICAL
+    else:
+        projection = mk.ProjectionType.CARTESIAN
+    dfm_network = Network(projection=projection)
     _mesh1d_attrs = dfm_network._mesh1d.__dict__.keys()
 
     # add mesh2d
