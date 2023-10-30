@@ -54,9 +54,10 @@ def hydrolib_network_from_mesh(
 
     # add mesh2d
     if "mesh2d" in grids:
-        dfm_network._mesh2d._process(
-            grids["mesh2d"].mesh
-        )  # FIXME: test what if the mesh had bedlevel variable
+        dfm_network._mesh2d.meshkernel.mesh2d_set(grids["mesh2d"].mesh)
+    #    dfm_network._mesh2d._process(
+    #        grids["mesh2d"].mesh
+    #    )  # FIXME: test what if the mesh had bedlevel variable
 
     # add mesh1d (including mesh1d and networkd1d)
     if "mesh1d" in grids:
@@ -70,7 +71,8 @@ def hydrolib_network_from_mesh(
                 setattr(dfm_network._mesh1d, var, val.values)
         # process
         dfm_network._mesh1d._process_network1d()
-        dfm_network._mesh1d._set_mesh1d()
+        dfm_network._mesh1d._set_mesh1d() #TODO: avoid this private function
+        #dfm_network._mesh2d.meshkernel.mesh1d_set(grids["mesh1d"].mesh)
 
     # add 1d2dlinks
     _link1d2d_attrs = dfm_network._link1d2d.__dict__.keys()
@@ -257,7 +259,7 @@ def mesh2d_from_hydrolib_network(
     uds_mesh2d : xu.UgridDataset
         Mesh2d UgridDataset.
     """
-    network._mesh2d._set_mesh2d()
+    #network._mesh2d._set_mesh2d() #TODO: prevent this private function, was removed
     mk_mesh2d = network._mesh2d.meshkernel.mesh2d_get()
 
     # meshkernel to xugrid Ugrid2D

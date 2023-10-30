@@ -95,7 +95,7 @@ def mesh1d_network1d_from_branches(
     )
 
     # derive mesh1d
-    dfm_network._mesh1d._set_mesh1d()
+    #dfm_network._mesh1d._set_mesh1d()
 
     # Mesh1d to mesh1d and network1d xugrid
     uds_mesh1d, uds_network1d = mutils.mesh1d_network1d_from_hydrolib_network(
@@ -383,22 +383,24 @@ def links1d2d_add_links_1d_to_2d(
     # Initialise hydrolib network object
     network = mutils.hydrolib_network_from_mesh(mesh)
     # Load 1d and 2d in meshkernel
-    network._mesh1d._set_mesh1d()
-    network._mesh2d._set_mesh2d()
+    #network._mesh1d._set_mesh1d()
+    #network._mesh2d._set_mesh2d()
 
     if within is None:
         # If not provided, create a box from the maximum bounds
+        mesh1d_output = network._mesh1d._get_mesh1d()
+        mesh2d_output = network._mesh2d.get_mesh2d()
         xmin = min(
-            network._mesh1d.mesh1d_node_x.min(), network._mesh2d.mesh2d_node_x.min()
+            mesh1d_output.node_x.min(), mesh2d_output.node_x.min()
         )
         xmax = max(
-            network._mesh1d.mesh1d_node_x.max(), network._mesh2d.mesh2d_node_x.max()
+            mesh1d_output.node_x.max(), mesh2d_output.node_x.max()
         )
         ymin = min(
-            network._mesh1d.mesh1d_node_y.min(), network._mesh2d.mesh2d_node_y.min()
+            mesh1d_output.node_y.min(), mesh2d_output.node_y.min()
         )
         ymax = max(
-            network._mesh1d.mesh1d_node_y.max(), network._mesh2d.mesh2d_node_y.max()
+            mesh1d_output.node_y.max(), mesh2d_output.node_y.max()
         )
 
         within = box(xmin, ymin, xmax, ymax)
@@ -422,11 +424,11 @@ def links1d2d_add_links_1d_to_2d(
     id1d = network._link1d2d.link1d2d[npresent:, 0]
     id2d = network._link1d2d.link1d2d[npresent:, 1]
     nodes1d = np.stack(
-        [network._mesh1d.mesh1d_node_x[id1d], network._mesh1d.mesh1d_node_y[id1d]],
+        [mesh1d_output.node_x[id1d], mesh1d_output.node_y[id1d]],
         axis=1,
     )
     faces2d = np.stack(
-        [network._mesh2d.mesh2d_face_x[id2d], network._mesh2d.mesh2d_face_y[id2d]],
+        [mesh2d_output.face_x[id2d], mesh2d_output.face_y[id2d]],
         axis=1,
     )
     lengths = np.hypot(nodes1d[:, 0] - faces2d[:, 0], nodes1d[:, 1] - faces2d[:, 1])
@@ -483,8 +485,8 @@ def links1d2d_add_links_2d_to_1d_embedded(
     # Initialise hydrolib network object
     network = mutils.hydrolib_network_from_mesh(mesh)
     # Load 1d and 2d in meshkernel
-    network._mesh1d._set_mesh1d()
-    network._mesh2d._set_mesh2d()
+    #network._mesh1d._set_mesh1d()
+    #network._mesh2d._set_mesh2d()
 
     # Get the max edge distance
     nodes2d = np.stack(
@@ -600,8 +602,8 @@ def links1d2d_add_links_2d_to_1d_lateral(
     # Initialise hydrolib network object
     network = mutils.hydrolib_network_from_mesh(mesh)
     # Load 1d and 2d in meshkernel
-    network._mesh1d._set_mesh1d()
-    network._mesh2d._set_mesh2d()
+    #network._mesh1d._set_mesh1d()
+    #network._mesh2d._set_mesh2d()
 
     geometrylist = network.meshkernel.mesh2d_get_mesh_boundaries_as_polygons()
     mpboundaries = GeometryList(**geometrylist.__dict__).to_geometry()
