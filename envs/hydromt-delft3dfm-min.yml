@@ -18,7 +18,7 @@ dependencies:
   - scipy
   - shapely>=2.0.0
   - xarray
-  #- xugrid>=0.6.5 # TODO: currently requires branch below
+  #- xugrid>=0.6.5 # TODO: currently requires branch below
   - networkx
   - llvmlite>=0.39.1 # hydrolib-core
   - pip:
