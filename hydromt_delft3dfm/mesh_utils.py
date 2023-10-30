@@ -259,9 +259,9 @@ def mesh2d_from_hydrolib_network(
     uds_mesh2d : xu.UgridDataset
         Mesh2d UgridDataset.
     """
-    #network._mesh2d._set_mesh2d() #TODO: prevent this private function, was removed
+    #network._mesh2d._set_mesh2d() #TODO: prevent this private function, was removed and setting happens on reading now
     mk_mesh2d = network._mesh2d.meshkernel.mesh2d_get()
-
+    
     # meshkernel to xugrid Ugrid2D
     uds_mesh2d = xu.Ugrid2d.from_meshkernel(
         mk_mesh2d,

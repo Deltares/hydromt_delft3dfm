@@ -95,7 +95,7 @@ def mesh1d_network1d_from_branches(
     )
 
     # derive mesh1d
-    #dfm_network._mesh1d._set_mesh1d()
+    dfm_network._mesh1d._set_mesh1d()
 
     # Mesh1d to mesh1d and network1d xugrid
     uds_mesh1d, uds_network1d = mutils.mesh1d_network1d_from_hydrolib_network(
