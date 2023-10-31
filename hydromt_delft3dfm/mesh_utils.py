@@ -55,9 +55,7 @@ def hydrolib_network_from_mesh(
     # add mesh2d
     if "mesh2d" in grids:
         dfm_network._mesh2d.meshkernel.mesh2d_set(grids["mesh2d"].mesh)
-    #    dfm_network._mesh2d._process(
-    #        grids["mesh2d"].mesh
-    #    )  # FIXME: test what if the mesh had bedlevel variable
+        # FIXME: test what if the mesh had bedlevel variable
 
     # add mesh1d (including mesh1d and networkd1d)
     if "mesh1d" in grids:
