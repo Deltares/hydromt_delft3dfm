@@ -383,7 +383,7 @@ def links1d2d_add_links_1d_to_2d(
     # Initialise hydrolib network object
     network = mutils.hydrolib_network_from_mesh(mesh)
     # Load 1d and 2d in meshkernel
-    #network._mesh1d._set_mesh1d()
+    network._mesh1d._set_mesh1d()
     #network._mesh2d._set_mesh2d()
 
     if within is None:
@@ -602,7 +602,7 @@ def links1d2d_add_links_2d_to_1d_lateral(
     # Initialise hydrolib network object
     network = mutils.hydrolib_network_from_mesh(mesh)
     # Load 1d and 2d in meshkernel
-    #network._mesh1d._set_mesh1d()
+    network._mesh1d._set_mesh1d()
     #network._mesh2d._set_mesh2d()
 
     geometrylist = network.meshkernel.mesh2d_get_mesh_boundaries_as_polygons()
