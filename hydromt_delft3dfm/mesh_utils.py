@@ -257,7 +257,6 @@ def mesh2d_from_hydrolib_network(
     uds_mesh2d : xu.UgridDataset
         Mesh2d UgridDataset.
     """
-    #network._mesh2d._set_mesh2d()
     mk_mesh2d = network._mesh2d.meshkernel.mesh2d_get()
     
     # meshkernel to xugrid Ugrid2D
@@ -310,7 +309,6 @@ def mesh_from_hydrolib_network(
 
     # Mesh2d
     if not network._mesh2d.is_empty():
-        # network._mesh2d._set_mesh2d()
         uds_mesh2d = mesh2d_from_hydrolib_network(network, crs)
 
         if mesh is None:

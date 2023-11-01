@@ -384,8 +384,7 @@ def links1d2d_add_links_1d_to_2d(
     network = mutils.hydrolib_network_from_mesh(mesh)
     # Load 1d and 2d in meshkernel
     network._mesh1d._set_mesh1d()
-    #network._mesh2d._set_mesh2d()
-
+    
     if within is None:
         # If not provided, create a box from the maximum bounds
         xmin = min(
@@ -484,8 +483,7 @@ def links1d2d_add_links_2d_to_1d_embedded(
     network = mutils.hydrolib_network_from_mesh(mesh)
     # Load 1d and 2d in meshkernel
     network._mesh1d._set_mesh1d()
-    #network._mesh2d._set_mesh2d()
-
+    
     # Get the max edge distance
     nodes2d = np.stack(
         [network._mesh2d.mesh2d_node_x, network._mesh2d.mesh2d_node_y], axis=1
@@ -601,8 +599,7 @@ def links1d2d_add_links_2d_to_1d_lateral(
     network = mutils.hydrolib_network_from_mesh(mesh)
     # Load 1d and 2d in meshkernel
     network._mesh1d._set_mesh1d()
-    #network._mesh2d._set_mesh2d()
-
+    
     geometrylist = network.meshkernel.mesh2d_get_mesh_boundaries_as_polygons()
     mpboundaries = GeometryList(**geometrylist.__dict__).to_geometry()
     if within is not None:
