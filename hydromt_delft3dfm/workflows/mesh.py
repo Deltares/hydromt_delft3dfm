@@ -388,19 +388,17 @@ def links1d2d_add_links_1d_to_2d(
 
     if within is None:
         # If not provided, create a box from the maximum bounds
-        mesh1d_output = network._mesh1d._get_mesh1d()
-        mesh2d_output = network._mesh2d.get_mesh2d()
         xmin = min(
-            mesh1d_output.node_x.min(), mesh2d_output.node_x.min()
+            network._mesh1d.mesh1d_node_x.min(), network._mesh2d.mesh2d_node_x.min()
         )
         xmax = max(
-            mesh1d_output.node_x.max(), mesh2d_output.node_x.max()
+            network._mesh1d.mesh1d_node_x.max(), network._mesh2d.mesh2d_node_x.max()
         )
         ymin = min(
-            mesh1d_output.node_y.min(), mesh2d_output.node_y.min()
+            network._mesh1d.mesh1d_node_y.min(), network._mesh2d.mesh2d_node_y.min()
         )
         ymax = max(
-            mesh1d_output.node_y.max(), mesh2d_output.node_y.max()
+            network._mesh1d.mesh1d_node_y.max(), network._mesh2d.mesh2d_node_y.max()
         )
 
         within = box(xmin, ymin, xmax, ymax)
@@ -424,11 +422,11 @@ def links1d2d_add_links_1d_to_2d(
     id1d = network._link1d2d.link1d2d[npresent:, 0]
     id2d = network._link1d2d.link1d2d[npresent:, 1]
     nodes1d = np.stack(
-        [mesh1d_output.node_x[id1d], mesh1d_output.node_y[id1d]],
+        [network._mesh1d.mesh1d_node_x[id1d], network._mesh1d.mesh1d_node_y[id1d]],
         axis=1,
     )
     faces2d = np.stack(
-        [mesh2d_output.face_x[id2d], mesh2d_output.face_y[id2d]],
+        [network._mesh2d.mesh2d_face_x[id2d], network._mesh2d.mesh2d_face_y[id2d]],
         axis=1,
     )
     lengths = np.hypot(nodes1d[:, 0] - faces2d[:, 0], nodes1d[:, 1] - faces2d[:, 1])
