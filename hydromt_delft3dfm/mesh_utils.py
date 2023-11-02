@@ -8,7 +8,6 @@ import xarray as xr
 import xugrid as xu
 from hydrolib.core.dflowfm import Network
 from pyproj import CRS
-import meshkernel
 
 logger = logging.getLogger(__name__)
 
