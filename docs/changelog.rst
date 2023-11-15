@@ -11,9 +11,11 @@ Unreleased
 
 Added
 -----
+- Support reading and writing of compound structures. (PR#113)
 
 Changed
 -------
+- Support multiple structures at the same location. (PR#113)
 
 Fixed
 -----

@@ -414,6 +414,8 @@ def read_structures(branches: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDat
     Read structures into hydrolib-core structures objects
     Returns structures geodataframe.
 
+    Will drop compound structures.
+
     Parameters
     ----------
     branches: geopandas.GeoDataFrame
@@ -453,6 +455,8 @@ def read_structures(branches: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDat
 def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     """
     write structures into hydrolib-core structures objects.
+
+    Will add compound structures.
 
     Parameters
     ----------

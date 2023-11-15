@@ -1494,19 +1494,18 @@ class DFlowFMModel(MeshModel):
         bridge_filter: Optional[str] = None,
         snap_offset: Optional[float] = None,
     ):
-        """Prepares bridges, including bridge locations and bridge crossections.
+        """Prepare bridges, including bridge locations and bridge crossections.
 
         The bridges are read from ``bridges_fn`` and if any missing, filled with information provided in ``bridges_defaults_fn``.
 
         When reading ``bridges_fn``, only locations within the region will be read.
-        Read locations are then filtered for value specified in ``bridge_filter`` on the column "structure_type" .
+        Read locations are then filtered for value specified in ``bridge_filter`` on the column "structure_type".
         Remaining locations are snapped to the existing network within a max distance defined in ``snap_offset`` and will be dropped if not snapped.
 
         A default rectangle bridge profile can be found in ``bridges_defaults_fn`` as an example.
 
         Structure attributes ['structure_id', 'structure_type'] are either taken from data or generated in the script.
-        Structure attributes ['shape', 'diameter', 'width', 't_width', 'height', 'closed', 'shift', 'length', 'pillarwidth', 'formfactor', 'friction_type', 'friction_value', 'allowedflowdir',  'inletlosscoeff', 'outletlosscoeff']
-            are either taken from data,  or in case of missing read from defaults.
+        Structure attributes ['shape', 'diameter', 'width', 't_width', 'height', 'closed', 'shift', 'length', 'pillarwidth', 'formfactor', 'friction_type', 'friction_value', 'allowedflowdir',  'inletlosscoeff', 'outletlosscoeff'] are either taken from data,  or in case of missing read from defaults.
 
         Adds/Updates model layers:
             * **bridges** geom: 1D bridges vector
@@ -1535,7 +1534,7 @@ class DFlowFMModel(MeshModel):
         See Also
         --------
         dflowfm._setup_1dstructures
-        """
+        """  # noqa: E501
         snap_offset = self._network_snap_offset if snap_offset is None else snap_offset
         _st_type = "bridge"
         _allowed_columns = [
@@ -1607,7 +1606,7 @@ class DFlowFMModel(MeshModel):
         culvert_filter: Optional[str] = None,
         snap_offset: Optional[float] = None,
     ):
-        """Prepares culverts, including locations and crossections. Note that only subtype culvert is supported, i.e. inverted siphon is not supported.
+        """Prepare culverts, including locations and crossections. Note that only subtype culvert is supported, i.e. inverted siphon is not supported.
 
         The culverts are read from ``culverts_fn`` and if any missing, filled with information provided in ``culverts_defaults_fn``.
 
@@ -1618,10 +1617,7 @@ class DFlowFMModel(MeshModel):
         A default ``culverts_defaults_fn`` that defines a circle culvert profile can be found in dflowfm.data.culverts as an example.
 
         Structure attributes ['structure_id', 'structure_type'] are either taken from data or generated in the script.
-        Structure attributes ['shape', 'diameter', 'width', 't_width', 'height', 'closed', 'leftlevel', 'rightlevel', 'length',
-            'valveonoff', 'valveopeningheight', 'numlosscoeff', 'relopening', 'losscoeff',
-            'friction_type', 'friction_value', 'allowedflowdir',  'inletlosscoeff', 'outletlosscoeff']
-            are either taken from data,  or in case of missing read from defaults.
+        Structure attributes ['shape', 'diameter', 'width', 't_width', 'height', 'closed', 'leftlevel', 'rightlevel', 'length','valveonoff', 'valveopeningheight', 'numlosscoeff', 'relopening', 'losscoeff', 'friction_type', 'friction_value', 'allowedflowdir',  'inletlosscoeff', 'outletlosscoeff'] are either taken from data,  or in case of missing read from defaults.
 
         Adds/Updates model layers:
             * **culverts** geom: 1D culverts vector
@@ -1632,32 +1628,26 @@ class DFlowFMModel(MeshModel):
             Path or data source name for culverts, see data/data_sources.yml.
             Note only the points that are within the region polygon will be used.
 
-            * Optional variables: ['structure_id', 'structure_type', 'shape', 'diameter', 'width', 't_width', 'height', 'closed',
-                                    'leftlevel', 'rightlevel', 'length', 'valveonoff', 'valveopeningheight',
-                                    'numlosscoeff', 'relopening', 'losscoeff',
-                                    'friction_type', 'friction_value', 'allowedflowdir',  'inletlosscoeff', 'outletlosscoeff']
+            * Optional variables: ['structure_id', 'structure_type', 'shape', 'diameter', 'width', 't_width', 'height', 'closed', 'leftlevel', 'rightlevel', 'length', 'valveonoff', 'valveopeningheight', 'numlosscoeff', 'relopening', 'losscoeff', 'friction_type', 'friction_value', 'allowedflowdir',  'inletlosscoeff', 'outletlosscoeff']
 
         culverts_defaults_fn : str Path, optional
             Path to a csv file containing all defaults values per "structure_type".
             By default `hydrolib.hydromt_delft3dfm.data.culverts.culverts_defaults.csv` is used.
             This file describes a default circle culvert profile.
 
-            * Allowed variables: ['structure_type', 'shape', 'diameter', 'width', 't_width', 'height', 'closed',
-                                    'leftlevel', 'rightlevel', 'length', 'valveonoff', 'valveopeningheight',
-                                    'numlosscoeff', 'relopening', 'losscoeff',
-                                    'friction_type', 'friction_value', 'allowedflowdir',  'inletlosscoeff', 'outletlosscoeff']
+            * Allowed variables: ['structure_type', 'shape', 'diameter', 'width', 't_width', 'height', 'closed', 'leftlevel', 'rightlevel', 'length', 'valveonoff', 'valveopeningheight', 'numlosscoeff', 'relopening', 'losscoeff', 'friction_type', 'friction_value', 'allowedflowdir',  'inletlosscoeff', 'outletlosscoeff']
 
         culvert_filter: str, optional
             Keyword in "structure_type" column of ``culverts_fn`` used to filter culvert features. If None all features are used (default).
 
         snap_offset: float, optional
             Snapping tolenrance to automatically snap culverts to network and add ['branchid', 'chainage'] attributes.
-            By default None. In this case, global variable "network_snap_offset" will be used..
+            By default None. In this case, global variable "network_snap_offset" will be used.
 
         See Also
         --------
         dflowfm._setup_1dstructures
-        """
+        """  # noqa: E501
         snap_offset = self._network_snap_offset if snap_offset is None else snap_offset
         _st_type = "culvert"
         _allowed_columns = [
