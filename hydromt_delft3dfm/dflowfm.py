@@ -2769,20 +2769,6 @@ class DFlowFMModel(MeshModel):
                 structures.append(self.geoms.get(st).to_dict("records"))
             structures = list(itertools.chain.from_iterable(structures))
             structures = pd.DataFrame(structures).replace(np.nan, None)
-            # add compound structures
-            cmp_structures = structures.groupby(["chainage", "branchid"])["id"].apply(list)
-            for cmp_count, cmp_st in enumerate(cmp_structures, start=1):
-                structures = pd.concat([structures, 
-                                        pd.DataFrame(index=[max(structures.index) + 1],
-                                                     data={"id": [f"CompoundStructure_{cmp_count}"],
-                                                           "name": [f"CompoundStructure_{cmp_count}"],
-                                                           "type": ["compound"],
-                                                           "numStructures": [len(cmp_st)],
-                                                           "structureIds": [";".join(cmp_st)]
-                                                           }
-                                                    )
-                                       ],
-                                       axis=0)
             # write
             self.logger.info("Writting structures file.")
             structures_fn = utils.write_structures(

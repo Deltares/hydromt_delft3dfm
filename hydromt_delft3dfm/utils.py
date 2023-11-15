@@ -441,6 +441,9 @@ def read_structures(branches: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDat
         axis=1,
     )
 
+    # Drop compound structures (only write but do not read it back)
+    df_structures = df_structures[df_structures["type"] != "compound"]
+
     # Add geometry
     gdf_structures = gis_utils.get_gdf_from_branches(branches, df_structures)
 
@@ -463,6 +466,28 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     structures_fn: str
         relative path to structures file.
     """
+
+    # Add compound structures
+    cmp_structures = gdf.groupby(["chainage", "branchid"])["id"].apply(list)
+    for cmp_count, cmp_st in enumerate(cmp_structures, start=1):
+        gdf = pd.concat(
+            [
+                gdf,
+                pd.DataFrame(
+                    index=[max(gdf.index) + 1],
+                    data={
+                        "id": [f"CompoundStructure_{cmp_count}"],
+                        "name": [f"CompoundStructure_{cmp_count}"],
+                        "type": ["compound"],
+                        "numStructures": [len(cmp_st)],
+                        "structureIds": [";".join(cmp_st)],
+                    },
+                ),
+            ],
+            axis=0,
+        )
+
+    # Write structures
     structures = StructureModel(structure=gdf.to_dict("records"))
 
     structures_fn = structures._filename() + ".ini"
