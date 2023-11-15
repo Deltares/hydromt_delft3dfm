@@ -62,7 +62,10 @@ def hydrolib_network_from_mesh(
                 # use hydrolib-core conventions as it does harmonization when reading.
                 # check conventions at hydrolib.core.dflowfm.net.ugrid_conventions.json
                 setattr(dfm_network._mesh1d, var, val.values)
-        dfm_network._mesh1d.meshkernel.mesh1d_set(grids["mesh1d"].mesh)
+        # process
+        dfm_network._mesh1d._process_network1d()
+        dfm_network._mesh1d._set_mesh1d()  # TODO: avoid this private function
+        # dfm_network._mesh1d.meshkernel.mesh1d_set(grids["mesh1d"].mesh)
 
     # add 1d2dlinks
     _link1d2d_attrs = dfm_network._link1d2d.__dict__.keys()

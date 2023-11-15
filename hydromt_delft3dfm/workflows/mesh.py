@@ -70,11 +70,7 @@ def mesh1d_network1d_from_branches(
     crs = opensystem.crs
 
     # create network
-    if opensystem.crs.is_geographic:
-        projection = mk.ProjectionType.SPHERICAL
-    else:
-        projection = mk.ProjectionType.CARTESIAN
-    dfm_network = Network(projection=projection)
+    dfm_network = Network(is_geographic=crs.is_geographic)
     # add open system mesh1d
     node_distance = openwater_computation_node_distance
     dfm_network, _ = mesh1d_add_branch(
@@ -379,7 +375,7 @@ def links1d2d_add_links_1d_to_2d(
     """
     # Initialise hydrolib network object
     network = mutils.hydrolib_network_from_mesh(mesh)
-    
+
     if within is None:
         # If not provided, create a box from the maximum bounds
         xmin = min(
@@ -476,7 +472,7 @@ def links1d2d_add_links_2d_to_1d_embedded(
     """
     # Initialise hydrolib network object
     network = mutils.hydrolib_network_from_mesh(mesh)
-    
+
     # Get the max edge distance
     nodes2d = np.stack(
         [network._mesh2d.mesh2d_node_x, network._mesh2d.mesh2d_node_y], axis=1
@@ -590,7 +586,7 @@ def links1d2d_add_links_2d_to_1d_lateral(
     """
     # Initialise hydrolib network object
     network = mutils.hydrolib_network_from_mesh(mesh)
-    
+
     geometrylist = network.meshkernel.mesh2d_get_mesh_boundaries_as_polygons()
     mpboundaries = GeometryList(**geometrylist.__dict__).to_geometry()
     if within is not None:
