@@ -101,7 +101,7 @@ def prepare_1dstructures(
     gdf_st = update_data_columns_attributes_based_on_filter(
         gdf_st, params, type_col, st_type
     )
-
+    
     # 4. snap structures to branches
     # setup branch_id - snap structures to branch (inplace of structures,
     # will add branch_id and branch_offset columns)
@@ -131,7 +131,7 @@ def prepare_1dstructures(
     if "shift" not in gdf_st.columns:
         gdf_st["shift"] = np.nan
     # derive crosssections
-    gdf_st_crossections = set_point_crosssections(branches, gdf_st, maxdist=snap_offset)
+    gdf_st_crossections = set_point_crosssections(branches, gdf_st, maxdist=snap_offset, check_dupl_geom=False)
     # remove crossection locations and any friction from the setup
     gdf_st_crsdefs = gdf_st_crossections.drop(
         columns=[
@@ -148,7 +148,7 @@ def prepare_1dstructures(
     # 6. replace np.nan as None
     gdf_st = gdf_st.replace(np.nan, None)
 
-    # 7. remove index
-    gdf_st = gdf_st.reset_index()
-
+    # 7. remove index and add name
+    gdf_st = gdf_st.reset_index(names=id_col)  # force colname to index_col with names=
+    gdf_st["structure_name"] = gdf_st[id_col]
     return gdf_st
