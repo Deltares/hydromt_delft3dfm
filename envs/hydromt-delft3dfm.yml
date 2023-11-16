@@ -33,7 +33,6 @@ dependencies:
   - networkx
   - llvmlite>=0.39.1 # hydrolib-core
   - pip:
-      #- hydrolib-core==0.5.2 # TODO: currently requires branch below
-      - git+https://github.com/deltares/hydrolib-core@569-bumping-meshkernel-version-to-latest-v300
+      - hydrolib-core==0.6.0
       - git+https://github.com/deltares/xugrid@169-update-meshkernel-api-calls-after-new-release
       - meshkernel>=3.0.0
