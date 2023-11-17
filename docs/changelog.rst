@@ -8,16 +8,18 @@ The format is based on `Keep a Changelog`_, and this project adheres to
 
 Unreleased
 ==========
-Major dependency upgrade.
+Major dependency upgrade and add support for compound structures.
 
 Added
 -----
+- Support reading and writing of compound structures. (PR#113)
 
 Changed
 -------
 - Upgraded meshkernel dependency to version 3.0.0. (PR#109) 
 - Upgraded xugrid dependency to version 0.7.1. (PR#109) 
 - Upgraded hydrolib-core dependency to version 0.6.0. (PR#109) 
+- Support multiple structures at the same location. (PR#113)
 
 Fixed
 -----
