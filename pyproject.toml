@@ -8,6 +8,7 @@ authors = [
 	{ name = "Rinske Hutten", email = "rinske.hutten@deltares.nl" },
 	{ name = "Xiaohan Li", email = "xiaohan.li@deltares.nl" },
 	{ name = "Hélène Boisgontier", email = "helene.boisgontier@deltares.nl" },
+	{ name = "Jelmer Veenstra", email = "jelmer.veenstra@deltares.nl" },
 ]
 dependencies = [
 	"hydromt >=0.9.0",

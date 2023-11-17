@@ -8,12 +8,16 @@ The format is based on `Keep a Changelog`_, and this project adheres to
 
 Unreleased
 ==========
+Major dependency upgrade.
 
 Added
 -----
 
 Changed
 -------
+- Upgraded meshkernel dependency to version 3.0.0. (PR#109) 
+- Upgraded xugrid dependency to version 0.7.1. (PR#109) 
+- Upgraded hydrolib-core dependency to version 0.6.0. (PR#109) 
 
 Fixed
 -----
