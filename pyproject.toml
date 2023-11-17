@@ -15,9 +15,8 @@ dependencies = [
 	"numpy",
 	"pandas",
 	"xarray",
-	"hydrolib-core >=0.6.0",# TODO: currently requires branch below
-	#"xugrid >=0.6.5", # TODO: currently requires branch below
-	"xugrid@git+https://github.com/deltares/xugrid@169-update-meshkernel-api-calls-after-new-release",
+	"hydrolib-core >=0.6.0",
+	"xugrid >=0.7.1",
 	"meshkernel >= 3.0.0",
 	"pyproj",
 	"shapely >=2.0.0",
