@@ -6,8 +6,8 @@ All notable changes to this project will be documented in this page.
 The format is based on `Keep a Changelog`_, and this project adheres to
 `Semantic Versioning`_.
 
-Unreleased
-==========
+v0.2.0 (20 November 2023)
+=========================
 Major dependency upgrade and add support for compound structures.
 
 Added
@@ -20,9 +20,6 @@ Changed
 - Upgraded xugrid dependency to version 0.7.1. (PR#109) 
 - Upgraded hydrolib-core dependency to version 0.6.0. (PR#109) 
 - Support multiple structures at the same location. (PR#113)
-
-Fixed
------
 
 v0.1.2 (20 October 2023)
 ========================
