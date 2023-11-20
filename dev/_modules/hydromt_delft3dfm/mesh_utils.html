@@ -468,9 +468,8 @@
 
     <span class="c1"># add mesh2d</span>
     <span class="k">if</span> <span class="s2">&quot;mesh2d&quot;</span> <span class="ow">in</span> <span class="n">grids</span><span class="p">:</span>
-        <span class="n">dfm_network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">_process</span><span class="p">(</span>
-            <span class="n">grids</span><span class="p">[</span><span class="s2">&quot;mesh2d&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mesh</span>
-        <span class="p">)</span>  <span class="c1"># FIXME: test what if the mesh had bedlevel variable</span>
+        <span class="n">dfm_network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_set</span><span class="p">(</span><span class="n">grids</span><span class="p">[</span><span class="s2">&quot;mesh2d&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
+        <span class="c1"># FIXME: test what if the mesh had bedlevel variable</span>
 
     <span class="c1"># add mesh1d (including mesh1d and networkd1d)</span>
     <span class="k">if</span> <span class="s2">&quot;mesh1d&quot;</span> <span class="ow">in</span> <span class="n">grids</span><span class="p">:</span>
@@ -484,7 +483,8 @@
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">dfm_network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">val</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
         <span class="c1"># process</span>
         <span class="n">dfm_network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">_process_network1d</span><span class="p">()</span>
-        <span class="n">dfm_network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">_set_mesh1d</span><span class="p">()</span>
+        <span class="n">dfm_network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">_set_mesh1d</span><span class="p">()</span>  <span class="c1"># TODO: avoid this private function</span>
+        <span class="c1"># dfm_network._mesh1d.meshkernel.mesh1d_set(grids[&quot;mesh1d&quot;].mesh)</span>
 
     <span class="c1"># add 1d2dlinks</span>
     <span class="n">_link1d2d_attrs</span> <span class="o">=</span> <span class="n">dfm_network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
@@ -678,7 +678,6 @@
 <span class="sd">    uds_mesh2d : xu.UgridDataset</span>
 <span class="sd">        Mesh2d UgridDataset.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">_set_mesh2d</span><span class="p">()</span>
     <span class="n">mk_mesh2d</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_get</span><span class="p">()</span>
 
     <span class="c1"># meshkernel to xugrid Ugrid2D</span>
@@ -733,7 +732,6 @@
 
     <span class="c1"># Mesh2d</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
-        <span class="c1"># network._mesh2d._set_mesh2d()</span>
         <span class="n">uds_mesh2d</span> <span class="o">=</span> <span class="n">mesh2d_from_hydrolib_network</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">crs</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">mesh</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

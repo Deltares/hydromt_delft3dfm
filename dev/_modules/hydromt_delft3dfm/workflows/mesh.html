@@ -509,9 +509,6 @@
         <span class="n">branch_orders</span><span class="o">=</span><span class="n">closedsystem</span><span class="o">.</span><span class="n">branchorder</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
     <span class="p">)</span>
 
-    <span class="c1"># derive mesh1d</span>
-    <span class="n">dfm_network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">_set_mesh1d</span><span class="p">()</span>
-
     <span class="c1"># Mesh1d to mesh1d and network1d xugrid</span>
     <span class="n">uds_mesh1d</span><span class="p">,</span> <span class="n">uds_network1d</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">mesh1d_network1d_from_hydrolib_network</span><span class="p">(</span>
         <span class="n">dfm_network</span><span class="p">,</span> <span class="n">crs</span>
@@ -806,9 +803,6 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Initialise hydrolib network object</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">hydrolib_network_from_mesh</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
-    <span class="c1"># Load 1d and 2d in meshkernel</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">_set_mesh1d</span><span class="p">()</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">_set_mesh2d</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">within</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># If not provided, create a box from the maximum bounds</span>
@@ -909,9 +903,6 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Initialise hydrolib network object</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">hydrolib_network_from_mesh</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
-    <span class="c1"># Load 1d and 2d in meshkernel</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">_set_mesh1d</span><span class="p">()</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">_set_mesh2d</span><span class="p">()</span>
 
     <span class="c1"># Get the max edge distance</span>
     <span class="n">nodes2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
@@ -1029,9 +1020,6 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Initialise hydrolib network object</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">hydrolib_network_from_mesh</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
-    <span class="c1"># Load 1d and 2d in meshkernel</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">_set_mesh1d</span><span class="p">()</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">_set_mesh2d</span><span class="p">()</span>
 
     <span class="n">geometrylist</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_get_mesh_boundaries_as_polygons</span><span class="p">()</span>
     <span class="n">mpboundaries</span> <span class="o">=</span> <span class="n">GeometryList</span><span class="p">(</span><span class="o">**</span><span class="n">geometrylist</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span><span class="o">.</span><span class="n">to_geometry</span><span class="p">()</span>
