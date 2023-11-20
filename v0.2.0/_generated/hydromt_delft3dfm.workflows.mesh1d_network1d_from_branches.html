@@ -1,0 +1,761 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches &#8212; HydroMT Delft3D FM  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/theme-deltares.css?v=17060807" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_generated/hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="hydromt_delft3dfm.workflows.mesh1d_add_branch" href="hydromt_delft3dfm.workflows.mesh1d_add_branch.html" />
+    <link rel="prev" title="hydromt_delft3dfm.workflows.generate_manholes_on_branches" href="hydromt_delft3dfm.workflows.generate_manholes_on_branches.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../_static/hydromt-logo.jpg" class="logo__image only-light" alt=""/>
+    <script>document.write(`<img src="../_static/hydromt-logo.jpg" class="logo__image only-dark" alt=""/>`);</script>
+  
+  
+    <p class="title logo__title">HydroMT Delft3D FM</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/intro.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/intro.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../api.html">
+                        API reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../dev_guide/intro.html">
+                        Developments
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
+                    HydroMT core
+                  </a>
+                </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/intro.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/intro.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../api.html">
+                        API reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../dev_guide/intro.html">
+                        Developments
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
+                    HydroMT core
+                  </a>
+                </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.html">hydromt_delft3dfm.DFlowFMModel</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_config.html">hydromt_delft3dfm.DFlowFMModel.setup_config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_channels.html">hydromt_delft3dfm.DFlowFMModel.setup_channels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_rivers_from_dem.html">hydromt_delft3dfm.DFlowFMModel.setup_rivers_from_dem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_rivers.html">hydromt_delft3dfm.DFlowFMModel.setup_rivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_pipes.html">hydromt_delft3dfm.DFlowFMModel.setup_pipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_manholes.html">hydromt_delft3dfm.DFlowFMModel.setup_manholes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_1dboundary.html">hydromt_delft3dfm.DFlowFMModel.setup_1dboundary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_bridges.html">hydromt_delft3dfm.DFlowFMModel.setup_bridges</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_culverts.html">hydromt_delft3dfm.DFlowFMModel.setup_culverts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_mesh2d.html">hydromt_delft3dfm.DFlowFMModel.setup_mesh2d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_mesh2d_refine.html">hydromt_delft3dfm.DFlowFMModel.setup_mesh2d_refine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_link1d2d.html">hydromt_delft3dfm.DFlowFMModel.setup_link1d2d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_maps_from_rasterdataset.html">hydromt_delft3dfm.DFlowFMModel.setup_maps_from_rasterdataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_maps_from_raster_reclass.html">hydromt_delft3dfm.DFlowFMModel.setup_maps_from_raster_reclass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_2dboundary.html">hydromt_delft3dfm.DFlowFMModel.setup_2dboundary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_rainfall_from_constant.html">hydromt_delft3dfm.DFlowFMModel.setup_rainfall_from_constant</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_rainfall_from_uniform_timeseries.html">hydromt_delft3dfm.DFlowFMModel.setup_rainfall_from_uniform_timeseries</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.region.html">hydromt_delft3dfm.DFlowFMModel.region</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.crs.html">hydromt_delft3dfm.DFlowFMModel.crs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.bounds.html">hydromt_delft3dfm.DFlowFMModel.bounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.res.html">hydromt_delft3dfm.DFlowFMModel.res</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.root.html">hydromt_delft3dfm.DFlowFMModel.root</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.config.html">hydromt_delft3dfm.DFlowFMModel.config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.maps.html">hydromt_delft3dfm.DFlowFMModel.maps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.geoms.html">hydromt_delft3dfm.DFlowFMModel.geoms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.forcing.html">hydromt_delft3dfm.DFlowFMModel.forcing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.states.html">hydromt_delft3dfm.DFlowFMModel.states</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.results.html">hydromt_delft3dfm.DFlowFMModel.results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.mesh.html">hydromt_delft3dfm.DFlowFMModel.mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.dfmmodel.html">hydromt_delft3dfm.DFlowFMModel.dfmmodel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.dimr.html">hydromt_delft3dfm.DFlowFMModel.dimr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.branches.html">hydromt_delft3dfm.DFlowFMModel.branches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.rivers.html">hydromt_delft3dfm.DFlowFMModel.rivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.channels.html">hydromt_delft3dfm.DFlowFMModel.channels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.pipes.html">hydromt_delft3dfm.DFlowFMModel.pipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.opensystem.html">hydromt_delft3dfm.DFlowFMModel.opensystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.closedsystem.html">hydromt_delft3dfm.DFlowFMModel.closedsystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.mesh_names.html">hydromt_delft3dfm.DFlowFMModel.mesh_names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.mesh_grids.html">hydromt_delft3dfm.DFlowFMModel.mesh_grids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.mesh_datasets.html">hydromt_delft3dfm.DFlowFMModel.mesh_datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.mesh_gdf.html">hydromt_delft3dfm.DFlowFMModel.mesh_gdf</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.read.html">hydromt_delft3dfm.DFlowFMModel.read</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.write.html">hydromt_delft3dfm.DFlowFMModel.write</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.build.html">hydromt_delft3dfm.DFlowFMModel.build</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.update.html">hydromt_delft3dfm.DFlowFMModel.update</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.set_root.html">hydromt_delft3dfm.DFlowFMModel.set_root</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.write_data_catalog.html">hydromt_delft3dfm.DFlowFMModel.write_data_catalog</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.get_config.html">hydromt_delft3dfm.DFlowFMModel.get_config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.set_config.html">hydromt_delft3dfm.DFlowFMModel.set_config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.read_config.html">hydromt_delft3dfm.DFlowFMModel.read_config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.write_config.html">hydromt_delft3dfm.DFlowFMModel.write_config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.set_maps.html">hydromt_delft3dfm.DFlowFMModel.set_maps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.read_maps.html">hydromt_delft3dfm.DFlowFMModel.read_maps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.write_maps.html">hydromt_delft3dfm.DFlowFMModel.write_maps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.set_geoms.html">hydromt_delft3dfm.DFlowFMModel.set_geoms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.read_geoms.html">hydromt_delft3dfm.DFlowFMModel.read_geoms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.write_geoms.html">hydromt_delft3dfm.DFlowFMModel.write_geoms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.set_forcing.html">hydromt_delft3dfm.DFlowFMModel.set_forcing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.read_forcing.html">hydromt_delft3dfm.DFlowFMModel.read_forcing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.write_forcing.html">hydromt_delft3dfm.DFlowFMModel.write_forcing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.set_states.html">hydromt_delft3dfm.DFlowFMModel.set_states</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.read_states.html">hydromt_delft3dfm.DFlowFMModel.read_states</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.write_states.html">hydromt_delft3dfm.DFlowFMModel.write_states</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.set_results.html">hydromt_delft3dfm.DFlowFMModel.set_results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.read_results.html">hydromt_delft3dfm.DFlowFMModel.read_results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.get_mesh.html">hydromt_delft3dfm.DFlowFMModel.get_mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.set_mesh.html">hydromt_delft3dfm.DFlowFMModel.set_mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.set_link1d2d.html">hydromt_delft3dfm.DFlowFMModel.set_link1d2d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.read_mesh.html">hydromt_delft3dfm.DFlowFMModel.read_mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.write_mesh.html">hydromt_delft3dfm.DFlowFMModel.write_mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.set_branches.html">hydromt_delft3dfm.DFlowFMModel.set_branches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.read_dimr.html">hydromt_delft3dfm.DFlowFMModel.read_dimr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.write_dimr.html">hydromt_delft3dfm.DFlowFMModel.write_dimr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.init_dfmmodel.html">hydromt_delft3dfm.DFlowFMModel.init_dfmmodel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.get_model_time.html">hydromt_delft3dfm.DFlowFMModel.get_model_time</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.get_boundaries_with_nodeid.html">hydromt_delft3dfm.workflows.get_boundaries_with_nodeid</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.generate_boundaries_from_branches.html">hydromt_delft3dfm.workflows.generate_boundaries_from_branches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.select_boundary_type.html">hydromt_delft3dfm.workflows.select_boundary_type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.validate_boundaries.html">hydromt_delft3dfm.workflows.validate_boundaries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.compute_boundary_values.html">hydromt_delft3dfm.workflows.compute_boundary_values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.compute_2dboundary_values.html">hydromt_delft3dfm.workflows.compute_2dboundary_values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.compute_meteo_forcings.html">hydromt_delft3dfm.workflows.compute_meteo_forcings</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.prepare_branches.html">hydromt_delft3dfm.workflows.prepare_branches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.process_branches.html">hydromt_delft3dfm.workflows.process_branches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.validate_branches.html">hydromt_delft3dfm.workflows.validate_branches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.add_branches.html">hydromt_delft3dfm.workflows.add_branches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.find_nearest_branch.html">hydromt_delft3dfm.workflows.find_nearest_branch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.update_data_columns_attributes.html">hydromt_delft3dfm.workflows.update_data_columns_attributes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.update_data_columns_attribute_from_query.html">hydromt_delft3dfm.workflows.update_data_columns_attribute_from_query</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.snap_newbranches_to_branches_at_snappednodes.html">hydromt_delft3dfm.workflows.snap_newbranches_to_branches_at_snappednodes</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.prepare_default_friction_and_crosssection.html">hydromt_delft3dfm.workflows.prepare_default_friction_and_crosssection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.init_crosssections_options.html">hydromt_delft3dfm.workflows.init_crosssections_options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.set_branch_crosssections.html">hydromt_delft3dfm.workflows.set_branch_crosssections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.set_xyz_crosssections.html">hydromt_delft3dfm.workflows.set_xyz_crosssections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.set_point_crosssections.html">hydromt_delft3dfm.workflows.set_point_crosssections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.add_crosssections.html">hydromt_delft3dfm.workflows.add_crosssections</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.invert_levels_from_dem.html">hydromt_delft3dfm.workflows.invert_levels_from_dem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.get_river_bathymetry.html">hydromt_delft3dfm.workflows.get_river_bathymetry</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.generate_manholes_on_branches.html">hydromt_delft3dfm.workflows.generate_manholes_on_branches</a></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.mesh1d_add_branch.html">hydromt_delft3dfm.workflows.mesh1d_add_branch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.mesh2d_refine.html">hydromt_delft3dfm.workflows.mesh2d_refine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.links1d2d_add_links_1d_to_2d.html">hydromt_delft3dfm.workflows.links1d2d_add_links_1d_to_2d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_embedded.html">hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_embedded</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_lateral.html">hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_lateral</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.parse_region_geometry.html">hydromt_delft3dfm.workflows.parse_region_geometry</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.generate_roughness.html">hydromt_delft3dfm.workflows.generate_roughness</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.prepare_1dstructures.html">hydromt_delft3dfm.workflows.prepare_1dstructures</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_branches_gui.html">hydromt_delft3dfm.utils.read_branches_gui</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_branches_gui.html">hydromt_delft3dfm.utils.write_branches_gui</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_crosssections.html">hydromt_delft3dfm.utils.read_crosssections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_crosssections.html">hydromt_delft3dfm.utils.write_crosssections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_friction.html">hydromt_delft3dfm.utils.read_friction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_friction.html">hydromt_delft3dfm.utils.write_friction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_structures.html">hydromt_delft3dfm.utils.read_structures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_structures.html">hydromt_delft3dfm.utils.write_structures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_manholes.html">hydromt_delft3dfm.utils.read_manholes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_manholes.html">hydromt_delft3dfm.utils.write_manholes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_1dboundary.html">hydromt_delft3dfm.utils.read_1dboundary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_1dboundary.html">hydromt_delft3dfm.utils.write_1dboundary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_2dboundary.html">hydromt_delft3dfm.utils.read_2dboundary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_2dboundary.html">hydromt_delft3dfm.utils.write_2dboundary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_meteo.html">hydromt_delft3dfm.utils.read_meteo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_meteo.html">hydromt_delft3dfm.utils.write_meteo</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.mesh_utils.hydrolib_network_from_mesh.html">hydromt_delft3dfm.mesh_utils.hydrolib_network_from_mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.mesh_utils.mesh1d_network1d_from_hydrolib_network.html">hydromt_delft3dfm.mesh_utils.mesh1d_network1d_from_hydrolib_network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.mesh_utils.links1d2d_from_hydrolib_network.html">hydromt_delft3dfm.mesh_utils.links1d2d_from_hydrolib_network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.mesh_utils.mesh_from_hydrolib_network.html">hydromt_delft3dfm.mesh_utils.mesh_from_hydrolib_network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.mesh_utils.mesh1d_nodes_geodataframe.html">hydromt_delft3dfm.mesh_utils.mesh1d_nodes_geodataframe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.mesh_utils.network1d_nodes_geodataframe.html">hydromt_delft3dfm.mesh_utils.network1d_nodes_geodataframe</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.graph_utils.gpd_to_digraph.html">hydromt_delft3dfm.graph_utils.gpd_to_digraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.graph_utils.get_endnodes_from_lines.html">hydromt_delft3dfm.graph_utils.get_endnodes_from_lines</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.gis_utils.split_lines.html">hydromt_delft3dfm.gis_utils.split_lines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.gis_utils.cut_pieces.html">hydromt_delft3dfm.gis_utils.cut_pieces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.gis_utils.check_gpd_attributes.html">hydromt_delft3dfm.gis_utils.check_gpd_attributes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.gis_utils.update_data_columns_attributes_based_on_filter.html">hydromt_delft3dfm.gis_utils.update_data_columns_attributes_based_on_filter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.gis_utils.get_gdf_from_branches.html">hydromt_delft3dfm.gis_utils.get_gdf_from_branches</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">hydromt_delf...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="hydromt-delft3dfm-workflows-mesh1d-network1d-from-branches">
+<h1>hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches<a class="headerlink" href="#hydromt-delft3dfm-workflows-mesh1d-network1d-from-branches" title="Link to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches">
+<span class="sig-prename descclassname"><span class="pre">hydromt_delft3dfm.workflows.</span></span><span class="sig-name descname"><span class="pre">mesh1d_network1d_from_branches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opensystem</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame" title="(in GeoPandas v0.dev+untagged)"><span class="pre">GeoDataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">closedsystem</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame" title="(in GeoPandas v0.dev+untagged)"><span class="pre">GeoDataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">openwater_computation_node_distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">40.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">UgridDataset</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">UgridDataset</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/hydromt_delft3dfm/workflows/mesh.html#mesh1d_network1d_from_branches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches" title="Link to this definition">#</a></dt>
+<dd><p>Return xugrid mesh1d and network1d UgridDataset from branches.</p>
+<p>Uses hydrolib-core network object and add_branch methods to build the
+network and then converts back to xugrid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>opensystem</strong> (<em>gpd.GeoDataFrame</em>) – GeoDataFrame containing open system branches.</p></li>
+<li><p><strong>closedsystem</strong> (<em>gpd.GeoDataFrame</em>) – GeoDataFrame containing closed system branches.</p></li>
+<li><p><strong>openwater_computation_node_distance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Node distance for open water computation, by default 40.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>uds_mesh1d</strong> (<em>xu.UgridDataset</em>) – Mesh1d UgridDataset.</p></li>
+<li><p><strong>uds_network1d</strong> (<em>xu.UgridDataset</em>) – Network1d UgridDataset.
+Note that it is part of the Deltares-0.11 conventions.
+These newly proposed conventions should currently be seen as an extension
+on top of the regular CF-conventions (≥1.8) and, in particular, on top of
+the UGRID (1.0) conventions.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="hydromt_delft3dfm.workflows.generate_manholes_on_branches.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">hydromt_delft3dfm.workflows.generate_manholes_on_branches</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="hydromt_delft3dfm.workflows.mesh1d_add_branch.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">hydromt_delft3dfm.workflows.mesh1d_add_branch</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches"><code class="docutils literal notranslate"><span class="pre">mesh1d_network1d_from_branches()</span></code></a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/Deltares/hydromt_delft3dfm/edit/main/docs/_generated/hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div class="tocsection sourcelink">
+    <a href="../_sources/_generated/hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright Deltares.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
