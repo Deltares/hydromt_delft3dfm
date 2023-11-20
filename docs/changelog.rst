@@ -6,6 +6,18 @@ All notable changes to this project will be documented in this page.
 The format is based on `Keep a Changelog`_, and this project adheres to
 `Semantic Versioning`_.
 
+Unreleased
+==========
+
+Added
+-----
+
+Changed
+-------
+
+Fixed
+-----
+
 v0.2.0 (20 November 2023)
 =========================
 Major dependency upgrade and add support for compound structures.
