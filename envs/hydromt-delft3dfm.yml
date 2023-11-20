@@ -29,9 +29,9 @@ dependencies:
   - sphinx # docs
   - sphinx-design # docs
   - xarray
-  - xugrid
   - networkx
   - llvmlite>=0.39.1 # hydrolib-core
   - pip:
-      - hydrolib-core==0.5.2
-      - meshkernel>=2.1.0
+      - hydrolib-core>=0.6.0
+      - xugrid>=0.7.1
+      - meshkernel>=3.0.0
