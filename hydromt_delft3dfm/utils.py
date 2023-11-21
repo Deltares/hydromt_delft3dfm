@@ -102,7 +102,7 @@ def read_branches_gui(
 
     # Merge the two df based on branchid
     df_gui = df_gui.drop_duplicates(subset="branchid")
-    gdf_out = gdf.merge(df_gui, on="branchid", how="left")
+    gdf_out = gdf.merge(df_gui, on="branchid", how="left", validate=None)
 
     return gdf_out
 
