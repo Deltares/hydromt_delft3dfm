@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+"""Utilities mesh functions for Delft3D-FM model."""
 
 import logging
 from typing import Tuple
@@ -26,7 +26,7 @@ def hydrolib_network_from_mesh(
     mesh: xu.UgridDataset,
 ) -> Network:
     """
-    Converts from xugrid mesh to hydrolib-core network object.
+    Convert from xugrid mesh to hydrolib-core network object.
 
     Parameters
     ----------
@@ -83,7 +83,7 @@ def mesh1d_network1d_from_hydrolib_network(
     crs: CRS,
 ) -> Tuple[xu.UgridDataset, xu.UgridDataset]:
     """
-    Creates xugrid mesh1d and network1d UgridDataset from hydrolib-core network object.
+    Create xugrid mesh1d and network1d UgridDataset from hydrolib-core network object.
 
     Parameters
     ----------
@@ -130,10 +130,11 @@ def mesh1d_network1d_from_hydrolib_network(
         uds_mesh1d = xu.UgridDataset(ds, grids=grid_mesh1d)
 
         # derive network1d
-        # The 1D network topology serves as the coordinate space in which a 1D mesh discretization
-        # will later be defined. The network is largely based on the UGRID conventions for its topology
-        # (i.e., nodes and edges) and additionally uses an optional edge_geometry to define the
-        # precise network branch geometries (more about this in the next Section).
+        # The 1D network topology serves as the coordinate space in which a 1D mesh
+        # discretization will later be defined. The network is largely based on the
+        # UGRID conventions for its topology (i.e., nodes and edges) and additionally
+        # uses an optional edge_geometry to define the precise network branch geometries
+        # (more about this in the next Section).
 
         grid_network1d = xu.Ugrid1d(
             node_x=mesh1d.network1d_node_x,
@@ -184,7 +185,8 @@ def mesh1d_network1d_from_hydrolib_network(
             network_edge_dim,
             mesh1d.network1d_branch_order,
         )
-        # might be supported in the future https://github.com/Deltares/HYDROLIB-core/issues/561
+        # might be supported in the future
+        # https://github.com/Deltares/HYDROLIB-core/issues/561
         # ds["network1d_branch_type"] = (
         #     edge_dim,
         #     mesh1d.network1d_branch_type,
@@ -238,7 +240,7 @@ def mesh2d_from_hydrolib_network(
     crs: CRS,
 ) -> xu.UgridDataset:
     """
-    Creates xugrid mesh2d UgridDataset from hydrolib-core network object.
+    Create xugrid mesh2d UgridDataset from hydrolib-core network object.
 
     Parameters
     ----------
@@ -276,7 +278,7 @@ def mesh_from_hydrolib_network(
     crs: CRS,
 ) -> xu.UgridDataset:
     """
-    Creates xugrid mesh from hydrolib-core network object.
+    Create xugrid mesh from hydrolib-core network object.
 
     Parameters
     ----------
@@ -339,7 +341,7 @@ def mesh1d_nodes_geodataframe(
     branches: gpd.GeoDataFrame,
 ) -> gpd.GeoDataFrame:
     """
-    Returns the nodes of mesh 1D as geodataframe.
+    Return the nodes of mesh 1D as geodataframe.
 
     Parameters
     ----------

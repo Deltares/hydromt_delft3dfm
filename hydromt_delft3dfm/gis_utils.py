@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+"""Utilities GIS functions for Delft3D-FM model."""
 
 import logging
 
@@ -38,7 +38,8 @@ def cut_pieces(line, distances):
 
 
 def cut(line, distance):
-    """Cuts a line in two at a distance from its starting point
+    """Cut a line in two at a distance from its starting point.
+
     ref: https://shapely.readthedocs.io/en/stable/manual.html.
     """
     if distance <= 0.0 or distance >= line.length:
@@ -116,11 +117,13 @@ def check_gpd_attributes(
     if not (set(required_columns).issubset(gdf.columns)):
         if raise_error:
             raise ValueError(
-                f"GeoDataFrame do not contains all required attributes: {required_columns}."
+                "GeoDataFrame does not contain all required attributes:"
+                f"{required_columns}."
             )
         else:
             logger.warning(
-                f"GeoDataFrame do not contains all required attributes: {required_columns}."
+                "GeoDataFrame does not contain all required attributes:"
+                f"{required_columns}."
             )
         return False
     return True
@@ -133,16 +136,18 @@ def update_data_columns_attributes_based_on_filter(
     filter_value: str = None,
 ):
     """
-    Add or update columns in the geodataframe based on column and values in attributes dataframe.
+    Add or update columns in gdf based on column and values in df.
 
-    If filter_column and filter_value is set, only update the attributes of the filtered geodataframe.
+    If filter_column and filter_value is set, only update the attributes of the filtered
+    geodataframe.
 
     Parameters
     ----------
     gdf : gpd.GeoDataFrame
         geodataframe containing user input
     df : attribute DataFrame
-        a pd.DataFrame with attribute columns and values (e.g. width =  1) per filter_value in the filter_column (e.g. branch_type = pipe)
+        a pd.DataFrame with attribute columns and values (e.g. width =  1) per
+        filter_value in the filter_column (e.g. branch_type = pipe)
     filter_column : str
         Name of the column linking df to gdf.
     filter_value: str
@@ -189,6 +194,7 @@ def get_gdf_from_branches(
     branches: gpd.GeoDataFrame, df: pd.DataFrame
 ) -> gpd.GeoDataFrame:
     """Get geodataframe from dataframe.
+
     Based on interpolation of branches, using columns ["branchid", "chainage" in df].
 
     Parameters
@@ -211,7 +217,7 @@ def get_gdf_from_branches(
 
     df["geometry"] = None
 
-    # Iterate over each point and interpolate a point along the corresponding line feature
+    # Iterate over each point and interpolate a point along the corresponding line
     for i, row in df.iterrows():
         line_geometry = branches.loc[row.branchid, "geometry"]
         new_point_geometry = line_geometry.interpolate(row.chainage)
