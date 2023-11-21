@@ -1,3 +1,5 @@
+"""Utilities read/write functions for Delft3D-FM model."""
+
 from enum import Enum
 from os.path import join
 from pathlib import Path
@@ -70,7 +72,8 @@ def read_branches_gui(
     )
 
     if not filepath.is_file():
-        # Create df with all attributes from nothing; all branches are considered as river
+        # Create df with all attributes from nothing;
+        # all branches are considered as river
         df_gui = pd.DataFrame()
         df_gui["branchid"] = [b.branchid for b in gdf.itertuples()]
         df_gui["branchtype"] = "river"
@@ -125,8 +128,10 @@ def write_branches_gui(
     branchgui_fn: str
         relative filepath to branches_gui file.
 
-    #TODO: branches.gui is written with a [general] section which is not recongnised by GUI. Improvement of the GUI is needed.
-    #TODO: branches.gui has a column is custumised length written as bool, which is not recongnised by GUI. improvement of the hydrolib-core writer is needed.
+    #TODO: branches.gui is written with a [general] section which is not recongnised by
+    GUI. Improvement of the GUI is needed.
+    #TODO: branches.gui has a column is custumised length written as bool, which is not
+    recongnised by GUI. improvement of the hydrolib-core writer is needed.
     """
     if not all([col in gdf.columns for col in ["manhole_up", "manhole_dn"]]):
         gdf[["manhole_up", "manhole_dn"]] = ""
@@ -155,6 +160,7 @@ def read_crosssections(
 ) -> tuple((gpd.GeoDataFrame, gpd.GeoDataFrame)):
     """
     Read crosssections from hydrolib-core crsloc and crsdef objects and add to branches.
+
     Also returns crosssections geodataframe.
 
     Parameters
@@ -240,9 +246,9 @@ def read_crosssections(
     )
 
     # Combine def attributes with locs for crossection geom
-    gdf_crs = _gdf_crsloc.merge(
-        _gdf_crsdef, on="crs_id", how="outer"
-    )  # use outer because some crsdefs are from structures, therefore no crslocs associated
+    gdf_crs = _gdf_crsloc.merge(_gdf_crsdef, on="crs_id", how="outer")
+    # use outer because some crsdefs are from structures,
+    # therefore no crslocs associated
     gdf_crs = gpd.GeoDataFrame(gdf_crs, crs=gdf.crs)
 
     return gdf_crs
@@ -292,12 +298,6 @@ def write_crosssections(gdf: gpd.GeoDataFrame, savedir: str) -> Tuple[str, str]:
         subset="id"
     )  # structures have crsdefs but no crslocs
 
-    # add x,y column --> hydrolib value_error: branchid and chainage or x and y should be provided
-    # x,y would make reading back much faster than re-computing from branchid and chainage....
-    # xs, ys = np.vectorize(lambda p: (p.xy[0][0], p.xy[1][0]))(gdf["geometry"])
-    # gpd_crsloc["x"] = xs
-    # gpd_crsloc["y"] = ys
-
     crsloc = CrossLocModel(crosssection=gpd_crsloc.to_dict("records"))
 
     crsloc_fn = crsloc._filename() + ".ini"
@@ -311,8 +311,9 @@ def write_crosssections(gdf: gpd.GeoDataFrame, savedir: str) -> Tuple[str, str]:
 
 def read_friction(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
     """
-    read friction files and add properties to branches geodataframe.
-    assumes cross-sections have been read before to contain per branch frictionid.
+    Read friction files and add properties to branches geodataframe.
+
+    Assumes cross-sections have been read before to contain per branch frictionid.
 
     Parameters
     ----------
@@ -411,7 +412,8 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
 
 def read_structures(branches: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
     """
-    Read structures into hydrolib-core structures objects
+    Read structures into hydrolib-core structures objects.
+
     Returns structures geodataframe.
 
     Will drop compound structures.
@@ -505,6 +507,7 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
 def read_manholes(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
     """
     Read manholes from hydrolib-core storagenodes and network 1d nodes for locations.
+
     Returns manholes geodataframe.
 
     Parameters
@@ -525,7 +528,9 @@ def read_manholes(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
     for b in manholes.storagenode:
         manholes_dict[b.id] = b.__dict__
     df_manholes = pd.DataFrame.from_dict(manholes_dict, orient="index")
-    # replace 0e to 0d # TODO: fix this when hydrolib-core fix issue https://github.com/Deltares/HYDROLIB-core/issues/559
+    # replace 0e to 0d
+    # # TODO: fix this when hydrolib-core fix issue
+    # https://github.com/Deltares/HYDROLIB-core/issues/559
     df_manholes["id"] = df_manholes["id"].apply(
         lambda x: "0D" + x[2:] if isinstance(x, str) and x.startswith("0e") else x
     )
@@ -583,7 +588,8 @@ def read_1dboundary(
     df: pd.DataFrame, quantity: str, nodes: gpd.GeoDataFrame
 ) -> xr.DataArray:
     """
-    Read for a specific quantity the corresponding external and forcing files and parse to xarray
+    Read for a specific quantity the external and forcing files and parse to xarray.
+
     # TODO: support external forcing for 2D.
 
     Parameters
@@ -647,15 +653,13 @@ def read_1dboundary(
     # Else not implemented yet
     else:
         raise NotImplementedError(
-            f"ForcingFile with several function for a single variable not implemented yet. Skipping reading forcing for variable {quantity}."
+            "ForcingFile with several function for a single variable not implemented."
+            f"Skipping reading forcing for variable {quantity}."
         )
 
     # Get nodeid coordinates
     node_geoms = nodes.set_index("nodeid").reindex(nodeids)
     # # get rid of missing geometries
-    # index_name = node_geoms.index.name
-    # node_geoms = pd.DataFrame([row for n, row in node_geoms.iterrows() if row["geometry"] is not None])
-    # node_geoms.index.name = index_name
     xs, ys = np.vectorize(
         lambda p: (np.nan, np.nan) if p is None else (p.xy[0][0], p.xy[1][0])
     )(node_geoms["geometry"])
@@ -675,8 +679,8 @@ def read_1dboundary(
 
 
 def write_1dboundary(forcing: Dict, savedir: str = None, ext_fn: str = None) -> Tuple:
-    """ "
-    write 1dboundary ext and boundary files from forcing dict.
+    """
+    Write 1dboundary ext and boundary files from forcing dict.
 
     Parameters
     ----------
@@ -736,7 +740,7 @@ def write_1dboundary(forcing: Dict, savedir: str = None, ext_fn: str = None) -> 
                     bc for bc in bcdict if bc["name"] == "481349.951956_8041528.002583"
                 ]
             )
-        except:
+        except ValueError:
             raise ValueError(f"Error in boundary forcing {bc['name']}")
 
     forcing_model = ForcingModel(forcing=bcdict)
@@ -774,11 +778,13 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
     Returns
     -------
     da_out: xr.DataArray
-        External and forcing values combined into a DataArray with name starts with "boundary2d".
+        External and forcing values combined into a DataArray with name starts with
+        "boundary2d".
     """
     # Initialise dataarray attributes
     bc = {"quantity": df.quantity}
-    # location file, assume one location file has only one location (hydromt writer) and read
+    # location file
+    # assume one location file has only one location (hydromt writer) and read
     locationfile = PolyFile(workdir.joinpath(df.locationfile.filepath))
     boundary_name = locationfile.objects[0].metadata.name
     boundary_points = pd.DataFrame([f.__dict__ for f in locationfile.objects[0].points])
@@ -812,7 +818,8 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
     # Else not implemented yet
     else:
         raise NotImplementedError(
-            "ForcingFile with several function for a single variable not implemented yet. Skipping reading forcing."
+            "ForcingFile with several function for a single variable not implemented."
+            "Skipping reading forcing."
         )
 
     # Get coordinates
@@ -833,7 +840,8 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
 
 def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     """
-    write 2 boundary forcings from forcing dict.
+    Write 2 boundary forcings from forcing dict.
+
     Note! forcing file (.bc) and forcing locations (.pli) are written in this function.
     Use external forcing (.ext) file will be extended.
 
@@ -925,7 +933,7 @@ def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[di
 
 def read_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
     """
-    Read for a specific quantity the corresponding external and forcing files and parse to xarray.
+    Read for a specific quantity the external and forcing files and parse to xarray.
 
     Parameters
     ----------
@@ -986,7 +994,8 @@ def read_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
     # Else not implemented yet
     else:
         raise NotImplementedError(
-            f"ForcingFile with several function for a single variable not implemented yet. Skipping reading forcing for variable {quantity}."
+            "ForcingFile with several function for a single variable not implemented."
+            f"Skipping reading forcing for variable {quantity}."
         )
 
     # Do not apply to "global" meteo
@@ -1007,7 +1016,8 @@ def read_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
 
 def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     """
-    write 2d meteo forcing from forcing dict.
+    Write 2d meteo forcing from forcing dict.
+
     Note! only forcing file (.bc) is written in this function.
     Use utils.write_ext() for writing external forcing (.ext) file.
 
@@ -1036,9 +1046,8 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
             # Meteo
             ext = dict()
             ext["quantity"] = bc["quantity"]
-            ext[
-                "forcingFileType"
-            ] = "bcAscii"  # FIXME: hardcoded, decide whether use bcAscii or netcdf in setup
+            ext["forcingFileType"] = "bcAscii"
+            # FIXME: hardcoded, decide whether use bcAscii or netcdf in setup
             # Forcing
             bc["name"] = i
             if bc["function"] == "constant":
@@ -1096,7 +1105,8 @@ def write_ext(
     ext_fn: str, optional
         filename to the external forcing file.
     block_name: str, optional
-        name of the block in the external forcing file. Includes "boundary", "lateral" and "meteo".
+        name of the block in the external forcing file. Includes "boundary", "lateral"
+        and "meteo".
     mode: str, optional
         "overwrite" or "append".
         By default, append.
