@@ -470,7 +470,6 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     structures_fn: str
         relative path to structures file.
     """
-
     # Add compound structures
     cmp_structures = gdf.groupby(["chainage", "branchid"])["id"].apply(list)
     for cmp_count, cmp_st in enumerate(cmp_structures, start=1):

@@ -530,7 +530,10 @@ def set_xyz_crosssections(
 
 
 def set_point_crosssections(
-    branches: gpd.GeoDataFrame, crosssections: gpd.GeoDataFrame, maxdist: float = 1.0, check_dupl_geom: bool = True,
+    branches: gpd.GeoDataFrame,
+    crosssections: gpd.GeoDataFrame,
+    maxdist: float = 1.0,
+    check_dupl_geom: bool = True,
 ):
     """
     Set regular cross-sections from point.

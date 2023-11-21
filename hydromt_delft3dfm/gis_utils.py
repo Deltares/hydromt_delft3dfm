@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import configparser
 import logging
-import pathlib
 
 import geopandas as gpd
 import numpy as np
