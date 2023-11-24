@@ -27,6 +27,7 @@ __all__ = [
     "update_data_columns_attributes",
     "update_data_columns_attribute_from_query",
     "snap_newbranches_to_branches_at_snappednodes",
+    "snap_geom_to_branches_and_drop_nonsnapped",
 ]
 
 
@@ -1233,3 +1234,25 @@ def _remove_branches_with_ring_geometries(
     logger.debug("Removing branches with ring geometries.")
 
     return branches
+
+
+def snap_geom_to_branches_and_drop_nonsnapped(
+    branches: gpd.GeoDataFrame, geoms: gpd.GeoDataFrame, snap_offset=0.0
+):
+    """Snaps geoms to branches and drop the ones that are not snapped.
+    Returns snapped geoms with branchid and chainage.
+    branches must have branchid.
+    """
+    find_nearest_branch(
+        branches=branches,
+        geometries=geoms,
+        maxdist=snap_offset,
+    )
+    geoms = geoms.rename(columns={"branch_id": "branchid", "branch_offset": "chainage"})
+
+    # drop ones non snapped
+    _drop_geoms = geoms["chainage"].isna()
+    if any(_drop_geoms):
+        logger.debug(f"Unable to snap to branches: {geoms[_drop_geoms].index}")
+
+    return geoms[~_drop_geoms]

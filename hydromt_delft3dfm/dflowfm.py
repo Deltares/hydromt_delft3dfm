@@ -1439,7 +1439,7 @@ class DFlowFMModel(MeshModel):
 
         # 2. read boundary from user data
         _, da_bnd = self._read_forcing_geodataset(
-            boundaries_geodataset_fn, boundary_type
+            boundaries_geodataset_fn, boundary_type, snap_offset
         )
 
         # 3. Derive DataArray with boundary values at boundary locations in boundaries_branch_type
@@ -1459,7 +1459,10 @@ class DFlowFMModel(MeshModel):
         )  # FIXME: this format cannot be read back due to lack of branch type info from model files
 
     def _read_forcing_geodataset(
-        self, forcing_geodataset_fn: Union[str, Path], forcing_name: str = "discharge"
+        self,
+        forcing_geodataset_fn: Union[str, Path],
+        forcing_name: str = "discharge",
+        region_buffer=0.0,
     ):
         """Read forcing geodataset."""
 
@@ -1472,11 +1475,11 @@ class DFlowFMModel(MeshModel):
             da = self.data_catalog.get_geodataset(
                 forcing_geodataset_fn,
                 geom=self.region.buffer(
-                    1000
+                    region_buffer  # buffer region
                 ),  # only select data within region of interest (large region for forcing)
                 variables=[forcing_name],
                 time_tuple=(tstart, tstop),
-            ).rename(forcing_name)
+            )
             # error if time mismatch
             if np.logical_and(
                 pd.to_datetime(da.time.values[0]) == pd.to_datetime(tstart),
@@ -1487,7 +1490,7 @@ class DFlowFMModel(MeshModel):
                 self.logger.error(
                     "forcing has different start and end time. Please check the forcing file. support yyyy-mm-dd HH:MM:SS. "
                 )
-            # reproject if needed and convert to location
+            # reproject if needed and convert to location #TODO change this after hydromt release >0.9.0
             if da.vector.crs != self.crs:
                 da = da.vector.to_crs(self.crs)
             # get geom
@@ -1500,34 +1503,14 @@ class DFlowFMModel(MeshModel):
                 forcing_geodataset_fn,
                 geom=self.region.buffer(self._network_snap_offset),
             )
+            # reproject
+            if gdf.crs != self.crs:
+                gdf = gdf.to_crs(self.crs)
             da = None
         else:
             gdf = None
             da = None
         return gdf, da
-
-    def _snap_geom_to_branches_and_drop_nonsnapped(
-        self, branches: gpd.GeoDataFrame, geoms: gpd.GeoDataFrame, snap_offset=0.0
-    ):
-        """Snaps geoms to branches and drop the ones that are not snapped.
-        Returns snapped geoms with branchid and chainage.
-        branches must have branchid.
-        """
-        workflows.find_nearest_branch(
-            branches=branches,
-            geometries=geoms,
-            maxdist=snap_offset,
-        )
-        geoms = geoms.rename(
-            columns={"branch_id": "branchid", "branch_offset": "chainage"}
-        )
-
-        # drop ones non snapped
-        _drop_geoms = geoms["chainage"].isna()
-        if any(_drop_geoms):
-            self.logger.debug(f"Unable to snap to branches: {geoms[_drop_geoms].index}")
-
-        return geoms[~_drop_geoms]
 
     def setup_1dlateral_from_points(
         self,
@@ -1561,7 +1544,7 @@ class DFlowFMModel(MeshModel):
         ----------
         laterals_geodataset_fn : str, Path
             Path or data source name for geospatial point location file.
-            * Required variables if geodataset is provided ['laterals_discharge']
+            * Required variables if geodataset is provided ['lateral_discharge']
             NOTE: Require equidistant time series
         lateral_value : float, optional
             Constant value to use for all laterals if ``laterals_geodataset_fn`` is a geodataframe,
@@ -1580,11 +1563,11 @@ class DFlowFMModel(MeshModel):
 
         # 1. read lateral geodataset and snap to network
         gdf_laterals, da_lat = self._read_forcing_geodataset(
-            laterals_geodataset_fn, "lateral_discharge"
+            laterals_geodataset_fn, "lateral_discharge", snap_offset
         )
 
         # snap laterlas to selected branches
-        gdf_laterals = self._snap_geom_to_branches_and_drop_nonsnapped(
+        gdf_laterals = workflows.snap_geom_to_branches_and_drop_nonsnapped(
             branches=network_by_branchtype.set_index("branchid"),
             geoms=gdf_laterals,
             snap_offset=snap_offset,
@@ -1633,7 +1616,7 @@ class DFlowFMModel(MeshModel):
         ----------
         laterals_geodataset_fn : str, Path
             Path or data source name for geospatial point location file.
-            * Required variables if geodataset is provided ['laterals_discharge']
+            * Required variables if geodataset is provided ['lateral_discharge']
             NOTE: Require equidistant time series
         lateral_value : float, optional
             Constant value to use for all laterals if ``laterals_geodataset_fn`` is a geodataframe,
@@ -1662,180 +1645,6 @@ class DFlowFMModel(MeshModel):
 
         # 3. set laterals
         self.set_forcing(da_out, name="lateral1d_polygons")
-
-    def _setup_1dstructures(
-        self,
-        st_type: str,
-        st_fn: Union[str, Path, gpd.GeoDataFrame] = None,
-        defaults_fn: Union[str, Path, pd.DataFrame] = None,
-        filter: Optional[str] = None,
-        snap_offset: Optional[float] = None,
-    ):
-        """Setup 1D structures.
-        Include the universal weir (Not Implemented) , culvert and bridge (``str_type`` = 'bridge'), which can only be used in a single 1D channel.
-
-        The structures are first read from ``st_fn`` (only locations within the region will be read), and if any missing, filled with information provided in ``defaults_fn``.
-        Read locations are then filtered for value specified in ``filter`` on the column ``st_type``.
-        They are then snapped to the existing network within a max distance defined in ``snap_offset`` and will be dropped if not snapped.
-        Finally, crossections are read and set up for the remaining structures.
-
-        Parameters
-        ----------
-        st_type: str, required
-            Name of structure type
-
-        st_fn: str Path, optional
-            Path or data source name for structures, see data/data_sources.yml.
-            Note only the points that are within the region polygon will be used.
-
-            * Optional variables: see the setup function for each ``st_type``
-
-        defaults_fn : str Path, optional
-            Path to a csv file containing all defaults values per "structure_type".
-            By default `hydrolib.hydromt_delft3dfm.data.bridges.bridges_defaults.csv` is used. This file describes a minimum rectangle bridge profile.
-
-            * Allowed variables: see the setup function for each ``st_type``
-
-        filter: str, optional
-            Keyword in "structure_type" column of ``st_fn`` used to filter features. If None all features are used (default).
-
-        snap_offset: float, optional
-            Snapping tolenrance to automatically snap bridges to network and add ['branchid', 'chainage'] attributes.
-            By default None. In this case, global variable "network_snap_offset" will be used.
-
-        Returns
-        -------
-        gdf_st: geopandas.GeoDataFrame
-            geodataframe of the structures and crossections
-
-
-        See Also
-        --------
-        dflowfm.setup_bridges
-        dflowfm.setup_culverts
-        """
-        if snap_offset is None:
-            snap_offset = self._network_snap_offset
-            self.logger.info(
-                f"Snap_offset is set to global network snap offset: {snap_offset}"
-            )
-
-        type_col = "structure_type"
-        id_col = "structure_id"
-
-        branches = self.branches.set_index("branchid")
-
-        # 1. Read data and filter within region
-        # If needed read the structures GeoDataFrame
-        if isinstance(st_fn, str) or isinstance(st_fn, Path):
-            gdf_st = self.data_catalog.get_geodataframe(
-                st_fn, geom=self.region, buffer=0, predicate="contains"
-            )
-        else:
-            gdf_st = st_fn
-        # Filter features based on filter on type_col
-        if filter is not None and type_col in gdf_st.columns:
-            gdf_st = gdf_st[gdf_st[type_col].str.lower() == filter.lower()]
-            self.logger.info(
-                f"Set {filter} locations filtered from {st_fn} as {st_type} ."
-            )
-        # Check if features in region
-        if len(gdf_st) == 0:
-            self.logger.warning(f"No 1D {type} locations found within domain")
-            return None
-        # reproject to model crs
-        gdf_st.to_crs(self.crs)
-
-        # 2.  Read defaults table
-        if isinstance(defaults_fn, pd.DataFrame):
-            defaults = defaults_fn
-        else:
-            if defaults_fn is None:
-                self.logger.warning(
-                    f"defaults_fn ({defaults_fn}) does not exist. Fall back choice to defaults. "
-                )
-                defaults_fn = Path(self._DATADIR).joinpath(
-                    f"{st_type}s", f"{st_type}s_defaults.csv"
-                )
-            defaults = self.data_catalog.get_dataframe(defaults_fn)
-            self.logger.info(f"{st_type} default settings read from {defaults_fn}.")
-
-        # 3. Add defaults
-        # overwrite type and add id attributes if does not exist
-        gdf_st[type_col] = pd.Series(
-            data=np.repeat(st_type, len(gdf_st)), index=gdf_st.index, dtype=str
-        )
-        if id_col not in gdf_st.columns:
-            data = [
-                f"{st_type}_{i}"
-                for i in np.arange(
-                    len(self.structures) + 1, len(self.structures) + len(gdf_st) + 1
-                )
-            ]  # avoid duplicated ids being generated
-            gdf_st[id_col] = pd.Series(data, index=gdf_st.index, dtype=str)
-        # assign id
-        gdf_st.index = gdf_st[id_col]
-        gdf_st.index.name = id_col
-        # filter for allowed columns
-        allowed_columns = set(defaults.columns).intersection(gdf_st.columns)
-        allowed_columns.update({"geometry"})
-        gdf_st = gpd.GeoDataFrame(gdf_st[list(allowed_columns)], crs=gdf_st.crs)
-        self.logger.info("Adding/Filling default attributes values")
-        gdf_st = workflows.update_data_columns_attributes_based_on_filter(
-            gdf_st, defaults, type_col, st_type
-        )
-
-        # 4. snap structures to branches
-        # setup branch_id - snap structures to branch (inplace of structures, will add branch_id and branch_offset columns)
-        workflows.find_nearest_branch(
-            branches=branches, geometries=gdf_st, maxdist=snap_offset
-        )
-        # setup failed - drop based on branch_offset that are not snapped to branch
-        _old_ids = gdf_st.index.to_list()
-        gdf_st.dropna(axis=0, inplace=True, subset=["branch_offset"])
-        _new_ids = gdf_st.index.to_list()
-        if len(_old_ids) != len(_new_ids):
-            logger.warning(
-                f"structure with id: {list(set(_old_ids) - set(_new_ids))} are dropped: unable to find closest branch. "
-            )
-        if len(_new_ids) == 0:
-            self.logger.warning(
-                f"No 1D {type} locations found within the proximity of the network"
-            )
-            return None
-        else:
-            # setup success, add branchid and chainage
-            gdf_st["structure_branchid"] = gdf_st["branch_id"]
-            gdf_st["structure_chainage"] = gdf_st["branch_offset"]
-
-        # 5. add structure crossections
-        # add a dummy "shift" for crossection locations if missing (e.g. culverts), because structures only needs crossection definitions.
-        if "shift" not in gdf_st.columns:
-            gdf_st["shift"] = np.nan
-        # derive crosssections
-        gdf_st_crossections = workflows.set_point_crosssections(
-            branches, gdf_st, maxdist=snap_offset
-        )
-        # remove crossection locations and any friction from the setup
-        gdf_st_crsdefs = gdf_st_crossections.drop(
-            columns=[
-                c
-                for c in gdf_st_crossections.columns
-                if c.startswith("crsloc") or "friction" in c
-            ]
-        )
-        # add to structures
-        gdf_st = gdf_st.merge(
-            gdf_st_crsdefs.drop(columns="geometry"), left_index=True, right_index=True
-        )
-
-        # 6. replace np.nan as None
-        gdf_st = gdf_st.replace(np.nan, None)
-
-        # 7. remove index
-        gdf_st = gdf_st.reset_index()
-
-        return gdf_st
 
     def setup_bridges(
         self,
@@ -1884,7 +1693,7 @@ class DFlowFMModel(MeshModel):
 
         See Also
         --------
-        dflowfm._setup_1dstructures
+        workflows.prepare_1dstructures
         """
         snap_offset = self._network_snap_offset if snap_offset is None else snap_offset
         _st_type = "bridge"
@@ -2004,7 +1813,7 @@ class DFlowFMModel(MeshModel):
 
         See Also
         --------
-        dflowfm._setup_1dstructures
+        workflows.prepare_1dstructures
         """
         snap_offset = self._network_snap_offset if snap_offset is None else snap_offset
         _st_type = "culvert"
