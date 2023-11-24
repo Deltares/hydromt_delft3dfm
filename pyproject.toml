@@ -81,6 +81,10 @@ ignore-init-module-imports = true
 ignore = ["D211", "D213", "E741", "D105", "E712"]
 exclude = ["examples", "tests", "docs"]
 
+[tool.ruff.per-file-ignores]
+"hydromt_delft3dfm/__init__.py" = ["E402", "F403"]
+"hydromt_delft3dfm/workflows/__init__.py" = ["F403"]
+
 [tool.ruff.pydocstyle]
 convention = "numpy"
 

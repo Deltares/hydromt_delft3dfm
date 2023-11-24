@@ -115,7 +115,7 @@ class DFlowFMModel(MeshModel):
         self,
         root: Union[str, Path],
         mode: str = "w",
-        config_fn: str = None,  # hydromt config contain glob section, anything needed can be added here as args
+        config_fn: str = None,
         data_libs: List[str] = [],  # yml
         crs: Union[int, str] = None,
         dimr_fn: str = None,
@@ -134,7 +134,8 @@ class DFlowFMModel(MeshModel):
             Write/read/append mode.
             Default is "w".
         config_fn : str, optional
-            The D-Flow FM model configuration file (.mdu). If None, default configuration file is used.
+            The D-Flow FM model configuration file (.mdu).
+            If None, default configuration file is used.
             Default is None.
         data_libs : list of str, optional
             List of data catalog yaml files.
@@ -142,17 +143,19 @@ class DFlowFMModel(MeshModel):
         crs : EPSG code, int
             EPSG code of the model.
         dimr_fn: str, optional
-            Path to the dimr configuration file. If None, default dimr configuration file is used.
+            Path to the dimr configuration file.
+            If None, default dimr configuration file is used.
             Default is None.
         network_snap_offset: float, optional
-            Global option for generation of the mesh1d network. Snapping tolerance to automatically connecting branches.
+            Global option for generation of the mesh1d network. Snapping tolerance to
+            automatically connecting branches.
             By default 25 m.
         snap_newbranches_to_branches_at_snapnodes: bool, optional
             Global option for generation of the mesh1d network.
             By default True.
         openwater_computation_node_distance: float, optional
-            Global option for generation of the mesh1d network. Distance to generate mesh1d nodes for open water
-            system (rivers, channels). By default 40 m.
+            Global option for generation of the mesh1d network. Distance to generate
+            mesh1d nodes for open water system (rivers, channels). By default 40 m.
         logger
             The logger used to log messages.
         """
@@ -196,8 +199,10 @@ class DFlowFMModel(MeshModel):
         raise ValueError(
             "setup_region() method not implemented for DFlowFMModel."
             "The region will be set in the methods preparing the mesh: "
-            "[setup_mesh2d, setup_rivers, setup_rivers_from_dem, setup_channels, setup_pipes]"
-            "Pass the region argument to these methods directly and not in the command line."
+            "[setup_mesh2d, setup_rivers, setup_rivers_from_dem, setup_channels,"
+            "setup_pipes]"
+            "Pass the region argument to these methods directly and not in the"
+            "command line."
         )
 
     def setup_channels(
@@ -214,7 +219,7 @@ class DFlowFMModel(MeshModel):
         snap_offset: float = 0.0,
         allow_intersection_snapping: bool = True,
     ):
-        """This component prepares the 1D channels and adds to branches 1D network.
+        """Prepare the 1D channels and adds to branches 1D network.
 
         Adds model layers:
 
@@ -232,24 +237,34 @@ class DFlowFMModel(MeshModel):
             Note that only crs=4326 is supported for 'bbox'.
         channels_fn : str
             Name of data source for channelsparameters, see data/data_sources.yml.
-            Note only the lines that are intersects with the region polygon will be used.
-            * Optional variables: [branchid, branchtype, branchorder, material, friction_type, friction_value]
+            Note only the lines that intersect with the region polygon will be used.
+
+            * Optional variables: [branchid, branchtype, branchorder, material,
+            friction_type, friction_value]
         channels_defaults_fn : str, optional
             Path to a csv file containing all defaults values per 'branchtype'.
             Default is None.
         channel_filter: str, optional
-            Keyword in branchtype column of channels_fn used to filter river lines. If None all lines in channels_fn are used (default).
+            Keyword in branchtype column of channels_fn used to filter river lines.
+            If None all lines in channels_fn are used (default).
         friction_type : str, optional
-            Type of friction to use. One of ["Manning", "Chezy", "wallLawNikuradse", "WhiteColebrook", "StricklerNikuradse", "Strickler", "deBosBijkerk"].
+            Type of friction to use. One of ["Manning", "Chezy", "wallLawNikuradse",
+            "WhiteColebrook", "StricklerNikuradse", "Strickler", "deBosBijkerk"].
             By default "Manning".
         friction_value : float, optional.
-            Units corresponding to [friction_type] are ["Chézy C [m 1/2 /s]", "Manning n [s/m 1/3 ]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Strickler k_s [m 1/3 /s]", "De Bos-Bijkerk γ [1/s]"]
-            Friction value. By default 0.023.
+            Friction value.
+            Units corresponding to [friction_type] are ["Chézy C [m 1/2 /s]",
+            "Manning n [s/m 1/3 ]", "Nikuradse k_n [m]", "Nikuradse k_n [m]",
+            "Nikuradse k_n [m]", "Strickler k_s [m 1/3 /s]",
+            "De Bos-Bijkerk γ [1/s]"]
+            By default 0.023.
         crosssections_fn : str or Path, optional
             Name of data source for crosssections, see data/data_sources.yml.
             If ``crosssections_type`` = "xyzpoints"
+
             * Required variables: [crsid, order, z]
             If ``crosssections_type`` = "points"
+
             * Required variables: [crsid, order, z]
             By default None, crosssections will be set from branches
         crosssections_type : str, optional
@@ -259,7 +274,8 @@ class DFlowFMModel(MeshModel):
             Snapping tolerance to automatically connecting branches.
             By default 0.0, no snapping is applied.
         allow_intersection_snapping: bool, optional
-            Switch to choose whether snapping of multiple branch ends are allowed when ``snap_offset`` is used.
+            Switch to choose whether snapping of multiple branch ends are allowed when
+            ``snap_offset`` is used.
             By default True.
 
         See Also
@@ -319,7 +335,8 @@ class DFlowFMModel(MeshModel):
 
         # setup crosssections
         if crosssections_type is None:
-            crosssections_type = "branch"  # TODO: maybe assign a specific one for river, like branch_river
+            crosssections_type = "branch"
+            # TODO: maybe assign a specific one for river, like branch_river
         assert {crosssections_type}.issubset({"xyzpoints", "branch"})
         crosssections = self._setup_crosssections(
             branches=channels,
@@ -384,28 +401,31 @@ class DFlowFMModel(MeshModel):
         **kwargs,  # for workflows.get_river_bathymetry method
     ) -> None:
         """
-        This component sets the all river parameters from hydrograph and dem maps.
+        Set the all river parameters from hydrograph and dem maps.
 
-        River cells are based on the `river_mask_fn` raster file if `rivwth_method='mask'`,
-        or if `rivwth_method='geom'` the rasterized segments buffered with half a river width
-        ("rivwth" [m]) if that attribute is found in `river_geom_fn`.
+        River cells are based on the `river_mask_fn` raster file if
+        `rivwth_method='mask'`, or if `rivwth_method='geom'` the rasterized segments
+        buffered with half a river width ("rivwth" [m]) if that attribute is found in
+        `river_geom_fn`.
 
-        If a river segment geometry file `river_geom_fn` with bedlevel column ("zb" [m+REF]) or
-        a river depth ("rivdph" [m]) in combination with `rivdph_method='geom'` is provided,
-        this attribute is used directly.
+        If a river segment geometry file `river_geom_fn` with bedlevel column
+        ("zb" [m+REF]) or a river depth ("rivdph" [m]) in combination with
+        `rivdph_method='geom'` is provided, this attribute is used directly.
 
-        Otherwise, a river depth is estimated based on bankfull discharge ("qbankfull" [m3/s])
-        attribute taken from the nearest river segment in `river_geom_fn` or `qbankfull_fn`
-        upstream river boundary points if provided.
+        Otherwise, a river depth is estimated based on bankfull discharge
+        ("qbankfull" [m3/s]) attribute taken from the nearest river segment in
+        `river_geom_fn` or `qbankfull_fn` upstream river boundary points if provided.
 
-        The river depth is relative to the bankfull elevation profile if `rivbank=True` (default),
-        which is estimated as the `rivbankq` elevation percentile [0-100] of cells neighboring river cells.
-        This option requires the flow direction ("flwdir") and upstream area ("uparea") maps to be set
-        using the hydromt.flw.flwdir_from_da method. If `rivbank=False` the depth is simply subtracted
-        from the elevation of river cells.
+        The river depth is relative to the bankfull elevation profile if `rivbank=True`
+        (default), which is estimated as the `rivbankq` elevation percentile [0-100] of
+        cells neighboring river cells. This option requires the flow direction
+        ("flwdir") and upstream area ("uparea") maps to be set using the
+        hydromt.flw.flwdir_from_da method. If `rivbank=False` the depth is simply
+        subtracted from the elevation of river cells.
 
-        Missing river width and river depth values are filled by propagating valid values downstream and
-        using the constant minimum values `min_rivwth` and `min_rivdph` for the remaining missing values.
+        Missing river width and river depth values are filled by propagating valid
+        values downstream and using the constant minimum values `min_rivwth` and
+        `min_rivdph` for the remaining missing values.
 
         Updates model layer:
 
@@ -426,12 +446,15 @@ class DFlowFMModel(MeshModel):
             * {'geom': 'path/to/polygon_geometry'}
         hydrography_fn : str
             Hydrography data to derive river shape and characteristics from.
+
             * Required variables: ['elevtn']
             * Optional variables: ['flwdir', 'uparea']
         river_geom_fn : str, optional
             Line geometry with river attribute data.
+
             * Required variable for direct bed level burning: ['zb']
-            * Required variable for direct river depth burning: ['rivdph'] (only in combination with rivdph_method='geom')
+            * Required variable for direct river depth burning: ['rivdph']
+            (only in combination with rivdph_method='geom')
             * Variables used for river depth estimates: ['qbankfull', 'rivwth']
         rivers_defaults_fn : str Path
             Path to a csv file containing all defaults values per 'branchtype'.
@@ -443,13 +466,14 @@ class DFlowFMModel(MeshModel):
         river_upa : float, optional
             Minimum upstream area threshold for rivers [km2], by default 25.0
         river_len: float, optional
-            Mimimum river length within the model domain threshhold [m], by default 1000 m.
+            Mimimum river length within the model domain threshhold [m], by default
+            1000 m.
         min_rivwth, min_rivdph: float, optional
             Minimum river width [m] (by default 50.0) and depth [m] (by default 1.0)
         rivbank: bool, optional
-            If True (default), approximate the reference elevation for the river depth based
-            on the river bankfull elevation at cells neighboring river cells. Otherwise
-            use the elevation of the local river cell as reference level.
+            If True (default), approximate the reference elevation for the river depth
+            based on the river bankfull elevation at cells neighboring river cells.
+            Otherwise use the elevation of the local river cell as reference level.
         rivbankq : float, optional
             quantile [1-100] for river bank estimation, by default 25
         segment_length : float, optional
@@ -457,13 +481,17 @@ class DFlowFMModel(MeshModel):
         smooth_length : float, optional
             Approximate smoothing length [m], by default 10e3
         friction_type : str, optional
-            Type of friction tu use. One of ["Manning", "Chezy", "wallLawNikuradse", "WhiteColebrook", "StricklerNikuradse", "Strickler", "deBosBijkerk"].
+            Type of friction tu use. One of ["Manning", "Chezy", "wallLawNikuradse",
+            "WhiteColebrook", "StricklerNikuradse", "Strickler", "deBosBijkerk"].
             By default "Manning".
         friction_value : float, optional.
-            Units corresponding to [friction_type] are ["Chézy C [m 1/2 /s]", "Manning n [s/m 1/3 ]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Strickler k_s [m 1/3 /s]", "De Bos-Bijkerk γ [1/s]"]
+            Units corresponding to [friction_type] are ["Chézy C [m 1/2 /s]",
+            "Manning n [s/m 1/3 ]", "Nikuradse k_n [m]", "Nikuradse k_n [m]",
+            "Nikuradse k_n [m]", "Strickler k_s [m 1/3 /s]", "De Bos-Bijkerk γ [1/s]"]
             Friction value. By default 0.023.
         constrain_estuary : bool, optional
-            If True (default) fix the river depth in estuaries based on the upstream river depth.
+            If True (default) fix the river depth in estuaries based on the upstream
+            river depth.
         constrain_rivbed : bool, optional
             If True (default) correct the river bed level to be hydrologically correct,
             i.e. sloping downward in downstream direction.
@@ -517,7 +545,8 @@ class DFlowFMModel(MeshModel):
             kwargs.update(manning=friction_value)
         elif rivdph_method == "gvf":
             raise ValueError(
-                "rivdph_method 'gvf' requires friction_type='Manning'. Use 'geom' or 'powlaw' instead."
+                "rivdph_method 'gvf' requires friction_type='Manning'."
+                "Use 'geom' or 'powlaw' instead."
             )
         gdf_riv, _ = workflows.get_river_bathymetry(
             ds_hydro,
@@ -640,21 +669,23 @@ class DFlowFMModel(MeshModel):
         snap_offset: float = 0.0,
         allow_intersection_snapping: bool = True,
     ):
-        """Prepares the 1D rivers and adds to 1D branches.
+        """Prepare the 1D rivers and adds to 1D branches.
 
         1D rivers must contain valid geometry, friction and crosssections.
 
         The river geometry is read from ``rivers_fn``. If defaults attributes
-        [branchorder, spacing, material, shape, width, t_width, height, bedlev, closed] are not present in ``rivers_fn``,
-        they are added from defaults values in ``rivers_defaults_fn``. For branchid and branchtype, they are created on the fly
+        [branchorder, spacing, material, shape, width, t_width, height, bedlev, closed]
+        are not present in ``rivers_fn``, they are added from defaults values in
+        ``rivers_defaults_fn``. For branchid and branchtype, they are created on the fly
         if not available in rivers_fn ("river" for Type and "river_{i}" for Id).
 
-        Friction attributes are either taken from ``rivers_fn`` or filled in using ``friction_type`` and
-        ``friction_value`` arguments.
+        Friction attributes are either taken from ``rivers_fn`` or filled in using
+        ``friction_type`` and ``friction_value`` arguments.
         Note for now only branch friction or global friction is supported.
 
-        Crosssections are read from ``crosssections_fn`` based on the ``crosssections_type``. If there is no
-        ``crosssections_fn`` values are derived at the centroid of each river line based on defaults. If there are multiple
+        Crosssections are read from ``crosssections_fn`` based on the
+        ``crosssections_type``. If there is no ``crosssections_fn`` values are derived
+        at the centroid of each river line based on defaults. If there are multiple
         types of crossections, specify them as lists.
 
         Adds/Updates model layers:
@@ -673,36 +704,47 @@ class DFlowFMModel(MeshModel):
             * {'geom': 'path/to/polygon_geometry'}
         rivers_fn : str
             Name of data source for rivers parameters, see data/data_sources.yml.
-            Note only the lines that are intersects with the region polygon will be used.
-            * Optional variables: [branchid, branchtype, branchorder, material, friction_type, friction_value]
+            Note only the lines that intersect with the region polygon will be used.
+
+            * Optional variables: [branchid, branchtype, branchorder, material,
+            friction_type, friction_value]
         rivers_defaults_fn : str Path
             Path to a csv file containing all defaults values per 'branchtype'.
             By default None.
         river_filter: str, optional
-            Keyword in branchtype column of rivers_fn used to filter river lines. If None all lines in rivers_fn are used (default).
+            Keyword in branchtype column of rivers_fn used to filter river lines.
+            If None all lines in rivers_fn are used (default).
         friction_type : str, optional
-            Type of friction to use. One of ["Manning", "Chezy", "wallLawNikuradse", "WhiteColebrook", "StricklerNikuradse", "Strickler", "deBosBijkerk"].
+            Type of friction to use. One of ["Manning", "Chezy", "wallLawNikuradse",
+            "WhiteColebrook", "StricklerNikuradse", "Strickler", "deBosBijkerk"].
             By default "Manning".
         friction_value : float, optional.
-            Units corresponding to [friction_type] are ["Chézy C [m 1/2 /s]", "Manning n [s/m 1/3 ]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Strickler k_s [m 1/3 /s]", "De Bos-Bijkerk γ [1/s]"]
+            Units corresponding to [friction_type] are ["Chézy C [m 1/2 /s]",
+            "Manning n [s/m 1/3 ]", "Nikuradse k_n [m]", "Nikuradse k_n [m]",
+            "Nikuradse k_n [m]", "Strickler k_s [m 1/3 /s]", "De Bos-Bijkerk γ [1/s]"]
             Friction value. By default 0.023.
         crosssections_fn : str, Path, or a list of str or Path, optional
-            Name of data source for crosssections, see data/data_sources.yml. One or a list corresponding to ``crosssections_type`` .
+            Name of data source for crosssections, see data/data_sources.yml. One or a
+            list corresponding to ``crosssections_type`` .
             If ``crosssections_type`` = "branch"
             crosssections_fn should be None
             If ``crosssections_type`` = "xyz"
+
             * Required variables: [crsid, order, z]
             If ``crosssections_type`` = "point"
+
             * Required variables: [crsid, shape, shift]
             By default None, crosssections will be set from branches
         crosssections_type : str, or a list of str, optional
-            Type of crosssections read from crosssections_fn. One or a list of ["branch", "xyz", "point"].
+            Type of crosssections read from crosssections_fn. One or a list of
+            ["branch", "xyz", "point"].
             By default None.
         snap_offset: float, optional
             Snapping tolerance to automatically connecting branches.
             By default 0.0, no snapping is applied.
         allow_intersection_snapping: bool, optional
-            Switch to choose whether snapping of multiple branch ends are allowed when ``snap_offset`` is used.
+            Switch to choose whether snapping of multiple branch ends are allowed when
+            ``snap_offset`` is used.
             By default True.
 
         See Also
@@ -776,7 +818,8 @@ class DFlowFMModel(MeshModel):
             self.set_geoms(crosssections, "crosssections")
 
         # setup branch orders
-        # for crossection type yz or xyz, always use branchorder = -1, because no interpolation can be applied.
+        # for crossection type yz or xyz, always use branchorder = -1,
+        # because no interpolation can be applied.
         # TODO: change to lower case is needed
         _overwrite_branchorder = self.geoms["crosssections"][
             self.geoms["crosssections"]["crsdef_type"].str.contains("yz")
@@ -831,23 +874,36 @@ class DFlowFMModel(MeshModel):
         snap_offset: float = 0.0,
         allow_intersection_snapping: bool = True,
     ):
-        """Prepares the 1D pipes and adds to 1D branches.
+        """Prepare the 1D pipes and adds to 1D branches.
+
         Note that 1D manholes must also be set-up  when setting up 1D pipes.
 
         1D pipes must contain valid geometry, friction and crosssections.
 
         The pipe geometry is read from ``pipes_fn``.
-        if branchtype is present in ``pipes_fn``, it is possible to filter pipe geometry using an additional filter specificed in``pipe_filter``.
-        If defaults attributes ["branchorder"] are not present in ``pipes_fn``, they are added from defaults values in ``pipes_defaults_fn``.
-        For branchid and branchtype, if they are not present in ``pipes_fn``, they are created on the fly ("pipe" for branchtype and "pipe_{i}" for branchid).
+
+        If branchtype is present in ``pipes_fn``, it is possible to filter pipe geometry
+        using an additional filter specificed in``pipe_filter``. If defaults attributes
+        ["branchorder"] are not present in ``pipes_fn``, they are added from defaults
+        values in ``pipes_defaults_fn``. For branchid and branchtype, if they are not
+        present in ``pipes_fn``, they are created on the fly ("pipe" for branchtype and
+        "pipe_{i}" for branchid).
+
         The pipe geometry can be processed using splitting based on ``spacing``.
 
-        Friction attributes ["branchid", "frictionvalue"] are either taken from ``pipes_fn`` or filled in using ``friction_type`` and
-        ``friction_value`` arguments.
+        Friction attributes ["branchid", "frictionvalue"] are either taken from
+        ``pipes_fn`` or filled in using ``friction_type`` and ``friction_value``
+        arguments.
         Note for now only branch friction or global friction is supported.
 
-        Crosssections definition attributes ["shape", "diameter", "width", "height", "closed"] are either taken from ``pipes_fn`` or filled in using ``crosssections_shape`` and ``crosssections_value``.
-        Crosssections location attributes ["invlev_up", "invlev_dn"] are either taken from ``pipes_fn``, or derived from ``dem_fn`` minus a fixed depth ``pipe_depth`` [m], or from a constant ``pipe_invlev`` [m asl] (not recommended! should be edited before a model run).
+        Crosssections definition attributes ["shape", "diameter", "width", "height",
+        "closed"] are either taken from ``pipes_fn`` or filled in using
+        ``crosssections_shape`` and ``crosssections_value``.
+
+        Crosssections location attributes ["invlev_up", "invlev_dn"] are either taken
+        from ``pipes_fn``, or derived from ``dem_fn`` minus a fixed depth ``pipe_depth``
+        [m], or from a constant ``pipe_invlev`` [m asl] (not recommended! should be
+        edited before a model run).
 
         Adds/Updates model layers:
 
@@ -867,38 +923,54 @@ class DFlowFMModel(MeshModel):
         pipes_fn : str
             Name of data source for pipes parameters, see data/data_sources.yml.
             Note only the lines that are within the region polygon will be used.
-            * Optional variables: [branchid, branchtype, branchorder, spacing, branchid, frictionvalue, shape, diameter, width, height, closed, invlev_up, invlev_dn]
+
+            * Optional variables: [branchid, branchtype, branchorder, spacing, branchid,
+            frictionvalue, shape, diameter, width, height, closed, invlev_up, invlev_dn]
             #TODO: material table is used for friction which is not implemented
         pipes_defaults_fn : str Path
             Path to a csv file containing all defaults values per "branchtype"'".
         pipe_filter: str, optional
-            Keyword in branchtype column of pipes_fn used to filter pipe lines. If None all lines in pipes_fn are used (default).
+            Keyword in branchtype column of pipes_fn used to filter pipe lines.
+            If None all lines in pipes_fn are used (default).
         spacing: float, optional
-            Spacing value in meters to split the long pipelines lines into shorter pipes. By default inf - no splitting is applied.
+            Spacing value in meters to split the long pipelines lines into shorter
+            pipes. By default inf - no splitting is applied.
         friction_type : str, optional
-            Type of friction to use. One of ["Manning", "Chezy", "wallLawNikuradse", "WhiteColebrook", "StricklerNikuradse", "Strickler", "deBosBijkerk"].
+            Type of friction to use. One of ["Manning", "Chezy", "wallLawNikuradse",
+            "WhiteColebrook", "StricklerNikuradse", "Strickler", "deBosBijkerk"].
             By default "WhiteColeBrook".
         friction_value : float, optional.
-            Units corresponding to ''friction_type'' are ["Chézy C [m 1/2 /s]", "Manning n [s/m 1/3 ]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Nikuradse k_n [m]", "Strickler k_s [m 1/3 /s]", "De Bos-Bijkerk γ [1/s]"]
+            Units corresponding to ''friction_type'' are ["Chézy C [m 1/2 /s]",
+            "Manning n [s/m 1/3 ]", "Nikuradse k_n [m]", "Nikuradse k_n [m]",
+            "Nikuradse k_n [m]", "Strickler k_s [m 1/3 /s]", "De Bos-Bijkerk γ [1/s]"]
             Friction value. By default 0.003.
         crosssections_shape : str, optional
             Shape of pipe crosssections. Either "circle" (default) or "rectangle".
         crosssections_value : int or list of int, optional
             Crosssections parameter value.
-            If ``crosssections_shape`` = "circle", expects a diameter (default with 0.5 m) [m]
-            If ``crosssections_shape`` = "rectangle", expects a list with [width, height] (e.g. [1.0, 1.0]) [m]. closed rectangle by default.
+            If ``crosssections_shape`` = "circle", expects a diameter
+            (default with 0.5 m) [m]
+            If ``crosssections_shape`` = "rectangle", expects a list with
+            [width, height] (e.g. [1.0, 1.0]) [m]. closed rectangle by default.
         dem_fn: str, optional
-            Name of data source for dem data. Used to derive default invert levels values (DEM - pipes_depth - pipes diameter/height).
+            Name of data source for dem data. Used to derive default invert levels
+            values (DEM - pipes_depth - pipes diameter/height).
+
             * Required variables: [elevtn]
         pipes_depth: float, optional
-            Depth of the pipes underground [m] (default 2.0 m). Used to derive defaults invert levels values (DEM - pipes_depth - pipes diameter/height).
+            Depth of the pipes underground [m] (default 2.0 m). Used to derive defaults
+            invert levels values (DEM - pipes_depth - pipes diameter/height).
         pipes_invlev: float, optional
-            Constant default invert levels of the pipes [m asl] (default -2.5 m asl). This method is recommended to be used together with the dem method to fill remaining nan values. It slone is not a recommended method.
+            Constant default invert levels of the pipes [m asl] (default -2.5 m asl).
+            This method is recommended to be used together with the dem method to fill
+            remaining nan values. It slone is not a recommended method.
         snap_offset: float, optional
-            Snapping tolenrance to automatically connecting branches. Tolenrance must be smaller than the shortest pipe length.
+            Snapping tolenrance to automatically connecting branches. Tolenrance must be
+            smaller than the shortest pipe length.
             By default 0.0, no snapping is applied.
         allow_intersection_snapping: bool, optional
-            Switch to choose whether snapping of multiple branch ends are allowed when ``snap_offset`` is used.
+            Switch to choose whether snapping of multiple branch ends are allowed when
+            ``snap_offset`` is used.
             By default True.
 
         See Also
@@ -969,14 +1041,18 @@ class DFlowFMModel(MeshModel):
             if inv.isnull().sum().sum() > 0:  # nodata values in pipes for invert levels
                 fill_invlev = True
                 self.logger.info(
-                    f"{pipes_fn} data has {inv.isnull().sum().sum()} no data values for invert levels. Will be filled using dem_fn or default value {pipes_invlev}"
+                    f"{pipes_fn} data has {inv.isnull().sum().sum()} no data values"
+                    "for invert levels. Will be filled using dem_fn or"
+                    f"default value {pipes_invlev}"
                 )
             else:
                 fill_invlev = False
         else:
             fill_invlev = True
             self.logger.info(
-                f"{pipes_fn} does not have columns [invlev_up, invlev_dn]. Invert levels will be generated from dem_fn or default value {pipes_invlev}"
+                f"{pipes_fn} does not have columns [invlev_up, invlev_dn]."
+                "Invert levels will be generated from dem_fn or"
+                f"default value {pipes_invlev}"
             )
         # 2. filling use dem_fn + pipe_depth
         if fill_invlev and dem_fn is not None:
@@ -996,7 +1072,8 @@ class DFlowFMModel(MeshModel):
         # 3. filling use pipes_invlev
         if fill_invlev and pipes_invlev is not None:
             self.logger.warning(
-                "!Using a constant up and down invert levels for all pipes. May cause issues when running the delft3dfm model.!"
+                "!Using a constant up and down invert levels for all pipes."
+                "May cause issues when running the delft3dfm model.!"
             )
             df_inv = pd.DataFrame(
                 data={
@@ -1009,7 +1086,8 @@ class DFlowFMModel(MeshModel):
                 pipes, df_inv, brtype="pipe"
             )
 
-        # TODO: check that geometry lines are properly oriented from up to dn when deriving invert levels from dem
+        # TODO: check that geometry lines are properly oriented from up to dn
+        # when deriving invert levels from dem
 
         # Update crosssections object
         crosssections = self._setup_crosssections(
@@ -1058,25 +1136,30 @@ class DFlowFMModel(MeshModel):
         crosssections_type: str = "branch",
         midpoint=True,
     ) -> gpd.GeoDataFrame:
-        """Prepares 1D crosssections.
-        crosssections can be set from branches, points and xyz, # TODO to be extended also from dem data for rivers/channels?
+        """Prepare 1D crosssections from branches, points and xyz.
+
+        # TODO to be extended also from dem data for rivers/channels?
+
         Crosssection must only be used after friction has been setup.
 
         Crosssections are read from ``crosssections_fn``.
         Crosssection types of this file is read from ``crosssections_type``
 
-        If ``crosssections_fn`` is not defined, default method is ``crosssections_type`` = 'branch',
-        meaning that branch attributes will be used to derive regular crosssections.
+        If ``crosssections_fn`` is not defined, default method is
+        ``crosssections_type`` = 'branch', meaning that branch attributes will be used
+        to derive regular crosssections.
         Crosssections are derived at branches mid points if ``midpoints`` is True,
         else at both upstream and downstream extremities of branches if False.
 
         Adds/Updates model layers:
+
         * **crosssections** geom: 1D crosssection vector
 
         Parameters
         ----------
         branches : gpd.GeoDataFrame
             geodataframe of the branches to apply crosssections.
+
             * Required variables: [branchid, branchtype, branchorder]
             If ``crosssections_type`` = "branch"
                 if shape = 'circle': 'diameter'
@@ -1084,26 +1167,32 @@ class DFlowFMModel(MeshModel):
                 if shape = 'trapezoid': 'width', 't_width', 'height', 'closed'
             * Optional variables: [material, friction_type, friction_value]
         region : gpd.GeoDataFrame, optional
-            geodataframe of the region of interest for extracting crosssections_fn, by default None
+            geodataframe of the region of interest for extracting crosssections_fn,
+            by default None
         crosssections_fn : str Path, optional
             Name of data source for crosssections, see data/data_sources.yml.
-            Note that for point crossections, only ones within the snap_network_offset will be used.
+            Note that for point crossections, only ones within the snap_network_offset
+            will be used.
             If ``crosssections_type`` = "xyz"
             Note that only points within the region + 1000m buffer will be read.
+
             * Required variables: crsid, order, z
             * Optional variables:
             If ``crosssections_type`` = "point"
+
             * Required variables: crsid, shape, shift
             * Optional variables:
                 if shape = 'rectangle': 'width', 'height', 'closed'
                 if shape = 'trapezoid': 'width', 't_width', 'height', 'closed'
                 if shape = 'yz': 'yzcount','ycoordinates','zcoordinates','closed'
-                if shape = 'zw': 'numlevels', 'levels', 'flowwidths','totalwidths', 'closed'.
+                if shape = 'zw': 'numlevels', 'levels', 'flowwidths','totalwidths',
+                'closed'.
                 if shape = 'zwRiver': Not Supported
                 Note that list input must be strings seperated by a whitespace ''.
             By default None, crosssections will be set from branches
         crosssections_type : {'branch', 'xyz', 'point'}
-            Type of crosssections read from crosssections_fn. One of ['branch', 'xyz', 'point'].
+            Type of crosssections read from crosssections_fn. One of
+            ['branch', 'xyz', 'point'].
             By default `branch`.
 
         Returns
@@ -1117,7 +1206,8 @@ class DFlowFMModel(MeshModel):
         """
         # setup crosssections
         if crosssections_fn is None and crosssections_type == "branch":
-            # TODO: set a seperate type for rivers because other branch types might require upstream/downstream
+            # TODO: set a seperate type for rivers because other branch types
+            # might require upstream/downstream
             # TODO: check for required columns
             # read crosssection from branches
             self.logger.info("Preparing crossections from branch.")
@@ -1143,7 +1233,8 @@ class DFlowFMModel(MeshModel):
             )
             if not valid_attributes:
                 self.logger.error(
-                    "Required attributes [crsid, order, z] in xyz crosssections do not exist"
+                    "Required attributes [crsid, order, z] in xyz crosssections"
+                    "do not exist"
                 )
                 return None
 
@@ -1179,7 +1270,8 @@ class DFlowFMModel(MeshModel):
             )
             if not valid_attributes:
                 self.logger.error(
-                    "Required attributes [crsid, shape, shift] in point crosssections do not exist"
+                    "Required attributes [crsid, shape, shift] in point crosssections"
+                    "do not exist"
                 )
                 return None
 
@@ -1213,21 +1305,33 @@ class DFlowFMModel(MeshModel):
         snap_offset: float = 1e-3,
     ):
         """
-        Prepares the 1D manholes to pipes or tunnels. Can only be used after all branches are setup.
+        Prepare the 1D manholes to pipes or tunnels.
 
-        The manholes are generated based on a set of standards specified in ``manhole_defaults_fn`` (default)  and can be overwritten with manholes read from ``manholes_fn``.
+        Can only be used after all branches are setup.
+
+        The manholes are generated based on a set of standards specified in
+        ``manhole_defaults_fn`` (default)  and can be overwritten with manholes
+        read from ``manholes_fn``.
 
         Use ``manholes_fn`` to set the manholes from a dataset of point locations.
-        Only locations within the model region are selected. They are snapped to the model
-        network nodes locations within a max distance defined in ``snap_offset``.
+        Only locations within the model region are selected. They are snapped to the
+        model network nodes locations within a max distance defined in ``snap_offset``.
 
-        Manhole attributes ["area", "streetstoragearea", "storagetype", "streetlevel"] are either taken from ``manholes_fn`` or filled in using defaults in ``manhole_defaults_fn``.
-        Manhole attribute ["bedlevel"] is always generated from invert levels of the pipe/tunnel network plus a shift defined in ``bedlevel_shift``. This is needed for numerical stability.
-        Manhole attribute ["streetlevel"]  can also be overwriten with values dervied from "dem_fn".
-        #TODO probably needs another parameter to apply different sampling method for the manholes, e.g. min within 2 m radius.
+        Manhole attributes ["area", "streetstoragearea", "storagetype", "streetlevel"]
+        are either taken from ``manholes_fn`` or filled in using defaults in
+        ``manhole_defaults_fn``.
+        Manhole attribute ["bedlevel"] is always generated from invert levels of the
+        pipe/tunnel network plus a shift defined in ``bedlevel_shift``. This is needed
+        for numerical stability.
+        Manhole attribute ["streetlevel"]  can also be overwriten with values dervied
+        from "dem_fn".
+
+        #TODO probably needs another parameter to apply different sampling method for
+        the manholes, e.g. min within 2 m radius.
 
         Adds/Updates model layers:
-            * **manholes** geom: 1D manholes vector
+
+        * **manholes** geom: 1D manholes vector
 
         Parameters
         ----------
@@ -1235,26 +1339,35 @@ class DFlowFMModel(MeshModel):
             Path or data source name for manholes see data/data_sources.yml.
             Note only the points that are within the region polygon will be used.
 
-            * Optional variables: ["area", "streetstoragearea", "storagetype", "streetlevel"]
+            * Optional variables: ["area", "streetstoragearea", "storagetype",
+            "streetlevel"]
         manholes_defaults_fn : str Path, optional
             Path to a csv file containing all defaults values per "branchtype".
             Use multiple rows to apply defaults per ["shape", "diameter"/"width"] pairs.
-            By default `hydrolib.hydromt_delft3dfm.data.manholes.manholes_defaults.csv` is used.
+            By default `hydrolib.hydromt_delft3dfm.data.manholes.manholes_defaults.csv`
+            is used.
 
-            * Allowed variables: ["area", "streetlevel", "streeStorageArea", "storagetype"]
+            * Allowed variables: ["area", "streetlevel", "streeStorageArea",
+            "storagetype"]
         dem_fn: str, optional
-            Name of data source for dem data. Used to derive default invert levels values (DEM - pipes_depth - pipes diameter/height).
+            Name of data source for dem data. Used to derive default invert levels
+            values (DEM - pipes_depth - pipes diameter/height).
+
             * Required variables: [elevtn]
         bedlevel_shift: float, optional
-            Shift applied to lowest pipe invert levels to derive manhole bedlevels [m] (default -0.5 m, meaning bedlevel = pipe invert - 0.5m).
+            Shift applied to lowest pipe invert levels to derive manhole bedlevels [m]
+            (default -0.5 m, meaning bedlevel = pipe invert - 0.5m).
         snap_offset: float, optional
             Snapping tolenrance to automatically connecting manholes to network nodes.
-            By default 0.001. Use a higher value if large number of user manholes are missing.
+            By default 0.001. Use a higher value if large number of user manholes are
+            missing.
         """
         # geom columns for manholes
+        # id = storage node id, considered identical to manhole id
+        # when using single compartment manholes
         _allowed_columns = [
             "geometry",
-            "id",  # storage node id, considered identical to manhole id when using single compartment manholes
+            "id",
             "name",
             "manholeid",
             "nodeid",
@@ -1276,7 +1389,8 @@ class DFlowFMModel(MeshModel):
             id_suffix="_generated",
             logger=self.logger,
         )
-        # FIXME Xiaohan: why do we need set_branches here? Because of branches.gui --> add a high level write_gui files same level as write_mesh
+        # FIXME Xiaohan: why do we need set_branches here? Because of branches.gui
+        # --> add a high level write_gui files same level as write_mesh
         self.set_branches(branches)
 
         # add manhole attributes from defaults
@@ -1341,16 +1455,17 @@ class DFlowFMModel(MeshModel):
             manholes, network1d_nodes, max_dist=0.1, overwrite=False
         )
         # add additional required columns
-        manholes["id"] = manholes[
-            "nodeid"
-        ]  # id of the storage nodes id, identical to manholeid when single compartment manholes are used
+        manholes["id"] = manholes["nodeid"]
+        # id of the storage nodes id, identical to manholeid
+        # when single compartment manholes are used
         manholes["name"] = manholes["manholeid"]
         manholes["usetable"] = False
 
         # validate
         if manholes[_allowed_columns].isna().any().any():
             self.logger.error(
-                "manholes contain no data. use manholes_defaults_fn to apply no data filling."
+                "manholes contain no data."
+                "Use manholes_defaults_fn to apply no data filling."
             )
 
         # setup geoms
@@ -1369,22 +1484,28 @@ class DFlowFMModel(MeshModel):
         snap_offset: float = 1.0,
     ):
         """
-        Prepares the 1D ``boundary_type`` boundaries to branches using timeseries or a constant for a
-        specific ``branch_type`` at the ``boundary_locs`` locations.
-        E.g. 'waterlevel' boundaries for 'downstream''river' branches.
+        Prepare the 1D ``boundary_type`` boundaries using timeseries or a constant.
 
-        The values can either be a constant using ``boundary_value`` (default) or timeseries read from ``boundaries_geodataset_fn``.
+        Boundaries are prepared for a specific ``branch_type`` at the ``boundary_locs``
+        locations. E.g. 'waterlevel' boundaries for 'downstream''river' branches.
 
-        Use ``boundaries_geodataset_fn`` to set the boundary values from a dataset of point location
-        timeseries. Only locations within the possible model boundary locations + snap_offset are used. They are snapped to the model
-        boundary locations within a max distance defined in ``snap_offset``. If ``boundaries_geodataset_fn``
-        has missing values, the constant ``boundary_value`` will be used.
+        The values can either be a constant using ``boundary_value`` (default) or
+        timeseries read from ``boundaries_geodataset_fn``.
+
+        Use ``boundaries_geodataset_fn`` to set the boundary values from a dataset
+        of point location timeseries. Only locations within the possible model boundary
+        locations + snap_offset are used. They are snapped to the model boundary
+        locations within a max distance defined in ``snap_offset``. If
+        ``boundaries_geodataset_fn`` has missing values, the constant ``boundary_value``
+        will be used.
 
         The dataset/timeseries are clipped to the model time based on the model config
         tstart and tstop entries.
 
         Adds/Updates model layers:
-            * **boundary1d_{boundary_type}bnd_{branch_type}** forcing: 1D boundaries DataArray
+
+        * **boundary1d_{boundary_type}bnd_{branch_type}** forcing: 1D boundaries
+            DataArray
 
         Parameters
         ----------
@@ -1394,10 +1515,12 @@ class DFlowFMModel(MeshModel):
             or a combined point location file with a timeseries data csv file
             which can be setup through the data_catalog yml file.
 
-            * Required variables if netcdf: ['discharge', 'waterlevel'] depending on ``boundary_type``
+            * Required variables if netcdf: ['discharge', 'waterlevel'] depending on
+                ``boundary_type``
             * Required coordinates if netcdf: ['time', 'index', 'y', 'x']
 
-            * Required variables if a combined point location file: ['index'] with type int
+            * Required variables if a combined point location file: ['index'] with type
+                int
             * Required index types if a time series data csv file: int
             NOTE: Require equidistant time series
         boundaries_timeseries_fn: str, Path
@@ -1408,8 +1531,8 @@ class DFlowFMModel(MeshModel):
             coordinates be set as a geodataset in the data_catalog yml file.
             NOTE: Require equidistant time series
         boundary_value : float, optional
-            Constant value to use for all boundaries if ``boundaries_geodataset_fn`` is None and to
-            fill in missing data. By default -2.5 m.
+            Constant value to use for all boundaries if ``boundaries_geodataset_fn`` is
+            None and to fill in missing data. By default -2.5 m.
         branch_type: str
             Type of branch to apply boundaries on. One of ["river", "pipe"].
         boundary_type : str, optional
@@ -1424,11 +1547,14 @@ class DFlowFMModel(MeshModel):
             By default m.
         boundary_locs:
             Boundary locations to consider. One of ["upstream", "downstream", "both"].
-            Only used for river waterlevel which can be upstream, downstream or both. By default "downstream".
-            For the others, it is automatically derived from branch_type and boundary_type.
+            Only used for river waterlevel which can be upstream, downstream or both.
+            By default "downstream".
+            For the others, it is automatically derived from branch_type and
+            boundary_type.
         snap_offset : float, optional
-                Snapping tolerance to automatically applying boundaries at the correct network nodes.
-            By default 0.1, a small snapping is applied to avoid precision errors.
+            Snapping tolerance to automatically applying boundaries at the correct
+            network nodes. By default 0.1, a small snapping is applied to avoid
+            precision errors.
         """
         self.logger.info(f"Preparing 1D {boundary_type} boundaries for {branch_type}.")
         boundaries = workflows.get_boundaries_with_nodeid(
@@ -1461,7 +1587,8 @@ class DFlowFMModel(MeshModel):
                 pass
             else:
                 self.logger.error(
-                    "forcing has different start and end time. Please check the forcing file. support yyyy-mm-dd HH:MM:SS. "
+                    "forcing has different start and end time."
+                    "Please check the forcing file. support yyyy-mm-dd HH:MM:SS. "
                 )
             # reproject if needed and convert to location
             if da_bnd.vector.crs != self.crs:
@@ -1471,7 +1598,8 @@ class DFlowFMModel(MeshModel):
         else:
             da_bnd = None
 
-        # 3. Derive DataArray with boundary values at boundary locations in boundaries_branch_type
+        # 3. Derive DataArray with boundary values at boundary locations
+        # in boundaries_branch_type
         da_out = workflows.compute_boundary_values(
             boundaries=boundaries_branch_type,
             da_bnd=da_bnd,
@@ -1483,9 +1611,9 @@ class DFlowFMModel(MeshModel):
         )
 
         # 4. set boundaries
-        self.set_forcing(
-            da_out, name=f"boundary1d_{da_out.name}_{branch_type}"
-        )  # FIXME: this format cannot be read back due to lack of branch type info from model files
+        self.set_forcing(da_out, name=f"boundary1d_{da_out.name}_{branch_type}")
+        # FIXME: this format cannot be read back due to lack of branch type info
+        # from model files
 
     def setup_bridges(
         self,
@@ -1496,19 +1624,28 @@ class DFlowFMModel(MeshModel):
     ):
         """Prepare bridges, including bridge locations and bridge crossections.
 
-        The bridges are read from ``bridges_fn`` and if any missing, filled with information provided in ``bridges_defaults_fn``.
+        The bridges are read from ``bridges_fn`` and if any missing, filled with
+        information provided in ``bridges_defaults_fn``.
 
         When reading ``bridges_fn``, only locations within the region will be read.
-        Read locations are then filtered for value specified in ``bridge_filter`` on the column "structure_type".
-        Remaining locations are snapped to the existing network within a max distance defined in ``snap_offset`` and will be dropped if not snapped.
+        Read locations are then filtered for value specified in ``bridge_filter`` on
+        the column "structure_type".
+        Remaining locations are snapped to the existing network within a max distance
+        defined in ``snap_offset`` and will be dropped if not snapped.
 
-        A default rectangle bridge profile can be found in ``bridges_defaults_fn`` as an example.
+        A default rectangle bridge profile can be found in ``bridges_defaults_fn``
+        as an example.
 
-        Structure attributes ['structure_id', 'structure_type'] are either taken from data or generated in the script.
-        Structure attributes ['shape', 'diameter', 'width', 't_width', 'height', 'closed', 'shift', 'length', 'pillarwidth', 'formfactor', 'friction_type', 'friction_value', 'allowedflowdir',  'inletlosscoeff', 'outletlosscoeff'] are either taken from data,  or in case of missing read from defaults.
+        Structure attributes ['structure_id', 'structure_type'] are either taken from
+        data or generated in the script.
+        Structure attributes ['shape', 'diameter', 'width', 't_width', 'height',
+        'closed', 'shift', 'length', 'pillarwidth', 'formfactor', 'friction_type',
+        'friction_value', 'allowedflowdir',  'inletlosscoeff', 'outletlosscoeff']
+        are either taken from data,  or in case of missing read from defaults.
 
         Adds/Updates model layers:
-            * **bridges** geom: 1D bridges vector
+
+        * **bridges** geom: 1D bridges vector
 
         Parameters
         ----------
@@ -1516,20 +1653,30 @@ class DFlowFMModel(MeshModel):
             Path or data source name for bridges, see data/data_sources.yml.
             Note only the points that are within the region polygon will be used.
 
-            * Optional variables: ['structure_id', 'structure_type', 'shape', 'diameter', 'width', 't_width', 'height', 'closed', 'shift', 'length', 'pillarwidth', 'formfactor', 'friction_type', 'friction_value', 'allowedflowdir',  'inletlosscoeff', 'outletlosscoeff']
+            * Optional variables: ['structure_id', 'structure_type', 'shape',
+            'diameter', 'width', 't_width', 'height', 'closed', 'shift', 'length',
+            'pillarwidth', 'formfactor', 'friction_type', 'friction_value',
+            'allowedflowdir',  'inletlosscoeff', 'outletlosscoeff']
 
         bridges_defaults_fn : str Path, optional
             Path to a csv file containing all defaults values per "structure_type".
-            By default `hydrolib.hydromt_delft3dfm.data.bridges.bridges_defaults.csv` is used. This file describes a minimum rectangle bridge profile.
+            By default `hydrolib.hydromt_delft3dfm.data.bridges.bridges_defaults.csv`
+            is used. This file describes a minimum rectangle bridge profile.
 
-            * Allowed variables: ['structure_type', 'shape', 'diameter', 'width', 't_width', 'height', 'closed', 'shift', 'length', 'pillarwidth', 'formfactor', 'friction_type', 'friction_value', 'allowedflowdir',  'inletlosscoeff', 'outletlosscoeff']
+            * Allowed variables: ['structure_type', 'shape', 'diameter', 'width',
+                't_width', 'height', 'closed', 'shift', 'length', 'pillarwidth',
+                'formfactor', 'friction_type', 'friction_value', 'allowedflowdir',
+                'inletlosscoeff', 'outletlosscoeff']
 
         river_filter: str, optional
-            Keyword in "structure_type" column of ``bridges_fn`` used to filter bridge features. If None all features are used (default).
+            Keyword in "structure_type" column of ``bridges_fn`` used to filter bridge
+            features. If None all features are used (default).
 
         snap_offset: float, optional
-            Snapping tolenrance to automatically snap bridges to network and add ['branchid', 'chainage'] attributes.
-            By default None. In this case, global variable "network_snap_offset" will be used..
+            Snapping tolenrance to automatically snap bridges to network and add
+            ['branchid', 'chainage'] attributes.
+            By default None. In this case, global variable "network_snap_offset"
+            will be used.
 
         See Also
         --------
@@ -1606,21 +1753,35 @@ class DFlowFMModel(MeshModel):
         culvert_filter: Optional[str] = None,
         snap_offset: Optional[float] = None,
     ):
-        """Prepare culverts, including locations and crossections. Note that only subtype culvert is supported, i.e. inverted siphon is not supported.
+        """Prepare culverts, including locations and crossections.
 
-        The culverts are read from ``culverts_fn`` and if any missing, filled with information provided in ``culverts_defaults_fn``.
+        Note that only subtype culvert is supported, i.e. inverted siphon is not
+        supported.
+
+        The culverts are read from ``culverts_fn`` and if any missing, filled with
+        information provided in ``culverts_defaults_fn``.
 
         When reading ``culverts_fn``, only locations within the region will be read.
-        Read locations are then filtered for value specified in ``culvert_filter`` on the column "structure_type" .
-        Remaining locations are snapped to the existing network within a max distance defined in ``snap_offset`` and will be dropped if not snapped.
+        Read locations are then filtered for value specified in ``culvert_filter`` on
+        the column "structure_type" .
+        Remaining locations are snapped to the existing network within a max distance
+        defined in ``snap_offset`` and will be dropped if not snapped.
 
-        A default ``culverts_defaults_fn`` that defines a circle culvert profile can be found in dflowfm.data.culverts as an example.
+        A default ``culverts_defaults_fn`` that defines a circle culvert profile can be
+        found in dflowfm.data.culverts as an example.
 
-        Structure attributes ['structure_id', 'structure_type'] are either taken from data or generated in the script.
-        Structure attributes ['shape', 'diameter', 'width', 't_width', 'height', 'closed', 'leftlevel', 'rightlevel', 'length','valveonoff', 'valveopeningheight', 'numlosscoeff', 'relopening', 'losscoeff', 'friction_type', 'friction_value', 'allowedflowdir',  'inletlosscoeff', 'outletlosscoeff'] are either taken from data,  or in case of missing read from defaults.
+        Structure attributes ['structure_id', 'structure_type'] are either taken from
+        data or generated in the script.
+        Structure attributes ['shape', 'diameter', 'width', 't_width', 'height',
+        'closed', 'leftlevel', 'rightlevel', 'length','valveonoff',
+        'valveopeningheight', 'numlosscoeff', 'relopening', 'losscoeff',
+        'friction_type', 'friction_value', 'allowedflowdir',  'inletlosscoeff',
+        'outletlosscoeff'] are either taken from data,  or in case of missing read
+        from defaults.
 
         Adds/Updates model layers:
-            * **culverts** geom: 1D culverts vector
+
+        * **culverts** geom: 1D culverts vector
 
         Parameters
         ----------
@@ -1628,21 +1789,34 @@ class DFlowFMModel(MeshModel):
             Path or data source name for culverts, see data/data_sources.yml.
             Note only the points that are within the region polygon will be used.
 
-            * Optional variables: ['structure_id', 'structure_type', 'shape', 'diameter', 'width', 't_width', 'height', 'closed', 'leftlevel', 'rightlevel', 'length', 'valveonoff', 'valveopeningheight', 'numlosscoeff', 'relopening', 'losscoeff', 'friction_type', 'friction_value', 'allowedflowdir',  'inletlosscoeff', 'outletlosscoeff']
+            * Optional variables: ['structure_id', 'structure_type', 'shape',
+                'diameter', 'width', 't_width', 'height', 'closed', 'leftlevel',
+                'rightlevel', 'length', 'valveonoff', 'valveopeningheight',
+                'numlosscoeff', 'relopening', 'losscoeff', 'friction_type',
+                'friction_value', 'allowedflowdir',  'inletlosscoeff',
+                'outletlosscoeff']
 
         culverts_defaults_fn : str Path, optional
             Path to a csv file containing all defaults values per "structure_type".
-            By default `hydrolib.hydromt_delft3dfm.data.culverts.culverts_defaults.csv` is used.
+            By default `hydrolib.hydromt_delft3dfm.data.culverts.culverts_defaults.csv`
+            is used.
             This file describes a default circle culvert profile.
 
-            * Allowed variables: ['structure_type', 'shape', 'diameter', 'width', 't_width', 'height', 'closed', 'leftlevel', 'rightlevel', 'length', 'valveonoff', 'valveopeningheight', 'numlosscoeff', 'relopening', 'losscoeff', 'friction_type', 'friction_value', 'allowedflowdir',  'inletlosscoeff', 'outletlosscoeff']
+            * Allowed variables: ['structure_type', 'shape', 'diameter', 'width',
+                't_width', 'height', 'closed', 'leftlevel', 'rightlevel', 'length',
+                'valveonoff', 'valveopeningheight', 'numlosscoeff', 'relopening',
+                'losscoeff', 'friction_type', 'friction_value', 'allowedflowdir',
+                'inletlosscoeff', 'outletlosscoeff']
 
         culvert_filter: str, optional
-            Keyword in "structure_type" column of ``culverts_fn`` used to filter culvert features. If None all features are used (default).
+            Keyword in "structure_type" column of ``culverts_fn`` used to filter
+            culvert features. If None all features are used (default).
 
         snap_offset: float, optional
-            Snapping tolenrance to automatically snap culverts to network and add ['branchid', 'chainage'] attributes.
-            By default None. In this case, global variable "network_snap_offset" will be used.
+            Snapping tolenrance to automatically snap culverts to network and add
+            ['branchid', 'chainage'] attributes.
+            By default None. In this case, global variable "network_snap_offset" will
+            be used.
 
         See Also
         --------
@@ -1723,19 +1897,20 @@ class DFlowFMModel(MeshModel):
         region: dict,
         res: Optional[float] = None,
     ) -> xu.UgridDataset:
-        """Create an 2D unstructured mesh or reads an existing 2D mesh according UGRID conventions.
+        """Create a 2D unstructured mesh according UGRID conventions.
 
-        Grids are read according to UGRID conventions. An 2D unstructured mesh
+        Grids are read according to UGRID conventions. A 2D unstructured mesh
         will be created as 2D rectangular grid from a geometry (geom_fn) or bbox.
-        If an existing 2D mesh is given, then no new mesh will be generated but an extent
-        can be extracted using the `bounds` argument of region.
+        If an existing 2D mesh is given, then no new mesh will be generated but an
+        extent can be extracted using the `bounds` argument of region.
 
         # Note that:
-        # (1) Refinement of the mesh is a seperate setup function, however an existing grid with refinement (mesh_fn)
-        # can already be read.
+        # (1) Refinement of the mesh is a seperate setup function, however an existing
+        # grid with refinement (mesh_fn) can already be read.
         # (2) If mesh also has 1D, 1D2Dlinks are created in a separate setup function.
         # (3) At mesh border, cells that intersect with geometry border will be kept.
-        # (4) Only existing mesh with only 2D grid can be read. So 1D2D network files are not supported as mesh2d_fn.
+        # (4) Only existing mesh with only 2D grid can be read. So 1D2D network files
+        # are not supported as mesh2d_fn.
 
         Adds/Updates model layers:
 
@@ -1744,7 +1919,8 @@ class DFlowFMModel(MeshModel):
         Parameters
         ----------
         region : dict
-            Dictionary describing region of interest, bounds can be provided for type 'mesh'.
+            Dictionary describing region of interest, bounds can be provided for type
+            'mesh'.
         CRS for 'bbox' and 'bounds' should be 4326; e.g.:
 
             * {'bbox': [xmin, ymin, xmax, ymax]}
@@ -1781,11 +1957,19 @@ class DFlowFMModel(MeshModel):
         sample_fn: Optional[str] = None,
         steps: Optional[int] = 1,
     ):
-        """Refine the 2d mesh within the geometry based on polygon `polygon_fn` or raster samples `sample_fn`.
+        """
+        Refine the 2d mesh.
+
+        Refinement are done within the geometry based on polygon `polygon_fn` or
+        raster samples `sample_fn`.
+
         The number of refinement is defined by `steps` if `polygon_fn` is used.
 
-        Note that this function can only be applied on an existing regular rectangle 2d mesh.
-        # FIXME: how to identify if the mesh is uniform rectangle 2d mesh? regular irregular?
+        Note that this function can only be applied on an existing regular rectangle
+        2d mesh.
+
+        # FIXME: how to identify if the mesh is uniform rectangle 2d mesh?
+        regular irregular?
 
         Adds/Updates model layers:
 
@@ -1797,8 +1981,9 @@ class DFlowFMModel(MeshModel):
             Path to a polygon or MultiPolygon used to refine the 2D mesh
         sample_fn  : str Path, optional
             Path to a raster sample file used to refine the 2D mesh.
-            The value of each sample point is the number of steps to refine the mesh. Allow only single values.
-            The resolution of the raster should be the same as the desired end result resolution.
+            The value of each sample point is the number of steps to refine the mesh.
+            Allow only single values. The resolution of the raster should be the same
+            as the desired end result resolution.
 
             * Required variable: ['steps']
         steps : int, optional
@@ -1838,7 +2023,8 @@ class DFlowFMModel(MeshModel):
             # reproject
             if da.raster.crs != self.crs:
                 self.logger.warning(
-                    "Sample grid has a different resolution than model. Reprojecting with nearest but some information might be lost."
+                    "Sample grid has a different resolution than model."
+                    "Reprojecting with nearest but some information might be lost."
                 )
                 da = da.raster.reproject(self.crs, method="nearest")
 
@@ -1867,13 +2053,19 @@ class DFlowFMModel(MeshModel):
         dist_factor: Union[float, None] = 2.0,
         **kwargs,
     ):
-        """Generate 1d2d links that link mesh1d and mesh2d according UGRID conventions.
+        """
+        Generate 1d2d links that link mesh1d and mesh2d according UGRID conventions.
 
         1d2d links are added to allow water exchange between 1d and 2d for a 1d2d model.
-        They can only be added if both mesh1d and mesh2d are present. By default, 1d_to_2d links are generated for the entire mesh1d except boundary locations.
+        They can only be added if both mesh1d and mesh2d are present. By default,
+        1d_to_2d links are generated for the entire mesh1d except boundary locations.
+
         When ''polygon_fn'' is specified, only links within the polygon will be added.
-        When ''branch_type'' is specified, only 1d branches matching the specified type will be used for generating 1d2d link.
-        # TODO: This option should also allows more customised setup for pipes and tunnels: 1d2d links will also be generated at boundary locations.
+        When ''branch_type'' is specified, only 1d branches matching the specified type
+        will be used for generating 1d2d link.
+
+        # TODO: This option should also allows more customised setup for pipes and
+        tunnels: 1d2d links will also be generated at boundary locations.
 
         Parameters
         ----------
@@ -1881,29 +2073,36 @@ class DFlowFMModel(MeshModel):
             Direction of the links: ["1d_to_2d", "2d_to_1d"].
             Default to 1d_to_2d.
         link_type : str, optional
-            Type of the links to be generated: ["embedded", "lateral"]. only used when ''link_direction'' = '2d_to_1d'.
+            Type of the links to be generated: ["embedded", "lateral"].
+            Only used when ''link_direction'' = '2d_to_1d'.
             Default to None.
         polygon_fn: str Path, optional
-             Source name of raster data in data_catalog.
-             Default to None.
+            Source name of raster data in data_catalog.
+            Default to None.
         branch_type: str, Optional
-             Type of branch to be used for 1d: ["river","pipe","channel", "tunnel"].
-             When ''branch_type'' = "pipe" or "tunnel" are specified, 1d2d links will also be generated at boundary locations.
-             Default to None. Add 1d2d links for the all branches at non-boundary locations.
+            Type of branch to be used for 1d: ["river","pipe","channel", "tunnel"].
+            When ''branch_type'' = "pipe" or "tunnel" are specified, 1d2d links will
+            also be generated at boundary locations.
+            Default to None.
+            Add 1d2d links for the all branches at non-boundary locations.
         max_length : Union[float, None], optional
-             Max allowed edge length for generated links.
-             Only used when ''link_direction'' = '2d_to_1d'  and ''link_type'' = 'lateral'.
-             Defaults to infinity.
+            Max allowed edge length for generated links.
+            Only used when ''link_direction'' = '2d_to_1d'  and
+            ''link_type'' = 'lateral'.
+            Defaults to infinity.
         dist_factor : Union[float, None], optional:
-             Factor to determine which links are kept.
-             Only used when ''link_direction'' = '2d_to_1d'  and ''link_type'' = 'lateral'.
-             Defaults to 2.0. Links with an intersection distance larger than 2 times the center to edge distance of the cell, are removed.
+            Factor to determine which links are kept.
+            Only used when ''link_direction'' = '2d_to_1d'  and
+            ''link_type'' = 'lateral'.
+            Defaults to 2.0.
+            Links with an intersection distance larger than 2 times the center to edge
+            distance of the cell, are removed.
 
         See Also
         --------
-         workflows.links1d2d_add_links_1d_to_2d
-         workflows.links1d2d_add_links_2d_to_1d_embedded
-         workflows.links1d2d_add_links_2d_to_1d_lateral
+        workflows.links1d2d_add_links_1d_to_2d
+        workflows.links1d2d_add_links_2d_to_1d_embedded
+        workflows.links1d2d_add_links_2d_to_1d_lateral
         """
         # check existing network
         if "mesh1d" not in self.mesh_names or "mesh2d" not in self.mesh_names:
@@ -1912,10 +2111,10 @@ class DFlowFMModel(MeshModel):
             )
             return None
 
-        # if "link1d2d" in self.mesh_names:
-        #     self.logger.warning("adding to existing link1d2d: link1d2d already exists")
-        #    # FIXME: question - how to seperate if the user wants to update the entire 1d2d links object or simply wants to add another set of links? #1
-        #    # TODO: would be nice in hydrolib to allow clear of subset of 1d2d links for specific branches
+        # FIXME: question - how to seperate if the user wants to update the
+        # entire 1d2d links object or simply wants to add another set of links? #1
+        # TODO: would be nice in hydrolib to allow clear of subset of 1d2d links
+        # for specific branches
 
         # check input
         if polygon_fn is not None:
@@ -1984,9 +2183,10 @@ class DFlowFMModel(MeshModel):
         split_dataset: Optional[bool] = True,
     ) -> None:
         """
-        This component adds data variable(s) from ``raster_fn`` to maps object.
+        Add data variable(s) from ``raster_fn`` to maps object.
 
-        If raster is a dataset, all variables will be added unless ``variables`` list is specified.
+        If raster is a dataset, all variables will be added unless ``variables`` list
+        is specified.
 
         Adds model layers:
 
@@ -1998,25 +2198,32 @@ class DFlowFMModel(MeshModel):
             Source name of raster data in data_catalog.
         variables: list, optional
             List of variables to add to maps from raster_fn. By default all.
-            Available variables: ['elevtn', 'waterlevel', 'waterdepth', 'pet', 'infiltcap', 'roughness_chezy', 'roughness_manning', 'roughness_walllawnikuradse', 'roughness_whitecolebrook']
+            Available variables: ['elevtn', 'waterlevel', 'waterdepth', 'pet',
+            'infiltcap', 'roughness_chezy', 'roughness_manning',
+            'roughness_walllawnikuradse', 'roughness_whitecolebrook']
         fill_method : str, optional
-            If specified, fills no data values using fill_nodata method. Available methods
-            are ['linear', 'nearest', 'cubic', 'rio_idw'].
+            If specified, fills no data values using fill_nodata method. Available
+            methods are ['linear', 'nearest', 'cubic', 'rio_idw'].
         reproject_method : str, optional
             CRS reprojection method from rasterio.enums.Resampling. By default nearest.
-            Available methods: [ 'nearest', 'bilinear', 'cubic', 'cubic_spline', 'lanczos', 'average', 'mode',
-            'gauss', 'max', 'min', 'med', 'q1', 'q3', 'sum', 'rms']
+            Available methods: [ 'nearest', 'bilinear', 'cubic', 'cubic_spline',
+            'lanczos', 'average', 'mode', 'gauss', 'max', 'min', 'med', 'q1', 'q3',
+            'sum', 'rms']
         interpolation_method : str, optional
-            Interpolation method for DFlow-FM. By default triangulation. Except for waterlevel and
-            waterdepth then the default is mean.
-            When methods other than 'triangulation', the relative search cell size will be estimated based on resolution of the raster.
-            Available methods: ['triangulation', 'mean', 'nearestNb', 'max', 'min', 'invDist', 'minAbs', 'median']
+            Interpolation method for DFlow-FM. By default triangulation. Except for
+            waterlevel and waterdepth then the default is mean.
+            When methods other than 'triangulation', the relative search cell size will
+            be estimated based on resolution of the raster.
+            Available methods: ['triangulation', 'mean', 'nearestNb', 'max', 'min',
+            'invDist', 'minAbs', 'median']
         locationtype : str, optional
             LocationType in initial fields. Either 2d (default), 1d or all.
         name: str, optional
-            Variable name, only in case data is of type DataArray or if a Dataset is added as is (split_dataset=False).
+            Variable name, only in case data is of type DataArray or if a Dataset is
+            added as is (split_dataset=False).
         split_dataset: bool, optional
-            If data is a xarray.Dataset, either add it as is to maps or split it into several xarray.DataArrays.
+            If data is a xarray.Dataset, either add it as is to maps or split it into
+            several xarray.DataArrays.
             Default to True.
         """
         # check for name when split_dataset is False
@@ -2045,11 +2252,13 @@ class DFlowFMModel(MeshModel):
         ]
         if not np.isin(interpolation_method, allowed_methods):
             raise ValueError(
-                f"Interpolation method {interpolation_method} not allowed. Select from {allowed_methods}"
+                f"Interpolation method {interpolation_method} not allowed."
+                f"Select from {allowed_methods}"
             )
         if not np.isin(locationtype, ["2d", "1d", "all"]):
             raise ValueError(
-                f"Locationtype {locationtype} not allowed. Select from ['2d', '1d', 'all']"
+                f"Locationtype {locationtype} not allowed."
+                "Select from ['2d', '1d', 'all']"
             )
 
         for var in variables:
@@ -2071,42 +2280,58 @@ class DFlowFMModel(MeshModel):
         **kwargs,
     ) -> None:
         """
-        This component adds data variable(s) to maps object by combining values in ``raster_mapping_fn`` to
-        spatial layer ``raster_fn``. The ``mapping_variables`` rasters are first created by mapping variables values
+        Add data variable(s) to maps by reclassifying values from ``raster_fn``.
+
+        Reclassification is done bycombining values in ``raster_mapping_fn`` to
+        spatial layer ``raster_fn``.
+
+        The ``mapping_variables`` rasters are first created by mapping variables values
         from ``raster_mapping_fn`` to value in the ``raster_fn`` grid.
 
         Adds model layers:
-        * **mapping_variables** maps: data from raster_mapping_fn spatially ditributed with raster_fn
+
+        * **mapping_variables** maps: data from raster_mapping_fn spatially
+            distributed with raster_fn
         Parameters
         ----------
         raster_fn: str
-            Source name of raster data in data_catalog. Should be a DataArray. Else use **kwargs to select
-            variables/time_tuple in hydromt.data_catalog.get_rasterdataset method
+            Source name of raster data in data_catalog. Should be a DataArray. Else use
+            **kwargs to select variables/time_tuple in
+            hydromt.data_catalog.get_rasterdataset method
         reclass_table_fn: str
-            Source name of mapping table of raster_fn in data_catalog. Make sure the data type is consistant for a ``reclass_variables`` including nodata.
-            For example, for roughness, it is common that the data type is float, then use no data value as -999.0.
+            Source name of mapping table of raster_fn in data_catalog. Make sure the
+            data type is consistant for a ``reclass_variables`` including nodata.
+            For example, for roughness, it is common that the data type is float,
+            then use no data value as -999.0.
         reclass_variables: list
-            List of mapping_variables from raster_mapping_fn table to add to mesh. Index column should match values
-            in raster_fn.
-            Available variables: ['elevtn', 'waterlevel', 'waterdepth', 'pet', 'infiltcap', 'roughness_chezy', 'roughness_manning', 'roughness_walllawnikuradse', 'roughness_whitecolebrook']
+            List of mapping_variables from raster_mapping_fn table to add to mesh.
+            Index column should match values in raster_fn.
+            Available variables: ['elevtn', 'waterlevel', 'waterdepth', 'pet',
+            'infiltcap', 'roughness_chezy', 'roughness_manning',
+            'roughness_walllawnikuradse', 'roughness_whitecolebrook']
         fill_method : str, optional
-            If specified, fills no data values using fill_nodata method. Available methods
-            are {'linear', 'nearest', 'cubic', 'rio_idw'}.
+            If specified, fills no data values using fill_nodata method. Available
+            methods are {'linear', 'nearest', 'cubic', 'rio_idw'}.
         reproject_method : str, optional
             CRS reprojection method from rasterio.enums.Resampling. By default nearest.
-            Available methods: [ 'nearest', 'bilinear', 'cubic', 'cubic_spline', 'lanczos', 'average', 'mode',
-            'gauss', 'max', 'min', 'med', 'q1', 'q3', 'sum', 'rms']
+            Available methods: ['nearest', 'bilinear', 'cubic', 'cubic_spline',
+            'lanczos', 'average', 'mode', 'gauss', 'max', 'min', 'med', 'q1', 'q3',
+            'sum', 'rms']
         interpolation_method : str, optional
-            Interpolation method for DFlow-FM. By default triangulation. Except for waterlevel and waterdepth then
-            the default is mean.
-            When methods other than 'triangulation', the relative search cell size will be estimated based on resolution of the raster.
-            Available methods: ['triangulation', 'mean', 'nearestNb', 'max', 'min', 'invDist', 'minAbs', 'median']
+            Interpolation method for DFlow-FM. By default triangulation. Except for
+            waterlevel and waterdepth then the default is mean.
+            When methods other than 'triangulation', the relative search cell size will
+            be estimated based on resolution of the raster.
+            Available methods: ['triangulation', 'mean', 'nearestNb', 'max', 'min',
+            'invDist', 'minAbs', 'median']
         locationtype : str, optional
             LocationType in initial fields. Either 2d (default), 1d or all.
         name: str, optional
-            Variable name, only in case data is of type DataArray or if a Dataset is added as is (split_dataset=False).
+            Variable name, only in case data is of type DataArray or if a Dataset is
+            added as is (split_dataset=False).
         split_dataset: bool, optional
-            If data is a xarray.Dataset, either add it as is to maps or split it into several xarray.DataArrays.
+            If data is a xarray.Dataset, either add it as is to maps or split it into
+            several xarray.DataArrays.
             Default to True.
         """
         # check for name when split_dataset is False
@@ -2137,11 +2362,13 @@ class DFlowFMModel(MeshModel):
         ]
         if not np.isin(interpolation_method, allowed_methods):
             raise ValueError(
-                f"Interpolation method {interpolation_method} not allowed. Select from {allowed_methods}"
+                f"Interpolation method {interpolation_method} not allowed."
+                f"Select from {allowed_methods}"
             )
         if not np.isin(locationtype, ["2d", "1d", "all"]):
             raise ValueError(
-                f"Locationtype {locationtype} not allowed. Select from ['2d', '1d', 'all']"
+                f"Locationtype {locationtype} not allowed."
+                "Select from ['2d', '1d', 'all']"
             )
         for var in reclass_variables:
             self.__set_map_parameters_based_on_variable(
@@ -2176,33 +2403,43 @@ class DFlowFMModel(MeshModel):
         tolerance: float = 3.0,
     ):
         """
-        Prepares the 2D boundaries from line geometries.
+        Prepare the 2D boundaries from line geometries.
 
-        The values can either be a spatially-uniform constant using ``boundaries_fn`` and ``boundary_value`` (default),
-        or spatially-varying timeseries using ``boundaries_fn`` and  ``boundaries_timeseries_fn``
+        The values can either be a spatially-uniform constant using ``boundaries_fn``
+        and ``boundary_value`` (default), or spatially-varying timeseries using
+        ``boundaries_fn`` and  ``boundaries_timeseries_fn``
         The ``boundary_type`` can either be "waterlevel" or "discharge".
 
-        If ``boundaries_timeseries_fn`` has missing values, the constant ``boundary_value`` will be used.
+        If ``boundaries_timeseries_fn`` has missing values, the constant
+        ``boundary_value`` will be used.
 
-        The dataset/timeseries are clipped to the model region (see below note), and model time based on the model config
-        tstart and tstop entries.
+        The dataset/timeseries are clipped to the model region (see below note), and
+        model time based on the model config tstart and tstop entries.
 
         Note that:
-        (1) Only line geometry that are contained within the distance of ``tolenrance`` to grid cells are allowed.
-        (2) Because of the above, this function must be called before the mesh refinement. #FIXME: check this after deciding on mesh refinement being a workflow or function
-        (3) when using constant boundary, the output forcing will be written to time series with constant values.
+        (1) Only line geometry that are contained within the distance of
+            ``tolenrance`` to grid cells are allowed.
+        (2) Because of the above, this function must be called before the mesh
+            refinement. #FIXME: check this after deciding on mesh refinement being
+            a workflow or function
+        (3) when using constant boundary, the output forcing will be written to time
+            series with constant values.
 
         Adds/Updates model layers:
-            * **boundary2d_{boundary_name}** forcing: 2D boundaries DataArray
+
+        * **boundary2d_{boundary_name}** forcing: 2D boundaries DataArray
 
         Parameters
         ----------
         boundaries_fn: str Path
             Path or data source name for line geometry file.
-            * Required variables if a combined time series data csv file: ["boundary_id"] with type int
+
+            * Required variables if a combined time series data csv file:
+                ["boundary_id"] with type int
         boundaries_timeseries_fn: str, Path
             Path to tabulated timeseries csv file with time index in first column
-            and location index with type int in the first row, matching "boundary_id" in ``boundaries_fn`.
+            and location index with type int in the first row, matching "boundary_id"
+            in ``boundaries_fn`.
             see :py:meth:`hydromt.get_dataframe`, for details.
             NOTE: Require equidistant time series
         boundary_value : float, optional
@@ -2219,7 +2456,8 @@ class DFlowFMModel(MeshModel):
         Raises
         ------
         AssertionError
-            if "boundary_id" in "boundaries_fn" does not match the columns of ``boundaries_timeseries_fn``.
+            if "boundary_id" in "boundaries_fn" does not match the columns of
+            ``boundaries_timeseries_fn``.
 
         """
         self.logger.info("Preparing 2D boundaries.")
@@ -2252,7 +2490,8 @@ class DFlowFMModel(MeshModel):
             )
             if len(gdf_bnd) == 0:
                 self.logger.error(
-                    "Boundaries are not found. Check if the boundary are outside of recognisable boundary region (cell size * tolerance to the mesh). "
+                    "Boundaries are not found. Check if the boundary are outside of"
+                    "recognisable boundary region (cell size * tolerance to the mesh)."
                 )
             # preprocess
             gdf_bnd = gdf_bnd.explode()
@@ -2275,12 +2514,14 @@ class DFlowFMModel(MeshModel):
             if np.dtype(df_bnd.index).type != np.datetime64:
                 raise ValueError(
                     "Dates in boundaries_timeseries_fn were not parsed correctly. "
-                    "Update the source kwargs in the DataCatalog based on the driver function arguments (eg pandas.read_csv for csv driver)."
+                    "Update the source kwargs in the DataCatalog based on the driver"
+                    "function arguments (eg pandas.read_csv for csv driver)."
                 )
             if (df_bnd.index[-1] - df_bnd.index[0]) < (tstop - tstart):
                 raise ValueError(
-                    "Time in boundaries_timeseries_fn were shorter than model simulation time. "
-                    "Update the source kwargs in the DataCatalog based on the driver function arguments (eg pandas.read_csv for csv driver)."
+                    "Time in boundaries_timeseries_fn were shorter than model sim time."
+                    "Update the source kwargs in the DataCatalog based on the driver"
+                    "function arguments (eg pandas.read_csv for csv driver)."
                 )
             if gdf_bnd is not None:
                 # check if all boundary_id are in df_bnd
@@ -2301,7 +2542,8 @@ class DFlowFMModel(MeshModel):
             )
             df_bnd = pd.DataFrame(d_bnd).set_index("time")
 
-        # 4. Derive DataArray with boundary values at boundary locations in boundaries_branch_type
+        # 4. Derive DataArray with boundary values at boundary locations
+        # in boundaries_branch_type
         da_out_dict = workflows.compute_2dboundary_values(
             boundaries=gdf_bnd,
             df_bnd=df_bnd.reset_index(),
@@ -2323,10 +2565,11 @@ class DFlowFMModel(MeshModel):
         constant_value: float,
     ):
         """
-        Prepares constant daily rainfall_rate timeseries for the 2D grid based on ``constant_value``.
+        Prepare constant 2D daily rainfall_rate timeseries based on ``constant_value``.
 
         Adds/Updates model layers:
-            * **meteo_{meteo_type}** forcing: DataArray
+
+        * **meteo_{meteo_type}** forcing: DataArray
 
         Parameters
         ----------
@@ -2372,10 +2615,12 @@ class DFlowFMModel(MeshModel):
         is_rate: bool = True,
     ):
         """
-        Prepares spatially uniform rainfall forcings to 2d grid using timeseries from ``meteo_timeseries_fn``.
+        Prepare spatially uniform 2D rainfall forcings from ``meteo_timeseries_fn``.
+
         For now only support global  (spatially uniform) timeseries.
 
-        If ``meteo_timeseries_fn`` has missing values or shorter than model simulation time, the constant ``fill_value`` will be used, e.g. 0.
+        If ``meteo_timeseries_fn`` has missing values or shorter than model simulation
+        time, the constant ``fill_value`` will be used, e.g. 0.
 
         The dataset/timeseries are clipped to the model time based on the model config
         tstart and tstop entries.
@@ -2386,7 +2631,8 @@ class DFlowFMModel(MeshModel):
         Parameters
         ----------
         meteo_timeseries_fn: str, Path
-            Path or data source name to tabulated timeseries csv file with time index in first column.
+            Path or data source name to tabulated timeseries csv file with time index
+            in first column.
 
             * Required variables : ['precip']
 
@@ -2397,8 +2643,10 @@ class DFlowFMModel(MeshModel):
         fill_value : float, optional
             Constant value to use to fill in missing data. By default 0.
         is_rate : bool, optional
-            Specify if the type of meteo data is direct "rainfall" (False) or "rainfall_rate" (True).
-            By default True for "rainfall_rate". Note that Delft3DFM 1D2D Suite 2022.04 supports only "rainfall_rate".
+            Specify if the type of meteo data is direct "rainfall" (False) or
+            "rainfall_rate" (True).
+            By default True for "rainfall_rate".
+            Note that Delft3DFM 1D2D Suite 2022.04 supports only "rainfall_rate".
 
         """
         self.logger.info("Preparing rainfall meteo forcing from uniform timeseries.")
@@ -2417,7 +2665,8 @@ class DFlowFMModel(MeshModel):
         if np.dtype(df_meteo.index).type != np.datetime64:
             raise ValueError(
                 "Dates in meteo_timeseries_fn were not parsed correctly. "
-                "Update the source kwargs in the DataCatalog based on the driver function arguments (eg pandas.read_csv for csv driver)."
+                "Update the source kwargs in the DataCatalog based on the driver"
+                "function arguments (eg pandas.read_csv for csv driver)."
             )
         if (df_meteo.index[-1] - df_meteo.index[0]) < (tstop - tstart):
             self.logger.warning(
@@ -2446,7 +2695,9 @@ class DFlowFMModel(MeshModel):
 
     # ## I/O
     def read(self):
-        """Method to read the complete model schematization and configuration from file.
+        """
+        Read the complete model schematization and configuration from file.
+
         # FIXME: where to read crs?.
         """
         self.logger.info(f"Reading model data from {self.root}")
@@ -2459,7 +2710,7 @@ class DFlowFMModel(MeshModel):
         self._check_crs()
 
     def write(self):  # complete model
-        """Method to write the complete model schematization and configuration to file."""
+        """Write the complete model schematization and configuration to file."""
         self.logger.info(f"Writing model data to {self.root}")
         # if in r, r+ mode, only write updated components
         if not self._write:
@@ -2506,8 +2757,9 @@ class DFlowFMModel(MeshModel):
 
     def write_config(self) -> None:
         """From config dict to Hydrolib MDU."""
-        # Not sure if this is worth it compared to just calling write_config super method
-        # advantage is the validator but the whole model is then read when initialising FMModel
+        # Not sure if this is worth it compared to just calling write_config from super
+        # advantage is the validator but the whole model is then read
+        # when initialising FMModel
         self._assert_write_mode()
 
         cf_dict = self._config.copy()
@@ -2541,7 +2793,8 @@ class DFlowFMModel(MeshModel):
                     rm_dict[self._MAPS[v]["name"]] = v
                 for inidict in inilist:
                     _fn = inidict.datafile.filepath
-                    # Bug: when initialising IniFieldModel hydrolib-core does not parse correclty the relative path
+                    # Bug: when initialising IniFieldModel hydrolib-core
+                    # does not parse correclty the relative path
                     # For now re-update manually....
                     if not isfile(_fn):
                         _fn = join(self.root, "maps", _fn.name)
@@ -2626,7 +2879,7 @@ class DFlowFMModel(MeshModel):
                 paramlist.append(inidict)
 
         # Only write maps that are listed in self._MAPS, rename tif on the fly
-        # TODO raise value error if both waterdepth and waterlevel are given as maps.items
+        # TODO raise value error if both waterdepth and waterlevel are given in maps
         for name, ds in self._maps.items():
             if isinstance(ds, xr.DataArray):
                 if name in self._MAPS:
@@ -2655,7 +2908,8 @@ class DFlowFMModel(MeshModel):
 
         # Assign initial fields to model and write
         inifield_model = IniFieldModel(initial=inilist, parameter=paramlist)
-        # Bug: when initialising IniFieldModel hydrolib-core does not parse correclty the relative path
+        # Bug: when initialising IniFieldModel hydrolib-core does not parse correclty
+        # the relative path
         # For now re-update manually....
         for i in range(len(inifield_model.initial)):
             path = Path(f"../maps/{inifield_model.initial[i].datafile.filepath.name}")
@@ -2677,8 +2931,9 @@ class DFlowFMModel(MeshModel):
         """
         Read model geometries files at <root>/<geoms> and add to geoms property.
 
-        For branches / boundaries etc... the reading of hydrolib-core objects happens in read_mesh
-        There the geoms geojson copies are re-set based on dflowfm files content.
+        For branches / boundaries etc... the reading of hydrolib-core objects happens
+        in read_mesh. There the geoms geojson copies are re-set based on dflowfm files
+        content.
         """
         self._assert_read_mode()
         super().read_geoms(fn="geoms/region.geojson")
@@ -2686,7 +2941,8 @@ class DFlowFMModel(MeshModel):
         if self.dfmmodel.geometry.crosslocfile is not None:
             # Read cross-sections and friction
             # Add crosssections properties, should be done before friction
-            # Branches are needed do derive locations, self.branches should start the read if not done yet
+            # Branches are needed do derive locations,
+            # self.branches should start the read if not done yet
             self.logger.info("Reading cross-sections files")
             crosssections = utils.read_crosssections(self.branches, self.dfmmodel)
 
@@ -2720,7 +2976,8 @@ class DFlowFMModel(MeshModel):
             for name, gdf in self.mesh_gdf.items():
                 self.set_geoms(gdf, name)
 
-        # Write geojson equivalent of all objects. Note that these files are not directly used when updating the model
+        # Write geojson equivalent of all objects.
+        # Note that these files are not directly used when updating the model
         super().write_geoms(fn="geoms/{name}.geojson")
 
         # Write dfm files
@@ -2847,7 +3104,8 @@ class DFlowFMModel(MeshModel):
         # hydrolib-core convention
         network = self.dfmmodel.geometry.netfile.network
         # FIXME: crs info is not available in dfmmodel, so get it from region.geojson
-        # Cannot use read_geoms yet because for some some geoms (crosssections, manholes) mesh needs to be read first...
+        # Cannot use read_geoms yet because for some some geoms
+        # (crosssections, manholes) mesh needs to be read first...
         region_fn = join(self.root, "geoms", "region.geojson")
         if isfile(region_fn):
             crs = gpd.read_file(region_fn).crs
@@ -2872,7 +3130,9 @@ class DFlowFMModel(MeshModel):
             branches = network1d_geometry
             branches["branchid"] = network1d_dataset["network1d_branch_id"]
             branches["branchorder"] = network1d_dataset["network1d_branch_order"]
-            # branches["branchtype"] = network1d_dataset["network1d_branch_type"] # might support in the future https://github.com/Deltares/HYDROLIB-core/issues/561
+            # branches["branchtype"] = network1d_dataset["network1d_branch_type"]
+            # might support in the future
+            # https://github.com/Deltares/HYDROLIB-core/issues/561
 
             # Add branchtype, properties from branches.gui file
             self.logger.info("Reading branches GUI file")
@@ -2883,18 +3143,21 @@ class DFlowFMModel(MeshModel):
             self.set_geoms(branches, "branches")
 
     def write_mesh(self, write_gui=True):
-        """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc> in model ready format."""
+        """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc>."""
         self._assert_write_mode()
         savedir = dirname(join(self.root, self._config_fn))
         mesh_filename = "fm_net.nc"
 
         # write mesh
-        # hydromt convention - FIXME hydrolib does not seem to read the 1D and links part of the mesh
+        # hydromt convention - FIXME hydrolib does not seem to read the 1D and links
+        # part of the mesh
         # super().write_mesh(fn=join(savedir, mesh_filename))
 
         # write with hydrolib-core
-        # Note: hydrolib-core writes more information including attributes and converts some variables using start_index
-        # FIXME: does not write crs that is recongnised by Delft3D FM GUI. check https://github.com/Deltares/dfm_tools/blob/main/dfm_tools/meshkernel_helpers.py#L82
+        # Note: hydrolib-core writes more information including attributes and
+        # converts some variables using start_index
+        # FIXME: does not write crs that is recongnised by Delft3D FM GUI.
+        # check dfm_tools/meshkernel_helpers.py#L82
 
         network = mesh_utils.hydrolib_network_from_mesh(self.mesh)
         network.to_file(Path(join(savedir, mesh_filename)))
@@ -2930,6 +3193,7 @@ class DFlowFMModel(MeshModel):
 
     @property
     def crs(self):
+        """Return model crs."""
         # return pyproj.CRS.from_epsg(self.get_config("global.epsg", fallback=4326))
         if self._crs is None:
             # try to read it from mesh usingMeshModel method
@@ -2938,12 +3202,12 @@ class DFlowFMModel(MeshModel):
 
     @property
     def bounds(self) -> Tuple:
-        """Returns model mesh bounds."""
+        """Return model mesh bounds."""
         return self.region.total_bounds
 
     @property
     def region(self) -> gpd.GeoDataFrame:
-        """Returns geometry of region of the model area of interest."""
+        """Return geometry of region of the model area of interest."""
         # First tries in geoms
         if "region" in self.geoms:
             region = self.geoms["region"]
@@ -2967,11 +3231,13 @@ class DFlowFMModel(MeshModel):
 
     @property
     def dfmmodel(self):
+        """Hydrolib-core FMModel object."""
         if self._dfmmodel is None:
             self.init_dfmmodel()
         return self._dfmmodel
 
     def init_dfmmodel(self):
+        """Initialise the hydrolib-core FMModel object."""
         # create a new MDU-Model
         mdu_fn = Path(join(self.root, self._config_fn))
         if isfile(mdu_fn) and self._read:
@@ -3006,7 +3272,10 @@ class DFlowFMModel(MeshModel):
         self._dimr = dimr
 
     def write_dimr(self, dimr_fn: Optional[str] = None):
-        """Writes the dmir file. In write mode, updates first the FMModel component."""
+        """Write the dmir file.
+
+        In write mode, updates first the FMModel component.
+        """
         # force read
         self.dimr
         if dimr_fn is not None:
@@ -3045,7 +3314,8 @@ class DFlowFMModel(MeshModel):
     @property
     def branches(self):
         """
-        Returns the branches (gpd.GeoDataFrame object) representing the 1D network.
+        Return the branches (gpd.GeoDataFrame object) representing the 1D network.
+
         Contains several "branchtype" for : channel, river, pipe, tunnel.
         """
         if self._branches is None and self._read:
@@ -3055,7 +3325,7 @@ class DFlowFMModel(MeshModel):
         return self._branches
 
     def set_branches(self, branches: gpd.GeoDataFrame):
-        """Updates the branches object as well as the linked geoms."""
+        """Update the branches object as well as the linked geoms."""
         # Check if "branchtype" col in new branches
         if "branchtype" in branches.columns:
             self._branches = branches
@@ -3076,6 +3346,7 @@ class DFlowFMModel(MeshModel):
         self.logger.debug("Updating branches in network.")
 
     def set_branches_component(self, name: str):
+        """Extract component name from branches and add it to geoms."""
         gdf_comp = self.branches[self.branches["branchtype"] == name]
         if gdf_comp.index.size > 0:
             self.set_geoms(gdf_comp, name=f"{name}s")
@@ -3083,6 +3354,7 @@ class DFlowFMModel(MeshModel):
 
     @property
     def rivers(self):
+        """Extract rivers from branches."""
         if "rivers" in self.geoms:
             gdf = self.geoms["rivers"]
         else:
@@ -3091,6 +3363,7 @@ class DFlowFMModel(MeshModel):
 
     @property
     def channels(self):
+        """Extract channels from branches."""
         if "channels" in self.geoms:
             gdf = self.geoms["channels"]
         else:
@@ -3099,6 +3372,7 @@ class DFlowFMModel(MeshModel):
 
     @property
     def pipes(self):
+        """Extract pipes from branches."""
         if "pipes" in self.geoms:
             gdf = self.geoms["pipes"]
         else:
@@ -3107,6 +3381,7 @@ class DFlowFMModel(MeshModel):
 
     @property
     def opensystem(self):
+        """Open system branches (river, channel)."""
         if len(self.branches) > 0:
             gdf = self.branches[self.branches["branchtype"].isin(["river", "channel"])]
         else:
@@ -3115,6 +3390,7 @@ class DFlowFMModel(MeshModel):
 
     @property
     def closedsystem(self):
+        """Closed system branches (pipe, tunnel)."""
         if len(self.branches) > 0:
             gdf = self.branches[self.branches["branchtype"].isin(["pipe", "tunnel"])]
         else:
@@ -3122,7 +3398,11 @@ class DFlowFMModel(MeshModel):
         return gdf
 
     def get_model_time(self):
-        """Return (refdate, tstart, tstop) tuple with parsed model reference datem start and end time."""
+        """
+        Return (refdate, tstart, tstop) tuple.
+
+        It is parsed from model reference datem start and end time.
+        """
         refdate = datetime.strptime(str(self.get_config("time.refdate")), "%Y%m%d")
         tstart = refdate + timedelta(seconds=float(self.get_config("time.tstart")))
         tstop = refdate + timedelta(seconds=float(self.get_config("time.tstop")))
@@ -3130,7 +3410,7 @@ class DFlowFMModel(MeshModel):
 
     @property
     def res(self):
-        "Resolution of the mesh2d."
+        """Resolution of the mesh2d."""
         if self._res is not None:
             return self._res
 
@@ -3172,7 +3452,8 @@ class DFlowFMModel(MeshModel):
             overwrite_grid=overwrite_grid,
         )
 
-        # check if 1D and 2D and and 1D2D links and overwrite then send warning that setup_link1d2d should be run again
+        # check if 1D and 2D and and 1D2D links and overwrite
+        # then send warning that setup_link1d2d should be run again
         if overwrite_grid and "link1d2d" in self.mesh.data_vars:
             if grid_name == "mesh1d" or grid_name == "mesh2d":
                 # TODO check if warning is enough or if we should remove to be sure?
@@ -3206,10 +3487,12 @@ class DFlowFMModel(MeshModel):
         Parameters
         ----------
         link1d2d: xr.Dataset
-            link1d2d dataset with variables: [link1d2d, link1d2d_ids, link1d2d_long_names, link1d2d_contact_type]
+            link1d2d dataset with variables: [link1d2d, link1d2d_ids,
+            link1d2d_long_names, link1d2d_contact_type]
         """
         # Check if link1d2d already in self.mesh
-        # FIXME current implementation of below does not support updating partial 1d2d links. Either document or adapt. #1
+        # FIXME current implementation of below does not support updating partial
+        # 1d2d links. Either document or adapt. #1
         if "link1d2d" in self.mesh.data_vars:
             self.logger.info("Overwriting existing link1d2d in self.mesh.")
             self._mesh = self._mesh.drop_vars(
@@ -3227,28 +3510,32 @@ class DFlowFMModel(MeshModel):
         self._mesh = self._mesh.merge(link1d2d)
 
     def _model_has_2d(self):
+        """Check if model has 2D mesh part."""
         if "mesh2d" in self.mesh_names:
             return True
         else:
             return False
 
     def _model_has_1d(self):
+        """Check if model has 1D mesh part."""
         if "mesh1d" in self.mesh_names:
             return True
         else:
             return False
 
     def _check_crs(self):
-        """"""
+        """Check if model crs is defined."""
         if self.crs is None:
             if self._read:
                 self.logger.warning(
                     "Could not derive CRS from reading the mesh file."
-                    "Please define the CRS in the [global] init attributes before setting up the model."
+                    "Please define the CRS in the [global] init attributes before"
+                    "setting up the model."
                 )
             else:
                 raise ValueError(
-                    "CRS is not defined. Please define the CRS in the [global] init attributes before setting up the model."
+                    "CRS is not defined. Please define the CRS in the [global] init"
+                    "attributes before setting up the model."
                 )
         else:
             self.logger.info(f"project crs: {self.crs.to_epsg()}")
