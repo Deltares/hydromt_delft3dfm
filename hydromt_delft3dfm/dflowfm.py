@@ -1592,7 +1592,6 @@ class DFlowFMModel(MeshModel):
         region_buffer=0.0,
     ):
         """Read forcing geodataset."""
-
         refdate, tstart, tstop = self.get_model_time()  # time slice
 
         if (
@@ -1601,9 +1600,7 @@ class DFlowFMModel(MeshModel):
         ):
             da = self.data_catalog.get_geodataset(
                 forcing_geodataset_fn,
-                geom=self.region.buffer(
-                    region_buffer  # buffer region
-                ),  # only select data within region of interest (large region for forcing)
+                geom=self.region.buffer(region_buffer),  # buffer region
                 variables=[forcing_name],
                 time_tuple=(tstart, tstop),
             )
@@ -1615,11 +1612,13 @@ class DFlowFMModel(MeshModel):
                 pass
             else:
                 self.logger.error(
-                    "forcing has different start and end time. Please check the forcing file. support yyyy-mm-dd HH:MM:SS. "
+                    "Forcing has different start and end time."
+                    + " Please check the forcing file. Support yyyy-mm-dd HH:MM:SS. "
                 )
-            # reproject if needed and convert to location #TODO change this after hydromt release >0.9.0
+            # reproject if needed and convert to location
             if da.vector.crs != self.crs:
                 da = da.vector.to_crs(self.crs)
+                # TODO update after hydromt release >0.9.0
             # get geom
             gdf = da.vector.to_gdf(reducer=np.mean)
         elif (
@@ -1647,7 +1646,8 @@ class DFlowFMModel(MeshModel):
         branch_type: str = "river",
     ):
         """
-        Prepares the 1D lateral discharge from geodataset of point geometries.
+        Prepare the 1D lateral discharge from geodataset of point geometries.
+
         E.g. '1' m3/s for all lateral locations.
 
         Use ``laterals_geodataset_fn`` to set the lateral values from a geodataset
@@ -1659,13 +1659,13 @@ class DFlowFMModel(MeshModel):
 
         The discharge can either be a constant using ``lateral_value`` (default) or
         a timeseries read from ``laterals_geodataset_fn``.
-        If the timeseries has missing values, the constant ``lateral_value`` will be used.
+        If the timeseries has missing values, constant ``lateral_value`` will be used.
 
         The timeseries are clipped to the model time based on the model config
         tstart and tstop entries.
 
         Adds/Updates model layers:
-            * ** lateral1d_points** forcing: 1D laterals DataArray with points coordinates.
+            ** lateral1d_points** forcing: DataArray with points coordinates.
 
         Parameters
         ----------
@@ -1674,11 +1674,11 @@ class DFlowFMModel(MeshModel):
             * Required variables if geodataset is provided ['lateral_discharge']
             NOTE: Require equidistant time series
         lateral_value : float, optional
-            Constant value to use for all laterals if ``laterals_geodataset_fn`` is a geodataframe,
+            Constant value, used if ``laterals_geodataset_fn`` is a geodataframe,
             or for filling in missing data.
             By default 0 [m3/s].
         snap_offset : float, optional
-            Snapping tolerance to automatically applying boundaries at the correct network nodes.
+            Snapping tolerance to snap boundaries to the correct network nodes.
             By default 0.1, a small snapping is applied to avoid precision errors.
         branch_type: str, optional
             Type of branch to apply laterals on. One of ["river", "pipe"].
@@ -1722,7 +1722,8 @@ class DFlowFMModel(MeshModel):
         lateral_value: float = -2.5,
     ):
         """
-        Prepares the 1D lateral discharge from geodataset of polygons.
+        Prepare the 1D lateral discharge from geodataset of polygons.
+
         E.g. '1' m3/s for all lateral locations.
 
         Use ``laterals_geodataset_fn`` to set the lateral values from a geodatasets
@@ -1731,13 +1732,13 @@ class DFlowFMModel(MeshModel):
 
         The discharge can either be a constant using ``lateral_value`` (default) or
         a timeseries read from ``laterals_geodataset_fn``.
-        If the timeseries has missing values, the constant ``lateral_value`` will be used.
+        If the timeseries has missing values, constant ``lateral_value`` will be used.
 
         The timeseries are clipped to the model time based on the model config
         tstart and tstop entries.
 
         Adds/Updates model layers:
-            * ** lateral1d_polygons** forcing: 1D laterals DataArray with polygon coordinates.
+            * ** lateral1d_polygons** forcing: DataArray with polygon coordinates.
 
         Parameters
         ----------
@@ -1746,7 +1747,7 @@ class DFlowFMModel(MeshModel):
             * Required variables if geodataset is provided ['lateral_discharge']
             NOTE: Require equidistant time series
         lateral_value : float, optional
-            Constant value to use for all laterals if ``laterals_geodataset_fn`` is a geodataframe,
+            Constant value, used if ``laterals_geodataset_fn`` is a geodataframe,
             or for filling in missing data.
             By default 0 [m3/s].
         """
@@ -3198,7 +3199,8 @@ class DFlowFMModel(MeshModel):
             for name, gdf in self.mesh_gdf.items():
                 self.set_geoms(gdf, name)
 
-        # Write geojson equivalent of all objects. Note that these files are not directly used when updating the model
+        # Write geojson equivalent of all objects.
+        # NOTE these files are not used for model update.
         # convert any list in geoms to strings
         def convert_lists_to_strings(df):
             for column_name in df.columns:
@@ -3595,6 +3597,7 @@ class DFlowFMModel(MeshModel):
 
     @property
     def boundaries(self):
+        """1D boundary locations."""
         if "boundaries" not in self.geoms:
             self.set_geoms(
                 workflows.get_boundaries_with_nodeid(

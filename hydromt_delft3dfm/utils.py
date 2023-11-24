@@ -18,8 +18,8 @@ from hydrolib.core.dflowfm import (
     FMModel,
     ForcingModel,
     FrictionModel,
-    Meteo,
     Lateral,
+    Meteo,
     PolyFile,
     StorageNodeModel,
     StructureModel,
@@ -795,7 +795,9 @@ def read_1dlateral(
     branches: gpd.GeoDataFrame = None,
 ) -> xr.DataArray:
     """
-    Read for a specific quantity the corresponding external and forcing files and parse to xarray
+    Read a 1D lateral from external and forcing files.
+
+    Parsed to xarray.
 
     Parameters
     ----------
@@ -859,7 +861,8 @@ def read_1dlateral(
     # Else not implemented yet
     else:
         raise NotImplementedError(
-            f"ForcingFile with several function for a single variable not implemented yet. Skipping reading forcing for variable {quantity}."
+            "ForcingFile with several function for a single variable not implemented."
+            + f"Skipping reading forcing for variable {quantity}."
         )
 
     # Get lateral locations and update dimentions and coordinates
@@ -923,8 +926,8 @@ def read_1dlateral(
 def write_1dlateral(
     forcing: Dict, savedir: str = None, ext_fn: str = None
 ) -> Union[None, Tuple]:
-    """ "
-    write 1dlateral ext and bc files from forcing dict.
+    """
+    Write 1dlateral ext and bc files from forcing dict.
 
     Parameters
     ----------

@@ -1239,9 +1239,11 @@ def _remove_branches_with_ring_geometries(
 def snap_geom_to_branches_and_drop_nonsnapped(
     branches: gpd.GeoDataFrame, geoms: gpd.GeoDataFrame, snap_offset=0.0
 ):
-    """Snaps geoms to branches and drop the ones that are not snapped.
+    """
+    Snap geoms to branches and drop the ones that are not snapped.
+
     Returns snapped geoms with branchid and chainage.
-    branches must have branchid.
+    Branches must have branchid.
     """
     find_nearest_branch(
         branches=branches,

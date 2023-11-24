@@ -4,11 +4,11 @@ import logging
 from typing import Tuple
 
 import geopandas as gpd
-from shapely.geometry import LineString
 import xarray as xr
 import xugrid as xu
 from hydrolib.core.dflowfm import Network
 from pyproj import CRS
+from shapely.geometry import LineString
 
 logger = logging.getLogger(__name__)
 

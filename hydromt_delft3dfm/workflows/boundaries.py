@@ -8,7 +8,7 @@ import hydromt.io
 import numpy as np
 import pandas as pd
 import xarray as xr
-from shapely.geometry import Point, Polygon
+from shapely.geometry import Point
 
 from hydromt_delft3dfm import graph_utils
 
@@ -267,9 +267,8 @@ def compute_boundary_values(
 
         # snap user boundary to potential boundary locations to get nodeid
         gdf_bnd = da_bnd.vector.to_gdf()
-        gdf_bnd.crs = (
-            boundaries.crs
-        )  # FIXME temp fix for hydromt reprojection issue #613
+        gdf_bnd.crs = boundaries.crs
+        # TODO remove after hydromt release>0.9.0
         gdf_bnd = hydromt.gis_utils.nearest_merge(
             gdf_bnd,
             boundaries,
@@ -628,7 +627,7 @@ def compute_meteo_forcings(
 
 
 def _standardize_forcing_timeindexes(da):
-    """Standardize timeindexes frequency based on forcing DataArray"""
+    """Standardize timeindexes frequency based on forcing DataArray."""
     _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
     dt = pd.to_timedelta((da.time[1].values - da.time[0].values))
     freq = dt.resolution_string
@@ -636,7 +635,7 @@ def _standardize_forcing_timeindexes(da):
     if freq == "D":
         logger.warning(
             "time unit days is not supported by the current GUI version: 2022.04"
-        )  # converting to hours as temporary solution # FIXME: day is converted to hours temporarily
+        )  # TODO: remove temporay pin on GUI version
         multiplier = 24
     if len(pd.date_range(da.time[0].values, da.time[-1].values, freq=dt)) != len(
         da.time
@@ -718,7 +717,7 @@ def compute_forcing_values_points(
                 timeInterpolation="Linear",
                 quantity=f"{forcing_type}",
                 units=f"{forcing_unit}",
-                time_unit=f"{freq_name} since {pd.to_datetime(da.time[0].values)}",  # support only yyyy-mm-dd HH:MM:SS
+                time_unit=f"{freq_name} since {pd.to_datetime(da.time[0].values)}",
             ),
         )
         # fill in na using default
@@ -730,9 +729,7 @@ def compute_forcing_values_points(
         # add name
         da_out.name = f"{forcing_type}"
     else:
-        logger.info(
-            f"Using constant value {forcing_value} {forcing_unit} for all {forcing_type} forcings."
-        )
+        logger.info(f"Use constant {forcing_value} {forcing_unit} for {forcing_type}.")
         # instantiate xr.DataArray for bnd data with forcing_type directly
         da_out = xr.DataArray(
             data=np.full((len(gdf.index)), forcing_value, dtype=np.float32),
@@ -757,8 +754,11 @@ def compute_forcing_values_points(
 
 
 def get_geometry_coords_for_polygons(gdf):
-    """Gets xarray DataArray coordinates that describes polygon geometries.
-    Inlcudes numcoordinates, xcoordinates and ycoordinates"""
+    """
+    Get xarray DataArray coordinates that describes polygon geometries.
+
+    Inlcude numcoordinates, xcoordinates and ycoordinates.
+    """
     if gdf.geometry.type.iloc[0] == "Polygon":
         # Get the maximum number of coordinates for any polygon
         max_coords = gdf["geometry"].apply(lambda x: len(x.exterior.coords[:])).max()
@@ -861,7 +861,7 @@ def compute_forcing_values_polygon(
                 timeInterpolation="Linear",
                 quantity=f"{forcing_type}",
                 units=f"{forcing_unit}",
-                time_unit=f"{freq_name} since {pd.to_datetime(da.time[0].values)}",  # support only yyyy-mm-dd HH:MM:SS
+                time_unit=f"{freq_name} since {pd.to_datetime(da.time[0].values)}",
             ),
         )
         # fill in na using default
@@ -873,9 +873,7 @@ def compute_forcing_values_polygon(
         # add name
         da_out.name = f"{forcing_type}"
     else:
-        logger.info(
-            f"Using constant value {forcing_value} {forcing_unit} for all {forcing_type} forcings."
-        )
+        logger.info(f"Use constant {forcing_value} {forcing_unit} for {forcing_type}.")
         # instantiate xr.DataArray for forcing data with forcing_type directly
         coords_dict = get_geometry_coords_for_polygons(gdf)
         data_3d = np.full(
