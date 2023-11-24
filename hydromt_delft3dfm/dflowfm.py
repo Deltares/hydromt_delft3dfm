@@ -1714,6 +1714,63 @@ class DFlowFMModel(MeshModel):
         )
 
         # 3. set laterals
+        self.set_forcing(da_out, name="lateral1d_points")
+
+    def setup_1dlateral_from_polygons(
+        self,
+        laterals_geodataset_fn: str = None,
+        lateral_value: float = -2.5,
+    ):
+        """
+        Prepares the 1D lateral discharge from geodataset of polygons.
+        E.g. '1' m3/s for all lateral locations.
+
+        Use ``laterals_geodataset_fn`` to set the lateral values from a geodatasets
+        of polygons.
+        Support also geodataframe of polygons in combination of `lateral_value`.
+
+        The discharge can either be a constant using ``lateral_value`` (default) or
+        a timeseries read from ``laterals_geodataset_fn``.
+        If the timeseries has missing values, the constant ``lateral_value`` will be used.
+
+        The timeseries are clipped to the model time based on the model config
+        tstart and tstop entries.
+
+        Adds/Updates model layers:
+            * ** lateral1d_polygons** forcing: 1D laterals DataArray with polygon coordinates.
+
+        Parameters
+        ----------
+        laterals_geodataset_fn : str, Path
+            Path or data source name for geospatial point location file.
+            * Required variables if geodataset is provided ['lateral_discharge']
+            NOTE: Require equidistant time series
+        lateral_value : float, optional
+            Constant value to use for all laterals if ``laterals_geodataset_fn`` is a geodataframe,
+            or for filling in missing data.
+            By default 0 [m3/s].
+        """
+        self.logger.info("Preparing 1D laterals for polygons.")
+
+        # 1. read lateral geodataset
+        gdf_laterals, da_lat = self._read_forcing_geodataset(
+            laterals_geodataset_fn, "lateral_discharge"
+        )
+
+        if len(gdf_laterals) == 0:
+            return None
+
+        # 2. Compute lateral dataarray
+        da_out = workflows.compute_forcing_values_polygon(
+            gdf=gdf_laterals,
+            da=da_lat,
+            forcing_value=lateral_value,
+            forcing_type="lateral_discharge",
+            forcing_unit="m3/s",
+            logger=self.logger,
+        )
+
+        # 3. set laterals
         self.set_forcing(da_out, name="lateral1d_polygons")
 
     def setup_bridges(
