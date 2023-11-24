@@ -609,37 +609,56 @@
 <dt class="sig sig-object py" id="hydromt_delft3dfm.DFlowFMModel.setup_bridges">
 <span class="sig-prename descclassname"><span class="pre">DFlowFMModel.</span></span><span class="sig-name descname"><span class="pre">setup_bridges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bridges_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bridges_defaults_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'1D_bridges_defaults'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bridge_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snap_offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hydromt_delft3dfm/dflowfm.html#DFlowFMModel.setup_bridges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hydromt_delft3dfm.DFlowFMModel.setup_bridges" title="Link to this definition">#</a></dt>
 <dd><p>Prepare bridges, including bridge locations and bridge crossections.</p>
-<p>The bridges are read from <code class="docutils literal notranslate"><span class="pre">bridges_fn</span></code> and if any missing, filled with information provided in <code class="docutils literal notranslate"><span class="pre">bridges_defaults_fn</span></code>.</p>
+<p>The bridges are read from <code class="docutils literal notranslate"><span class="pre">bridges_fn</span></code> and if any missing, filled with
+information provided in <code class="docutils literal notranslate"><span class="pre">bridges_defaults_fn</span></code>.</p>
 <p>When reading <code class="docutils literal notranslate"><span class="pre">bridges_fn</span></code>, only locations within the region will be read.
-Read locations are then filtered for value specified in <code class="docutils literal notranslate"><span class="pre">bridge_filter</span></code> on the column “structure_type”.
-Remaining locations are snapped to the existing network within a max distance defined in <code class="docutils literal notranslate"><span class="pre">snap_offset</span></code> and will be dropped if not snapped.</p>
-<p>A default rectangle bridge profile can be found in <code class="docutils literal notranslate"><span class="pre">bridges_defaults_fn</span></code> as an example.</p>
-<p>Structure attributes [‘structure_id’, ‘structure_type’] are either taken from data or generated in the script.
-Structure attributes [‘shape’, ‘diameter’, ‘width’, ‘t_width’, ‘height’, ‘closed’, ‘shift’, ‘length’, ‘pillarwidth’, ‘formfactor’, ‘friction_type’, ‘friction_value’, ‘allowedflowdir’,  ‘inletlosscoeff’, ‘outletlosscoeff’] are either taken from data,  or in case of missing read from defaults.</p>
-<dl class="simple">
-<dt>Adds/Updates model layers:</dt><dd><ul class="simple">
+Read locations are then filtered for value specified in <code class="docutils literal notranslate"><span class="pre">bridge_filter</span></code> on
+the column “structure_type”.
+Remaining locations are snapped to the existing network within a max distance
+defined in <code class="docutils literal notranslate"><span class="pre">snap_offset</span></code> and will be dropped if not snapped.</p>
+<p>A default rectangle bridge profile can be found in <code class="docutils literal notranslate"><span class="pre">bridges_defaults_fn</span></code>
+as an example.</p>
+<p>Structure attributes [‘structure_id’, ‘structure_type’] are either taken from
+data or generated in the script.
+Structure attributes [‘shape’, ‘diameter’, ‘width’, ‘t_width’, ‘height’,
+‘closed’, ‘shift’, ‘length’, ‘pillarwidth’, ‘formfactor’, ‘friction_type’,
+‘friction_value’, ‘allowedflowdir’,  ‘inletlosscoeff’, ‘outletlosscoeff’]
+are either taken from data,  or in case of missing read from defaults.</p>
+<p>Adds/Updates model layers:</p>
+<ul class="simple">
 <li><p><strong>bridges</strong> geom: 1D bridges vector</p></li>
 </ul>
-</dd>
-</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>bridges_fn</strong> (<em>str Path</em><em>, </em><em>optional</em>) – <p>Path or data source name for bridges, see data/data_sources.yml.
 Note only the points that are within the region polygon will be used.</p>
 <ul>
-<li><p>Optional variables: [‘structure_id’, ‘structure_type’, ‘shape’, ‘diameter’, ‘width’, ‘t_width’, ‘height’, ‘closed’, ‘shift’, ‘length’, ‘pillarwidth’, ‘formfactor’, ‘friction_type’, ‘friction_value’, ‘allowedflowdir’,  ‘inletlosscoeff’, ‘outletlosscoeff’]</p></li>
+<li><p>Optional variables: [‘structure_id’, ‘structure_type’, ‘shape’,</p></li>
 </ul>
+<p>’diameter’, ‘width’, ‘t_width’, ‘height’, ‘closed’, ‘shift’, ‘length’,
+‘pillarwidth’, ‘formfactor’, ‘friction_type’, ‘friction_value’,
+‘allowedflowdir’,  ‘inletlosscoeff’, ‘outletlosscoeff’]</p>
 </p></li>
 <li><p><strong>bridges_defaults_fn</strong> (<em>str Path</em><em>, </em><em>optional</em>) – <p>Path to a csv file containing all defaults values per “structure_type”.
-By default <cite>hydrolib.hydromt_delft3dfm.data.bridges.bridges_defaults.csv</cite> is used. This file describes a minimum rectangle bridge profile.</p>
+By default <cite>hydrolib.hydromt_delft3dfm.data.bridges.bridges_defaults.csv</cite>
+is used. This file describes a minimum rectangle bridge profile.</p>
 <ul>
-<li><p>Allowed variables: [‘structure_type’, ‘shape’, ‘diameter’, ‘width’, ‘t_width’, ‘height’, ‘closed’, ‘shift’, ‘length’, ‘pillarwidth’, ‘formfactor’, ‘friction_type’, ‘friction_value’, ‘allowedflowdir’,  ‘inletlosscoeff’, ‘outletlosscoeff’]</p></li>
+<li><dl class="simple">
+<dt>Allowed variables: [‘structure_type’, ‘shape’, ‘diameter’, ‘width’,</dt><dd><p>’t_width’, ‘height’, ‘closed’, ‘shift’, ‘length’, ‘pillarwidth’,
+‘formfactor’, ‘friction_type’, ‘friction_value’, ‘allowedflowdir’,
+‘inletlosscoeff’, ‘outletlosscoeff’]</p>
+</dd>
+</dl>
+</li>
 </ul>
 </p></li>
-<li><p><strong>river_filter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Keyword in “structure_type” column of <code class="docutils literal notranslate"><span class="pre">bridges_fn</span></code> used to filter bridge features. If None all features are used (default).</p></li>
-<li><p><strong>snap_offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Snapping tolenrance to automatically snap bridges to network and add [‘branchid’, ‘chainage’] attributes.
-By default None. In this case, global variable “network_snap_offset” will be used..</p></li>
+<li><p><strong>river_filter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Keyword in “structure_type” column of <code class="docutils literal notranslate"><span class="pre">bridges_fn</span></code> used to filter bridge
+features. If None all features are used (default).</p></li>
+<li><p><strong>snap_offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Snapping tolenrance to automatically snap bridges to network and add
+[‘branchid’, ‘chainage’] attributes.
+By default None. In this case, global variable “network_snap_offset”
+will be used.</p></li>
 </ul>
 </dd>
 </dl>

@@ -608,42 +608,58 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="hydromt_delft3dfm.DFlowFMModel.setup_manholes">
 <span class="sig-prename descclassname"><span class="pre">DFlowFMModel.</span></span><span class="sig-name descname"><span class="pre">setup_manholes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manholes_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manhole_defaults_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'manholes_defaults'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bedlevel_shift</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dem_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snap_offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hydromt_delft3dfm/dflowfm.html#DFlowFMModel.setup_manholes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hydromt_delft3dfm.DFlowFMModel.setup_manholes" title="Link to this definition">#</a></dt>
-<dd><p>Prepares the 1D manholes to pipes or tunnels. Can only be used after all branches are setup.</p>
-<p>The manholes are generated based on a set of standards specified in <code class="docutils literal notranslate"><span class="pre">manhole_defaults_fn</span></code> (default)  and can be overwritten with manholes read from <code class="docutils literal notranslate"><span class="pre">manholes_fn</span></code>.</p>
+<dd><p>Prepare the 1D manholes to pipes or tunnels.</p>
+<p>Can only be used after all branches are setup.</p>
+<p>The manholes are generated based on a set of standards specified in
+<code class="docutils literal notranslate"><span class="pre">manhole_defaults_fn</span></code> (default)  and can be overwritten with manholes
+read from <code class="docutils literal notranslate"><span class="pre">manholes_fn</span></code>.</p>
 <p>Use <code class="docutils literal notranslate"><span class="pre">manholes_fn</span></code> to set the manholes from a dataset of point locations.
-Only locations within the model region are selected. They are snapped to the model
-network nodes locations within a max distance defined in <code class="docutils literal notranslate"><span class="pre">snap_offset</span></code>.</p>
-<p>Manhole attributes [“area”, “streetstoragearea”, “storagetype”, “streetlevel”] are either taken from <code class="docutils literal notranslate"><span class="pre">manholes_fn</span></code> or filled in using defaults in <code class="docutils literal notranslate"><span class="pre">manhole_defaults_fn</span></code>.
-Manhole attribute [“bedlevel”] is always generated from invert levels of the pipe/tunnel network plus a shift defined in <code class="docutils literal notranslate"><span class="pre">bedlevel_shift</span></code>. This is needed for numerical stability.
-Manhole attribute [“streetlevel”]  can also be overwriten with values dervied from “dem_fn”.
-#TODO probably needs another parameter to apply different sampling method for the manholes, e.g. min within 2 m radius.</p>
-<dl class="simple">
-<dt>Adds/Updates model layers:</dt><dd><ul class="simple">
+Only locations within the model region are selected. They are snapped to the
+model network nodes locations within a max distance defined in <code class="docutils literal notranslate"><span class="pre">snap_offset</span></code>.</p>
+<p>Manhole attributes [“area”, “streetstoragearea”, “storagetype”, “streetlevel”]
+are either taken from <code class="docutils literal notranslate"><span class="pre">manholes_fn</span></code> or filled in using defaults in
+<code class="docutils literal notranslate"><span class="pre">manhole_defaults_fn</span></code>.
+Manhole attribute [“bedlevel”] is always generated from invert levels of the
+pipe/tunnel network plus a shift defined in <code class="docutils literal notranslate"><span class="pre">bedlevel_shift</span></code>. This is needed
+for numerical stability.
+Manhole attribute [“streetlevel”]  can also be overwriten with values dervied
+from “dem_fn”.</p>
+<p>#TODO probably needs another parameter to apply different sampling method for
+the manholes, e.g. min within 2 m radius.</p>
+<p>Adds/Updates model layers:</p>
+<ul class="simple">
 <li><p><strong>manholes</strong> geom: 1D manholes vector</p></li>
 </ul>
-</dd>
-</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>manholes_fn</strong> (<em>str Path</em><em>, </em><em>optional</em>) – <p>Path or data source name for manholes see data/data_sources.yml.
 Note only the points that are within the region polygon will be used.</p>
 <ul>
-<li><p>Optional variables: [“area”, “streetstoragearea”, “storagetype”, “streetlevel”]</p></li>
+<li><p>Optional variables: [“area”, “streetstoragearea”, “storagetype”,</p></li>
 </ul>
+<p>”streetlevel”]</p>
 </p></li>
 <li><p><strong>manholes_defaults_fn</strong> (<em>str Path</em><em>, </em><em>optional</em>) – <p>Path to a csv file containing all defaults values per “branchtype”.
 Use multiple rows to apply defaults per [“shape”, “diameter”/”width”] pairs.
-By default <cite>hydrolib.hydromt_delft3dfm.data.manholes.manholes_defaults.csv</cite> is used.</p>
+By default <cite>hydrolib.hydromt_delft3dfm.data.manholes.manholes_defaults.csv</cite>
+is used.</p>
 <ul>
-<li><p>Allowed variables: [“area”, “streetlevel”, “streeStorageArea”, “storagetype”]</p></li>
+<li><p>Allowed variables: [“area”, “streetlevel”, “streeStorageArea”,</p></li>
+</ul>
+<p>”storagetype”]</p>
+</p></li>
+<li><p><strong>dem_fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – <p>Name of data source for dem data. Used to derive default invert levels
+values (DEM - pipes_depth - pipes diameter/height).</p>
+<ul>
+<li><p>Required variables: [elevtn]</p></li>
 </ul>
 </p></li>
-<li><p><strong>dem_fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Name of data source for dem data. Used to derive default invert levels values (DEM - pipes_depth - pipes diameter/height).
-* Required variables: [elevtn]</p></li>
-<li><p><strong>bedlevel_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Shift applied to lowest pipe invert levels to derive manhole bedlevels [m] (default -0.5 m, meaning bedlevel = pipe invert - 0.5m).</p></li>
+<li><p><strong>bedlevel_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Shift applied to lowest pipe invert levels to derive manhole bedlevels [m]
+(default -0.5 m, meaning bedlevel = pipe invert - 0.5m).</p></li>
 <li><p><strong>snap_offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Snapping tolenrance to automatically connecting manholes to network nodes.
-By default 0.001. Use a higher value if large number of user manholes are missing.</p></li>
+By default 0.001. Use a higher value if large number of user manholes are
+missing.</p></li>
 </ul>
 </dd>
 </dl>

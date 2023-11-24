@@ -415,7 +415,7 @@
                 <article class="bd-article" role="main">
                   
   <h1>Source code for hydromt_delft3dfm.graph_utils</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span></span><span class="sd">&quot;&quot;&quot;Utilities graph functions for Delft3D-FM model.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
 
@@ -433,7 +433,10 @@
 <div class="viewcode-block" id="gpd_to_digraph">
 <a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.graph_utils.gpd_to_digraph.html#hydromt_delft3dfm.graph_utils.gpd_to_digraph">[docs]</a>
 <span class="k">def</span> <span class="nf">gpd_to_digraph</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a `gpd.GeoDataFrame` to a `nx.DiGraph` by taking the first and last coordinate in a row as source and target, respectively.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a `gpd.GeoDataFrame` to a `nx.DiGraph`.</span>
+
+<span class="sd">    This is done by taking the first and last coordinate in a row as source and target,</span>
+<span class="sd">    respectively.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -471,13 +474,13 @@
 <span class="sd">    ----------</span>
 <span class="sd">    where : {&#39;both&#39;, &#39;upstream&#39;, &#39;downstream&#39;}</span>
 <span class="sd">        Where at the branches should the boundaries be derived.</span>
-<span class="sd">        An upstream end node is defined as a node which has 0 incoming branches and 1 outgoing branch.</span>
-<span class="sd">        A downstream end node is defined as a node which has 1 incoming branch and 0 outgoing branches.</span>
+<span class="sd">        An upstream end node: 0 incoming branches and 1 outgoing branch.</span>
+<span class="sd">        A downstream end node: 1 incoming branch and 0 outgoing branches.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    gpd.GeoDataFrame</span>
-<span class="sd">        A data frame containing all the upstream and downstream end nodes of the branches</span>
+<span class="sd">        A dataframe containing all the upstream and downstream end nodes of the branches</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># convert branches to graph</span>
     <span class="n">G</span> <span class="o">=</span> <span class="n">gpd_to_digraph</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>

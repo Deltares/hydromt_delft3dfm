@@ -608,10 +608,14 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="hydromt_delft3dfm.DFlowFMModel.setup_mesh2d_refine">
 <span class="sig-prename descclassname"><span class="pre">DFlowFMModel.</span></span><span class="sig-name descname"><span class="pre">setup_mesh2d_refine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polygon_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hydromt_delft3dfm/dflowfm.html#DFlowFMModel.setup_mesh2d_refine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hydromt_delft3dfm.DFlowFMModel.setup_mesh2d_refine" title="Link to this definition">#</a></dt>
-<dd><p>Refine the 2d mesh within the geometry based on polygon <cite>polygon_fn</cite> or raster samples <cite>sample_fn</cite>.
-The number of refinement is defined by <cite>steps</cite> if <cite>polygon_fn</cite> is used.</p>
-<p>Note that this function can only be applied on an existing regular rectangle 2d mesh.
-# FIXME: how to identify if the mesh is uniform rectangle 2d mesh? regular irregular?</p>
+<dd><p>Refine the 2d mesh.</p>
+<p>Refinement are done within the geometry based on polygon <cite>polygon_fn</cite> or
+raster samples <cite>sample_fn</cite>.</p>
+<p>The number of refinement is defined by <cite>steps</cite> if <cite>polygon_fn</cite> is used.</p>
+<p>Note that this function can only be applied on an existing regular rectangle
+2d mesh.</p>
+<p># FIXME: how to identify if the mesh is uniform rectangle 2d mesh?
+regular irregular?</p>
 <p>Adds/Updates model layers:</p>
 <ul class="simple">
 <li><p><strong>2D mesh</strong> geom: By any changes in 2D grid</p></li>
@@ -621,8 +625,9 @@ The number of refinement is defined by <cite>steps</cite> if <cite>polygon_fn</c
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>polygon_fn</strong> (<em>str Path</em><em>, </em><em>optional</em>) – Path to a polygon or MultiPolygon used to refine the 2D mesh</p></li>
 <li><p><strong>sample_fn</strong> (<em>str Path</em><em>, </em><em>optional</em>) – <p>Path to a raster sample file used to refine the 2D mesh.
-The value of each sample point is the number of steps to refine the mesh. Allow only single values.
-The resolution of the raster should be the same as the desired end result resolution.</p>
+The value of each sample point is the number of steps to refine the mesh.
+Allow only single values. The resolution of the raster should be the same
+as the desired end result resolution.</p>
 <ul>
 <li><p>Required variable: [‘steps’]</p></li>
 </ul>

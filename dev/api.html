@@ -622,22 +622,22 @@
 <td><p>Update config with a dictionary.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.setup_channels.html#hydromt_delft3dfm.DFlowFMModel.setup_channels" title="hydromt_delft3dfm.DFlowFMModel.setup_channels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.setup_channels</span></code></a>(region, channels_fn)</p></td>
-<td><p>This component prepares the 1D channels and adds to branches 1D network.</p></td>
+<td><p>Prepare the 1D channels and adds to branches 1D network.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.setup_rivers_from_dem.html#hydromt_delft3dfm.DFlowFMModel.setup_rivers_from_dem" title="hydromt_delft3dfm.DFlowFMModel.setup_rivers_from_dem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.setup_rivers_from_dem</span></code></a>(region, ...)</p></td>
-<td><p>This component sets the all river parameters from hydrograph and dem maps.</p></td>
+<td><p>Set the all river parameters from hydrograph and dem maps.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.setup_rivers.html#hydromt_delft3dfm.DFlowFMModel.setup_rivers" title="hydromt_delft3dfm.DFlowFMModel.setup_rivers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.setup_rivers</span></code></a>(region, rivers_fn)</p></td>
-<td><p>Prepares the 1D rivers and adds to 1D branches.</p></td>
+<td><p>Prepare the 1D rivers and adds to 1D branches.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.setup_pipes.html#hydromt_delft3dfm.DFlowFMModel.setup_pipes" title="hydromt_delft3dfm.DFlowFMModel.setup_pipes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.setup_pipes</span></code></a>(region, pipes_fn[, ...])</p></td>
-<td><p>Prepares the 1D pipes and adds to 1D branches.</p></td>
+<td><p>Prepare the 1D pipes and adds to 1D branches.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.setup_manholes.html#hydromt_delft3dfm.DFlowFMModel.setup_manholes" title="hydromt_delft3dfm.DFlowFMModel.setup_manholes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.setup_manholes</span></code></a>([manholes_fn, ...])</p></td>
-<td><p>Prepares the 1D manholes to pipes or tunnels.</p></td>
+<td><p>Prepare the 1D manholes to pipes or tunnels.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.setup_1dboundary.html#hydromt_delft3dfm.DFlowFMModel.setup_1dboundary" title="hydromt_delft3dfm.DFlowFMModel.setup_1dboundary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.setup_1dboundary</span></code></a>([...])</p></td>
-<td><p>Prepares the 1D <code class="docutils literal notranslate"><span class="pre">boundary_type</span></code> boundaries to branches using timeseries or a constant for a specific <code class="docutils literal notranslate"><span class="pre">branch_type</span></code> at the <code class="docutils literal notranslate"><span class="pre">boundary_locs</span></code> locations.</p></td>
+<td><p>Prepare the 1D <code class="docutils literal notranslate"><span class="pre">boundary_type</span></code> boundaries using timeseries or a constant.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.setup_bridges.html#hydromt_delft3dfm.DFlowFMModel.setup_bridges" title="hydromt_delft3dfm.DFlowFMModel.setup_bridges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.setup_bridges</span></code></a>([bridges_fn, ...])</p></td>
 <td><p>Prepare bridges, including bridge locations and bridge crossections.</p></td>
@@ -646,28 +646,28 @@
 <td><p>Prepare culverts, including locations and crossections.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.setup_mesh2d.html#hydromt_delft3dfm.DFlowFMModel.setup_mesh2d" title="hydromt_delft3dfm.DFlowFMModel.setup_mesh2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.setup_mesh2d</span></code></a>(region[, res])</p></td>
-<td><p>Create an 2D unstructured mesh or reads an existing 2D mesh according UGRID conventions.</p></td>
+<td><p>Create a 2D unstructured mesh according UGRID conventions.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.setup_mesh2d_refine.html#hydromt_delft3dfm.DFlowFMModel.setup_mesh2d_refine" title="hydromt_delft3dfm.DFlowFMModel.setup_mesh2d_refine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.setup_mesh2d_refine</span></code></a>([...])</p></td>
-<td><p>Refine the 2d mesh within the geometry based on polygon <cite>polygon_fn</cite> or raster samples <cite>sample_fn</cite>.</p></td>
+<td><p>Refine the 2d mesh.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.setup_link1d2d.html#hydromt_delft3dfm.DFlowFMModel.setup_link1d2d" title="hydromt_delft3dfm.DFlowFMModel.setup_link1d2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.setup_link1d2d</span></code></a>([...])</p></td>
 <td><p>Generate 1d2d links that link mesh1d and mesh2d according UGRID conventions.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.setup_maps_from_rasterdataset.html#hydromt_delft3dfm.DFlowFMModel.setup_maps_from_rasterdataset" title="hydromt_delft3dfm.DFlowFMModel.setup_maps_from_rasterdataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.setup_maps_from_rasterdataset</span></code></a>(...)</p></td>
-<td><p>This component adds data variable(s) from <code class="docutils literal notranslate"><span class="pre">raster_fn</span></code> to maps object.</p></td>
+<td><p>Add data variable(s) from <code class="docutils literal notranslate"><span class="pre">raster_fn</span></code> to maps object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.setup_maps_from_raster_reclass.html#hydromt_delft3dfm.DFlowFMModel.setup_maps_from_raster_reclass" title="hydromt_delft3dfm.DFlowFMModel.setup_maps_from_raster_reclass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.setup_maps_from_raster_reclass</span></code></a>(...)</p></td>
-<td><p>This component adds data variable(s) to maps object by combining values in <code class="docutils literal notranslate"><span class="pre">raster_mapping_fn</span></code> to spatial layer <code class="docutils literal notranslate"><span class="pre">raster_fn</span></code>.</p></td>
+<td><p>Add data variable(s) to maps by reclassifying values from <code class="docutils literal notranslate"><span class="pre">raster_fn</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.setup_2dboundary.html#hydromt_delft3dfm.DFlowFMModel.setup_2dboundary" title="hydromt_delft3dfm.DFlowFMModel.setup_2dboundary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.setup_2dboundary</span></code></a>([...])</p></td>
-<td><p>Prepares the 2D boundaries from line geometries.</p></td>
+<td><p>Prepare the 2D boundaries from line geometries.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.setup_rainfall_from_constant.html#hydromt_delft3dfm.DFlowFMModel.setup_rainfall_from_constant" title="hydromt_delft3dfm.DFlowFMModel.setup_rainfall_from_constant"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.setup_rainfall_from_constant</span></code></a>(...)</p></td>
-<td><p>Prepares constant daily rainfall_rate timeseries for the 2D grid based on <code class="docutils literal notranslate"><span class="pre">constant_value</span></code>.</p></td>
+<td><p>Prepare constant 2D daily rainfall_rate timeseries based on <code class="docutils literal notranslate"><span class="pre">constant_value</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.setup_rainfall_from_uniform_timeseries.html#hydromt_delft3dfm.DFlowFMModel.setup_rainfall_from_uniform_timeseries" title="hydromt_delft3dfm.DFlowFMModel.setup_rainfall_from_uniform_timeseries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.setup_rainfall_from_uniform_timeseries</span></code></a>(...)</p></td>
-<td><p>Prepares spatially uniform rainfall forcings to 2d grid using timeseries from <code class="docutils literal notranslate"><span class="pre">meteo_timeseries_fn</span></code>.</p></td>
+<td><p>Prepare spatially uniform 2D rainfall forcings from <code class="docutils literal notranslate"><span class="pre">meteo_timeseries_fn</span></code>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -677,13 +677,13 @@
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.region.html#hydromt_delft3dfm.DFlowFMModel.region" title="hydromt_delft3dfm.DFlowFMModel.region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.region</span></code></a></p></td>
-<td><p>Returns geometry of region of the model area of interest.</p></td>
+<td><p>Return geometry of region of the model area of interest.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.crs.html#hydromt_delft3dfm.DFlowFMModel.crs" title="hydromt_delft3dfm.DFlowFMModel.crs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.crs</span></code></a></p></td>
-<td><p>Returns model mesh crs.</p></td>
+<td><p>Return model crs.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.bounds.html#hydromt_delft3dfm.DFlowFMModel.bounds" title="hydromt_delft3dfm.DFlowFMModel.bounds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.bounds</span></code></a></p></td>
-<td><p>Returns model mesh bounds.</p></td>
+<td><p>Return model mesh bounds.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.res.html#hydromt_delft3dfm.DFlowFMModel.res" title="hydromt_delft3dfm.DFlowFMModel.res"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.res</span></code></a></p></td>
 <td><p>Resolution of the mesh2d.</p></td>
@@ -713,28 +713,28 @@
 <td><p>Model static mesh data.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.dfmmodel.html#hydromt_delft3dfm.DFlowFMModel.dfmmodel" title="hydromt_delft3dfm.DFlowFMModel.dfmmodel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.dfmmodel</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Hydrolib-core FMModel object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.dimr.html#hydromt_delft3dfm.DFlowFMModel.dimr" title="hydromt_delft3dfm.DFlowFMModel.dimr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.dimr</span></code></a></p></td>
 <td><p>DIMR file object.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.branches.html#hydromt_delft3dfm.DFlowFMModel.branches" title="hydromt_delft3dfm.DFlowFMModel.branches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.branches</span></code></a></p></td>
-<td><p>Returns the branches (gpd.GeoDataFrame object) representing the 1D network.</p></td>
+<td><p>Return the branches (gpd.GeoDataFrame object) representing the 1D network.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.rivers.html#hydromt_delft3dfm.DFlowFMModel.rivers" title="hydromt_delft3dfm.DFlowFMModel.rivers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.rivers</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Extract rivers from branches.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.channels.html#hydromt_delft3dfm.DFlowFMModel.channels" title="hydromt_delft3dfm.DFlowFMModel.channels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.channels</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Extract channels from branches.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.pipes.html#hydromt_delft3dfm.DFlowFMModel.pipes" title="hydromt_delft3dfm.DFlowFMModel.pipes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.pipes</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Extract pipes from branches.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.opensystem.html#hydromt_delft3dfm.DFlowFMModel.opensystem" title="hydromt_delft3dfm.DFlowFMModel.opensystem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.opensystem</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Open system branches (river, channel).</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.closedsystem.html#hydromt_delft3dfm.DFlowFMModel.closedsystem" title="hydromt_delft3dfm.DFlowFMModel.closedsystem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.closedsystem</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Closed system branches (pipe, tunnel).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.mesh_names.html#hydromt_delft3dfm.DFlowFMModel.mesh_names" title="hydromt_delft3dfm.DFlowFMModel.mesh_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.mesh_names</span></code></a></p></td>
 <td><p>List of grid names in mesh.</p></td>
@@ -756,10 +756,10 @@
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.read.html#hydromt_delft3dfm.DFlowFMModel.read" title="hydromt_delft3dfm.DFlowFMModel.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.read</span></code></a>()</p></td>
-<td><p>Method to read the complete model schematization and configuration from file.</p></td>
+<td><p>Read the complete model schematization and configuration from file.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.write.html#hydromt_delft3dfm.DFlowFMModel.write" title="hydromt_delft3dfm.DFlowFMModel.write"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.write</span></code></a>()</p></td>
-<td><p>Method to write the complete model schematization and configuration to file.</p></td>
+<td><p>Write the complete model schematization and configuration to file.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.build.html#hydromt_delft3dfm.DFlowFMModel.build" title="hydromt_delft3dfm.DFlowFMModel.build"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.build</span></code></a>([region, write, opt])</p></td>
 <td><p>Single method to build a model from scratch based on settings in <cite>opt</cite>.</p></td>
@@ -847,22 +847,22 @@
 <td><p>Read network file with Hydrolib-core and extract mesh/branches info.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.write_mesh.html#hydromt_delft3dfm.DFlowFMModel.write_mesh" title="hydromt_delft3dfm.DFlowFMModel.write_mesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.write_mesh</span></code></a>([write_gui])</p></td>
-<td><p>Write 1D branches and 2D mesh at &lt;root/dflowfm/fm_net.nc&gt; in model ready format.</p></td>
+<td><p>Write 1D branches and 2D mesh at &lt;root/dflowfm/fm_net.nc&gt;.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.set_branches.html#hydromt_delft3dfm.DFlowFMModel.set_branches" title="hydromt_delft3dfm.DFlowFMModel.set_branches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.set_branches</span></code></a>(branches)</p></td>
-<td><p>Updates the branches object as well as the linked geoms.</p></td>
+<td><p>Update the branches object as well as the linked geoms.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.read_dimr.html#hydromt_delft3dfm.DFlowFMModel.read_dimr" title="hydromt_delft3dfm.DFlowFMModel.read_dimr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.read_dimr</span></code></a>([dimr_fn])</p></td>
 <td><p>Read DIMR from file and else create from hydrolib-core.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.write_dimr.html#hydromt_delft3dfm.DFlowFMModel.write_dimr" title="hydromt_delft3dfm.DFlowFMModel.write_dimr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.write_dimr</span></code></a>([dimr_fn])</p></td>
-<td><p>Writes the dmir file.</p></td>
+<td><p>Write the dmir file.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.init_dfmmodel.html#hydromt_delft3dfm.DFlowFMModel.init_dfmmodel" title="hydromt_delft3dfm.DFlowFMModel.init_dfmmodel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.init_dfmmodel</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>Initialise the hydrolib-core FMModel object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.DFlowFMModel.get_model_time.html#hydromt_delft3dfm.DFlowFMModel.get_model_time" title="hydromt_delft3dfm.DFlowFMModel.get_model_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DFlowFMModel.get_model_time</span></code></a>()</p></td>
-<td><p>Return (refdate, tstart, tstop) tuple with parsed model reference datem start and end time.</p></td>
+<td><p>Return (refdate, tstart, tstop) tuple.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1052,13 +1052,13 @@
 <td><p>Write crosssections into hydrolib-core crsloc and crsdef objects.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.utils.read_friction.html#hydromt_delft3dfm.utils.read_friction" title="hydromt_delft3dfm.utils.read_friction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.read_friction</span></code></a>(gdf, fm_model)</p></td>
-<td><p>read friction files and add properties to branches geodataframe.</p></td>
+<td><p>Read friction files and add properties to branches geodataframe.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.utils.write_friction.html#hydromt_delft3dfm.utils.write_friction" title="hydromt_delft3dfm.utils.write_friction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.write_friction</span></code></a>(gdf, savedir)</p></td>
 <td><p>write friction files from crosssections geodataframe.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.utils.read_structures.html#hydromt_delft3dfm.utils.read_structures" title="hydromt_delft3dfm.utils.read_structures"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.read_structures</span></code></a>(branches, fm_model)</p></td>
-<td><p>Read structures into hydrolib-core structures objects Returns structures geodataframe.</p></td>
+<td><p>Read structures into hydrolib-core structures objects.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.utils.write_structures.html#hydromt_delft3dfm.utils.write_structures" title="hydromt_delft3dfm.utils.write_structures"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.write_structures</span></code></a>(gdf, savedir)</p></td>
 <td><p>write structures into hydrolib-core structures objects.</p></td>
@@ -1070,23 +1070,22 @@
 <td><p>write manholes into hydrolib-core storage nodes objects.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.utils.read_1dboundary.html#hydromt_delft3dfm.utils.read_1dboundary" title="hydromt_delft3dfm.utils.read_1dboundary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.read_1dboundary</span></code></a>(df, quantity, nodes)</p></td>
-<td><p>Read for a specific quantity the corresponding external and forcing files and parse to xarray # TODO: support external forcing for 2D.</p></td>
+<td><p>Read for a specific quantity the external and forcing files and parse to xarray.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.utils.write_1dboundary.html#hydromt_delft3dfm.utils.write_1dboundary" title="hydromt_delft3dfm.utils.write_1dboundary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.write_1dboundary</span></code></a>(forcing[, savedir, ...])</p></td>
-<td><p><p>&quot;</p>
-</p></td>
+<td><p>Write 1dboundary ext and boundary files from forcing dict.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.utils.read_2dboundary.html#hydromt_delft3dfm.utils.read_2dboundary" title="hydromt_delft3dfm.utils.read_2dboundary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.read_2dboundary</span></code></a>(df[, workdir])</p></td>
 <td><p>Read a 2d boundary forcing location and values, and parse to xarray.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.utils.write_2dboundary.html#hydromt_delft3dfm.utils.write_2dboundary" title="hydromt_delft3dfm.utils.write_2dboundary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.write_2dboundary</span></code></a>(forcing, savedir[, ...])</p></td>
-<td><p>write 2 boundary forcings from forcing dict.</p></td>
+<td><p>Write 2 boundary forcings from forcing dict.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.utils.read_meteo.html#hydromt_delft3dfm.utils.read_meteo" title="hydromt_delft3dfm.utils.read_meteo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.read_meteo</span></code></a>(df, quantity)</p></td>
-<td><p>Read for a specific quantity the corresponding external and forcing files and parse to xarray.</p></td>
+<td><p>Read for a specific quantity the external and forcing files and parse to xarray.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.utils.write_meteo.html#hydromt_delft3dfm.utils.write_meteo" title="hydromt_delft3dfm.utils.write_meteo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.write_meteo</span></code></a>(forcing, savedir[, ext_fn])</p></td>
-<td><p>write 2d meteo forcing from forcing dict.</p></td>
+<td><p>Write 2d meteo forcing from forcing dict.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1096,19 +1095,19 @@
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.mesh_utils.hydrolib_network_from_mesh.html#hydromt_delft3dfm.mesh_utils.hydrolib_network_from_mesh" title="hydromt_delft3dfm.mesh_utils.hydrolib_network_from_mesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh_utils.hydrolib_network_from_mesh</span></code></a>(mesh)</p></td>
-<td><p>Converts from xugrid mesh to hydrolib-core network object.</p></td>
+<td><p>Convert from xugrid mesh to hydrolib-core network object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.mesh_utils.mesh1d_network1d_from_hydrolib_network.html#hydromt_delft3dfm.mesh_utils.mesh1d_network1d_from_hydrolib_network" title="hydromt_delft3dfm.mesh_utils.mesh1d_network1d_from_hydrolib_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh_utils.mesh1d_network1d_from_hydrolib_network</span></code></a>(...)</p></td>
-<td><p>Creates xugrid mesh1d and network1d UgridDataset from hydrolib-core network object.</p></td>
+<td><p>Create xugrid mesh1d and network1d UgridDataset from hydrolib-core network object.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.mesh_utils.links1d2d_from_hydrolib_network.html#hydromt_delft3dfm.mesh_utils.links1d2d_from_hydrolib_network" title="hydromt_delft3dfm.mesh_utils.links1d2d_from_hydrolib_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh_utils.links1d2d_from_hydrolib_network</span></code></a>(network)</p></td>
 <td><p>Extract link1d2d from hydrolib-core network object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.mesh_utils.mesh_from_hydrolib_network.html#hydromt_delft3dfm.mesh_utils.mesh_from_hydrolib_network" title="hydromt_delft3dfm.mesh_utils.mesh_from_hydrolib_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh_utils.mesh_from_hydrolib_network</span></code></a>(...)</p></td>
-<td><p>Creates xugrid mesh from hydrolib-core network object.</p></td>
+<td><p>Create xugrid mesh from hydrolib-core network object.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.mesh_utils.mesh1d_nodes_geodataframe.html#hydromt_delft3dfm.mesh_utils.mesh1d_nodes_geodataframe" title="hydromt_delft3dfm.mesh_utils.mesh1d_nodes_geodataframe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh_utils.mesh1d_nodes_geodataframe</span></code></a>(...)</p></td>
-<td><p>Returns the nodes of mesh 1D as geodataframe.</p></td>
+<td><p>Return the nodes of mesh 1D as geodataframe.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.mesh_utils.network1d_nodes_geodataframe.html#hydromt_delft3dfm.mesh_utils.network1d_nodes_geodataframe" title="hydromt_delft3dfm.mesh_utils.network1d_nodes_geodataframe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh_utils.network1d_nodes_geodataframe</span></code></a>(...)</p></td>
 <td><p>Get network1d nodes as gdp.</p></td>
@@ -1121,7 +1120,7 @@
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.graph_utils.gpd_to_digraph.html#hydromt_delft3dfm.graph_utils.gpd_to_digraph" title="hydromt_delft3dfm.graph_utils.gpd_to_digraph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph_utils.gpd_to_digraph</span></code></a>(data)</p></td>
-<td><p>Convert a <cite>gpd.GeoDataFrame</cite> to a <cite>nx.DiGraph</cite> by taking the first and last coordinate in a row as source and target, respectively.</p></td>
+<td><p>Convert a <cite>gpd.GeoDataFrame</cite> to a <cite>nx.DiGraph</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.graph_utils.get_endnodes_from_lines.html#hydromt_delft3dfm.graph_utils.get_endnodes_from_lines" title="hydromt_delft3dfm.graph_utils.get_endnodes_from_lines"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph_utils.get_endnodes_from_lines</span></code></a>(lines[, ...])</p></td>
 <td><p>Get the possible boundary locations from the branches with id.</p></td>
@@ -1143,7 +1142,7 @@
 <td><p>Check if the geodataframe contains all required columns.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.gis_utils.update_data_columns_attributes_based_on_filter.html#hydromt_delft3dfm.gis_utils.update_data_columns_attributes_based_on_filter" title="hydromt_delft3dfm.gis_utils.update_data_columns_attributes_based_on_filter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gis_utils.update_data_columns_attributes_based_on_filter</span></code></a>(...)</p></td>
-<td><p>Add or update columns in the geodataframe based on column and values in attributes dataframe.</p></td>
+<td><p>Add or update columns in gdf based on column and values in df.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_generated/hydromt_delft3dfm.gis_utils.get_gdf_from_branches.html#hydromt_delft3dfm.gis_utils.get_gdf_from_branches" title="hydromt_delft3dfm.gis_utils.get_gdf_from_branches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gis_utils.get_gdf_from_branches</span></code></a>(branches, df)</p></td>
 <td><p>Get geodataframe from dataframe.</p></td>

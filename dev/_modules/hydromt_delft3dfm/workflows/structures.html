@@ -520,7 +520,7 @@
     <span class="n">gdf_st</span> <span class="o">=</span> <span class="n">update_data_columns_attributes_based_on_filter</span><span class="p">(</span>
         <span class="n">gdf_st</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">type_col</span><span class="p">,</span> <span class="n">st_type</span>
     <span class="p">)</span>
-    
+
     <span class="c1"># 4. snap structures to branches</span>
     <span class="c1"># setup branch_id - snap structures to branch (inplace of structures,</span>
     <span class="c1"># will add branch_id and branch_offset columns)</span>
@@ -550,7 +550,9 @@
     <span class="k">if</span> <span class="s2">&quot;shift&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">gdf_st</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
         <span class="n">gdf_st</span><span class="p">[</span><span class="s2">&quot;shift&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
     <span class="c1"># derive crosssections</span>
-    <span class="n">gdf_st_crossections</span> <span class="o">=</span> <span class="n">set_point_crosssections</span><span class="p">(</span><span class="n">branches</span><span class="p">,</span> <span class="n">gdf_st</span><span class="p">,</span> <span class="n">maxdist</span><span class="o">=</span><span class="n">snap_offset</span><span class="p">,</span> <span class="n">check_dupl_geom</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">gdf_st_crossections</span> <span class="o">=</span> <span class="n">set_point_crosssections</span><span class="p">(</span>
+        <span class="n">branches</span><span class="p">,</span> <span class="n">gdf_st</span><span class="p">,</span> <span class="n">maxdist</span><span class="o">=</span><span class="n">snap_offset</span><span class="p">,</span> <span class="n">check_dupl_geom</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
     <span class="c1"># remove crossection locations and any friction from the setup</span>
     <span class="n">gdf_st_crsdefs</span> <span class="o">=</span> <span class="n">gdf_st_crossections</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
         <span class="n">columns</span><span class="o">=</span><span class="p">[</span>

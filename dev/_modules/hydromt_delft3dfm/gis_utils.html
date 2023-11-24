@@ -415,11 +415,9 @@
                 <article class="bd-article" role="main">
                   
   <h1>Source code for hydromt_delft3dfm.gis_utils</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span></span><span class="sd">&quot;&quot;&quot;Utilities GIS functions for Delft3D-FM model.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">configparser</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">pathlib</span>
 
 <span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -460,7 +458,8 @@
 
 
 <span class="k">def</span> <span class="nf">cut</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">distance</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Cuts a line in two at a distance from its starting point</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Cut a line in two at a distance from its starting point.</span>
+
 <span class="sd">    ref: https://shapely.readthedocs.io/en/stable/manual.html.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">distance</span> <span class="o">&lt;=</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">distance</span> <span class="o">&gt;=</span> <span class="n">line</span><span class="o">.</span><span class="n">length</span><span class="p">:</span>
@@ -543,11 +542,13 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">required_columns</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">gdf</span><span class="o">.</span><span class="n">columns</span><span class="p">)):</span>
         <span class="k">if</span> <span class="n">raise_error</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;GeoDataFrame do not contains all required attributes: </span><span class="si">{</span><span class="n">required_columns</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="s2">&quot;GeoDataFrame does not contain all required attributes:&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">required_columns</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;GeoDataFrame do not contains all required attributes: </span><span class="si">{</span><span class="n">required_columns</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="s2">&quot;GeoDataFrame does not contain all required attributes:&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">required_columns</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="kc">True</span></div>
@@ -563,16 +564,18 @@
     <span class="n">filter_value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Add or update columns in the geodataframe based on column and values in attributes dataframe.</span>
+<span class="sd">    Add or update columns in gdf based on column and values in df.</span>
 
-<span class="sd">    If filter_column and filter_value is set, only update the attributes of the filtered geodataframe.</span>
+<span class="sd">    If filter_column and filter_value is set, only update the attributes of the filtered</span>
+<span class="sd">    geodataframe.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    gdf : gpd.GeoDataFrame</span>
 <span class="sd">        geodataframe containing user input</span>
 <span class="sd">    df : attribute DataFrame</span>
-<span class="sd">        a pd.DataFrame with attribute columns and values (e.g. width =  1) per filter_value in the filter_column (e.g. branch_type = pipe)</span>
+<span class="sd">        a pd.DataFrame with attribute columns and values (e.g. width =  1) per</span>
+<span class="sd">        filter_value in the filter_column (e.g. branch_type = pipe)</span>
 <span class="sd">    filter_column : str</span>
 <span class="sd">        Name of the column linking df to gdf.</span>
 <span class="sd">    filter_value: str</span>
@@ -622,6 +625,7 @@
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get geodataframe from dataframe.</span>
+
 <span class="sd">    Based on interpolation of branches, using columns [&quot;branchid&quot;, &quot;chainage&quot; in df].</span>
 
 <span class="sd">    Parameters</span>
@@ -644,7 +648,7 @@
 
     <span class="n">df</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="c1"># Iterate over each point and interpolate a point along the corresponding line feature</span>
+    <span class="c1"># Iterate over each point and interpolate a point along the corresponding line</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
         <span class="n">line_geometry</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">branchid</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]</span>
         <span class="n">new_point_geometry</span> <span class="o">=</span> <span class="n">line_geometry</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">chainage</span><span class="p">)</span>

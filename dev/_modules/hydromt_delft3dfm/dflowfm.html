@@ -536,7 +536,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">root</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
         <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
-        <span class="n">config_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># hydromt config contain glob section, anything needed can be added here as args</span>
+        <span class="n">config_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">data_libs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>  <span class="c1"># yml</span>
         <span class="n">crs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">dimr_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -555,7 +555,8 @@
 <span class="sd">            Write/read/append mode.</span>
 <span class="sd">            Default is &quot;w&quot;.</span>
 <span class="sd">        config_fn : str, optional</span>
-<span class="sd">            The D-Flow FM model configuration file (.mdu). If None, default configuration file is used.</span>
+<span class="sd">            The D-Flow FM model configuration file (.mdu).</span>
+<span class="sd">            If None, default configuration file is used.</span>
 <span class="sd">            Default is None.</span>
 <span class="sd">        data_libs : list of str, optional</span>
 <span class="sd">            List of data catalog yaml files.</span>
@@ -563,17 +564,19 @@
 <span class="sd">        crs : EPSG code, int</span>
 <span class="sd">            EPSG code of the model.</span>
 <span class="sd">        dimr_fn: str, optional</span>
-<span class="sd">            Path to the dimr configuration file. If None, default dimr configuration file is used.</span>
+<span class="sd">            Path to the dimr configuration file.</span>
+<span class="sd">            If None, default dimr configuration file is used.</span>
 <span class="sd">            Default is None.</span>
 <span class="sd">        network_snap_offset: float, optional</span>
-<span class="sd">            Global option for generation of the mesh1d network. Snapping tolerance to automatically connecting branches.</span>
+<span class="sd">            Global option for generation of the mesh1d network. Snapping tolerance to</span>
+<span class="sd">            automatically connecting branches.</span>
 <span class="sd">            By default 25 m.</span>
 <span class="sd">        snap_newbranches_to_branches_at_snapnodes: bool, optional</span>
 <span class="sd">            Global option for generation of the mesh1d network.</span>
 <span class="sd">            By default True.</span>
 <span class="sd">        openwater_computation_node_distance: float, optional</span>
-<span class="sd">            Global option for generation of the mesh1d network. Distance to generate mesh1d nodes for open water</span>
-<span class="sd">            system (rivers, channels). By default 40 m.</span>
+<span class="sd">            Global option for generation of the mesh1d network. Distance to generate</span>
+<span class="sd">            mesh1d nodes for open water system (rivers, channels). By default 40 m.</span>
 <span class="sd">        logger</span>
 <span class="sd">            The logger used to log messages.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -618,8 +621,10 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">&quot;setup_region() method not implemented for DFlowFMModel.&quot;</span>
             <span class="s2">&quot;The region will be set in the methods preparing the mesh: &quot;</span>
-            <span class="s2">&quot;[setup_mesh2d, setup_rivers, setup_rivers_from_dem, setup_channels, setup_pipes]&quot;</span>
-            <span class="s2">&quot;Pass the region argument to these methods directly and not in the command line.&quot;</span>
+            <span class="s2">&quot;[setup_mesh2d, setup_rivers, setup_rivers_from_dem, setup_channels,&quot;</span>
+            <span class="s2">&quot;setup_pipes]&quot;</span>
+            <span class="s2">&quot;Pass the region argument to these methods directly and not in the&quot;</span>
+            <span class="s2">&quot;command line.&quot;</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="DFlowFMModel.setup_channels">
@@ -638,7 +643,7 @@
         <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">allow_intersection_snapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;This component prepares the 1D channels and adds to branches 1D network.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare the 1D channels and adds to branches 1D network.</span>
 
 <span class="sd">        Adds model layers:</span>
 
@@ -656,24 +661,34 @@
 <span class="sd">            Note that only crs=4326 is supported for &#39;bbox&#39;.</span>
 <span class="sd">        channels_fn : str</span>
 <span class="sd">            Name of data source for channelsparameters, see data/data_sources.yml.</span>
-<span class="sd">            Note only the lines that are intersects with the region polygon will be used.</span>
-<span class="sd">            * Optional variables: [branchid, branchtype, branchorder, material, friction_type, friction_value]</span>
+<span class="sd">            Note only the lines that intersect with the region polygon will be used.</span>
+
+<span class="sd">            * Optional variables: [branchid, branchtype, branchorder, material,</span>
+<span class="sd">            friction_type, friction_value]</span>
 <span class="sd">        channels_defaults_fn : str, optional</span>
 <span class="sd">            Path to a csv file containing all defaults values per &#39;branchtype&#39;.</span>
 <span class="sd">            Default is None.</span>
 <span class="sd">        channel_filter: str, optional</span>
-<span class="sd">            Keyword in branchtype column of channels_fn used to filter river lines. If None all lines in channels_fn are used (default).</span>
+<span class="sd">            Keyword in branchtype column of channels_fn used to filter river lines.</span>
+<span class="sd">            If None all lines in channels_fn are used (default).</span>
 <span class="sd">        friction_type : str, optional</span>
-<span class="sd">            Type of friction to use. One of [&quot;Manning&quot;, &quot;Chezy&quot;, &quot;wallLawNikuradse&quot;, &quot;WhiteColebrook&quot;, &quot;StricklerNikuradse&quot;, &quot;Strickler&quot;, &quot;deBosBijkerk&quot;].</span>
+<span class="sd">            Type of friction to use. One of [&quot;Manning&quot;, &quot;Chezy&quot;, &quot;wallLawNikuradse&quot;,</span>
+<span class="sd">            &quot;WhiteColebrook&quot;, &quot;StricklerNikuradse&quot;, &quot;Strickler&quot;, &quot;deBosBijkerk&quot;].</span>
 <span class="sd">            By default &quot;Manning&quot;.</span>
 <span class="sd">        friction_value : float, optional.</span>
-<span class="sd">            Units corresponding to [friction_type] are [&quot;Chézy C [m 1/2 /s]&quot;, &quot;Manning n [s/m 1/3 ]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Strickler k_s [m 1/3 /s]&quot;, &quot;De Bos-Bijkerk γ [1/s]&quot;]</span>
-<span class="sd">            Friction value. By default 0.023.</span>
+<span class="sd">            Friction value.</span>
+<span class="sd">            Units corresponding to [friction_type] are [&quot;Chézy C [m 1/2 /s]&quot;,</span>
+<span class="sd">            &quot;Manning n [s/m 1/3 ]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Nikuradse k_n [m]&quot;,</span>
+<span class="sd">            &quot;Nikuradse k_n [m]&quot;, &quot;Strickler k_s [m 1/3 /s]&quot;,</span>
+<span class="sd">            &quot;De Bos-Bijkerk γ [1/s]&quot;]</span>
+<span class="sd">            By default 0.023.</span>
 <span class="sd">        crosssections_fn : str or Path, optional</span>
 <span class="sd">            Name of data source for crosssections, see data/data_sources.yml.</span>
 <span class="sd">            If ``crosssections_type`` = &quot;xyzpoints&quot;</span>
+
 <span class="sd">            * Required variables: [crsid, order, z]</span>
 <span class="sd">            If ``crosssections_type`` = &quot;points&quot;</span>
+
 <span class="sd">            * Required variables: [crsid, order, z]</span>
 <span class="sd">            By default None, crosssections will be set from branches</span>
 <span class="sd">        crosssections_type : str, optional</span>
@@ -683,7 +698,8 @@
 <span class="sd">            Snapping tolerance to automatically connecting branches.</span>
 <span class="sd">            By default 0.0, no snapping is applied.</span>
 <span class="sd">        allow_intersection_snapping: bool, optional</span>
-<span class="sd">            Switch to choose whether snapping of multiple branch ends are allowed when ``snap_offset`` is used.</span>
+<span class="sd">            Switch to choose whether snapping of multiple branch ends are allowed when</span>
+<span class="sd">            ``snap_offset`` is used.</span>
 <span class="sd">            By default True.</span>
 
 <span class="sd">        See Also</span>
@@ -743,7 +759,8 @@
 
         <span class="c1"># setup crosssections</span>
         <span class="k">if</span> <span class="n">crosssections_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">crosssections_type</span> <span class="o">=</span> <span class="s2">&quot;branch&quot;</span>  <span class="c1"># TODO: maybe assign a specific one for river, like branch_river</span>
+            <span class="n">crosssections_type</span> <span class="o">=</span> <span class="s2">&quot;branch&quot;</span>
+            <span class="c1"># TODO: maybe assign a specific one for river, like branch_river</span>
         <span class="k">assert</span> <span class="p">{</span><span class="n">crosssections_type</span><span class="p">}</span><span class="o">.</span><span class="n">issubset</span><span class="p">({</span><span class="s2">&quot;xyzpoints&quot;</span><span class="p">,</span> <span class="s2">&quot;branch&quot;</span><span class="p">})</span>
         <span class="n">crosssections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_crosssections</span><span class="p">(</span>
             <span class="n">branches</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
@@ -811,28 +828,31 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>  <span class="c1"># for workflows.get_river_bathymetry method</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This component sets the all river parameters from hydrograph and dem maps.</span>
+<span class="sd">        Set the all river parameters from hydrograph and dem maps.</span>
 
-<span class="sd">        River cells are based on the `river_mask_fn` raster file if `rivwth_method=&#39;mask&#39;`,</span>
-<span class="sd">        or if `rivwth_method=&#39;geom&#39;` the rasterized segments buffered with half a river width</span>
-<span class="sd">        (&quot;rivwth&quot; [m]) if that attribute is found in `river_geom_fn`.</span>
+<span class="sd">        River cells are based on the `river_mask_fn` raster file if</span>
+<span class="sd">        `rivwth_method=&#39;mask&#39;`, or if `rivwth_method=&#39;geom&#39;` the rasterized segments</span>
+<span class="sd">        buffered with half a river width (&quot;rivwth&quot; [m]) if that attribute is found in</span>
+<span class="sd">        `river_geom_fn`.</span>
 
-<span class="sd">        If a river segment geometry file `river_geom_fn` with bedlevel column (&quot;zb&quot; [m+REF]) or</span>
-<span class="sd">        a river depth (&quot;rivdph&quot; [m]) in combination with `rivdph_method=&#39;geom&#39;` is provided,</span>
-<span class="sd">        this attribute is used directly.</span>
+<span class="sd">        If a river segment geometry file `river_geom_fn` with bedlevel column</span>
+<span class="sd">        (&quot;zb&quot; [m+REF]) or a river depth (&quot;rivdph&quot; [m]) in combination with</span>
+<span class="sd">        `rivdph_method=&#39;geom&#39;` is provided, this attribute is used directly.</span>
 
-<span class="sd">        Otherwise, a river depth is estimated based on bankfull discharge (&quot;qbankfull&quot; [m3/s])</span>
-<span class="sd">        attribute taken from the nearest river segment in `river_geom_fn` or `qbankfull_fn`</span>
-<span class="sd">        upstream river boundary points if provided.</span>
+<span class="sd">        Otherwise, a river depth is estimated based on bankfull discharge</span>
+<span class="sd">        (&quot;qbankfull&quot; [m3/s]) attribute taken from the nearest river segment in</span>
+<span class="sd">        `river_geom_fn` or `qbankfull_fn` upstream river boundary points if provided.</span>
 
-<span class="sd">        The river depth is relative to the bankfull elevation profile if `rivbank=True` (default),</span>
-<span class="sd">        which is estimated as the `rivbankq` elevation percentile [0-100] of cells neighboring river cells.</span>
-<span class="sd">        This option requires the flow direction (&quot;flwdir&quot;) and upstream area (&quot;uparea&quot;) maps to be set</span>
-<span class="sd">        using the hydromt.flw.flwdir_from_da method. If `rivbank=False` the depth is simply subtracted</span>
-<span class="sd">        from the elevation of river cells.</span>
+<span class="sd">        The river depth is relative to the bankfull elevation profile if `rivbank=True`</span>
+<span class="sd">        (default), which is estimated as the `rivbankq` elevation percentile [0-100] of</span>
+<span class="sd">        cells neighboring river cells. This option requires the flow direction</span>
+<span class="sd">        (&quot;flwdir&quot;) and upstream area (&quot;uparea&quot;) maps to be set using the</span>
+<span class="sd">        hydromt.flw.flwdir_from_da method. If `rivbank=False` the depth is simply</span>
+<span class="sd">        subtracted from the elevation of river cells.</span>
 
-<span class="sd">        Missing river width and river depth values are filled by propagating valid values downstream and</span>
-<span class="sd">        using the constant minimum values `min_rivwth` and `min_rivdph` for the remaining missing values.</span>
+<span class="sd">        Missing river width and river depth values are filled by propagating valid</span>
+<span class="sd">        values downstream and using the constant minimum values `min_rivwth` and</span>
+<span class="sd">        `min_rivdph` for the remaining missing values.</span>
 
 <span class="sd">        Updates model layer:</span>
 
@@ -853,12 +873,15 @@
 <span class="sd">            * {&#39;geom&#39;: &#39;path/to/polygon_geometry&#39;}</span>
 <span class="sd">        hydrography_fn : str</span>
 <span class="sd">            Hydrography data to derive river shape and characteristics from.</span>
+
 <span class="sd">            * Required variables: [&#39;elevtn&#39;]</span>
 <span class="sd">            * Optional variables: [&#39;flwdir&#39;, &#39;uparea&#39;]</span>
 <span class="sd">        river_geom_fn : str, optional</span>
 <span class="sd">            Line geometry with river attribute data.</span>
+
 <span class="sd">            * Required variable for direct bed level burning: [&#39;zb&#39;]</span>
-<span class="sd">            * Required variable for direct river depth burning: [&#39;rivdph&#39;] (only in combination with rivdph_method=&#39;geom&#39;)</span>
+<span class="sd">            * Required variable for direct river depth burning: [&#39;rivdph&#39;]</span>
+<span class="sd">            (only in combination with rivdph_method=&#39;geom&#39;)</span>
 <span class="sd">            * Variables used for river depth estimates: [&#39;qbankfull&#39;, &#39;rivwth&#39;]</span>
 <span class="sd">        rivers_defaults_fn : str Path</span>
 <span class="sd">            Path to a csv file containing all defaults values per &#39;branchtype&#39;.</span>
@@ -870,13 +893,14 @@
 <span class="sd">        river_upa : float, optional</span>
 <span class="sd">            Minimum upstream area threshold for rivers [km2], by default 25.0</span>
 <span class="sd">        river_len: float, optional</span>
-<span class="sd">            Mimimum river length within the model domain threshhold [m], by default 1000 m.</span>
+<span class="sd">            Mimimum river length within the model domain threshhold [m], by default</span>
+<span class="sd">            1000 m.</span>
 <span class="sd">        min_rivwth, min_rivdph: float, optional</span>
 <span class="sd">            Minimum river width [m] (by default 50.0) and depth [m] (by default 1.0)</span>
 <span class="sd">        rivbank: bool, optional</span>
-<span class="sd">            If True (default), approximate the reference elevation for the river depth based</span>
-<span class="sd">            on the river bankfull elevation at cells neighboring river cells. Otherwise</span>
-<span class="sd">            use the elevation of the local river cell as reference level.</span>
+<span class="sd">            If True (default), approximate the reference elevation for the river depth</span>
+<span class="sd">            based on the river bankfull elevation at cells neighboring river cells.</span>
+<span class="sd">            Otherwise use the elevation of the local river cell as reference level.</span>
 <span class="sd">        rivbankq : float, optional</span>
 <span class="sd">            quantile [1-100] for river bank estimation, by default 25</span>
 <span class="sd">        segment_length : float, optional</span>
@@ -884,13 +908,17 @@
 <span class="sd">        smooth_length : float, optional</span>
 <span class="sd">            Approximate smoothing length [m], by default 10e3</span>
 <span class="sd">        friction_type : str, optional</span>
-<span class="sd">            Type of friction tu use. One of [&quot;Manning&quot;, &quot;Chezy&quot;, &quot;wallLawNikuradse&quot;, &quot;WhiteColebrook&quot;, &quot;StricklerNikuradse&quot;, &quot;Strickler&quot;, &quot;deBosBijkerk&quot;].</span>
+<span class="sd">            Type of friction tu use. One of [&quot;Manning&quot;, &quot;Chezy&quot;, &quot;wallLawNikuradse&quot;,</span>
+<span class="sd">            &quot;WhiteColebrook&quot;, &quot;StricklerNikuradse&quot;, &quot;Strickler&quot;, &quot;deBosBijkerk&quot;].</span>
 <span class="sd">            By default &quot;Manning&quot;.</span>
 <span class="sd">        friction_value : float, optional.</span>
-<span class="sd">            Units corresponding to [friction_type] are [&quot;Chézy C [m 1/2 /s]&quot;, &quot;Manning n [s/m 1/3 ]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Strickler k_s [m 1/3 /s]&quot;, &quot;De Bos-Bijkerk γ [1/s]&quot;]</span>
+<span class="sd">            Units corresponding to [friction_type] are [&quot;Chézy C [m 1/2 /s]&quot;,</span>
+<span class="sd">            &quot;Manning n [s/m 1/3 ]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Nikuradse k_n [m]&quot;,</span>
+<span class="sd">            &quot;Nikuradse k_n [m]&quot;, &quot;Strickler k_s [m 1/3 /s]&quot;, &quot;De Bos-Bijkerk γ [1/s]&quot;]</span>
 <span class="sd">            Friction value. By default 0.023.</span>
 <span class="sd">        constrain_estuary : bool, optional</span>
-<span class="sd">            If True (default) fix the river depth in estuaries based on the upstream river depth.</span>
+<span class="sd">            If True (default) fix the river depth in estuaries based on the upstream</span>
+<span class="sd">            river depth.</span>
 <span class="sd">        constrain_rivbed : bool, optional</span>
 <span class="sd">            If True (default) correct the river bed level to be hydrologically correct,</span>
 <span class="sd">            i.e. sloping downward in downstream direction.</span>
@@ -944,7 +972,8 @@
             <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">manning</span><span class="o">=</span><span class="n">friction_value</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">rivdph_method</span> <span class="o">==</span> <span class="s2">&quot;gvf&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;rivdph_method &#39;gvf&#39; requires friction_type=&#39;Manning&#39;. Use &#39;geom&#39; or &#39;powlaw&#39; instead.&quot;</span>
+                <span class="s2">&quot;rivdph_method &#39;gvf&#39; requires friction_type=&#39;Manning&#39;.&quot;</span>
+                <span class="s2">&quot;Use &#39;geom&#39; or &#39;powlaw&#39; instead.&quot;</span>
             <span class="p">)</span>
         <span class="n">gdf_riv</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">get_river_bathymetry</span><span class="p">(</span>
             <span class="n">ds_hydro</span><span class="p">,</span>
@@ -1070,21 +1099,23 @@
         <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">allow_intersection_snapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepares the 1D rivers and adds to 1D branches.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare the 1D rivers and adds to 1D branches.</span>
 
 <span class="sd">        1D rivers must contain valid geometry, friction and crosssections.</span>
 
 <span class="sd">        The river geometry is read from ``rivers_fn``. If defaults attributes</span>
-<span class="sd">        [branchorder, spacing, material, shape, width, t_width, height, bedlev, closed] are not present in ``rivers_fn``,</span>
-<span class="sd">        they are added from defaults values in ``rivers_defaults_fn``. For branchid and branchtype, they are created on the fly</span>
+<span class="sd">        [branchorder, spacing, material, shape, width, t_width, height, bedlev, closed]</span>
+<span class="sd">        are not present in ``rivers_fn``, they are added from defaults values in</span>
+<span class="sd">        ``rivers_defaults_fn``. For branchid and branchtype, they are created on the fly</span>
 <span class="sd">        if not available in rivers_fn (&quot;river&quot; for Type and &quot;river_{i}&quot; for Id).</span>
 
-<span class="sd">        Friction attributes are either taken from ``rivers_fn`` or filled in using ``friction_type`` and</span>
-<span class="sd">        ``friction_value`` arguments.</span>
+<span class="sd">        Friction attributes are either taken from ``rivers_fn`` or filled in using</span>
+<span class="sd">        ``friction_type`` and ``friction_value`` arguments.</span>
 <span class="sd">        Note for now only branch friction or global friction is supported.</span>
 
-<span class="sd">        Crosssections are read from ``crosssections_fn`` based on the ``crosssections_type``. If there is no</span>
-<span class="sd">        ``crosssections_fn`` values are derived at the centroid of each river line based on defaults. If there are multiple</span>
+<span class="sd">        Crosssections are read from ``crosssections_fn`` based on the</span>
+<span class="sd">        ``crosssections_type``. If there is no ``crosssections_fn`` values are derived</span>
+<span class="sd">        at the centroid of each river line based on defaults. If there are multiple</span>
 <span class="sd">        types of crossections, specify them as lists.</span>
 
 <span class="sd">        Adds/Updates model layers:</span>
@@ -1103,36 +1134,47 @@
 <span class="sd">            * {&#39;geom&#39;: &#39;path/to/polygon_geometry&#39;}</span>
 <span class="sd">        rivers_fn : str</span>
 <span class="sd">            Name of data source for rivers parameters, see data/data_sources.yml.</span>
-<span class="sd">            Note only the lines that are intersects with the region polygon will be used.</span>
-<span class="sd">            * Optional variables: [branchid, branchtype, branchorder, material, friction_type, friction_value]</span>
+<span class="sd">            Note only the lines that intersect with the region polygon will be used.</span>
+
+<span class="sd">            * Optional variables: [branchid, branchtype, branchorder, material,</span>
+<span class="sd">            friction_type, friction_value]</span>
 <span class="sd">        rivers_defaults_fn : str Path</span>
 <span class="sd">            Path to a csv file containing all defaults values per &#39;branchtype&#39;.</span>
 <span class="sd">            By default None.</span>
 <span class="sd">        river_filter: str, optional</span>
-<span class="sd">            Keyword in branchtype column of rivers_fn used to filter river lines. If None all lines in rivers_fn are used (default).</span>
+<span class="sd">            Keyword in branchtype column of rivers_fn used to filter river lines.</span>
+<span class="sd">            If None all lines in rivers_fn are used (default).</span>
 <span class="sd">        friction_type : str, optional</span>
-<span class="sd">            Type of friction to use. One of [&quot;Manning&quot;, &quot;Chezy&quot;, &quot;wallLawNikuradse&quot;, &quot;WhiteColebrook&quot;, &quot;StricklerNikuradse&quot;, &quot;Strickler&quot;, &quot;deBosBijkerk&quot;].</span>
+<span class="sd">            Type of friction to use. One of [&quot;Manning&quot;, &quot;Chezy&quot;, &quot;wallLawNikuradse&quot;,</span>
+<span class="sd">            &quot;WhiteColebrook&quot;, &quot;StricklerNikuradse&quot;, &quot;Strickler&quot;, &quot;deBosBijkerk&quot;].</span>
 <span class="sd">            By default &quot;Manning&quot;.</span>
 <span class="sd">        friction_value : float, optional.</span>
-<span class="sd">            Units corresponding to [friction_type] are [&quot;Chézy C [m 1/2 /s]&quot;, &quot;Manning n [s/m 1/3 ]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Strickler k_s [m 1/3 /s]&quot;, &quot;De Bos-Bijkerk γ [1/s]&quot;]</span>
+<span class="sd">            Units corresponding to [friction_type] are [&quot;Chézy C [m 1/2 /s]&quot;,</span>
+<span class="sd">            &quot;Manning n [s/m 1/3 ]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Nikuradse k_n [m]&quot;,</span>
+<span class="sd">            &quot;Nikuradse k_n [m]&quot;, &quot;Strickler k_s [m 1/3 /s]&quot;, &quot;De Bos-Bijkerk γ [1/s]&quot;]</span>
 <span class="sd">            Friction value. By default 0.023.</span>
 <span class="sd">        crosssections_fn : str, Path, or a list of str or Path, optional</span>
-<span class="sd">            Name of data source for crosssections, see data/data_sources.yml. One or a list corresponding to ``crosssections_type`` .</span>
+<span class="sd">            Name of data source for crosssections, see data/data_sources.yml. One or a</span>
+<span class="sd">            list corresponding to ``crosssections_type`` .</span>
 <span class="sd">            If ``crosssections_type`` = &quot;branch&quot;</span>
 <span class="sd">            crosssections_fn should be None</span>
 <span class="sd">            If ``crosssections_type`` = &quot;xyz&quot;</span>
+
 <span class="sd">            * Required variables: [crsid, order, z]</span>
 <span class="sd">            If ``crosssections_type`` = &quot;point&quot;</span>
+
 <span class="sd">            * Required variables: [crsid, shape, shift]</span>
 <span class="sd">            By default None, crosssections will be set from branches</span>
 <span class="sd">        crosssections_type : str, or a list of str, optional</span>
-<span class="sd">            Type of crosssections read from crosssections_fn. One or a list of [&quot;branch&quot;, &quot;xyz&quot;, &quot;point&quot;].</span>
+<span class="sd">            Type of crosssections read from crosssections_fn. One or a list of</span>
+<span class="sd">            [&quot;branch&quot;, &quot;xyz&quot;, &quot;point&quot;].</span>
 <span class="sd">            By default None.</span>
 <span class="sd">        snap_offset: float, optional</span>
 <span class="sd">            Snapping tolerance to automatically connecting branches.</span>
 <span class="sd">            By default 0.0, no snapping is applied.</span>
 <span class="sd">        allow_intersection_snapping: bool, optional</span>
-<span class="sd">            Switch to choose whether snapping of multiple branch ends are allowed when ``snap_offset`` is used.</span>
+<span class="sd">            Switch to choose whether snapping of multiple branch ends are allowed when</span>
+<span class="sd">            ``snap_offset`` is used.</span>
 <span class="sd">            By default True.</span>
 
 <span class="sd">        See Also</span>
@@ -1206,7 +1248,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">set_geoms</span><span class="p">(</span><span class="n">crosssections</span><span class="p">,</span> <span class="s2">&quot;crosssections&quot;</span><span class="p">)</span>
 
         <span class="c1"># setup branch orders</span>
-        <span class="c1"># for crossection type yz or xyz, always use branchorder = -1, because no interpolation can be applied.</span>
+        <span class="c1"># for crossection type yz or xyz, always use branchorder = -1,</span>
+        <span class="c1"># because no interpolation can be applied.</span>
         <span class="c1"># TODO: change to lower case is needed</span>
         <span class="n">_overwrite_branchorder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geoms</span><span class="p">[</span><span class="s2">&quot;crosssections&quot;</span><span class="p">][</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">geoms</span><span class="p">[</span><span class="s2">&quot;crosssections&quot;</span><span class="p">][</span><span class="s2">&quot;crsdef_type&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;yz&quot;</span><span class="p">)</span>
@@ -1264,23 +1307,36 @@
         <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">allow_intersection_snapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepares the 1D pipes and adds to 1D branches.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare the 1D pipes and adds to 1D branches.</span>
+
 <span class="sd">        Note that 1D manholes must also be set-up  when setting up 1D pipes.</span>
 
 <span class="sd">        1D pipes must contain valid geometry, friction and crosssections.</span>
 
 <span class="sd">        The pipe geometry is read from ``pipes_fn``.</span>
-<span class="sd">        if branchtype is present in ``pipes_fn``, it is possible to filter pipe geometry using an additional filter specificed in``pipe_filter``.</span>
-<span class="sd">        If defaults attributes [&quot;branchorder&quot;] are not present in ``pipes_fn``, they are added from defaults values in ``pipes_defaults_fn``.</span>
-<span class="sd">        For branchid and branchtype, if they are not present in ``pipes_fn``, they are created on the fly (&quot;pipe&quot; for branchtype and &quot;pipe_{i}&quot; for branchid).</span>
+
+<span class="sd">        If branchtype is present in ``pipes_fn``, it is possible to filter pipe geometry</span>
+<span class="sd">        using an additional filter specificed in``pipe_filter``. If defaults attributes</span>
+<span class="sd">        [&quot;branchorder&quot;] are not present in ``pipes_fn``, they are added from defaults</span>
+<span class="sd">        values in ``pipes_defaults_fn``. For branchid and branchtype, if they are not</span>
+<span class="sd">        present in ``pipes_fn``, they are created on the fly (&quot;pipe&quot; for branchtype and</span>
+<span class="sd">        &quot;pipe_{i}&quot; for branchid).</span>
+
 <span class="sd">        The pipe geometry can be processed using splitting based on ``spacing``.</span>
 
-<span class="sd">        Friction attributes [&quot;branchid&quot;, &quot;frictionvalue&quot;] are either taken from ``pipes_fn`` or filled in using ``friction_type`` and</span>
-<span class="sd">        ``friction_value`` arguments.</span>
+<span class="sd">        Friction attributes [&quot;branchid&quot;, &quot;frictionvalue&quot;] are either taken from</span>
+<span class="sd">        ``pipes_fn`` or filled in using ``friction_type`` and ``friction_value``</span>
+<span class="sd">        arguments.</span>
 <span class="sd">        Note for now only branch friction or global friction is supported.</span>
 
-<span class="sd">        Crosssections definition attributes [&quot;shape&quot;, &quot;diameter&quot;, &quot;width&quot;, &quot;height&quot;, &quot;closed&quot;] are either taken from ``pipes_fn`` or filled in using ``crosssections_shape`` and ``crosssections_value``.</span>
-<span class="sd">        Crosssections location attributes [&quot;invlev_up&quot;, &quot;invlev_dn&quot;] are either taken from ``pipes_fn``, or derived from ``dem_fn`` minus a fixed depth ``pipe_depth`` [m], or from a constant ``pipe_invlev`` [m asl] (not recommended! should be edited before a model run).</span>
+<span class="sd">        Crosssections definition attributes [&quot;shape&quot;, &quot;diameter&quot;, &quot;width&quot;, &quot;height&quot;,</span>
+<span class="sd">        &quot;closed&quot;] are either taken from ``pipes_fn`` or filled in using</span>
+<span class="sd">        ``crosssections_shape`` and ``crosssections_value``.</span>
+
+<span class="sd">        Crosssections location attributes [&quot;invlev_up&quot;, &quot;invlev_dn&quot;] are either taken</span>
+<span class="sd">        from ``pipes_fn``, or derived from ``dem_fn`` minus a fixed depth ``pipe_depth``</span>
+<span class="sd">        [m], or from a constant ``pipe_invlev`` [m asl] (not recommended! should be</span>
+<span class="sd">        edited before a model run).</span>
 
 <span class="sd">        Adds/Updates model layers:</span>
 
@@ -1300,38 +1356,54 @@
 <span class="sd">        pipes_fn : str</span>
 <span class="sd">            Name of data source for pipes parameters, see data/data_sources.yml.</span>
 <span class="sd">            Note only the lines that are within the region polygon will be used.</span>
-<span class="sd">            * Optional variables: [branchid, branchtype, branchorder, spacing, branchid, frictionvalue, shape, diameter, width, height, closed, invlev_up, invlev_dn]</span>
+
+<span class="sd">            * Optional variables: [branchid, branchtype, branchorder, spacing, branchid,</span>
+<span class="sd">            frictionvalue, shape, diameter, width, height, closed, invlev_up, invlev_dn]</span>
 <span class="sd">            #TODO: material table is used for friction which is not implemented</span>
 <span class="sd">        pipes_defaults_fn : str Path</span>
 <span class="sd">            Path to a csv file containing all defaults values per &quot;branchtype&quot;&#39;&quot;.</span>
 <span class="sd">        pipe_filter: str, optional</span>
-<span class="sd">            Keyword in branchtype column of pipes_fn used to filter pipe lines. If None all lines in pipes_fn are used (default).</span>
+<span class="sd">            Keyword in branchtype column of pipes_fn used to filter pipe lines.</span>
+<span class="sd">            If None all lines in pipes_fn are used (default).</span>
 <span class="sd">        spacing: float, optional</span>
-<span class="sd">            Spacing value in meters to split the long pipelines lines into shorter pipes. By default inf - no splitting is applied.</span>
+<span class="sd">            Spacing value in meters to split the long pipelines lines into shorter</span>
+<span class="sd">            pipes. By default inf - no splitting is applied.</span>
 <span class="sd">        friction_type : str, optional</span>
-<span class="sd">            Type of friction to use. One of [&quot;Manning&quot;, &quot;Chezy&quot;, &quot;wallLawNikuradse&quot;, &quot;WhiteColebrook&quot;, &quot;StricklerNikuradse&quot;, &quot;Strickler&quot;, &quot;deBosBijkerk&quot;].</span>
+<span class="sd">            Type of friction to use. One of [&quot;Manning&quot;, &quot;Chezy&quot;, &quot;wallLawNikuradse&quot;,</span>
+<span class="sd">            &quot;WhiteColebrook&quot;, &quot;StricklerNikuradse&quot;, &quot;Strickler&quot;, &quot;deBosBijkerk&quot;].</span>
 <span class="sd">            By default &quot;WhiteColeBrook&quot;.</span>
 <span class="sd">        friction_value : float, optional.</span>
-<span class="sd">            Units corresponding to &#39;&#39;friction_type&#39;&#39; are [&quot;Chézy C [m 1/2 /s]&quot;, &quot;Manning n [s/m 1/3 ]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Strickler k_s [m 1/3 /s]&quot;, &quot;De Bos-Bijkerk γ [1/s]&quot;]</span>
+<span class="sd">            Units corresponding to &#39;&#39;friction_type&#39;&#39; are [&quot;Chézy C [m 1/2 /s]&quot;,</span>
+<span class="sd">            &quot;Manning n [s/m 1/3 ]&quot;, &quot;Nikuradse k_n [m]&quot;, &quot;Nikuradse k_n [m]&quot;,</span>
+<span class="sd">            &quot;Nikuradse k_n [m]&quot;, &quot;Strickler k_s [m 1/3 /s]&quot;, &quot;De Bos-Bijkerk γ [1/s]&quot;]</span>
 <span class="sd">            Friction value. By default 0.003.</span>
 <span class="sd">        crosssections_shape : str, optional</span>
 <span class="sd">            Shape of pipe crosssections. Either &quot;circle&quot; (default) or &quot;rectangle&quot;.</span>
 <span class="sd">        crosssections_value : int or list of int, optional</span>
 <span class="sd">            Crosssections parameter value.</span>
-<span class="sd">            If ``crosssections_shape`` = &quot;circle&quot;, expects a diameter (default with 0.5 m) [m]</span>
-<span class="sd">            If ``crosssections_shape`` = &quot;rectangle&quot;, expects a list with [width, height] (e.g. [1.0, 1.0]) [m]. closed rectangle by default.</span>
+<span class="sd">            If ``crosssections_shape`` = &quot;circle&quot;, expects a diameter</span>
+<span class="sd">            (default with 0.5 m) [m]</span>
+<span class="sd">            If ``crosssections_shape`` = &quot;rectangle&quot;, expects a list with</span>
+<span class="sd">            [width, height] (e.g. [1.0, 1.0]) [m]. closed rectangle by default.</span>
 <span class="sd">        dem_fn: str, optional</span>
-<span class="sd">            Name of data source for dem data. Used to derive default invert levels values (DEM - pipes_depth - pipes diameter/height).</span>
+<span class="sd">            Name of data source for dem data. Used to derive default invert levels</span>
+<span class="sd">            values (DEM - pipes_depth - pipes diameter/height).</span>
+
 <span class="sd">            * Required variables: [elevtn]</span>
 <span class="sd">        pipes_depth: float, optional</span>
-<span class="sd">            Depth of the pipes underground [m] (default 2.0 m). Used to derive defaults invert levels values (DEM - pipes_depth - pipes diameter/height).</span>
+<span class="sd">            Depth of the pipes underground [m] (default 2.0 m). Used to derive defaults</span>
+<span class="sd">            invert levels values (DEM - pipes_depth - pipes diameter/height).</span>
 <span class="sd">        pipes_invlev: float, optional</span>
-<span class="sd">            Constant default invert levels of the pipes [m asl] (default -2.5 m asl). This method is recommended to be used together with the dem method to fill remaining nan values. It slone is not a recommended method.</span>
+<span class="sd">            Constant default invert levels of the pipes [m asl] (default -2.5 m asl).</span>
+<span class="sd">            This method is recommended to be used together with the dem method to fill</span>
+<span class="sd">            remaining nan values. It slone is not a recommended method.</span>
 <span class="sd">        snap_offset: float, optional</span>
-<span class="sd">            Snapping tolenrance to automatically connecting branches. Tolenrance must be smaller than the shortest pipe length.</span>
+<span class="sd">            Snapping tolenrance to automatically connecting branches. Tolenrance must be</span>
+<span class="sd">            smaller than the shortest pipe length.</span>
 <span class="sd">            By default 0.0, no snapping is applied.</span>
 <span class="sd">        allow_intersection_snapping: bool, optional</span>
-<span class="sd">            Switch to choose whether snapping of multiple branch ends are allowed when ``snap_offset`` is used.</span>
+<span class="sd">            Switch to choose whether snapping of multiple branch ends are allowed when</span>
+<span class="sd">            ``snap_offset`` is used.</span>
 <span class="sd">            By default True.</span>
 
 <span class="sd">        See Also</span>
@@ -1402,14 +1474,18 @@
             <span class="k">if</span> <span class="n">inv</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># nodata values in pipes for invert levels</span>
                 <span class="n">fill_invlev</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pipes_fn</span><span class="si">}</span><span class="s2"> data has </span><span class="si">{</span><span class="n">inv</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2"> no data values for invert levels. Will be filled using dem_fn or default value </span><span class="si">{</span><span class="n">pipes_invlev</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pipes_fn</span><span class="si">}</span><span class="s2"> data has </span><span class="si">{</span><span class="n">inv</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2"> no data values&quot;</span>
+                    <span class="s2">&quot;for invert levels. Will be filled using dem_fn or&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;default value </span><span class="si">{</span><span class="n">pipes_invlev</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">fill_invlev</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">fill_invlev</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pipes_fn</span><span class="si">}</span><span class="s2"> does not have columns [invlev_up, invlev_dn]. Invert levels will be generated from dem_fn or default value </span><span class="si">{</span><span class="n">pipes_invlev</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pipes_fn</span><span class="si">}</span><span class="s2"> does not have columns [invlev_up, invlev_dn].&quot;</span>
+                <span class="s2">&quot;Invert levels will be generated from dem_fn or&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;default value </span><span class="si">{</span><span class="n">pipes_invlev</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="c1"># 2. filling use dem_fn + pipe_depth</span>
         <span class="k">if</span> <span class="n">fill_invlev</span> <span class="ow">and</span> <span class="n">dem_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1429,7 +1505,8 @@
         <span class="c1"># 3. filling use pipes_invlev</span>
         <span class="k">if</span> <span class="n">fill_invlev</span> <span class="ow">and</span> <span class="n">pipes_invlev</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s2">&quot;!Using a constant up and down invert levels for all pipes. May cause issues when running the delft3dfm model.!&quot;</span>
+                <span class="s2">&quot;!Using a constant up and down invert levels for all pipes.&quot;</span>
+                <span class="s2">&quot;May cause issues when running the delft3dfm model.!&quot;</span>
             <span class="p">)</span>
             <span class="n">df_inv</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
                 <span class="n">data</span><span class="o">=</span><span class="p">{</span>
@@ -1442,7 +1519,8 @@
                 <span class="n">pipes</span><span class="p">,</span> <span class="n">df_inv</span><span class="p">,</span> <span class="n">brtype</span><span class="o">=</span><span class="s2">&quot;pipe&quot;</span>
             <span class="p">)</span>
 
-        <span class="c1"># TODO: check that geometry lines are properly oriented from up to dn when deriving invert levels from dem</span>
+        <span class="c1"># TODO: check that geometry lines are properly oriented from up to dn</span>
+        <span class="c1"># when deriving invert levels from dem</span>
 
         <span class="c1"># Update crosssections object</span>
         <span class="n">crosssections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_crosssections</span><span class="p">(</span>
@@ -1492,25 +1570,30 @@
         <span class="n">crosssections_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;branch&quot;</span><span class="p">,</span>
         <span class="n">midpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepares 1D crosssections.</span>
-<span class="sd">        crosssections can be set from branches, points and xyz, # TODO to be extended also from dem data for rivers/channels?</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare 1D crosssections from branches, points and xyz.</span>
+
+<span class="sd">        # TODO to be extended also from dem data for rivers/channels?</span>
+
 <span class="sd">        Crosssection must only be used after friction has been setup.</span>
 
 <span class="sd">        Crosssections are read from ``crosssections_fn``.</span>
 <span class="sd">        Crosssection types of this file is read from ``crosssections_type``</span>
 
-<span class="sd">        If ``crosssections_fn`` is not defined, default method is ``crosssections_type`` = &#39;branch&#39;,</span>
-<span class="sd">        meaning that branch attributes will be used to derive regular crosssections.</span>
+<span class="sd">        If ``crosssections_fn`` is not defined, default method is</span>
+<span class="sd">        ``crosssections_type`` = &#39;branch&#39;, meaning that branch attributes will be used</span>
+<span class="sd">        to derive regular crosssections.</span>
 <span class="sd">        Crosssections are derived at branches mid points if ``midpoints`` is True,</span>
 <span class="sd">        else at both upstream and downstream extremities of branches if False.</span>
 
 <span class="sd">        Adds/Updates model layers:</span>
+
 <span class="sd">        * **crosssections** geom: 1D crosssection vector</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        branches : gpd.GeoDataFrame</span>
 <span class="sd">            geodataframe of the branches to apply crosssections.</span>
+
 <span class="sd">            * Required variables: [branchid, branchtype, branchorder]</span>
 <span class="sd">            If ``crosssections_type`` = &quot;branch&quot;</span>
 <span class="sd">                if shape = &#39;circle&#39;: &#39;diameter&#39;</span>
@@ -1518,26 +1601,32 @@
 <span class="sd">                if shape = &#39;trapezoid&#39;: &#39;width&#39;, &#39;t_width&#39;, &#39;height&#39;, &#39;closed&#39;</span>
 <span class="sd">            * Optional variables: [material, friction_type, friction_value]</span>
 <span class="sd">        region : gpd.GeoDataFrame, optional</span>
-<span class="sd">            geodataframe of the region of interest for extracting crosssections_fn, by default None</span>
+<span class="sd">            geodataframe of the region of interest for extracting crosssections_fn,</span>
+<span class="sd">            by default None</span>
 <span class="sd">        crosssections_fn : str Path, optional</span>
 <span class="sd">            Name of data source for crosssections, see data/data_sources.yml.</span>
-<span class="sd">            Note that for point crossections, only ones within the snap_network_offset will be used.</span>
+<span class="sd">            Note that for point crossections, only ones within the snap_network_offset</span>
+<span class="sd">            will be used.</span>
 <span class="sd">            If ``crosssections_type`` = &quot;xyz&quot;</span>
 <span class="sd">            Note that only points within the region + 1000m buffer will be read.</span>
+
 <span class="sd">            * Required variables: crsid, order, z</span>
 <span class="sd">            * Optional variables:</span>
 <span class="sd">            If ``crosssections_type`` = &quot;point&quot;</span>
+
 <span class="sd">            * Required variables: crsid, shape, shift</span>
 <span class="sd">            * Optional variables:</span>
 <span class="sd">                if shape = &#39;rectangle&#39;: &#39;width&#39;, &#39;height&#39;, &#39;closed&#39;</span>
 <span class="sd">                if shape = &#39;trapezoid&#39;: &#39;width&#39;, &#39;t_width&#39;, &#39;height&#39;, &#39;closed&#39;</span>
 <span class="sd">                if shape = &#39;yz&#39;: &#39;yzcount&#39;,&#39;ycoordinates&#39;,&#39;zcoordinates&#39;,&#39;closed&#39;</span>
-<span class="sd">                if shape = &#39;zw&#39;: &#39;numlevels&#39;, &#39;levels&#39;, &#39;flowwidths&#39;,&#39;totalwidths&#39;, &#39;closed&#39;.</span>
+<span class="sd">                if shape = &#39;zw&#39;: &#39;numlevels&#39;, &#39;levels&#39;, &#39;flowwidths&#39;,&#39;totalwidths&#39;,</span>
+<span class="sd">                &#39;closed&#39;.</span>
 <span class="sd">                if shape = &#39;zwRiver&#39;: Not Supported</span>
 <span class="sd">                Note that list input must be strings seperated by a whitespace &#39;&#39;.</span>
 <span class="sd">            By default None, crosssections will be set from branches</span>
 <span class="sd">        crosssections_type : {&#39;branch&#39;, &#39;xyz&#39;, &#39;point&#39;}</span>
-<span class="sd">            Type of crosssections read from crosssections_fn. One of [&#39;branch&#39;, &#39;xyz&#39;, &#39;point&#39;].</span>
+<span class="sd">            Type of crosssections read from crosssections_fn. One of</span>
+<span class="sd">            [&#39;branch&#39;, &#39;xyz&#39;, &#39;point&#39;].</span>
 <span class="sd">            By default `branch`.</span>
 
 <span class="sd">        Returns</span>
@@ -1551,7 +1640,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># setup crosssections</span>
         <span class="k">if</span> <span class="n">crosssections_fn</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">crosssections_type</span> <span class="o">==</span> <span class="s2">&quot;branch&quot;</span><span class="p">:</span>
-            <span class="c1"># TODO: set a seperate type for rivers because other branch types might require upstream/downstream</span>
+            <span class="c1"># TODO: set a seperate type for rivers because other branch types</span>
+            <span class="c1"># might require upstream/downstream</span>
             <span class="c1"># TODO: check for required columns</span>
             <span class="c1"># read crosssection from branches</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preparing crossections from branch.&quot;</span><span class="p">)</span>
@@ -1577,7 +1667,8 @@
             <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_attributes</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="s2">&quot;Required attributes [crsid, order, z] in xyz crosssections do not exist&quot;</span>
+                    <span class="s2">&quot;Required attributes [crsid, order, z] in xyz crosssections&quot;</span>
+                    <span class="s2">&quot;do not exist&quot;</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">None</span>
 
@@ -1613,7 +1704,8 @@
             <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_attributes</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="s2">&quot;Required attributes [crsid, shape, shift] in point crosssections do not exist&quot;</span>
+                    <span class="s2">&quot;Required attributes [crsid, shape, shift] in point crosssections&quot;</span>
+                    <span class="s2">&quot;do not exist&quot;</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">None</span>
 
@@ -1649,21 +1741,33 @@
         <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Prepares the 1D manholes to pipes or tunnels. Can only be used after all branches are setup.</span>
+<span class="sd">        Prepare the 1D manholes to pipes or tunnels.</span>
 
-<span class="sd">        The manholes are generated based on a set of standards specified in ``manhole_defaults_fn`` (default)  and can be overwritten with manholes read from ``manholes_fn``.</span>
+<span class="sd">        Can only be used after all branches are setup.</span>
+
+<span class="sd">        The manholes are generated based on a set of standards specified in</span>
+<span class="sd">        ``manhole_defaults_fn`` (default)  and can be overwritten with manholes</span>
+<span class="sd">        read from ``manholes_fn``.</span>
 
 <span class="sd">        Use ``manholes_fn`` to set the manholes from a dataset of point locations.</span>
-<span class="sd">        Only locations within the model region are selected. They are snapped to the model</span>
-<span class="sd">        network nodes locations within a max distance defined in ``snap_offset``.</span>
+<span class="sd">        Only locations within the model region are selected. They are snapped to the</span>
+<span class="sd">        model network nodes locations within a max distance defined in ``snap_offset``.</span>
 
-<span class="sd">        Manhole attributes [&quot;area&quot;, &quot;streetstoragearea&quot;, &quot;storagetype&quot;, &quot;streetlevel&quot;] are either taken from ``manholes_fn`` or filled in using defaults in ``manhole_defaults_fn``.</span>
-<span class="sd">        Manhole attribute [&quot;bedlevel&quot;] is always generated from invert levels of the pipe/tunnel network plus a shift defined in ``bedlevel_shift``. This is needed for numerical stability.</span>
-<span class="sd">        Manhole attribute [&quot;streetlevel&quot;]  can also be overwriten with values dervied from &quot;dem_fn&quot;.</span>
-<span class="sd">        #TODO probably needs another parameter to apply different sampling method for the manholes, e.g. min within 2 m radius.</span>
+<span class="sd">        Manhole attributes [&quot;area&quot;, &quot;streetstoragearea&quot;, &quot;storagetype&quot;, &quot;streetlevel&quot;]</span>
+<span class="sd">        are either taken from ``manholes_fn`` or filled in using defaults in</span>
+<span class="sd">        ``manhole_defaults_fn``.</span>
+<span class="sd">        Manhole attribute [&quot;bedlevel&quot;] is always generated from invert levels of the</span>
+<span class="sd">        pipe/tunnel network plus a shift defined in ``bedlevel_shift``. This is needed</span>
+<span class="sd">        for numerical stability.</span>
+<span class="sd">        Manhole attribute [&quot;streetlevel&quot;]  can also be overwriten with values dervied</span>
+<span class="sd">        from &quot;dem_fn&quot;.</span>
+
+<span class="sd">        #TODO probably needs another parameter to apply different sampling method for</span>
+<span class="sd">        the manholes, e.g. min within 2 m radius.</span>
 
 <span class="sd">        Adds/Updates model layers:</span>
-<span class="sd">            * **manholes** geom: 1D manholes vector</span>
+
+<span class="sd">        * **manholes** geom: 1D manholes vector</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1671,26 +1775,35 @@
 <span class="sd">            Path or data source name for manholes see data/data_sources.yml.</span>
 <span class="sd">            Note only the points that are within the region polygon will be used.</span>
 
-<span class="sd">            * Optional variables: [&quot;area&quot;, &quot;streetstoragearea&quot;, &quot;storagetype&quot;, &quot;streetlevel&quot;]</span>
+<span class="sd">            * Optional variables: [&quot;area&quot;, &quot;streetstoragearea&quot;, &quot;storagetype&quot;,</span>
+<span class="sd">            &quot;streetlevel&quot;]</span>
 <span class="sd">        manholes_defaults_fn : str Path, optional</span>
 <span class="sd">            Path to a csv file containing all defaults values per &quot;branchtype&quot;.</span>
 <span class="sd">            Use multiple rows to apply defaults per [&quot;shape&quot;, &quot;diameter&quot;/&quot;width&quot;] pairs.</span>
-<span class="sd">            By default `hydrolib.hydromt_delft3dfm.data.manholes.manholes_defaults.csv` is used.</span>
+<span class="sd">            By default `hydrolib.hydromt_delft3dfm.data.manholes.manholes_defaults.csv`</span>
+<span class="sd">            is used.</span>
 
-<span class="sd">            * Allowed variables: [&quot;area&quot;, &quot;streetlevel&quot;, &quot;streeStorageArea&quot;, &quot;storagetype&quot;]</span>
+<span class="sd">            * Allowed variables: [&quot;area&quot;, &quot;streetlevel&quot;, &quot;streeStorageArea&quot;,</span>
+<span class="sd">            &quot;storagetype&quot;]</span>
 <span class="sd">        dem_fn: str, optional</span>
-<span class="sd">            Name of data source for dem data. Used to derive default invert levels values (DEM - pipes_depth - pipes diameter/height).</span>
+<span class="sd">            Name of data source for dem data. Used to derive default invert levels</span>
+<span class="sd">            values (DEM - pipes_depth - pipes diameter/height).</span>
+
 <span class="sd">            * Required variables: [elevtn]</span>
 <span class="sd">        bedlevel_shift: float, optional</span>
-<span class="sd">            Shift applied to lowest pipe invert levels to derive manhole bedlevels [m] (default -0.5 m, meaning bedlevel = pipe invert - 0.5m).</span>
+<span class="sd">            Shift applied to lowest pipe invert levels to derive manhole bedlevels [m]</span>
+<span class="sd">            (default -0.5 m, meaning bedlevel = pipe invert - 0.5m).</span>
 <span class="sd">        snap_offset: float, optional</span>
 <span class="sd">            Snapping tolenrance to automatically connecting manholes to network nodes.</span>
-<span class="sd">            By default 0.001. Use a higher value if large number of user manholes are missing.</span>
+<span class="sd">            By default 0.001. Use a higher value if large number of user manholes are</span>
+<span class="sd">            missing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># geom columns for manholes</span>
+        <span class="c1"># id = storage node id, considered identical to manhole id</span>
+        <span class="c1"># when using single compartment manholes</span>
         <span class="n">_allowed_columns</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;geometry&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;id&quot;</span><span class="p">,</span>  <span class="c1"># storage node id, considered identical to manhole id when using single compartment manholes</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">,</span>
             <span class="s2">&quot;name&quot;</span><span class="p">,</span>
             <span class="s2">&quot;manholeid&quot;</span><span class="p">,</span>
             <span class="s2">&quot;nodeid&quot;</span><span class="p">,</span>
@@ -1712,7 +1825,8 @@
             <span class="n">id_suffix</span><span class="o">=</span><span class="s2">&quot;_generated&quot;</span><span class="p">,</span>
             <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="c1"># FIXME Xiaohan: why do we need set_branches here? Because of branches.gui --&gt; add a high level write_gui files same level as write_mesh</span>
+        <span class="c1"># FIXME Xiaohan: why do we need set_branches here? Because of branches.gui</span>
+        <span class="c1"># --&gt; add a high level write_gui files same level as write_mesh</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_branches</span><span class="p">(</span><span class="n">branches</span><span class="p">)</span>
 
         <span class="c1"># add manhole attributes from defaults</span>
@@ -1777,16 +1891,17 @@
             <span class="n">manholes</span><span class="p">,</span> <span class="n">network1d_nodes</span><span class="p">,</span> <span class="n">max_dist</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
         <span class="c1"># add additional required columns</span>
-        <span class="n">manholes</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">manholes</span><span class="p">[</span>
-            <span class="s2">&quot;nodeid&quot;</span>
-        <span class="p">]</span>  <span class="c1"># id of the storage nodes id, identical to manholeid when single compartment manholes are used</span>
+        <span class="n">manholes</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">manholes</span><span class="p">[</span><span class="s2">&quot;nodeid&quot;</span><span class="p">]</span>
+        <span class="c1"># id of the storage nodes id, identical to manholeid</span>
+        <span class="c1"># when single compartment manholes are used</span>
         <span class="n">manholes</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">manholes</span><span class="p">[</span><span class="s2">&quot;manholeid&quot;</span><span class="p">]</span>
         <span class="n">manholes</span><span class="p">[</span><span class="s2">&quot;usetable&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># validate</span>
         <span class="k">if</span> <span class="n">manholes</span><span class="p">[</span><span class="n">_allowed_columns</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;manholes contain no data. use manholes_defaults_fn to apply no data filling.&quot;</span>
+                <span class="s2">&quot;manholes contain no data.&quot;</span>
+                <span class="s2">&quot;Use manholes_defaults_fn to apply no data filling.&quot;</span>
             <span class="p">)</span>
 
         <span class="c1"># setup geoms</span>
@@ -1808,22 +1923,28 @@
         <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Prepares the 1D ``boundary_type`` boundaries to branches using timeseries or a constant for a</span>
-<span class="sd">        specific ``branch_type`` at the ``boundary_locs`` locations.</span>
-<span class="sd">        E.g. &#39;waterlevel&#39; boundaries for &#39;downstream&#39;&#39;river&#39; branches.</span>
+<span class="sd">        Prepare the 1D ``boundary_type`` boundaries using timeseries or a constant.</span>
 
-<span class="sd">        The values can either be a constant using ``boundary_value`` (default) or timeseries read from ``boundaries_geodataset_fn``.</span>
+<span class="sd">        Boundaries are prepared for a specific ``branch_type`` at the ``boundary_locs``</span>
+<span class="sd">        locations. E.g. &#39;waterlevel&#39; boundaries for &#39;downstream&#39;&#39;river&#39; branches.</span>
 
-<span class="sd">        Use ``boundaries_geodataset_fn`` to set the boundary values from a dataset of point location</span>
-<span class="sd">        timeseries. Only locations within the possible model boundary locations + snap_offset are used. They are snapped to the model</span>
-<span class="sd">        boundary locations within a max distance defined in ``snap_offset``. If ``boundaries_geodataset_fn``</span>
-<span class="sd">        has missing values, the constant ``boundary_value`` will be used.</span>
+<span class="sd">        The values can either be a constant using ``boundary_value`` (default) or</span>
+<span class="sd">        timeseries read from ``boundaries_geodataset_fn``.</span>
+
+<span class="sd">        Use ``boundaries_geodataset_fn`` to set the boundary values from a dataset</span>
+<span class="sd">        of point location timeseries. Only locations within the possible model boundary</span>
+<span class="sd">        locations + snap_offset are used. They are snapped to the model boundary</span>
+<span class="sd">        locations within a max distance defined in ``snap_offset``. If</span>
+<span class="sd">        ``boundaries_geodataset_fn`` has missing values, the constant ``boundary_value``</span>
+<span class="sd">        will be used.</span>
 
 <span class="sd">        The dataset/timeseries are clipped to the model time based on the model config</span>
 <span class="sd">        tstart and tstop entries.</span>
 
 <span class="sd">        Adds/Updates model layers:</span>
-<span class="sd">            * **boundary1d_{boundary_type}bnd_{branch_type}** forcing: 1D boundaries DataArray</span>
+
+<span class="sd">        * **boundary1d_{boundary_type}bnd_{branch_type}** forcing: 1D boundaries</span>
+<span class="sd">            DataArray</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1833,10 +1954,12 @@
 <span class="sd">            or a combined point location file with a timeseries data csv file</span>
 <span class="sd">            which can be setup through the data_catalog yml file.</span>
 
-<span class="sd">            * Required variables if netcdf: [&#39;discharge&#39;, &#39;waterlevel&#39;] depending on ``boundary_type``</span>
+<span class="sd">            * Required variables if netcdf: [&#39;discharge&#39;, &#39;waterlevel&#39;] depending on</span>
+<span class="sd">                ``boundary_type``</span>
 <span class="sd">            * Required coordinates if netcdf: [&#39;time&#39;, &#39;index&#39;, &#39;y&#39;, &#39;x&#39;]</span>
 
-<span class="sd">            * Required variables if a combined point location file: [&#39;index&#39;] with type int</span>
+<span class="sd">            * Required variables if a combined point location file: [&#39;index&#39;] with type</span>
+<span class="sd">                int</span>
 <span class="sd">            * Required index types if a time series data csv file: int</span>
 <span class="sd">            NOTE: Require equidistant time series</span>
 <span class="sd">        boundaries_timeseries_fn: str, Path</span>
@@ -1847,8 +1970,8 @@
 <span class="sd">            coordinates be set as a geodataset in the data_catalog yml file.</span>
 <span class="sd">            NOTE: Require equidistant time series</span>
 <span class="sd">        boundary_value : float, optional</span>
-<span class="sd">            Constant value to use for all boundaries if ``boundaries_geodataset_fn`` is None and to</span>
-<span class="sd">            fill in missing data. By default -2.5 m.</span>
+<span class="sd">            Constant value to use for all boundaries if ``boundaries_geodataset_fn`` is</span>
+<span class="sd">            None and to fill in missing data. By default -2.5 m.</span>
 <span class="sd">        branch_type: str</span>
 <span class="sd">            Type of branch to apply boundaries on. One of [&quot;river&quot;, &quot;pipe&quot;].</span>
 <span class="sd">        boundary_type : str, optional</span>
@@ -1863,11 +1986,14 @@
 <span class="sd">            By default m.</span>
 <span class="sd">        boundary_locs:</span>
 <span class="sd">            Boundary locations to consider. One of [&quot;upstream&quot;, &quot;downstream&quot;, &quot;both&quot;].</span>
-<span class="sd">            Only used for river waterlevel which can be upstream, downstream or both. By default &quot;downstream&quot;.</span>
-<span class="sd">            For the others, it is automatically derived from branch_type and boundary_type.</span>
+<span class="sd">            Only used for river waterlevel which can be upstream, downstream or both.</span>
+<span class="sd">            By default &quot;downstream&quot;.</span>
+<span class="sd">            For the others, it is automatically derived from branch_type and</span>
+<span class="sd">            boundary_type.</span>
 <span class="sd">        snap_offset : float, optional</span>
-<span class="sd">                Snapping tolerance to automatically applying boundaries at the correct network nodes.</span>
-<span class="sd">            By default 0.1, a small snapping is applied to avoid precision errors.</span>
+<span class="sd">            Snapping tolerance to automatically applying boundaries at the correct</span>
+<span class="sd">            network nodes. By default 0.1, a small snapping is applied to avoid</span>
+<span class="sd">            precision errors.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Preparing 1D </span><span class="si">{</span><span class="n">boundary_type</span><span class="si">}</span><span class="s2"> boundaries for </span><span class="si">{</span><span class="n">branch_type</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="n">boundaries</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">get_boundaries_with_nodeid</span><span class="p">(</span>
@@ -1900,7 +2026,8 @@
                 <span class="k">pass</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="s2">&quot;forcing has different start and end time. Please check the forcing file. support yyyy-mm-dd HH:MM:SS. &quot;</span>
+                    <span class="s2">&quot;forcing has different start and end time.&quot;</span>
+                    <span class="s2">&quot;Please check the forcing file. support yyyy-mm-dd HH:MM:SS. &quot;</span>
                 <span class="p">)</span>
             <span class="c1"># reproject if needed and convert to location</span>
             <span class="k">if</span> <span class="n">da_bnd</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">crs</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">:</span>
@@ -1910,7 +2037,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">da_bnd</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="c1"># 3. Derive DataArray with boundary values at boundary locations in boundaries_branch_type</span>
+        <span class="c1"># 3. Derive DataArray with boundary values at boundary locations</span>
+        <span class="c1"># in boundaries_branch_type</span>
         <span class="n">da_out</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">compute_boundary_values</span><span class="p">(</span>
             <span class="n">boundaries</span><span class="o">=</span><span class="n">boundaries_branch_type</span><span class="p">,</span>
             <span class="n">da_bnd</span><span class="o">=</span><span class="n">da_bnd</span><span class="p">,</span>
@@ -1922,10 +2050,10 @@
         <span class="p">)</span>
 
         <span class="c1"># 4. set boundaries</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_forcing</span><span class="p">(</span>
-            <span class="n">da_out</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;boundary1d_</span><span class="si">{</span><span class="n">da_out</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">branch_type</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>  <span class="c1"># FIXME: this format cannot be read back due to lack of branch type info from model files</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_forcing</span><span class="p">(</span><span class="n">da_out</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;boundary1d_</span><span class="si">{</span><span class="n">da_out</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">branch_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
+        <span class="c1"># FIXME: this format cannot be read back due to lack of branch type info</span>
+        <span class="c1"># from model files</span>
 
 <div class="viewcode-block" id="DFlowFMModel.setup_bridges">
 <a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.setup_bridges.html#hydromt_delft3dfm.DFlowFMModel.setup_bridges">[docs]</a>
@@ -1938,19 +2066,28 @@
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare bridges, including bridge locations and bridge crossections.</span>
 
-<span class="sd">        The bridges are read from ``bridges_fn`` and if any missing, filled with information provided in ``bridges_defaults_fn``.</span>
+<span class="sd">        The bridges are read from ``bridges_fn`` and if any missing, filled with</span>
+<span class="sd">        information provided in ``bridges_defaults_fn``.</span>
 
 <span class="sd">        When reading ``bridges_fn``, only locations within the region will be read.</span>
-<span class="sd">        Read locations are then filtered for value specified in ``bridge_filter`` on the column &quot;structure_type&quot;.</span>
-<span class="sd">        Remaining locations are snapped to the existing network within a max distance defined in ``snap_offset`` and will be dropped if not snapped.</span>
+<span class="sd">        Read locations are then filtered for value specified in ``bridge_filter`` on</span>
+<span class="sd">        the column &quot;structure_type&quot;.</span>
+<span class="sd">        Remaining locations are snapped to the existing network within a max distance</span>
+<span class="sd">        defined in ``snap_offset`` and will be dropped if not snapped.</span>
 
-<span class="sd">        A default rectangle bridge profile can be found in ``bridges_defaults_fn`` as an example.</span>
+<span class="sd">        A default rectangle bridge profile can be found in ``bridges_defaults_fn``</span>
+<span class="sd">        as an example.</span>
 
-<span class="sd">        Structure attributes [&#39;structure_id&#39;, &#39;structure_type&#39;] are either taken from data or generated in the script.</span>
-<span class="sd">        Structure attributes [&#39;shape&#39;, &#39;diameter&#39;, &#39;width&#39;, &#39;t_width&#39;, &#39;height&#39;, &#39;closed&#39;, &#39;shift&#39;, &#39;length&#39;, &#39;pillarwidth&#39;, &#39;formfactor&#39;, &#39;friction_type&#39;, &#39;friction_value&#39;, &#39;allowedflowdir&#39;,  &#39;inletlosscoeff&#39;, &#39;outletlosscoeff&#39;] are either taken from data,  or in case of missing read from defaults.</span>
+<span class="sd">        Structure attributes [&#39;structure_id&#39;, &#39;structure_type&#39;] are either taken from</span>
+<span class="sd">        data or generated in the script.</span>
+<span class="sd">        Structure attributes [&#39;shape&#39;, &#39;diameter&#39;, &#39;width&#39;, &#39;t_width&#39;, &#39;height&#39;,</span>
+<span class="sd">        &#39;closed&#39;, &#39;shift&#39;, &#39;length&#39;, &#39;pillarwidth&#39;, &#39;formfactor&#39;, &#39;friction_type&#39;,</span>
+<span class="sd">        &#39;friction_value&#39;, &#39;allowedflowdir&#39;,  &#39;inletlosscoeff&#39;, &#39;outletlosscoeff&#39;]</span>
+<span class="sd">        are either taken from data,  or in case of missing read from defaults.</span>
 
 <span class="sd">        Adds/Updates model layers:</span>
-<span class="sd">            * **bridges** geom: 1D bridges vector</span>
+
+<span class="sd">        * **bridges** geom: 1D bridges vector</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1958,20 +2095,30 @@
 <span class="sd">            Path or data source name for bridges, see data/data_sources.yml.</span>
 <span class="sd">            Note only the points that are within the region polygon will be used.</span>
 
-<span class="sd">            * Optional variables: [&#39;structure_id&#39;, &#39;structure_type&#39;, &#39;shape&#39;, &#39;diameter&#39;, &#39;width&#39;, &#39;t_width&#39;, &#39;height&#39;, &#39;closed&#39;, &#39;shift&#39;, &#39;length&#39;, &#39;pillarwidth&#39;, &#39;formfactor&#39;, &#39;friction_type&#39;, &#39;friction_value&#39;, &#39;allowedflowdir&#39;,  &#39;inletlosscoeff&#39;, &#39;outletlosscoeff&#39;]</span>
+<span class="sd">            * Optional variables: [&#39;structure_id&#39;, &#39;structure_type&#39;, &#39;shape&#39;,</span>
+<span class="sd">            &#39;diameter&#39;, &#39;width&#39;, &#39;t_width&#39;, &#39;height&#39;, &#39;closed&#39;, &#39;shift&#39;, &#39;length&#39;,</span>
+<span class="sd">            &#39;pillarwidth&#39;, &#39;formfactor&#39;, &#39;friction_type&#39;, &#39;friction_value&#39;,</span>
+<span class="sd">            &#39;allowedflowdir&#39;,  &#39;inletlosscoeff&#39;, &#39;outletlosscoeff&#39;]</span>
 
 <span class="sd">        bridges_defaults_fn : str Path, optional</span>
 <span class="sd">            Path to a csv file containing all defaults values per &quot;structure_type&quot;.</span>
-<span class="sd">            By default `hydrolib.hydromt_delft3dfm.data.bridges.bridges_defaults.csv` is used. This file describes a minimum rectangle bridge profile.</span>
+<span class="sd">            By default `hydrolib.hydromt_delft3dfm.data.bridges.bridges_defaults.csv`</span>
+<span class="sd">            is used. This file describes a minimum rectangle bridge profile.</span>
 
-<span class="sd">            * Allowed variables: [&#39;structure_type&#39;, &#39;shape&#39;, &#39;diameter&#39;, &#39;width&#39;, &#39;t_width&#39;, &#39;height&#39;, &#39;closed&#39;, &#39;shift&#39;, &#39;length&#39;, &#39;pillarwidth&#39;, &#39;formfactor&#39;, &#39;friction_type&#39;, &#39;friction_value&#39;, &#39;allowedflowdir&#39;,  &#39;inletlosscoeff&#39;, &#39;outletlosscoeff&#39;]</span>
+<span class="sd">            * Allowed variables: [&#39;structure_type&#39;, &#39;shape&#39;, &#39;diameter&#39;, &#39;width&#39;,</span>
+<span class="sd">                &#39;t_width&#39;, &#39;height&#39;, &#39;closed&#39;, &#39;shift&#39;, &#39;length&#39;, &#39;pillarwidth&#39;,</span>
+<span class="sd">                &#39;formfactor&#39;, &#39;friction_type&#39;, &#39;friction_value&#39;, &#39;allowedflowdir&#39;,</span>
+<span class="sd">                &#39;inletlosscoeff&#39;, &#39;outletlosscoeff&#39;]</span>
 
 <span class="sd">        river_filter: str, optional</span>
-<span class="sd">            Keyword in &quot;structure_type&quot; column of ``bridges_fn`` used to filter bridge features. If None all features are used (default).</span>
+<span class="sd">            Keyword in &quot;structure_type&quot; column of ``bridges_fn`` used to filter bridge</span>
+<span class="sd">            features. If None all features are used (default).</span>
 
 <span class="sd">        snap_offset: float, optional</span>
-<span class="sd">            Snapping tolenrance to automatically snap bridges to network and add [&#39;branchid&#39;, &#39;chainage&#39;] attributes.</span>
-<span class="sd">            By default None. In this case, global variable &quot;network_snap_offset&quot; will be used..</span>
+<span class="sd">            Snapping tolenrance to automatically snap bridges to network and add</span>
+<span class="sd">            [&#39;branchid&#39;, &#39;chainage&#39;] attributes.</span>
+<span class="sd">            By default None. In this case, global variable &quot;network_snap_offset&quot;</span>
+<span class="sd">            will be used.</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
@@ -2051,21 +2198,35 @@
         <span class="n">culvert_filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">snap_offset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare culverts, including locations and crossections. Note that only subtype culvert is supported, i.e. inverted siphon is not supported.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare culverts, including locations and crossections.</span>
 
-<span class="sd">        The culverts are read from ``culverts_fn`` and if any missing, filled with information provided in ``culverts_defaults_fn``.</span>
+<span class="sd">        Note that only subtype culvert is supported, i.e. inverted siphon is not</span>
+<span class="sd">        supported.</span>
+
+<span class="sd">        The culverts are read from ``culverts_fn`` and if any missing, filled with</span>
+<span class="sd">        information provided in ``culverts_defaults_fn``.</span>
 
 <span class="sd">        When reading ``culverts_fn``, only locations within the region will be read.</span>
-<span class="sd">        Read locations are then filtered for value specified in ``culvert_filter`` on the column &quot;structure_type&quot; .</span>
-<span class="sd">        Remaining locations are snapped to the existing network within a max distance defined in ``snap_offset`` and will be dropped if not snapped.</span>
+<span class="sd">        Read locations are then filtered for value specified in ``culvert_filter`` on</span>
+<span class="sd">        the column &quot;structure_type&quot; .</span>
+<span class="sd">        Remaining locations are snapped to the existing network within a max distance</span>
+<span class="sd">        defined in ``snap_offset`` and will be dropped if not snapped.</span>
 
-<span class="sd">        A default ``culverts_defaults_fn`` that defines a circle culvert profile can be found in dflowfm.data.culverts as an example.</span>
+<span class="sd">        A default ``culverts_defaults_fn`` that defines a circle culvert profile can be</span>
+<span class="sd">        found in dflowfm.data.culverts as an example.</span>
 
-<span class="sd">        Structure attributes [&#39;structure_id&#39;, &#39;structure_type&#39;] are either taken from data or generated in the script.</span>
-<span class="sd">        Structure attributes [&#39;shape&#39;, &#39;diameter&#39;, &#39;width&#39;, &#39;t_width&#39;, &#39;height&#39;, &#39;closed&#39;, &#39;leftlevel&#39;, &#39;rightlevel&#39;, &#39;length&#39;,&#39;valveonoff&#39;, &#39;valveopeningheight&#39;, &#39;numlosscoeff&#39;, &#39;relopening&#39;, &#39;losscoeff&#39;, &#39;friction_type&#39;, &#39;friction_value&#39;, &#39;allowedflowdir&#39;,  &#39;inletlosscoeff&#39;, &#39;outletlosscoeff&#39;] are either taken from data,  or in case of missing read from defaults.</span>
+<span class="sd">        Structure attributes [&#39;structure_id&#39;, &#39;structure_type&#39;] are either taken from</span>
+<span class="sd">        data or generated in the script.</span>
+<span class="sd">        Structure attributes [&#39;shape&#39;, &#39;diameter&#39;, &#39;width&#39;, &#39;t_width&#39;, &#39;height&#39;,</span>
+<span class="sd">        &#39;closed&#39;, &#39;leftlevel&#39;, &#39;rightlevel&#39;, &#39;length&#39;,&#39;valveonoff&#39;,</span>
+<span class="sd">        &#39;valveopeningheight&#39;, &#39;numlosscoeff&#39;, &#39;relopening&#39;, &#39;losscoeff&#39;,</span>
+<span class="sd">        &#39;friction_type&#39;, &#39;friction_value&#39;, &#39;allowedflowdir&#39;,  &#39;inletlosscoeff&#39;,</span>
+<span class="sd">        &#39;outletlosscoeff&#39;] are either taken from data,  or in case of missing read</span>
+<span class="sd">        from defaults.</span>
 
 <span class="sd">        Adds/Updates model layers:</span>
-<span class="sd">            * **culverts** geom: 1D culverts vector</span>
+
+<span class="sd">        * **culverts** geom: 1D culverts vector</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -2073,21 +2234,34 @@
 <span class="sd">            Path or data source name for culverts, see data/data_sources.yml.</span>
 <span class="sd">            Note only the points that are within the region polygon will be used.</span>
 
-<span class="sd">            * Optional variables: [&#39;structure_id&#39;, &#39;structure_type&#39;, &#39;shape&#39;, &#39;diameter&#39;, &#39;width&#39;, &#39;t_width&#39;, &#39;height&#39;, &#39;closed&#39;, &#39;leftlevel&#39;, &#39;rightlevel&#39;, &#39;length&#39;, &#39;valveonoff&#39;, &#39;valveopeningheight&#39;, &#39;numlosscoeff&#39;, &#39;relopening&#39;, &#39;losscoeff&#39;, &#39;friction_type&#39;, &#39;friction_value&#39;, &#39;allowedflowdir&#39;,  &#39;inletlosscoeff&#39;, &#39;outletlosscoeff&#39;]</span>
+<span class="sd">            * Optional variables: [&#39;structure_id&#39;, &#39;structure_type&#39;, &#39;shape&#39;,</span>
+<span class="sd">                &#39;diameter&#39;, &#39;width&#39;, &#39;t_width&#39;, &#39;height&#39;, &#39;closed&#39;, &#39;leftlevel&#39;,</span>
+<span class="sd">                &#39;rightlevel&#39;, &#39;length&#39;, &#39;valveonoff&#39;, &#39;valveopeningheight&#39;,</span>
+<span class="sd">                &#39;numlosscoeff&#39;, &#39;relopening&#39;, &#39;losscoeff&#39;, &#39;friction_type&#39;,</span>
+<span class="sd">                &#39;friction_value&#39;, &#39;allowedflowdir&#39;,  &#39;inletlosscoeff&#39;,</span>
+<span class="sd">                &#39;outletlosscoeff&#39;]</span>
 
 <span class="sd">        culverts_defaults_fn : str Path, optional</span>
 <span class="sd">            Path to a csv file containing all defaults values per &quot;structure_type&quot;.</span>
-<span class="sd">            By default `hydrolib.hydromt_delft3dfm.data.culverts.culverts_defaults.csv` is used.</span>
+<span class="sd">            By default `hydrolib.hydromt_delft3dfm.data.culverts.culverts_defaults.csv`</span>
+<span class="sd">            is used.</span>
 <span class="sd">            This file describes a default circle culvert profile.</span>
 
-<span class="sd">            * Allowed variables: [&#39;structure_type&#39;, &#39;shape&#39;, &#39;diameter&#39;, &#39;width&#39;, &#39;t_width&#39;, &#39;height&#39;, &#39;closed&#39;, &#39;leftlevel&#39;, &#39;rightlevel&#39;, &#39;length&#39;, &#39;valveonoff&#39;, &#39;valveopeningheight&#39;, &#39;numlosscoeff&#39;, &#39;relopening&#39;, &#39;losscoeff&#39;, &#39;friction_type&#39;, &#39;friction_value&#39;, &#39;allowedflowdir&#39;,  &#39;inletlosscoeff&#39;, &#39;outletlosscoeff&#39;]</span>
+<span class="sd">            * Allowed variables: [&#39;structure_type&#39;, &#39;shape&#39;, &#39;diameter&#39;, &#39;width&#39;,</span>
+<span class="sd">                &#39;t_width&#39;, &#39;height&#39;, &#39;closed&#39;, &#39;leftlevel&#39;, &#39;rightlevel&#39;, &#39;length&#39;,</span>
+<span class="sd">                &#39;valveonoff&#39;, &#39;valveopeningheight&#39;, &#39;numlosscoeff&#39;, &#39;relopening&#39;,</span>
+<span class="sd">                &#39;losscoeff&#39;, &#39;friction_type&#39;, &#39;friction_value&#39;, &#39;allowedflowdir&#39;,</span>
+<span class="sd">                &#39;inletlosscoeff&#39;, &#39;outletlosscoeff&#39;]</span>
 
 <span class="sd">        culvert_filter: str, optional</span>
-<span class="sd">            Keyword in &quot;structure_type&quot; column of ``culverts_fn`` used to filter culvert features. If None all features are used (default).</span>
+<span class="sd">            Keyword in &quot;structure_type&quot; column of ``culverts_fn`` used to filter</span>
+<span class="sd">            culvert features. If None all features are used (default).</span>
 
 <span class="sd">        snap_offset: float, optional</span>
-<span class="sd">            Snapping tolenrance to automatically snap culverts to network and add [&#39;branchid&#39;, &#39;chainage&#39;] attributes.</span>
-<span class="sd">            By default None. In this case, global variable &quot;network_snap_offset&quot; will be used.</span>
+<span class="sd">            Snapping tolenrance to automatically snap culverts to network and add</span>
+<span class="sd">            [&#39;branchid&#39;, &#39;chainage&#39;] attributes.</span>
+<span class="sd">            By default None. In this case, global variable &quot;network_snap_offset&quot; will</span>
+<span class="sd">            be used.</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
@@ -2171,19 +2345,20 @@
         <span class="n">region</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">res</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xu</span><span class="o">.</span><span class="n">UgridDataset</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an 2D unstructured mesh or reads an existing 2D mesh according UGRID conventions.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a 2D unstructured mesh according UGRID conventions.</span>
 
-<span class="sd">        Grids are read according to UGRID conventions. An 2D unstructured mesh</span>
+<span class="sd">        Grids are read according to UGRID conventions. A 2D unstructured mesh</span>
 <span class="sd">        will be created as 2D rectangular grid from a geometry (geom_fn) or bbox.</span>
-<span class="sd">        If an existing 2D mesh is given, then no new mesh will be generated but an extent</span>
-<span class="sd">        can be extracted using the `bounds` argument of region.</span>
+<span class="sd">        If an existing 2D mesh is given, then no new mesh will be generated but an</span>
+<span class="sd">        extent can be extracted using the `bounds` argument of region.</span>
 
 <span class="sd">        # Note that:</span>
-<span class="sd">        # (1) Refinement of the mesh is a seperate setup function, however an existing grid with refinement (mesh_fn)</span>
-<span class="sd">        # can already be read.</span>
+<span class="sd">        # (1) Refinement of the mesh is a seperate setup function, however an existing</span>
+<span class="sd">        # grid with refinement (mesh_fn) can already be read.</span>
 <span class="sd">        # (2) If mesh also has 1D, 1D2Dlinks are created in a separate setup function.</span>
 <span class="sd">        # (3) At mesh border, cells that intersect with geometry border will be kept.</span>
-<span class="sd">        # (4) Only existing mesh with only 2D grid can be read. So 1D2D network files are not supported as mesh2d_fn.</span>
+<span class="sd">        # (4) Only existing mesh with only 2D grid can be read. So 1D2D network files</span>
+<span class="sd">        # are not supported as mesh2d_fn.</span>
 
 <span class="sd">        Adds/Updates model layers:</span>
 
@@ -2192,7 +2367,8 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        region : dict</span>
-<span class="sd">            Dictionary describing region of interest, bounds can be provided for type &#39;mesh&#39;.</span>
+<span class="sd">            Dictionary describing region of interest, bounds can be provided for type</span>
+<span class="sd">            &#39;mesh&#39;.</span>
 <span class="sd">        CRS for &#39;bbox&#39; and &#39;bounds&#39; should be 4326; e.g.:</span>
 
 <span class="sd">            * {&#39;bbox&#39;: [xmin, ymin, xmax, ymax]}</span>
@@ -2232,11 +2408,19 @@
         <span class="n">sample_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">steps</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Refine the 2d mesh within the geometry based on polygon `polygon_fn` or raster samples `sample_fn`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Refine the 2d mesh.</span>
+
+<span class="sd">        Refinement are done within the geometry based on polygon `polygon_fn` or</span>
+<span class="sd">        raster samples `sample_fn`.</span>
+
 <span class="sd">        The number of refinement is defined by `steps` if `polygon_fn` is used.</span>
 
-<span class="sd">        Note that this function can only be applied on an existing regular rectangle 2d mesh.</span>
-<span class="sd">        # FIXME: how to identify if the mesh is uniform rectangle 2d mesh? regular irregular?</span>
+<span class="sd">        Note that this function can only be applied on an existing regular rectangle</span>
+<span class="sd">        2d mesh.</span>
+
+<span class="sd">        # FIXME: how to identify if the mesh is uniform rectangle 2d mesh?</span>
+<span class="sd">        regular irregular?</span>
 
 <span class="sd">        Adds/Updates model layers:</span>
 
@@ -2248,8 +2432,9 @@
 <span class="sd">            Path to a polygon or MultiPolygon used to refine the 2D mesh</span>
 <span class="sd">        sample_fn  : str Path, optional</span>
 <span class="sd">            Path to a raster sample file used to refine the 2D mesh.</span>
-<span class="sd">            The value of each sample point is the number of steps to refine the mesh. Allow only single values.</span>
-<span class="sd">            The resolution of the raster should be the same as the desired end result resolution.</span>
+<span class="sd">            The value of each sample point is the number of steps to refine the mesh.</span>
+<span class="sd">            Allow only single values. The resolution of the raster should be the same</span>
+<span class="sd">            as the desired end result resolution.</span>
 
 <span class="sd">            * Required variable: [&#39;steps&#39;]</span>
 <span class="sd">        steps : int, optional</span>
@@ -2289,7 +2474,8 @@
             <span class="c1"># reproject</span>
             <span class="k">if</span> <span class="n">da</span><span class="o">.</span><span class="n">raster</span><span class="o">.</span><span class="n">crs</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="s2">&quot;Sample grid has a different resolution than model. Reprojecting with nearest but some information might be lost.&quot;</span>
+                    <span class="s2">&quot;Sample grid has a different resolution than model.&quot;</span>
+                    <span class="s2">&quot;Reprojecting with nearest but some information might be lost.&quot;</span>
                 <span class="p">)</span>
                 <span class="n">da</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">raster</span><span class="o">.</span><span class="n">reproject</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)</span>
 
@@ -2321,13 +2507,19 @@
         <span class="n">dist_factor</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate 1d2d links that link mesh1d and mesh2d according UGRID conventions.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate 1d2d links that link mesh1d and mesh2d according UGRID conventions.</span>
 
 <span class="sd">        1d2d links are added to allow water exchange between 1d and 2d for a 1d2d model.</span>
-<span class="sd">        They can only be added if both mesh1d and mesh2d are present. By default, 1d_to_2d links are generated for the entire mesh1d except boundary locations.</span>
+<span class="sd">        They can only be added if both mesh1d and mesh2d are present. By default,</span>
+<span class="sd">        1d_to_2d links are generated for the entire mesh1d except boundary locations.</span>
+
 <span class="sd">        When &#39;&#39;polygon_fn&#39;&#39; is specified, only links within the polygon will be added.</span>
-<span class="sd">        When &#39;&#39;branch_type&#39;&#39; is specified, only 1d branches matching the specified type will be used for generating 1d2d link.</span>
-<span class="sd">        # TODO: This option should also allows more customised setup for pipes and tunnels: 1d2d links will also be generated at boundary locations.</span>
+<span class="sd">        When &#39;&#39;branch_type&#39;&#39; is specified, only 1d branches matching the specified type</span>
+<span class="sd">        will be used for generating 1d2d link.</span>
+
+<span class="sd">        # TODO: This option should also allows more customised setup for pipes and</span>
+<span class="sd">        tunnels: 1d2d links will also be generated at boundary locations.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -2335,29 +2527,36 @@
 <span class="sd">            Direction of the links: [&quot;1d_to_2d&quot;, &quot;2d_to_1d&quot;].</span>
 <span class="sd">            Default to 1d_to_2d.</span>
 <span class="sd">        link_type : str, optional</span>
-<span class="sd">            Type of the links to be generated: [&quot;embedded&quot;, &quot;lateral&quot;]. only used when &#39;&#39;link_direction&#39;&#39; = &#39;2d_to_1d&#39;.</span>
+<span class="sd">            Type of the links to be generated: [&quot;embedded&quot;, &quot;lateral&quot;].</span>
+<span class="sd">            Only used when &#39;&#39;link_direction&#39;&#39; = &#39;2d_to_1d&#39;.</span>
 <span class="sd">            Default to None.</span>
 <span class="sd">        polygon_fn: str Path, optional</span>
-<span class="sd">             Source name of raster data in data_catalog.</span>
-<span class="sd">             Default to None.</span>
+<span class="sd">            Source name of raster data in data_catalog.</span>
+<span class="sd">            Default to None.</span>
 <span class="sd">        branch_type: str, Optional</span>
-<span class="sd">             Type of branch to be used for 1d: [&quot;river&quot;,&quot;pipe&quot;,&quot;channel&quot;, &quot;tunnel&quot;].</span>
-<span class="sd">             When &#39;&#39;branch_type&#39;&#39; = &quot;pipe&quot; or &quot;tunnel&quot; are specified, 1d2d links will also be generated at boundary locations.</span>
-<span class="sd">             Default to None. Add 1d2d links for the all branches at non-boundary locations.</span>
+<span class="sd">            Type of branch to be used for 1d: [&quot;river&quot;,&quot;pipe&quot;,&quot;channel&quot;, &quot;tunnel&quot;].</span>
+<span class="sd">            When &#39;&#39;branch_type&#39;&#39; = &quot;pipe&quot; or &quot;tunnel&quot; are specified, 1d2d links will</span>
+<span class="sd">            also be generated at boundary locations.</span>
+<span class="sd">            Default to None.</span>
+<span class="sd">            Add 1d2d links for the all branches at non-boundary locations.</span>
 <span class="sd">        max_length : Union[float, None], optional</span>
-<span class="sd">             Max allowed edge length for generated links.</span>
-<span class="sd">             Only used when &#39;&#39;link_direction&#39;&#39; = &#39;2d_to_1d&#39;  and &#39;&#39;link_type&#39;&#39; = &#39;lateral&#39;.</span>
-<span class="sd">             Defaults to infinity.</span>
+<span class="sd">            Max allowed edge length for generated links.</span>
+<span class="sd">            Only used when &#39;&#39;link_direction&#39;&#39; = &#39;2d_to_1d&#39;  and</span>
+<span class="sd">            &#39;&#39;link_type&#39;&#39; = &#39;lateral&#39;.</span>
+<span class="sd">            Defaults to infinity.</span>
 <span class="sd">        dist_factor : Union[float, None], optional:</span>
-<span class="sd">             Factor to determine which links are kept.</span>
-<span class="sd">             Only used when &#39;&#39;link_direction&#39;&#39; = &#39;2d_to_1d&#39;  and &#39;&#39;link_type&#39;&#39; = &#39;lateral&#39;.</span>
-<span class="sd">             Defaults to 2.0. Links with an intersection distance larger than 2 times the center to edge distance of the cell, are removed.</span>
+<span class="sd">            Factor to determine which links are kept.</span>
+<span class="sd">            Only used when &#39;&#39;link_direction&#39;&#39; = &#39;2d_to_1d&#39;  and</span>
+<span class="sd">            &#39;&#39;link_type&#39;&#39; = &#39;lateral&#39;.</span>
+<span class="sd">            Defaults to 2.0.</span>
+<span class="sd">            Links with an intersection distance larger than 2 times the center to edge</span>
+<span class="sd">            distance of the cell, are removed.</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">         workflows.links1d2d_add_links_1d_to_2d</span>
-<span class="sd">         workflows.links1d2d_add_links_2d_to_1d_embedded</span>
-<span class="sd">         workflows.links1d2d_add_links_2d_to_1d_lateral</span>
+<span class="sd">        workflows.links1d2d_add_links_1d_to_2d</span>
+<span class="sd">        workflows.links1d2d_add_links_2d_to_1d_embedded</span>
+<span class="sd">        workflows.links1d2d_add_links_2d_to_1d_lateral</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># check existing network</span>
         <span class="k">if</span> <span class="s2">&quot;mesh1d&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_names</span> <span class="ow">or</span> <span class="s2">&quot;mesh2d&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_names</span><span class="p">:</span>
@@ -2366,10 +2565,10 @@
             <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-        <span class="c1"># if &quot;link1d2d&quot; in self.mesh_names:</span>
-        <span class="c1">#     self.logger.warning(&quot;adding to existing link1d2d: link1d2d already exists&quot;)</span>
-        <span class="c1">#    # FIXME: question - how to seperate if the user wants to update the entire 1d2d links object or simply wants to add another set of links? #1</span>
-        <span class="c1">#    # TODO: would be nice in hydrolib to allow clear of subset of 1d2d links for specific branches</span>
+        <span class="c1"># FIXME: question - how to seperate if the user wants to update the</span>
+        <span class="c1"># entire 1d2d links object or simply wants to add another set of links? #1</span>
+        <span class="c1"># TODO: would be nice in hydrolib to allow clear of subset of 1d2d links</span>
+        <span class="c1"># for specific branches</span>
 
         <span class="c1"># check input</span>
         <span class="k">if</span> <span class="n">polygon_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -2441,9 +2640,10 @@
         <span class="n">split_dataset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This component adds data variable(s) from ``raster_fn`` to maps object.</span>
+<span class="sd">        Add data variable(s) from ``raster_fn`` to maps object.</span>
 
-<span class="sd">        If raster is a dataset, all variables will be added unless ``variables`` list is specified.</span>
+<span class="sd">        If raster is a dataset, all variables will be added unless ``variables`` list</span>
+<span class="sd">        is specified.</span>
 
 <span class="sd">        Adds model layers:</span>
 
@@ -2455,25 +2655,32 @@
 <span class="sd">            Source name of raster data in data_catalog.</span>
 <span class="sd">        variables: list, optional</span>
 <span class="sd">            List of variables to add to maps from raster_fn. By default all.</span>
-<span class="sd">            Available variables: [&#39;elevtn&#39;, &#39;waterlevel&#39;, &#39;waterdepth&#39;, &#39;pet&#39;, &#39;infiltcap&#39;, &#39;roughness_chezy&#39;, &#39;roughness_manning&#39;, &#39;roughness_walllawnikuradse&#39;, &#39;roughness_whitecolebrook&#39;]</span>
+<span class="sd">            Available variables: [&#39;elevtn&#39;, &#39;waterlevel&#39;, &#39;waterdepth&#39;, &#39;pet&#39;,</span>
+<span class="sd">            &#39;infiltcap&#39;, &#39;roughness_chezy&#39;, &#39;roughness_manning&#39;,</span>
+<span class="sd">            &#39;roughness_walllawnikuradse&#39;, &#39;roughness_whitecolebrook&#39;]</span>
 <span class="sd">        fill_method : str, optional</span>
-<span class="sd">            If specified, fills no data values using fill_nodata method. Available methods</span>
-<span class="sd">            are [&#39;linear&#39;, &#39;nearest&#39;, &#39;cubic&#39;, &#39;rio_idw&#39;].</span>
+<span class="sd">            If specified, fills no data values using fill_nodata method. Available</span>
+<span class="sd">            methods are [&#39;linear&#39;, &#39;nearest&#39;, &#39;cubic&#39;, &#39;rio_idw&#39;].</span>
 <span class="sd">        reproject_method : str, optional</span>
 <span class="sd">            CRS reprojection method from rasterio.enums.Resampling. By default nearest.</span>
-<span class="sd">            Available methods: [ &#39;nearest&#39;, &#39;bilinear&#39;, &#39;cubic&#39;, &#39;cubic_spline&#39;, &#39;lanczos&#39;, &#39;average&#39;, &#39;mode&#39;,</span>
-<span class="sd">            &#39;gauss&#39;, &#39;max&#39;, &#39;min&#39;, &#39;med&#39;, &#39;q1&#39;, &#39;q3&#39;, &#39;sum&#39;, &#39;rms&#39;]</span>
+<span class="sd">            Available methods: [ &#39;nearest&#39;, &#39;bilinear&#39;, &#39;cubic&#39;, &#39;cubic_spline&#39;,</span>
+<span class="sd">            &#39;lanczos&#39;, &#39;average&#39;, &#39;mode&#39;, &#39;gauss&#39;, &#39;max&#39;, &#39;min&#39;, &#39;med&#39;, &#39;q1&#39;, &#39;q3&#39;,</span>
+<span class="sd">            &#39;sum&#39;, &#39;rms&#39;]</span>
 <span class="sd">        interpolation_method : str, optional</span>
-<span class="sd">            Interpolation method for DFlow-FM. By default triangulation. Except for waterlevel and</span>
-<span class="sd">            waterdepth then the default is mean.</span>
-<span class="sd">            When methods other than &#39;triangulation&#39;, the relative search cell size will be estimated based on resolution of the raster.</span>
-<span class="sd">            Available methods: [&#39;triangulation&#39;, &#39;mean&#39;, &#39;nearestNb&#39;, &#39;max&#39;, &#39;min&#39;, &#39;invDist&#39;, &#39;minAbs&#39;, &#39;median&#39;]</span>
+<span class="sd">            Interpolation method for DFlow-FM. By default triangulation. Except for</span>
+<span class="sd">            waterlevel and waterdepth then the default is mean.</span>
+<span class="sd">            When methods other than &#39;triangulation&#39;, the relative search cell size will</span>
+<span class="sd">            be estimated based on resolution of the raster.</span>
+<span class="sd">            Available methods: [&#39;triangulation&#39;, &#39;mean&#39;, &#39;nearestNb&#39;, &#39;max&#39;, &#39;min&#39;,</span>
+<span class="sd">            &#39;invDist&#39;, &#39;minAbs&#39;, &#39;median&#39;]</span>
 <span class="sd">        locationtype : str, optional</span>
 <span class="sd">            LocationType in initial fields. Either 2d (default), 1d or all.</span>
 <span class="sd">        name: str, optional</span>
-<span class="sd">            Variable name, only in case data is of type DataArray or if a Dataset is added as is (split_dataset=False).</span>
+<span class="sd">            Variable name, only in case data is of type DataArray or if a Dataset is</span>
+<span class="sd">            added as is (split_dataset=False).</span>
 <span class="sd">        split_dataset: bool, optional</span>
-<span class="sd">            If data is a xarray.Dataset, either add it as is to maps or split it into several xarray.DataArrays.</span>
+<span class="sd">            If data is a xarray.Dataset, either add it as is to maps or split it into</span>
+<span class="sd">            several xarray.DataArrays.</span>
 <span class="sd">            Default to True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># check for name when split_dataset is False</span>
@@ -2502,11 +2709,13 @@
         <span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">interpolation_method</span><span class="p">,</span> <span class="n">allowed_methods</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Interpolation method </span><span class="si">{</span><span class="n">interpolation_method</span><span class="si">}</span><span class="s2"> not allowed. Select from </span><span class="si">{</span><span class="n">allowed_methods</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Interpolation method </span><span class="si">{</span><span class="n">interpolation_method</span><span class="si">}</span><span class="s2"> not allowed.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Select from </span><span class="si">{</span><span class="n">allowed_methods</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">locationtype</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;2d&quot;</span><span class="p">,</span> <span class="s2">&quot;1d&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">]):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Locationtype </span><span class="si">{</span><span class="n">locationtype</span><span class="si">}</span><span class="s2"> not allowed. Select from [&#39;2d&#39;, &#39;1d&#39;, &#39;all&#39;]&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Locationtype </span><span class="si">{</span><span class="n">locationtype</span><span class="si">}</span><span class="s2"> not allowed.&quot;</span>
+                <span class="s2">&quot;Select from [&#39;2d&#39;, &#39;1d&#39;, &#39;all&#39;]&quot;</span>
             <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">:</span>
@@ -2531,42 +2740,58 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This component adds data variable(s) to maps object by combining values in ``raster_mapping_fn`` to</span>
-<span class="sd">        spatial layer ``raster_fn``. The ``mapping_variables`` rasters are first created by mapping variables values</span>
+<span class="sd">        Add data variable(s) to maps by reclassifying values from ``raster_fn``.</span>
+
+<span class="sd">        Reclassification is done bycombining values in ``raster_mapping_fn`` to</span>
+<span class="sd">        spatial layer ``raster_fn``.</span>
+
+<span class="sd">        The ``mapping_variables`` rasters are first created by mapping variables values</span>
 <span class="sd">        from ``raster_mapping_fn`` to value in the ``raster_fn`` grid.</span>
 
 <span class="sd">        Adds model layers:</span>
-<span class="sd">        * **mapping_variables** maps: data from raster_mapping_fn spatially ditributed with raster_fn</span>
+
+<span class="sd">        * **mapping_variables** maps: data from raster_mapping_fn spatially</span>
+<span class="sd">            distributed with raster_fn</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        raster_fn: str</span>
-<span class="sd">            Source name of raster data in data_catalog. Should be a DataArray. Else use **kwargs to select</span>
-<span class="sd">            variables/time_tuple in hydromt.data_catalog.get_rasterdataset method</span>
+<span class="sd">            Source name of raster data in data_catalog. Should be a DataArray. Else use</span>
+<span class="sd">            **kwargs to select variables/time_tuple in</span>
+<span class="sd">            hydromt.data_catalog.get_rasterdataset method</span>
 <span class="sd">        reclass_table_fn: str</span>
-<span class="sd">            Source name of mapping table of raster_fn in data_catalog. Make sure the data type is consistant for a ``reclass_variables`` including nodata.</span>
-<span class="sd">            For example, for roughness, it is common that the data type is float, then use no data value as -999.0.</span>
+<span class="sd">            Source name of mapping table of raster_fn in data_catalog. Make sure the</span>
+<span class="sd">            data type is consistant for a ``reclass_variables`` including nodata.</span>
+<span class="sd">            For example, for roughness, it is common that the data type is float,</span>
+<span class="sd">            then use no data value as -999.0.</span>
 <span class="sd">        reclass_variables: list</span>
-<span class="sd">            List of mapping_variables from raster_mapping_fn table to add to mesh. Index column should match values</span>
-<span class="sd">            in raster_fn.</span>
-<span class="sd">            Available variables: [&#39;elevtn&#39;, &#39;waterlevel&#39;, &#39;waterdepth&#39;, &#39;pet&#39;, &#39;infiltcap&#39;, &#39;roughness_chezy&#39;, &#39;roughness_manning&#39;, &#39;roughness_walllawnikuradse&#39;, &#39;roughness_whitecolebrook&#39;]</span>
+<span class="sd">            List of mapping_variables from raster_mapping_fn table to add to mesh.</span>
+<span class="sd">            Index column should match values in raster_fn.</span>
+<span class="sd">            Available variables: [&#39;elevtn&#39;, &#39;waterlevel&#39;, &#39;waterdepth&#39;, &#39;pet&#39;,</span>
+<span class="sd">            &#39;infiltcap&#39;, &#39;roughness_chezy&#39;, &#39;roughness_manning&#39;,</span>
+<span class="sd">            &#39;roughness_walllawnikuradse&#39;, &#39;roughness_whitecolebrook&#39;]</span>
 <span class="sd">        fill_method : str, optional</span>
-<span class="sd">            If specified, fills no data values using fill_nodata method. Available methods</span>
-<span class="sd">            are {&#39;linear&#39;, &#39;nearest&#39;, &#39;cubic&#39;, &#39;rio_idw&#39;}.</span>
+<span class="sd">            If specified, fills no data values using fill_nodata method. Available</span>
+<span class="sd">            methods are {&#39;linear&#39;, &#39;nearest&#39;, &#39;cubic&#39;, &#39;rio_idw&#39;}.</span>
 <span class="sd">        reproject_method : str, optional</span>
 <span class="sd">            CRS reprojection method from rasterio.enums.Resampling. By default nearest.</span>
-<span class="sd">            Available methods: [ &#39;nearest&#39;, &#39;bilinear&#39;, &#39;cubic&#39;, &#39;cubic_spline&#39;, &#39;lanczos&#39;, &#39;average&#39;, &#39;mode&#39;,</span>
-<span class="sd">            &#39;gauss&#39;, &#39;max&#39;, &#39;min&#39;, &#39;med&#39;, &#39;q1&#39;, &#39;q3&#39;, &#39;sum&#39;, &#39;rms&#39;]</span>
+<span class="sd">            Available methods: [&#39;nearest&#39;, &#39;bilinear&#39;, &#39;cubic&#39;, &#39;cubic_spline&#39;,</span>
+<span class="sd">            &#39;lanczos&#39;, &#39;average&#39;, &#39;mode&#39;, &#39;gauss&#39;, &#39;max&#39;, &#39;min&#39;, &#39;med&#39;, &#39;q1&#39;, &#39;q3&#39;,</span>
+<span class="sd">            &#39;sum&#39;, &#39;rms&#39;]</span>
 <span class="sd">        interpolation_method : str, optional</span>
-<span class="sd">            Interpolation method for DFlow-FM. By default triangulation. Except for waterlevel and waterdepth then</span>
-<span class="sd">            the default is mean.</span>
-<span class="sd">            When methods other than &#39;triangulation&#39;, the relative search cell size will be estimated based on resolution of the raster.</span>
-<span class="sd">            Available methods: [&#39;triangulation&#39;, &#39;mean&#39;, &#39;nearestNb&#39;, &#39;max&#39;, &#39;min&#39;, &#39;invDist&#39;, &#39;minAbs&#39;, &#39;median&#39;]</span>
+<span class="sd">            Interpolation method for DFlow-FM. By default triangulation. Except for</span>
+<span class="sd">            waterlevel and waterdepth then the default is mean.</span>
+<span class="sd">            When methods other than &#39;triangulation&#39;, the relative search cell size will</span>
+<span class="sd">            be estimated based on resolution of the raster.</span>
+<span class="sd">            Available methods: [&#39;triangulation&#39;, &#39;mean&#39;, &#39;nearestNb&#39;, &#39;max&#39;, &#39;min&#39;,</span>
+<span class="sd">            &#39;invDist&#39;, &#39;minAbs&#39;, &#39;median&#39;]</span>
 <span class="sd">        locationtype : str, optional</span>
 <span class="sd">            LocationType in initial fields. Either 2d (default), 1d or all.</span>
 <span class="sd">        name: str, optional</span>
-<span class="sd">            Variable name, only in case data is of type DataArray or if a Dataset is added as is (split_dataset=False).</span>
+<span class="sd">            Variable name, only in case data is of type DataArray or if a Dataset is</span>
+<span class="sd">            added as is (split_dataset=False).</span>
 <span class="sd">        split_dataset: bool, optional</span>
-<span class="sd">            If data is a xarray.Dataset, either add it as is to maps or split it into several xarray.DataArrays.</span>
+<span class="sd">            If data is a xarray.Dataset, either add it as is to maps or split it into</span>
+<span class="sd">            several xarray.DataArrays.</span>
 <span class="sd">            Default to True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># check for name when split_dataset is False</span>
@@ -2597,11 +2822,13 @@
         <span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">interpolation_method</span><span class="p">,</span> <span class="n">allowed_methods</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Interpolation method </span><span class="si">{</span><span class="n">interpolation_method</span><span class="si">}</span><span class="s2"> not allowed. Select from </span><span class="si">{</span><span class="n">allowed_methods</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Interpolation method </span><span class="si">{</span><span class="n">interpolation_method</span><span class="si">}</span><span class="s2"> not allowed.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Select from </span><span class="si">{</span><span class="n">allowed_methods</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">locationtype</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;2d&quot;</span><span class="p">,</span> <span class="s2">&quot;1d&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">]):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Locationtype </span><span class="si">{</span><span class="n">locationtype</span><span class="si">}</span><span class="s2"> not allowed. Select from [&#39;2d&#39;, &#39;1d&#39;, &#39;all&#39;]&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Locationtype </span><span class="si">{</span><span class="n">locationtype</span><span class="si">}</span><span class="s2"> not allowed.&quot;</span>
+                <span class="s2">&quot;Select from [&#39;2d&#39;, &#39;1d&#39;, &#39;all&#39;]&quot;</span>
             <span class="p">)</span>
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">reclass_variables</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__set_map_parameters_based_on_variable</span><span class="p">(</span>
@@ -2639,33 +2866,43 @@
         <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.0</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Prepares the 2D boundaries from line geometries.</span>
+<span class="sd">        Prepare the 2D boundaries from line geometries.</span>
 
-<span class="sd">        The values can either be a spatially-uniform constant using ``boundaries_fn`` and ``boundary_value`` (default),</span>
-<span class="sd">        or spatially-varying timeseries using ``boundaries_fn`` and  ``boundaries_timeseries_fn``</span>
+<span class="sd">        The values can either be a spatially-uniform constant using ``boundaries_fn``</span>
+<span class="sd">        and ``boundary_value`` (default), or spatially-varying timeseries using</span>
+<span class="sd">        ``boundaries_fn`` and  ``boundaries_timeseries_fn``</span>
 <span class="sd">        The ``boundary_type`` can either be &quot;waterlevel&quot; or &quot;discharge&quot;.</span>
 
-<span class="sd">        If ``boundaries_timeseries_fn`` has missing values, the constant ``boundary_value`` will be used.</span>
+<span class="sd">        If ``boundaries_timeseries_fn`` has missing values, the constant</span>
+<span class="sd">        ``boundary_value`` will be used.</span>
 
-<span class="sd">        The dataset/timeseries are clipped to the model region (see below note), and model time based on the model config</span>
-<span class="sd">        tstart and tstop entries.</span>
+<span class="sd">        The dataset/timeseries are clipped to the model region (see below note), and</span>
+<span class="sd">        model time based on the model config tstart and tstop entries.</span>
 
 <span class="sd">        Note that:</span>
-<span class="sd">        (1) Only line geometry that are contained within the distance of ``tolenrance`` to grid cells are allowed.</span>
-<span class="sd">        (2) Because of the above, this function must be called before the mesh refinement. #FIXME: check this after deciding on mesh refinement being a workflow or function</span>
-<span class="sd">        (3) when using constant boundary, the output forcing will be written to time series with constant values.</span>
+<span class="sd">        (1) Only line geometry that are contained within the distance of</span>
+<span class="sd">            ``tolenrance`` to grid cells are allowed.</span>
+<span class="sd">        (2) Because of the above, this function must be called before the mesh</span>
+<span class="sd">            refinement. #FIXME: check this after deciding on mesh refinement being</span>
+<span class="sd">            a workflow or function</span>
+<span class="sd">        (3) when using constant boundary, the output forcing will be written to time</span>
+<span class="sd">            series with constant values.</span>
 
 <span class="sd">        Adds/Updates model layers:</span>
-<span class="sd">            * **boundary2d_{boundary_name}** forcing: 2D boundaries DataArray</span>
+
+<span class="sd">        * **boundary2d_{boundary_name}** forcing: 2D boundaries DataArray</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        boundaries_fn: str Path</span>
 <span class="sd">            Path or data source name for line geometry file.</span>
-<span class="sd">            * Required variables if a combined time series data csv file: [&quot;boundary_id&quot;] with type int</span>
+
+<span class="sd">            * Required variables if a combined time series data csv file:</span>
+<span class="sd">                [&quot;boundary_id&quot;] with type int</span>
 <span class="sd">        boundaries_timeseries_fn: str, Path</span>
 <span class="sd">            Path to tabulated timeseries csv file with time index in first column</span>
-<span class="sd">            and location index with type int in the first row, matching &quot;boundary_id&quot; in ``boundaries_fn`.</span>
+<span class="sd">            and location index with type int in the first row, matching &quot;boundary_id&quot;</span>
+<span class="sd">            in ``boundaries_fn`.</span>
 <span class="sd">            see :py:meth:`hydromt.get_dataframe`, for details.</span>
 <span class="sd">            NOTE: Require equidistant time series</span>
 <span class="sd">        boundary_value : float, optional</span>
@@ -2682,7 +2919,8 @@
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        AssertionError</span>
-<span class="sd">            if &quot;boundary_id&quot; in &quot;boundaries_fn&quot; does not match the columns of ``boundaries_timeseries_fn``.</span>
+<span class="sd">            if &quot;boundary_id&quot; in &quot;boundaries_fn&quot; does not match the columns of</span>
+<span class="sd">            ``boundaries_timeseries_fn``.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preparing 2D boundaries.&quot;</span><span class="p">)</span>
@@ -2715,7 +2953,8 @@
             <span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gdf_bnd</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="s2">&quot;Boundaries are not found. Check if the boundary are outside of recognisable boundary region (cell size * tolerance to the mesh). &quot;</span>
+                    <span class="s2">&quot;Boundaries are not found. Check if the boundary are outside of&quot;</span>
+                    <span class="s2">&quot;recognisable boundary region (cell size * tolerance to the mesh).&quot;</span>
                 <span class="p">)</span>
             <span class="c1"># preprocess</span>
             <span class="n">gdf_bnd</span> <span class="o">=</span> <span class="n">gdf_bnd</span><span class="o">.</span><span class="n">explode</span><span class="p">()</span>
@@ -2738,12 +2977,14 @@
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">df_bnd</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;Dates in boundaries_timeseries_fn were not parsed correctly. &quot;</span>
-                    <span class="s2">&quot;Update the source kwargs in the DataCatalog based on the driver function arguments (eg pandas.read_csv for csv driver).&quot;</span>
+                    <span class="s2">&quot;Update the source kwargs in the DataCatalog based on the driver&quot;</span>
+                    <span class="s2">&quot;function arguments (eg pandas.read_csv for csv driver).&quot;</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">df_bnd</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">df_bnd</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">tstop</span> <span class="o">-</span> <span class="n">tstart</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Time in boundaries_timeseries_fn were shorter than model simulation time. &quot;</span>
-                    <span class="s2">&quot;Update the source kwargs in the DataCatalog based on the driver function arguments (eg pandas.read_csv for csv driver).&quot;</span>
+                    <span class="s2">&quot;Time in boundaries_timeseries_fn were shorter than model sim time.&quot;</span>
+                    <span class="s2">&quot;Update the source kwargs in the DataCatalog based on the driver&quot;</span>
+                    <span class="s2">&quot;function arguments (eg pandas.read_csv for csv driver).&quot;</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">gdf_bnd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># check if all boundary_id are in df_bnd</span>
@@ -2764,7 +3005,8 @@
             <span class="p">)</span>
             <span class="n">df_bnd</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">d_bnd</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
 
-        <span class="c1"># 4. Derive DataArray with boundary values at boundary locations in boundaries_branch_type</span>
+        <span class="c1"># 4. Derive DataArray with boundary values at boundary locations</span>
+        <span class="c1"># in boundaries_branch_type</span>
         <span class="n">da_out_dict</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">compute_2dboundary_values</span><span class="p">(</span>
             <span class="n">boundaries</span><span class="o">=</span><span class="n">gdf_bnd</span><span class="p">,</span>
             <span class="n">df_bnd</span><span class="o">=</span><span class="n">df_bnd</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(),</span>
@@ -2789,10 +3031,11 @@
         <span class="n">constant_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Prepares constant daily rainfall_rate timeseries for the 2D grid based on ``constant_value``.</span>
+<span class="sd">        Prepare constant 2D daily rainfall_rate timeseries based on ``constant_value``.</span>
 
 <span class="sd">        Adds/Updates model layers:</span>
-<span class="sd">            * **meteo_{meteo_type}** forcing: DataArray</span>
+
+<span class="sd">        * **meteo_{meteo_type}** forcing: DataArray</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -2841,10 +3084,12 @@
         <span class="n">is_rate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Prepares spatially uniform rainfall forcings to 2d grid using timeseries from ``meteo_timeseries_fn``.</span>
+<span class="sd">        Prepare spatially uniform 2D rainfall forcings from ``meteo_timeseries_fn``.</span>
+
 <span class="sd">        For now only support global  (spatially uniform) timeseries.</span>
 
-<span class="sd">        If ``meteo_timeseries_fn`` has missing values or shorter than model simulation time, the constant ``fill_value`` will be used, e.g. 0.</span>
+<span class="sd">        If ``meteo_timeseries_fn`` has missing values or shorter than model simulation</span>
+<span class="sd">        time, the constant ``fill_value`` will be used, e.g. 0.</span>
 
 <span class="sd">        The dataset/timeseries are clipped to the model time based on the model config</span>
 <span class="sd">        tstart and tstop entries.</span>
@@ -2855,7 +3100,8 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        meteo_timeseries_fn: str, Path</span>
-<span class="sd">            Path or data source name to tabulated timeseries csv file with time index in first column.</span>
+<span class="sd">            Path or data source name to tabulated timeseries csv file with time index</span>
+<span class="sd">            in first column.</span>
 
 <span class="sd">            * Required variables : [&#39;precip&#39;]</span>
 
@@ -2866,8 +3112,10 @@
 <span class="sd">        fill_value : float, optional</span>
 <span class="sd">            Constant value to use to fill in missing data. By default 0.</span>
 <span class="sd">        is_rate : bool, optional</span>
-<span class="sd">            Specify if the type of meteo data is direct &quot;rainfall&quot; (False) or &quot;rainfall_rate&quot; (True).</span>
-<span class="sd">            By default True for &quot;rainfall_rate&quot;. Note that Delft3DFM 1D2D Suite 2022.04 supports only &quot;rainfall_rate&quot;.</span>
+<span class="sd">            Specify if the type of meteo data is direct &quot;rainfall&quot; (False) or</span>
+<span class="sd">            &quot;rainfall_rate&quot; (True).</span>
+<span class="sd">            By default True for &quot;rainfall_rate&quot;.</span>
+<span class="sd">            Note that Delft3DFM 1D2D Suite 2022.04 supports only &quot;rainfall_rate&quot;.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preparing rainfall meteo forcing from uniform timeseries.&quot;</span><span class="p">)</span>
@@ -2886,7 +3134,8 @@
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">df_meteo</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;Dates in meteo_timeseries_fn were not parsed correctly. &quot;</span>
-                <span class="s2">&quot;Update the source kwargs in the DataCatalog based on the driver function arguments (eg pandas.read_csv for csv driver).&quot;</span>
+                <span class="s2">&quot;Update the source kwargs in the DataCatalog based on the driver&quot;</span>
+                <span class="s2">&quot;function arguments (eg pandas.read_csv for csv driver).&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">df_meteo</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">df_meteo</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">tstop</span> <span class="o">-</span> <span class="n">tstart</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
@@ -2918,7 +3167,9 @@
 <div class="viewcode-block" id="DFlowFMModel.read">
 <a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.read.html#hydromt_delft3dfm.DFlowFMModel.read">[docs]</a>
     <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Method to read the complete model schematization and configuration from file.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read the complete model schematization and configuration from file.</span>
+
 <span class="sd">        # FIXME: where to read crs?.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reading model data from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -2934,7 +3185,7 @@
 <div class="viewcode-block" id="DFlowFMModel.write">
 <a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.write.html#hydromt_delft3dfm.DFlowFMModel.write">[docs]</a>
     <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># complete model</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Method to write the complete model schematization and configuration to file.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write the complete model schematization and configuration to file.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing model data to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="c1"># if in r, r+ mode, only write updated components</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">:</span>
@@ -2987,8 +3238,9 @@
 <a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.write_config.html#hydromt_delft3dfm.DFlowFMModel.write_config">[docs]</a>
     <span class="k">def</span> <span class="nf">write_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;From config dict to Hydrolib MDU.&quot;&quot;&quot;</span>
-        <span class="c1"># Not sure if this is worth it compared to just calling write_config super method</span>
-        <span class="c1"># advantage is the validator but the whole model is then read when initialising FMModel</span>
+        <span class="c1"># Not sure if this is worth it compared to just calling write_config from super</span>
+        <span class="c1"># advantage is the validator but the whole model is then read</span>
+        <span class="c1"># when initialising FMModel</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_assert_write_mode</span><span class="p">()</span>
 
         <span class="n">cf_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -3025,7 +3277,8 @@
                     <span class="n">rm_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">v</span>
                 <span class="k">for</span> <span class="n">inidict</span> <span class="ow">in</span> <span class="n">inilist</span><span class="p">:</span>
                     <span class="n">_fn</span> <span class="o">=</span> <span class="n">inidict</span><span class="o">.</span><span class="n">datafile</span><span class="o">.</span><span class="n">filepath</span>
-                    <span class="c1"># Bug: when initialising IniFieldModel hydrolib-core does not parse correclty the relative path</span>
+                    <span class="c1"># Bug: when initialising IniFieldModel hydrolib-core</span>
+                    <span class="c1"># does not parse correclty the relative path</span>
                     <span class="c1"># For now re-update manually....</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">isfile</span><span class="p">(</span><span class="n">_fn</span><span class="p">):</span>
                         <span class="n">_fn</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;maps&quot;</span><span class="p">,</span> <span class="n">_fn</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
@@ -3113,7 +3366,7 @@
                 <span class="n">paramlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inidict</span><span class="p">)</span>
 
         <span class="c1"># Only write maps that are listed in self._MAPS, rename tif on the fly</span>
-        <span class="c1"># TODO raise value error if both waterdepth and waterlevel are given as maps.items</span>
+        <span class="c1"># TODO raise value error if both waterdepth and waterlevel are given in maps</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">ds</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maps</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">:</span>
@@ -3142,7 +3395,8 @@
 
         <span class="c1"># Assign initial fields to model and write</span>
         <span class="n">inifield_model</span> <span class="o">=</span> <span class="n">IniFieldModel</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="n">inilist</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="n">paramlist</span><span class="p">)</span>
-        <span class="c1"># Bug: when initialising IniFieldModel hydrolib-core does not parse correclty the relative path</span>
+        <span class="c1"># Bug: when initialising IniFieldModel hydrolib-core does not parse correclty</span>
+        <span class="c1"># the relative path</span>
         <span class="c1"># For now re-update manually....</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inifield_model</span><span class="o">.</span><span class="n">initial</span><span class="p">)):</span>
             <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;../maps/</span><span class="si">{</span><span class="n">inifield_model</span><span class="o">.</span><span class="n">initial</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">datafile</span><span class="o">.</span><span class="n">filepath</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -3167,8 +3421,9 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read model geometries files at &lt;root&gt;/&lt;geoms&gt; and add to geoms property.</span>
 
-<span class="sd">        For branches / boundaries etc... the reading of hydrolib-core objects happens in read_mesh</span>
-<span class="sd">        There the geoms geojson copies are re-set based on dflowfm files content.</span>
+<span class="sd">        For branches / boundaries etc... the reading of hydrolib-core objects happens</span>
+<span class="sd">        in read_mesh. There the geoms geojson copies are re-set based on dflowfm files</span>
+<span class="sd">        content.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_assert_read_mode</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">read_geoms</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="s2">&quot;geoms/region.geojson&quot;</span><span class="p">)</span>
@@ -3176,7 +3431,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dfmmodel</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">crosslocfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># Read cross-sections and friction</span>
             <span class="c1"># Add crosssections properties, should be done before friction</span>
-            <span class="c1"># Branches are needed do derive locations, self.branches should start the read if not done yet</span>
+            <span class="c1"># Branches are needed do derive locations,</span>
+            <span class="c1"># self.branches should start the read if not done yet</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reading cross-sections files&quot;</span><span class="p">)</span>
             <span class="n">crosssections</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">read_crosssections</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dfmmodel</span><span class="p">)</span>
 
@@ -3213,7 +3469,8 @@
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">gdf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_gdf</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">set_geoms</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
-        <span class="c1"># Write geojson equivalent of all objects. Note that these files are not directly used when updating the model</span>
+        <span class="c1"># Write geojson equivalent of all objects.</span>
+        <span class="c1"># Note that these files are not directly used when updating the model</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">write_geoms</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="s2">&quot;geoms/</span><span class="si">{name}</span><span class="s2">.geojson&quot;</span><span class="p">)</span>
 
         <span class="c1"># Write dfm files</span>
@@ -3349,7 +3606,8 @@
         <span class="c1"># hydrolib-core convention</span>
         <span class="n">network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dfmmodel</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">netfile</span><span class="o">.</span><span class="n">network</span>
         <span class="c1"># FIXME: crs info is not available in dfmmodel, so get it from region.geojson</span>
-        <span class="c1"># Cannot use read_geoms yet because for some some geoms (crosssections, manholes) mesh needs to be read first...</span>
+        <span class="c1"># Cannot use read_geoms yet because for some some geoms</span>
+        <span class="c1"># (crosssections, manholes) mesh needs to be read first...</span>
         <span class="n">region_fn</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;geoms&quot;</span><span class="p">,</span> <span class="s2">&quot;region.geojson&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">isfile</span><span class="p">(</span><span class="n">region_fn</span><span class="p">):</span>
             <span class="n">crs</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">region_fn</span><span class="p">)</span><span class="o">.</span><span class="n">crs</span>
@@ -3374,7 +3632,9 @@
             <span class="n">branches</span> <span class="o">=</span> <span class="n">network1d_geometry</span>
             <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;branchid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">network1d_dataset</span><span class="p">[</span><span class="s2">&quot;network1d_branch_id&quot;</span><span class="p">]</span>
             <span class="n">branches</span><span class="p">[</span><span class="s2">&quot;branchorder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">network1d_dataset</span><span class="p">[</span><span class="s2">&quot;network1d_branch_order&quot;</span><span class="p">]</span>
-            <span class="c1"># branches[&quot;branchtype&quot;] = network1d_dataset[&quot;network1d_branch_type&quot;] # might support in the future https://github.com/Deltares/HYDROLIB-core/issues/561</span>
+            <span class="c1"># branches[&quot;branchtype&quot;] = network1d_dataset[&quot;network1d_branch_type&quot;]</span>
+            <span class="c1"># might support in the future</span>
+            <span class="c1"># https://github.com/Deltares/HYDROLIB-core/issues/561</span>
 
             <span class="c1"># Add branchtype, properties from branches.gui file</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reading branches GUI file&quot;</span><span class="p">)</span>
@@ -3388,18 +3648,21 @@
 <div class="viewcode-block" id="DFlowFMModel.write_mesh">
 <a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.write_mesh.html#hydromt_delft3dfm.DFlowFMModel.write_mesh">[docs]</a>
     <span class="k">def</span> <span class="nf">write_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">write_gui</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write 1D branches and 2D mesh at &lt;root/dflowfm/fm_net.nc&gt; in model ready format.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write 1D branches and 2D mesh at &lt;root/dflowfm/fm_net.nc&gt;.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_assert_write_mode</span><span class="p">()</span>
         <span class="n">savedir</span> <span class="o">=</span> <span class="n">dirname</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_fn</span><span class="p">))</span>
         <span class="n">mesh_filename</span> <span class="o">=</span> <span class="s2">&quot;fm_net.nc&quot;</span>
 
         <span class="c1"># write mesh</span>
-        <span class="c1"># hydromt convention - FIXME hydrolib does not seem to read the 1D and links part of the mesh</span>
+        <span class="c1"># hydromt convention - FIXME hydrolib does not seem to read the 1D and links</span>
+        <span class="c1"># part of the mesh</span>
         <span class="c1"># super().write_mesh(fn=join(savedir, mesh_filename))</span>
 
         <span class="c1"># write with hydrolib-core</span>
-        <span class="c1"># Note: hydrolib-core writes more information including attributes and converts some variables using start_index</span>
-        <span class="c1"># FIXME: does not write crs that is recongnised by Delft3D FM GUI. check https://github.com/Deltares/dfm_tools/blob/main/dfm_tools/meshkernel_helpers.py#L82</span>
+        <span class="c1"># Note: hydrolib-core writes more information including attributes and</span>
+        <span class="c1"># converts some variables using start_index</span>
+        <span class="c1"># FIXME: does not write crs that is recongnised by Delft3D FM GUI.</span>
+        <span class="c1"># check dfm_tools/meshkernel_helpers.py#L82</span>
 
         <span class="n">network</span> <span class="o">=</span> <span class="n">mesh_utils</span><span class="o">.</span><span class="n">hydrolib_network_from_mesh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
         <span class="n">network</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">savedir</span><span class="p">,</span> <span class="n">mesh_filename</span><span class="p">)))</span>
@@ -3445,6 +3708,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">crs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return model crs.&quot;&quot;&quot;</span>
         <span class="c1"># return pyproj.CRS.from_epsg(self.get_config(&quot;global.epsg&quot;, fallback=4326))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_crs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># try to read it from mesh usingMeshModel method</span>
@@ -3453,12 +3717,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns model mesh bounds.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return model mesh bounds.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">total_bounds</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">region</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns geometry of region of the model area of interest.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return geometry of region of the model area of interest.&quot;&quot;&quot;</span>
         <span class="c1"># First tries in geoms</span>
         <span class="k">if</span> <span class="s2">&quot;region&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geoms</span><span class="p">:</span>
             <span class="n">region</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geoms</span><span class="p">[</span><span class="s2">&quot;region&quot;</span><span class="p">]</span>
@@ -3482,6 +3746,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dfmmodel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Hydrolib-core FMModel object.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dfmmodel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">init_dfmmodel</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dfmmodel</span>
@@ -3489,6 +3754,7 @@
 <div class="viewcode-block" id="DFlowFMModel.init_dfmmodel">
 <a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.init_dfmmodel.html#hydromt_delft3dfm.DFlowFMModel.init_dfmmodel">[docs]</a>
     <span class="k">def</span> <span class="nf">init_dfmmodel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise the hydrolib-core FMModel object.&quot;&quot;&quot;</span>
         <span class="c1"># create a new MDU-Model</span>
         <span class="n">mdu_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_fn</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">isfile</span><span class="p">(</span><span class="n">mdu_fn</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read</span><span class="p">:</span>
@@ -3529,7 +3795,10 @@
 <div class="viewcode-block" id="DFlowFMModel.write_dimr">
 <a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.write_dimr.html#hydromt_delft3dfm.DFlowFMModel.write_dimr">[docs]</a>
     <span class="k">def</span> <span class="nf">write_dimr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dimr_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Writes the dmir file. In write mode, updates first the FMModel component.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write the dmir file.</span>
+
+<span class="sd">        In write mode, updates first the FMModel component.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># force read</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dimr</span>
         <span class="k">if</span> <span class="n">dimr_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -3569,7 +3838,8 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">branches</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the branches (gpd.GeoDataFrame object) representing the 1D network.</span>
+<span class="sd">        Return the branches (gpd.GeoDataFrame object) representing the 1D network.</span>
+
 <span class="sd">        Contains several &quot;branchtype&quot; for : channel, river, pipe, tunnel.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_branches</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read</span><span class="p">:</span>
@@ -3581,7 +3851,7 @@
 <div class="viewcode-block" id="DFlowFMModel.set_branches">
 <a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.set_branches.html#hydromt_delft3dfm.DFlowFMModel.set_branches">[docs]</a>
     <span class="k">def</span> <span class="nf">set_branches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the branches object as well as the linked geoms.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the branches object as well as the linked geoms.&quot;&quot;&quot;</span>
         <span class="c1"># Check if &quot;branchtype&quot; col in new branches</span>
         <span class="k">if</span> <span class="s2">&quot;branchtype&quot;</span> <span class="ow">in</span> <span class="n">branches</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_branches</span> <span class="o">=</span> <span class="n">branches</span>
@@ -3603,6 +3873,7 @@
 
 
     <span class="k">def</span> <span class="nf">set_branches_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract component name from branches and add it to geoms.&quot;&quot;&quot;</span>
         <span class="n">gdf_comp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">name</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">gdf_comp</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_geoms</span><span class="p">(</span><span class="n">gdf_comp</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
@@ -3610,6 +3881,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">rivers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract rivers from branches.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;rivers&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geoms</span><span class="p">:</span>
             <span class="n">gdf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geoms</span><span class="p">[</span><span class="s2">&quot;rivers&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -3618,6 +3890,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract channels from branches.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;channels&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geoms</span><span class="p">:</span>
             <span class="n">gdf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geoms</span><span class="p">[</span><span class="s2">&quot;channels&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -3626,6 +3899,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">pipes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract pipes from branches.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;pipes&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geoms</span><span class="p">:</span>
             <span class="n">gdf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geoms</span><span class="p">[</span><span class="s2">&quot;pipes&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -3634,6 +3908,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">opensystem</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Open system branches (river, channel).&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">gdf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s2">&quot;river&quot;</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">])]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -3642,6 +3917,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">closedsystem</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Closed system branches (pipe, tunnel).&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">gdf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s2">&quot;pipe&quot;</span><span class="p">,</span> <span class="s2">&quot;tunnel&quot;</span><span class="p">])]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -3651,7 +3927,11 @@
 <div class="viewcode-block" id="DFlowFMModel.get_model_time">
 <a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.get_model_time.html#hydromt_delft3dfm.DFlowFMModel.get_model_time">[docs]</a>
     <span class="k">def</span> <span class="nf">get_model_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return (refdate, tstart, tstop) tuple with parsed model reference datem start and end time.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return (refdate, tstart, tstop) tuple.</span>
+
+<span class="sd">        It is parsed from model reference datem start and end time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">refdate</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_config</span><span class="p">(</span><span class="s2">&quot;time.refdate&quot;</span><span class="p">)),</span> <span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">tstart</span> <span class="o">=</span> <span class="n">refdate</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_config</span><span class="p">(</span><span class="s2">&quot;time.tstart&quot;</span><span class="p">)))</span>
         <span class="n">tstop</span> <span class="o">=</span> <span class="n">refdate</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_config</span><span class="p">(</span><span class="s2">&quot;time.tstop&quot;</span><span class="p">)))</span>
@@ -3660,7 +3940,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">res</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;Resolution of the mesh2d.&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolution of the mesh2d.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_res</span>
 
@@ -3704,7 +3984,8 @@
             <span class="n">overwrite_grid</span><span class="o">=</span><span class="n">overwrite_grid</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="c1"># check if 1D and 2D and and 1D2D links and overwrite then send warning that setup_link1d2d should be run again</span>
+        <span class="c1"># check if 1D and 2D and and 1D2D links and overwrite</span>
+        <span class="c1"># then send warning that setup_link1d2d should be run again</span>
         <span class="k">if</span> <span class="n">overwrite_grid</span> <span class="ow">and</span> <span class="s2">&quot;link1d2d&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">data_vars</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">grid_name</span> <span class="o">==</span> <span class="s2">&quot;mesh1d&quot;</span> <span class="ow">or</span> <span class="n">grid_name</span> <span class="o">==</span> <span class="s2">&quot;mesh2d&quot;</span><span class="p">:</span>
                 <span class="c1"># TODO check if warning is enough or if we should remove to be sure?</span>
@@ -3739,10 +4020,12 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        link1d2d: xr.Dataset</span>
-<span class="sd">            link1d2d dataset with variables: [link1d2d, link1d2d_ids, link1d2d_long_names, link1d2d_contact_type]</span>
+<span class="sd">            link1d2d dataset with variables: [link1d2d, link1d2d_ids,</span>
+<span class="sd">            link1d2d_long_names, link1d2d_contact_type]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Check if link1d2d already in self.mesh</span>
-        <span class="c1"># FIXME current implementation of below does not support updating partial 1d2d links. Either document or adapt. #1</span>
+        <span class="c1"># FIXME current implementation of below does not support updating partial</span>
+        <span class="c1"># 1d2d links. Either document or adapt. #1</span>
         <span class="k">if</span> <span class="s2">&quot;link1d2d&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">data_vars</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Overwriting existing link1d2d in self.mesh.&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span><span class="o">.</span><span class="n">drop_vars</span><span class="p">(</span>
@@ -3760,28 +4043,32 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">link1d2d</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_model_has_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if model has 2D mesh part.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;mesh2d&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_names</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">_model_has_1d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if model has 1D mesh part.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;mesh1d&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_names</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">_check_crs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if model crs is defined.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">crs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="s2">&quot;Could not derive CRS from reading the mesh file.&quot;</span>
-                    <span class="s2">&quot;Please define the CRS in the [global] init attributes before setting up the model.&quot;</span>
+                    <span class="s2">&quot;Please define the CRS in the [global] init attributes before&quot;</span>
+                    <span class="s2">&quot;setting up the model.&quot;</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;CRS is not defined. Please define the CRS in the [global] init attributes before setting up the model.&quot;</span>
+                    <span class="s2">&quot;CRS is not defined. Please define the CRS in the [global] init&quot;</span>
+                    <span class="s2">&quot;attributes before setting up the model.&quot;</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;project crs: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="o">.</span><span class="n">to_epsg</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>

@@ -608,22 +608,27 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="hydromt_delft3dfm.DFlowFMModel.setup_1dboundary">
 <span class="sig-prename descclassname"><span class="pre">DFlowFMModel.</span></span><span class="sig-name descname"><span class="pre">setup_1dboundary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">boundaries_geodataset_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundaries_timeseries_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-2.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branch_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'river'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'waterlevel'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'m'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_locs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'downstream'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snap_offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hydromt_delft3dfm/dflowfm.html#DFlowFMModel.setup_1dboundary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hydromt_delft3dfm.DFlowFMModel.setup_1dboundary" title="Link to this definition">#</a></dt>
-<dd><p>Prepares the 1D <code class="docutils literal notranslate"><span class="pre">boundary_type</span></code> boundaries to branches using timeseries or a constant for a
-specific <code class="docutils literal notranslate"><span class="pre">branch_type</span></code> at the <code class="docutils literal notranslate"><span class="pre">boundary_locs</span></code> locations.
-E.g. ‘waterlevel’ boundaries for ‘downstream’’river’ branches.</p>
-<p>The values can either be a constant using <code class="docutils literal notranslate"><span class="pre">boundary_value</span></code> (default) or timeseries read from <code class="docutils literal notranslate"><span class="pre">boundaries_geodataset_fn</span></code>.</p>
-<p>Use <code class="docutils literal notranslate"><span class="pre">boundaries_geodataset_fn</span></code> to set the boundary values from a dataset of point location
-timeseries. Only locations within the possible model boundary locations + snap_offset are used. They are snapped to the model
-boundary locations within a max distance defined in <code class="docutils literal notranslate"><span class="pre">snap_offset</span></code>. If <code class="docutils literal notranslate"><span class="pre">boundaries_geodataset_fn</span></code>
-has missing values, the constant <code class="docutils literal notranslate"><span class="pre">boundary_value</span></code> will be used.</p>
+<dd><p>Prepare the 1D <code class="docutils literal notranslate"><span class="pre">boundary_type</span></code> boundaries using timeseries or a constant.</p>
+<p>Boundaries are prepared for a specific <code class="docutils literal notranslate"><span class="pre">branch_type</span></code> at the <code class="docutils literal notranslate"><span class="pre">boundary_locs</span></code>
+locations. E.g. ‘waterlevel’ boundaries for ‘downstream’’river’ branches.</p>
+<p>The values can either be a constant using <code class="docutils literal notranslate"><span class="pre">boundary_value</span></code> (default) or
+timeseries read from <code class="docutils literal notranslate"><span class="pre">boundaries_geodataset_fn</span></code>.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">boundaries_geodataset_fn</span></code> to set the boundary values from a dataset
+of point location timeseries. Only locations within the possible model boundary
+locations + snap_offset are used. They are snapped to the model boundary
+locations within a max distance defined in <code class="docutils literal notranslate"><span class="pre">snap_offset</span></code>. If
+<code class="docutils literal notranslate"><span class="pre">boundaries_geodataset_fn</span></code> has missing values, the constant <code class="docutils literal notranslate"><span class="pre">boundary_value</span></code>
+will be used.</p>
 <p>The dataset/timeseries are clipped to the model time based on the model config
 tstart and tstop entries.</p>
-<dl class="simple">
-<dt>Adds/Updates model layers:</dt><dd><ul class="simple">
-<li><p><strong>boundary1d_{boundary_type}bnd_{branch_type}</strong> forcing: 1D boundaries DataArray</p></li>
-</ul>
+<p>Adds/Updates model layers:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>boundary1d_{boundary_type}bnd_{branch_type}</strong> forcing: 1D boundaries</dt><dd><p>DataArray</p>
 </dd>
 </dl>
+</li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -632,9 +637,17 @@ This can either be a netcdf file with geospatial coordinates
 or a combined point location file with a timeseries data csv file
 which can be setup through the data_catalog yml file.</p>
 <ul>
-<li><p>Required variables if netcdf: [‘discharge’, ‘waterlevel’] depending on <code class="docutils literal notranslate"><span class="pre">boundary_type</span></code></p></li>
+<li><dl class="simple">
+<dt>Required variables if netcdf: [‘discharge’, ‘waterlevel’] depending on</dt><dd><p><code class="docutils literal notranslate"><span class="pre">boundary_type</span></code></p>
+</dd>
+</dl>
+</li>
 <li><p>Required coordinates if netcdf: [‘time’, ‘index’, ‘y’, ‘x’]</p></li>
-<li><p>Required variables if a combined point location file: [‘index’] with type int</p></li>
+<li><dl class="simple">
+<dt>Required variables if a combined point location file: [‘index’] with type</dt><dd><p>int</p>
+</dd>
+</dl>
+</li>
 <li><p>Required index types if a time series data csv file: int</p></li>
 </ul>
 <p>NOTE: Require equidistant time series</p>
@@ -645,8 +658,8 @@ see <code class="xref py py-meth docutils literal notranslate"><span class="pre"
 NOTE: tabulated timeseries files can only in combination with point location
 coordinates be set as a geodataset in the data_catalog yml file.
 NOTE: Require equidistant time series</p></li>
-<li><p><strong>boundary_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Constant value to use for all boundaries if <code class="docutils literal notranslate"><span class="pre">boundaries_geodataset_fn</span></code> is None and to
-fill in missing data. By default -2.5 m.</p></li>
+<li><p><strong>boundary_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Constant value to use for all boundaries if <code class="docutils literal notranslate"><span class="pre">boundaries_geodataset_fn</span></code> is
+None and to fill in missing data. By default -2.5 m.</p></li>
 <li><p><strong>branch_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Type of branch to apply boundaries on. One of [“river”, “pipe”].</p></li>
 <li><p><strong>boundary_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Type of boundary tu use. One of [“waterlevel”, “discharge”].
 By default “waterlevel”.</p></li>
@@ -662,10 +675,13 @@ If <code class="docutils literal notranslate"><span class="pre">boundary_type</s
 <p>By default m.</p>
 </p></li>
 <li><p><strong>boundary_locs</strong> – Boundary locations to consider. One of [“upstream”, “downstream”, “both”].
-Only used for river waterlevel which can be upstream, downstream or both. By default “downstream”.
-For the others, it is automatically derived from branch_type and boundary_type.</p></li>
-<li><p><strong>snap_offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Snapping tolerance to automatically applying boundaries at the correct network nodes.
-By default 0.1, a small snapping is applied to avoid precision errors.</p></li>
+Only used for river waterlevel which can be upstream, downstream or both.
+By default “downstream”.
+For the others, it is automatically derived from branch_type and
+boundary_type.</p></li>
+<li><p><strong>snap_offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Snapping tolerance to automatically applying boundaries at the correct
+network nodes. By default 0.1, a small snapping is applied to avoid
+precision errors.</p></li>
 </ul>
 </dd>
 </dl>

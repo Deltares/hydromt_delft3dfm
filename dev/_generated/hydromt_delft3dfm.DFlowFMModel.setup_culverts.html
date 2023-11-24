@@ -608,39 +608,68 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="hydromt_delft3dfm.DFlowFMModel.setup_culverts">
 <span class="sig-prename descclassname"><span class="pre">DFlowFMModel.</span></span><span class="sig-name descname"><span class="pre">setup_culverts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">culverts_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">culverts_defaults_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'1D_culverts_defaults'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">culvert_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snap_offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hydromt_delft3dfm/dflowfm.html#DFlowFMModel.setup_culverts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hydromt_delft3dfm.DFlowFMModel.setup_culverts" title="Link to this definition">#</a></dt>
-<dd><p>Prepare culverts, including locations and crossections. Note that only subtype culvert is supported, i.e. inverted siphon is not supported.</p>
-<p>The culverts are read from <code class="docutils literal notranslate"><span class="pre">culverts_fn</span></code> and if any missing, filled with information provided in <code class="docutils literal notranslate"><span class="pre">culverts_defaults_fn</span></code>.</p>
+<dd><p>Prepare culverts, including locations and crossections.</p>
+<p>Note that only subtype culvert is supported, i.e. inverted siphon is not
+supported.</p>
+<p>The culverts are read from <code class="docutils literal notranslate"><span class="pre">culverts_fn</span></code> and if any missing, filled with
+information provided in <code class="docutils literal notranslate"><span class="pre">culverts_defaults_fn</span></code>.</p>
 <p>When reading <code class="docutils literal notranslate"><span class="pre">culverts_fn</span></code>, only locations within the region will be read.
-Read locations are then filtered for value specified in <code class="docutils literal notranslate"><span class="pre">culvert_filter</span></code> on the column “structure_type” .
-Remaining locations are snapped to the existing network within a max distance defined in <code class="docutils literal notranslate"><span class="pre">snap_offset</span></code> and will be dropped if not snapped.</p>
-<p>A default <code class="docutils literal notranslate"><span class="pre">culverts_defaults_fn</span></code> that defines a circle culvert profile can be found in dflowfm.data.culverts as an example.</p>
-<p>Structure attributes [‘structure_id’, ‘structure_type’] are either taken from data or generated in the script.
-Structure attributes [‘shape’, ‘diameter’, ‘width’, ‘t_width’, ‘height’, ‘closed’, ‘leftlevel’, ‘rightlevel’, ‘length’,’valveonoff’, ‘valveopeningheight’, ‘numlosscoeff’, ‘relopening’, ‘losscoeff’, ‘friction_type’, ‘friction_value’, ‘allowedflowdir’,  ‘inletlosscoeff’, ‘outletlosscoeff’] are either taken from data,  or in case of missing read from defaults.</p>
-<dl class="simple">
-<dt>Adds/Updates model layers:</dt><dd><ul class="simple">
+Read locations are then filtered for value specified in <code class="docutils literal notranslate"><span class="pre">culvert_filter</span></code> on
+the column “structure_type” .
+Remaining locations are snapped to the existing network within a max distance
+defined in <code class="docutils literal notranslate"><span class="pre">snap_offset</span></code> and will be dropped if not snapped.</p>
+<p>A default <code class="docutils literal notranslate"><span class="pre">culverts_defaults_fn</span></code> that defines a circle culvert profile can be
+found in dflowfm.data.culverts as an example.</p>
+<p>Structure attributes [‘structure_id’, ‘structure_type’] are either taken from
+data or generated in the script.
+Structure attributes [‘shape’, ‘diameter’, ‘width’, ‘t_width’, ‘height’,
+‘closed’, ‘leftlevel’, ‘rightlevel’, ‘length’,’valveonoff’,
+‘valveopeningheight’, ‘numlosscoeff’, ‘relopening’, ‘losscoeff’,
+‘friction_type’, ‘friction_value’, ‘allowedflowdir’,  ‘inletlosscoeff’,
+‘outletlosscoeff’] are either taken from data,  or in case of missing read
+from defaults.</p>
+<p>Adds/Updates model layers:</p>
+<ul class="simple">
 <li><p><strong>culverts</strong> geom: 1D culverts vector</p></li>
 </ul>
-</dd>
-</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>culverts_fn</strong> (<em>str Path</em><em>, </em><em>optional</em>) – <p>Path or data source name for culverts, see data/data_sources.yml.
 Note only the points that are within the region polygon will be used.</p>
 <ul>
-<li><p>Optional variables: [‘structure_id’, ‘structure_type’, ‘shape’, ‘diameter’, ‘width’, ‘t_width’, ‘height’, ‘closed’, ‘leftlevel’, ‘rightlevel’, ‘length’, ‘valveonoff’, ‘valveopeningheight’, ‘numlosscoeff’, ‘relopening’, ‘losscoeff’, ‘friction_type’, ‘friction_value’, ‘allowedflowdir’,  ‘inletlosscoeff’, ‘outletlosscoeff’]</p></li>
+<li><dl class="simple">
+<dt>Optional variables: [‘structure_id’, ‘structure_type’, ‘shape’,</dt><dd><p>’diameter’, ‘width’, ‘t_width’, ‘height’, ‘closed’, ‘leftlevel’,
+‘rightlevel’, ‘length’, ‘valveonoff’, ‘valveopeningheight’,
+‘numlosscoeff’, ‘relopening’, ‘losscoeff’, ‘friction_type’,
+‘friction_value’, ‘allowedflowdir’,  ‘inletlosscoeff’,
+‘outletlosscoeff’]</p>
+</dd>
+</dl>
+</li>
 </ul>
 </p></li>
 <li><p><strong>culverts_defaults_fn</strong> (<em>str Path</em><em>, </em><em>optional</em>) – <p>Path to a csv file containing all defaults values per “structure_type”.
-By default <cite>hydrolib.hydromt_delft3dfm.data.culverts.culverts_defaults.csv</cite> is used.
+By default <cite>hydrolib.hydromt_delft3dfm.data.culverts.culverts_defaults.csv</cite>
+is used.
 This file describes a default circle culvert profile.</p>
 <ul>
-<li><p>Allowed variables: [‘structure_type’, ‘shape’, ‘diameter’, ‘width’, ‘t_width’, ‘height’, ‘closed’, ‘leftlevel’, ‘rightlevel’, ‘length’, ‘valveonoff’, ‘valveopeningheight’, ‘numlosscoeff’, ‘relopening’, ‘losscoeff’, ‘friction_type’, ‘friction_value’, ‘allowedflowdir’,  ‘inletlosscoeff’, ‘outletlosscoeff’]</p></li>
+<li><dl class="simple">
+<dt>Allowed variables: [‘structure_type’, ‘shape’, ‘diameter’, ‘width’,</dt><dd><p>’t_width’, ‘height’, ‘closed’, ‘leftlevel’, ‘rightlevel’, ‘length’,
+‘valveonoff’, ‘valveopeningheight’, ‘numlosscoeff’, ‘relopening’,
+‘losscoeff’, ‘friction_type’, ‘friction_value’, ‘allowedflowdir’,
+‘inletlosscoeff’, ‘outletlosscoeff’]</p>
+</dd>
+</dl>
+</li>
 </ul>
 </p></li>
-<li><p><strong>culvert_filter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Keyword in “structure_type” column of <code class="docutils literal notranslate"><span class="pre">culverts_fn</span></code> used to filter culvert features. If None all features are used (default).</p></li>
-<li><p><strong>snap_offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Snapping tolenrance to automatically snap culverts to network and add [‘branchid’, ‘chainage’] attributes.
-By default None. In this case, global variable “network_snap_offset” will be used.</p></li>
+<li><p><strong>culvert_filter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Keyword in “structure_type” column of <code class="docutils literal notranslate"><span class="pre">culverts_fn</span></code> used to filter
+culvert features. If None all features are used (default).</p></li>
+<li><p><strong>snap_offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Snapping tolenrance to automatically snap culverts to network and add
+[‘branchid’, ‘chainage’] attributes.
+By default None. In this case, global variable “network_snap_offset” will
+be used.</p></li>
 </ul>
 </dd>
 </dl>
