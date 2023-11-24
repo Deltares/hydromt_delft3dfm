@@ -174,6 +174,7 @@ Branches
    workflows.update_data_columns_attributes
    workflows.update_data_columns_attribute_from_query
    workflows.snap_newbranches_to_branches_at_snappednodes
+   workflows.snap_geom_to_branches_and_drop_nonsnapped
 
 Crosssections
 -------------
