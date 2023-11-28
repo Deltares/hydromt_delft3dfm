@@ -530,7 +530,10 @@ def set_xyz_crosssections(
 
 
 def set_point_crosssections(
-    branches: gpd.GeoDataFrame, crosssections: gpd.GeoDataFrame, maxdist: float = 1.0
+    branches: gpd.GeoDataFrame,
+    crosssections: gpd.GeoDataFrame,
+    maxdist: float = 1.0,
+    check_dupl_geom: bool = True,
 ):
     """
     Set regular cross-sections from point.
@@ -558,10 +561,11 @@ def set_point_crosssections(
         logger.error("mismatch crs between cross-sections and branches")
 
     # remove duplicated geometries
-    _nodes = crosssections.copy()
-    G = _nodes["geometry"].apply(lambda geom: geom.wkb)
-    # check for diff in numbers: n = len(G) - len(G.drop_duplicates().index)
-    crosssections = _nodes[_nodes.index.isin(G.drop_duplicates().index)]
+    if check_dupl_geom:
+        _nodes = crosssections.copy()
+        G = _nodes["geometry"].apply(lambda geom: geom.wkb)
+        # check for diff in numbers: n = len(G) - len(G.drop_duplicates().index)
+        crosssections = _nodes[_nodes.index.isin(G.drop_duplicates().index)]
 
     # snap to branch
     # setup branch_id - snap bridges to branch

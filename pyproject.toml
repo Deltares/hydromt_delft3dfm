@@ -8,6 +8,7 @@ authors = [
 	{ name = "Rinske Hutten", email = "rinske.hutten@deltares.nl" },
 	{ name = "Xiaohan Li", email = "xiaohan.li@deltares.nl" },
 	{ name = "Hélène Boisgontier", email = "helene.boisgontier@deltares.nl" },
+	{ name = "Jelmer Veenstra", email = "jelmer.veenstra@deltares.nl" },
 ]
 dependencies = [
 	"hydromt >=0.9.0",
@@ -15,9 +16,9 @@ dependencies = [
 	"numpy",
 	"pandas",
 	"xarray",
-	"hydrolib-core >=0.5.2",
-	"xugrid >=0.6.5",
-	"meshkernel >= 2.1.0",
+	"hydrolib-core >=0.6.0",
+	"xugrid >=0.7.1",
+	"meshkernel >= 3.0.0",
 	"pyproj",
 	"shapely >=2.0.0",
 	"scipy",
@@ -79,6 +80,10 @@ select = ["E", "F", "I", "PT", "D"]
 ignore-init-module-imports = true
 ignore = ["D211", "D213", "E741", "D105", "E712"]
 exclude = ["examples", "tests", "docs"]
+
+[tool.ruff.per-file-ignores]
+"hydromt_delft3dfm/__init__.py" = ["E402", "F403"]
+"hydromt_delft3dfm/workflows/__init__.py" = ["F403"]
 
 [tool.ruff.pydocstyle]
 convention = "numpy"

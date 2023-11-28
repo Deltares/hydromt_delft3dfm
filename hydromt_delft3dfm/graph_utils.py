@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+"""Utilities graph functions for Delft3D-FM model."""
 
 import logging
 
@@ -14,7 +14,10 @@ __all__ = ["gpd_to_digraph", "get_endnodes_from_lines"]
 
 
 def gpd_to_digraph(data: gpd.GeoDataFrame) -> nx.DiGraph():
-    """Convert a `gpd.GeoDataFrame` to a `nx.DiGraph` by taking the first and last coordinate in a row as source and target, respectively.
+    """Convert a `gpd.GeoDataFrame` to a `nx.DiGraph`.
+
+    This is done by taking the first and last coordinate in a row as source and target,
+    respectively.
 
     Parameters
     ----------
@@ -49,13 +52,13 @@ def get_endnodes_from_lines(
     ----------
     where : {'both', 'upstream', 'downstream'}
         Where at the branches should the boundaries be derived.
-        An upstream end node is defined as a node which has 0 incoming branches and 1 outgoing branch.
-        A downstream end node is defined as a node which has 1 incoming branch and 0 outgoing branches.
+        An upstream end node: 0 incoming branches and 1 outgoing branch.
+        A downstream end node: 1 incoming branch and 0 outgoing branches.
 
     Returns
     -------
     gpd.GeoDataFrame
-        A data frame containing all the upstream and downstream end nodes of the branches
+        A dataframe containing all the upstream and downstream end nodes of the branches
     """
     # convert branches to graph
     G = gpd_to_digraph(lines)

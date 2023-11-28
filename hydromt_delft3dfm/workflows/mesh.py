@@ -90,9 +90,6 @@ def mesh1d_network1d_from_branches(
         branch_orders=closedsystem.branchorder.to_list(),
     )
 
-    # derive mesh1d
-    dfm_network._mesh1d._set_mesh1d()
-
     # Mesh1d to mesh1d and network1d xugrid
     uds_mesh1d, uds_network1d = mutils.mesh1d_network1d_from_hydrolib_network(
         dfm_network, crs
@@ -378,9 +375,6 @@ def links1d2d_add_links_1d_to_2d(
     """
     # Initialise hydrolib network object
     network = mutils.hydrolib_network_from_mesh(mesh)
-    # Load 1d and 2d in meshkernel
-    network._mesh1d._set_mesh1d()
-    network._mesh2d._set_mesh2d()
 
     if within is None:
         # If not provided, create a box from the maximum bounds
@@ -478,9 +472,6 @@ def links1d2d_add_links_2d_to_1d_embedded(
     """
     # Initialise hydrolib network object
     network = mutils.hydrolib_network_from_mesh(mesh)
-    # Load 1d and 2d in meshkernel
-    network._mesh1d._set_mesh1d()
-    network._mesh2d._set_mesh2d()
 
     # Get the max edge distance
     nodes2d = np.stack(
@@ -595,9 +586,6 @@ def links1d2d_add_links_2d_to_1d_lateral(
     """
     # Initialise hydrolib network object
     network = mutils.hydrolib_network_from_mesh(mesh)
-    # Load 1d and 2d in meshkernel
-    network._mesh1d._set_mesh1d()
-    network._mesh2d._set_mesh2d()
 
     geometrylist = network.meshkernel.mesh2d_get_mesh_boundaries_as_polygons()
     mpboundaries = GeometryList(**geometrylist.__dict__).to_geometry()
