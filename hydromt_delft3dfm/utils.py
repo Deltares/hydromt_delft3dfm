@@ -594,13 +594,10 @@ def write_manholes(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     return storage_fn
 
 
-def _read_forcingfile(
+def _read_forcing_dataframe(
     df_forcing: pd.DataFrame,
     index_values: Union[np.ndarray, str],
     quantity: str,
-    allow_constant: bool = True,
-    add_interpolation: bool = True,
-    add_factor_offset: bool = True,
 ) -> Tuple[np.ndarray, List, Dict, Dict]:
     """
     Read forcing dataframe and parse to xarray properties.
@@ -613,12 +610,6 @@ def _read_forcingfile(
         Index values of the forcing data.
     quantity: str
         Name of quantity (eg 'waterlevel').
-    allow_constant: bool, optional
-        If True, allow constant forcing.
-    add_interpolation: bool, optional
-        If True, add timeinterpolation attribute.
-    add_factor_offset: bool, optional
-        If True, add factor and offset attributes.
 
     Returns
     -------
@@ -636,7 +627,7 @@ def _read_forcingfile(
 
     # Get data from forcing df
     # Check if all constant
-    if np.all(df_forcing.function == "constant") and allow_constant:
+    if np.all(df_forcing.function == "constant"):
         # Prepare data
         data = np.array([v[0][0] for v in df_forcing.datablock])
         data = data + df_forcing.offset.values * df_forcing.factor.values
@@ -645,9 +636,8 @@ def _read_forcingfile(
         coords = dict(index=index_values)
         bc["function"] = "constant"
         bc["units"] = df_forcing.quantityunitpair.iloc[0][0].unit
-        if add_factor_offset:
-            bc["factor"] = 1
-            bc["offset"] = 0
+        # bc["factor"] = 1
+        # bc["offset"] = 0
     # Check if all timeseries
     elif np.all(df_forcing.function == "timeseries"):
         # Prepare data
@@ -665,20 +655,17 @@ def _read_forcingfile(
         dims = ["index", "time"]
         coords = dict(index=index_values, time=times)
         bc["function"] = "timeseries"
-        if add_interpolation:
-            bc["timeinterpolation"] = df_forcing.timeinterpolation.iloc[0]
+        bc["timeinterpolation"] = df_forcing.timeinterpolation.iloc[0]
         bc["units"] = df_forcing.quantityunitpair.iloc[0][1].unit
         bc["time_unit"] = df_forcing.quantityunitpair.iloc[0][0].unit
-        if add_factor_offset:
-            bc["factor"] = 1
-            bc["offset"] = 0
+        bc["factor"] = 1
+        bc["offset"] = 0
     # Else not implemented yet
     else:
         raise NotImplementedError(
             "ForcingFile with several function for a single variable not implemented."
             f"Skipping reading forcing for variable {quantity}."
         )
-
     return data, dims, coords, bc
 
 
@@ -716,9 +703,6 @@ def read_1dboundary(
         df_forcing,
         index_values=nodeids,
         quantity=quantity,
-        allow_constant=True,
-        add_interpolation=False,
-        add_factor_offset=True,
     )
 
     # Get nodeid coordinates
@@ -874,13 +858,10 @@ def read_1dlateral(
     forcing = df.discharge.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
 
-    data, dims, coords, bc = _read_forcingfile(
+    data, dims, coords, bc = _read_forcing_dataframe(
         df_forcing,
         index_values=df_forcing.name,
         quantity=quantity,
-        allow_constant=True,
-        add_interpolation=True,
-        add_factor_offset=True,
     )
 
     # Get lateral locations and update dimentions and coordinates
@@ -1081,13 +1062,10 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
     forcing = df.forcingfile
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
 
-    data, dims, coords, bc = _read_forcingfile(
+    data, dims, coords, bc = _read_forcing_dataframe(
         df_forcing,
         index_values=df_forcing.name.values,
         quantity=df.quantity,
-        allow_constant=False,
-        add_interpolation=False,
-        add_factor_offset=False,
     )
 
     bc["locationfile"] = df.locationfile.filepath.name
@@ -1223,13 +1201,10 @@ def read_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
     # Filter for the current nodes
     df_forcing = df_forcing[np.isin(df_forcing.name, "global")]
 
-    data, dims, coords, bc = _read_forcingfile(
+    data, dims, coords, bc = _read_forcing_dataframe(
         df_forcing,
         index_values="global",
         quantity=quantity,
-        allow_constant=True,
-        add_interpolation=True,
-        add_factor_offset=True,
     )
     # Do not apply to "global" meteo
     # coords["x"]
