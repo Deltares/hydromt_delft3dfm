@@ -9,7 +9,7 @@ import numpy as np
 import xarray as xr
 import xugrid as xu
 from hydrolib.core.dflowfm import Branch, Network
-from meshkernel import GeometryList
+from meshkernel import GeometryList, GriddedSamples
 from shapely.geometry import (
     LineString,
     MultiLineString,
@@ -160,8 +160,10 @@ def mesh1d_add_branch(
 def mesh2d_refine(
     mesh2d: xu.Ugrid2d,
     res: float,
+    min_edge_size: float = None,
     gdf_polygon: gpd.GeoDataFrame = None,
     da_sample: xr.DataArray = None,
+    da_bathy: xr.DataArray = None,
     steps: int = 1,
     logger: logging.Logger = logger,
 ) -> Tuple[Union[xu.UgridDataArray, xu.UgridDataset], float]:
@@ -186,6 +188,8 @@ def mesh2d_refine(
         Polygon to refine mesh within. Defaults to None.
     da_sample: xr.DataArray, optional
         Sample array to refine mesh based on. Defaults to None.
+    da_bathy: xr.DataArray, optional
+        Sample array with bathymetry values to refine mesh based on Courant criterion. Defaults to None.
     steps: int, optional
         Number of steps to refine mesh when using polygon. Defaults to 1.
     res: float, optional
@@ -202,6 +206,8 @@ def mesh2d_refine(
         refine_type = "polygon"
     elif da_sample is not None:
         refine_type = "samples"
+    elif da_bathy is not None:
+        refine_type = "bathy"
     else:
         raise ValueError("Either polygon or samples should be provided.")
 
@@ -275,6 +281,34 @@ def mesh2d_refine(
             relative_search_radius=1,
             minimum_num_samples=1,
             mesh_refinement_params=parameters,
+        )
+    elif refine_type == "bathy":
+        zv = da_bathy.values.flatten().astype('float')
+        gridded_samples = GriddedSamples(
+            x_coordinates=da_bathy.x.values,
+            y_coordinates=da_bathy.y.values,
+            values=zv,
+        )
+        # refine parameters
+        if min_edge_size is None:
+            min_edge_size = res
+        
+        parameters = mk.MeshRefinementParameters(
+            refinement_type=mk.RefinementType.WAVE_COURANT,
+            min_edge_size=min_edge_size,
+            smoothing_iterations=2,
+            max_courant_time=50,
+            # account_for_samples_outside_face=False,
+            connect_hanging_nodes=True,
+            # refine_intersected=False,
+            # use_mass_center_when_refining=False,
+        )
+        # refine assuming sample spacing is the same as end result resolution
+        # (hence relative_search_radius=1, minimum_num_samples=1 )
+        mesh2d_mk.mesh2d_refine_based_on_gridded_samples(
+            gridded_samples=gridded_samples,
+            mesh_refinement_params=parameters,
+            use_nodal_refinement=True,
         )
 
     # meshkernel to xugrid Ugrid2D

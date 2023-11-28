@@ -4,7 +4,11 @@ global:
 setup_mesh2d:
   region: 
     bbox: [11.82, 45.20, 12.95, 46.2]
-  res: 500
+  res: 2000 # in meters or degrees, depending on crs
+
+setup_mesh2d_refine:
+  bathy_fn: gebco_elev
+  min_edge_size: 200 # always in meters
 
 # setup_maps_from_rasterdataset:
   # raster_fn: merit_hydro
