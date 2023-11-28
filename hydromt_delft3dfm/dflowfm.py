@@ -2451,6 +2451,7 @@ class DFlowFMModel(MeshModel):
 
         * **mapping_variables** maps: data from raster_mapping_fn spatially
             distributed with raster_fn
+
         Parameters
         ----------
         raster_fn: str

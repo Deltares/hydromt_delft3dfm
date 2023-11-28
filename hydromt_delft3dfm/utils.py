@@ -179,7 +179,7 @@ def read_crosssections(
     """
 
     def _list2Str(lst):
-        if type(lst) is list:
+        if isinstance(lst, list):
             # apply conversion to list columns
             if isinstance(lst[0], float):
                 return " ".join(["{}".format(i) for i in lst])
@@ -699,7 +699,7 @@ def read_1dboundary(
     # Filter for the current nodes, remove nans
     df_forcing = df_forcing[np.isin(df_forcing.name, nodeids)]
 
-    data, dims, coords, bc = _read_forcingfile(
+    data, dims, coords, bc = _read_forcing_dataframe(
         df_forcing,
         index_values=nodeids,
         quantity=quantity,

@@ -551,6 +551,7 @@ def set_point_crosssections(
     maxdist : float, optional
         the maximum distant that a point crossection is snapped to the branch.
         By default 1.0
+
     Returns
     -------
     gpd.GeoDataFrame

@@ -624,6 +624,23 @@ def compute_forcing_values_points(
     # first process data based on either timeseries or constant
     # then update data based on either nodes or branches
     # Timeseries forcing values
+
+    # default dims, coords and attris for point geometry type
+    _dims_defaults = ["index"]
+    _coords_defaults = dict(
+        index=gdf.index,
+        x=("index", gdf.geometry.x.values),
+        y=("index", gdf.geometry.y.values),
+        branchid=("index", gdf.branchid.values),
+        chainage=("index", gdf.chainage.values),
+    )
+    _attrs_defaults = dict(
+        offset=0.0,
+        factor=1.0,
+        quantity=f"{forcing_type}",
+        units=f"{forcing_unit}",
+    )
+
     if da is not None:
         logger.info(f"Preparing 1D forcing type {forcing_type} from timeseries.")
 
@@ -631,26 +648,26 @@ def compute_forcing_values_points(
         bd_times, freq_name = _standardize_forcing_timeindexes(da)
 
         # instantiate xr.DataArray for forcing data
+
+        # update dims, coords and attrs
+        _dims_defaults.append("time")
+        _coords_defaults.update(dict(time=bd_times))
+        _attrs_defaults.update(
+            dict(
+                function="TimeSeries",
+                timeInterpolation="Linear",
+                time_unit=f"{freq_name} since {pd.to_datetime(da.time[0].values)}",
+            )
+        )
+
         # NOTE only support points on branches
         da_out = xr.DataArray(
             data=da.data,
-            dims=["index", "time"],
-            coords=dict(
-                index=gdf.index,
-                time=bd_times,
-                x=("index", gdf.geometry.x.values),
-                y=("index", gdf.geometry.y.values),
-                branchid=("index", gdf.branchid.values),
-                chainage=("index", gdf.chainage.values),
-            ),
-            attrs=dict(
-                function="TimeSeries",
-                timeInterpolation="Linear",
-                quantity=f"{forcing_type}",
-                units=f"{forcing_unit}",
-                time_unit=f"{freq_name} since {pd.to_datetime(da.time[0].values)}",
-            ),
+            dims=_dims_defaults,
+            coords=_coords_defaults,
+            attrs=_attrs_defaults,
         )
+
         # fill in na using default
         da_out = da_out.fillna(forcing_value)
 
@@ -661,24 +678,16 @@ def compute_forcing_values_points(
         da_out.name = f"{forcing_type}"
     else:
         logger.info(f"Use constant {forcing_value} {forcing_unit} for {forcing_type}.")
+
         # instantiate xr.DataArray for bnd data with forcing_type directly
+        # update dims, coords and attrs
+        _attrs_defaults.update(dict(function="constant"))
+
         da_out = xr.DataArray(
             data=np.full((len(gdf.index)), forcing_value, dtype=np.float32),
-            dims=["index"],
-            coords=dict(
-                index=gdf.index,
-                x=("index", gdf.geometry.x.values),
-                y=("index", gdf.geometry.y.values),
-                branchid=("index", gdf.branchid.values),
-                chainage=("index", gdf.chainage.values),
-            ),
-            attrs=dict(
-                function="constant",
-                offset=0.0,
-                factor=1.0,
-                quantity=f"{forcing_type}",
-                units=f"{forcing_unit}",
-            ),
+            dims=_dims_defaults,
+            coords=_coords_defaults,
+            attrs=_attrs_defaults,
         )
         da_out.name = f"{forcing_type}"
     return da_out
@@ -763,6 +772,16 @@ def compute_forcing_values_polygon(
     logger
         Logger to log messages.
     """
+    # default dims, coords and attris for polygon geometry type
+    _dims_defaults = ["index", "numcoordinates"]
+    _coords_defaults = get_geometry_coords_for_polygons(gdf)
+    _attrs_defaults = dict(
+        offset=0.0,
+        factor=1.0,
+        quantity=f"{forcing_type}",
+        units=f"{forcing_unit}",
+    )
+
     # Timeseries forcing values
     if da is not None:
         logger.info(f"Preparing 1D forcing type {forcing_type} from timeseries.")
@@ -771,29 +790,28 @@ def compute_forcing_values_polygon(
         bd_times, freq_name = _standardize_forcing_timeindexes(da)
 
         # instantiate xr.DataArray for forcing data
-        coords_dict = get_geometry_coords_for_polygons(gdf)
+
         # Prepare the data
         data_3d = np.tile(
-            np.expand_dims(da.data, axis=-1), (1, 1, len(coords_dict["numcoordinates"]))
+            np.expand_dims(da.data, axis=-1),
+            (1, 1, len(_coords_defaults["numcoordinates"])),
+        )
+        # update dims, coords and attrs
+        _dims_defaults.insert(1, "time")
+        _coords_defaults.update(dict(time=bd_times))
+        _attrs_defaults.update(
+            dict(
+                function="TimeSeries",
+                timeInterpolation="Linear",
+                time_unit=f"{freq_name} since {pd.to_datetime(da.time[0].values)}",
+            )
         )
         # Create the DataArray
         da_out = xr.DataArray(
             data=data_3d,
-            dims=("index", "time", "numcoordinates"),
-            coords={
-                "index": coords_dict["index"],
-                "numcoordinates": coords_dict["numcoordinates"],
-                "xcoordinates": coords_dict["xcoordinates"],
-                "ycoordinates": coords_dict["ycoordinates"],
-                "time": bd_times,
-            },
-            attrs=dict(
-                function="TimeSeries",
-                timeInterpolation="Linear",
-                quantity=f"{forcing_type}",
-                units=f"{forcing_unit}",
-                time_unit=f"{freq_name} since {pd.to_datetime(da.time[0].values)}",
-            ),
+            dims=_dims_defaults,
+            coords=_coords_defaults,
+            attrs=_attrs_defaults,
         )
         # fill in na using default
         da_out = da_out.fillna(forcing_value)
@@ -805,28 +823,24 @@ def compute_forcing_values_polygon(
         da_out.name = f"{forcing_type}"
     else:
         logger.info(f"Use constant {forcing_value} {forcing_unit} for {forcing_type}.")
+
         # instantiate xr.DataArray for forcing data with forcing_type directly
-        coords_dict = get_geometry_coords_for_polygons(gdf)
+        # Prepare the data
         data_3d = np.full(
-            (len(coords_dict["index"]), len(coords_dict["numcoordinates"])),
+            (len(_coords_defaults["index"]), len(_coords_defaults["numcoordinates"])),
             forcing_value,
             dtype=np.float32,
         )
+
+        # update dims, coords and attrs
+        _attrs_defaults.update(dict(function="constant"))
+
+        # Create the DataArray
         da_out = xr.DataArray(
             data=data_3d,
-            coords={
-                "index": coords_dict["index"],
-                "numcoordinates": coords_dict["numcoordinates"],
-                "xcoordinates": coords_dict["xcoordinates"],
-                "ycoordinates": coords_dict["ycoordinates"],
-            },
-            attrs=dict(
-                function="constant",
-                offset=0.0,
-                factor=1.0,
-                quantity=f"{forcing_type}",
-                units=f"{forcing_unit}",
-            ),
+            dims=_dims_defaults,
+            coords=_coords_defaults,
+            attrs=_attrs_defaults,
         )
         da_out.name = f"{forcing_type}"
 

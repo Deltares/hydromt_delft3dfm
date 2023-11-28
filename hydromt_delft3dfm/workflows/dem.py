@@ -99,6 +99,7 @@ def get_rivbank_dz(
         Minimum threshold for valid river bank cells, by default 20
     q : float, optional
         quantile [0-100] for river bank estimate, by default 25.0
+
     Returns
     -------
     rivbank_dz: np.ndarray
@@ -214,6 +215,7 @@ def get_river_bathymetry(
         river depth.
     constrain_rivbed : bool, optional
         If True (default) correct the river bed level to be hydrologically correct
+
     Returns
     -------
     gdf_riv: gpd.GeoDataFrame
