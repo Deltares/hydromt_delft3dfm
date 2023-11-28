@@ -34,6 +34,8 @@ Setup components
    DFlowFMModel.setup_pipes
    DFlowFMModel.setup_manholes
    DFlowFMModel.setup_1dboundary
+   DFlowFMModel.setup_1dlateral_from_points
+   DFlowFMModel.setup_1dlateral_from_polygons
    DFlowFMModel.setup_bridges
    DFlowFMModel.setup_culverts
    DFlowFMModel.setup_mesh2d
@@ -148,12 +150,14 @@ Boundaries
    :toctree: _generated
 
    workflows.get_boundaries_with_nodeid
-   workflows.generate_boundaries_from_branches
    workflows.select_boundary_type
    workflows.validate_boundaries
    workflows.compute_boundary_values
    workflows.compute_2dboundary_values
    workflows.compute_meteo_forcings
+   workflows.compute_forcing_values_points
+   workflows.compute_forcing_values_polygon
+   workflows.get_geometry_coords_for_polygons
 
 Branches
 --------
@@ -169,6 +173,7 @@ Branches
    workflows.update_data_columns_attributes
    workflows.update_data_columns_attribute_from_query
    workflows.snap_newbranches_to_branches_at_snappednodes
+   workflows.snap_geom_to_branches_and_drop_nonsnapped
 
 Crosssections
 -------------
@@ -260,6 +265,8 @@ Input/Output methods
    utils.write_manholes
    utils.read_1dboundary
    utils.write_1dboundary
+   utils.read_1dlateral
+   utils.write_1dlateral
    utils.read_2dboundary
    utils.write_2dboundary
    utils.read_meteo

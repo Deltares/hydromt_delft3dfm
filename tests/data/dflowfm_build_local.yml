@@ -42,6 +42,16 @@ setup_1dboundary:
   boundary_unit: m
   boundary_locs: both
 
+setup_1dlateral_from_points:
+  laterals_geodataset_fn: 1D_laterals_timeseries
+  branch_type: river
+  snap_offset: 10  
+  lateral_value: 0
+ 
+setup_1dlateral_from_polygons:
+  laterals_geodataset_fn: 1D_laterals_polygons_timeseries
+  lateral_value: 0
+
 setup_mesh2d:
   region:
     geom: "local_data/1D_extent.geojson"

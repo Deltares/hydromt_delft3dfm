@@ -8,6 +8,7 @@ import xarray as xr
 import xugrid as xu
 from hydrolib.core.dflowfm import Network
 from pyproj import CRS
+from shapely.geometry import LineString
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +20,7 @@ __all__ = [
     "mesh_from_hydrolib_network",
     "mesh1d_nodes_geodataframe",
     "network1d_nodes_geodataframe",
+    "network1d_geoms_geodataframe",
 ]
 
 
@@ -406,3 +408,38 @@ def network1d_nodes_geodataframe(
     )
 
     return network1d_nodes
+
+
+def network1d_geoms_geodataframe(
+    uds_network1d: xu.UgridDataset,
+) -> gpd.GeoDataFrame:
+    """
+    Get network1d as gdp from network1d geoms.
+
+    Parameters
+    ----------
+    uds_network1d : xu.UgridDataset
+        Network1d UgridDataset including network1d data_vars.
+
+    Returns
+    -------
+    network1d : gpd.GeoDataFrame
+        Network1d GeoDataFrame.
+    """
+    network1d_geoms = []
+    start_index = 0
+    for n in uds_network1d["network1d_part_node_count"].values:
+        x = uds_network1d["network1d_geom_x"][start_index : start_index + n]
+        y = uds_network1d["network1d_geom_y"][start_index : start_index + n]
+        start_index += n
+        points = list(zip(x, y))
+        line = LineString(points)
+        network1d_geoms.append(line)
+    network1d_geoms = gpd.GeoDataFrame(
+        geometry=network1d_geoms,
+        crs=uds_network1d.ugrid.grid.crs,
+    )
+    network1d_geoms["branchid"] = uds_network1d["network1d_branch_id"]
+    network1d_geoms["branchorder"] = uds_network1d["network1d_branch_order"]
+
+    return network1d_geoms

@@ -1557,46 +1557,16 @@ class DFlowFMModel(MeshModel):
             precision errors.
         """
         self.logger.info(f"Preparing 1D {boundary_type} boundaries for {branch_type}.")
-        boundaries = workflows.get_boundaries_with_nodeid(
-            self.branches,
-            mesh_utils.network1d_nodes_geodataframe(self.mesh_datasets["network1d"]),
-        )
-        refdate, tstart, tstop = self.get_model_time()  # time slice
 
         # 1. get potential boundary locations based on branch_type and boundary_type
         boundaries_branch_type = workflows.select_boundary_type(
-            boundaries, branch_type, boundary_type, boundary_locs
+            self.boundaries, branch_type, boundary_type, boundary_locs
         )
 
         # 2. read boundary from user data
-        if boundaries_geodataset_fn is not None:
-            da_bnd = self.data_catalog.get_geodataset(
-                boundaries_geodataset_fn,
-                geom=boundaries.buffer(
-                    snap_offset
-                ),  # only select data close to the boundary of the model region
-                variables=[boundary_type],
-                time_tuple=(tstart, tstop),
-                crs=self.crs.to_epsg(),  # assume model crs if none defined
-            ).rename(boundary_type)
-            # error if time mismatch
-            if np.logical_and(
-                pd.to_datetime(da_bnd.time.values[0]) == pd.to_datetime(tstart),
-                pd.to_datetime(da_bnd.time.values[-1]) == pd.to_datetime(tstop),
-            ):
-                pass
-            else:
-                self.logger.error(
-                    "forcing has different start and end time."
-                    "Please check the forcing file. support yyyy-mm-dd HH:MM:SS. "
-                )
-            # reproject if needed and convert to location
-            if da_bnd.vector.crs != self.crs:
-                da_bnd.vector.to_crs(self.crs)
-        elif boundaries_timeseries_fn is not None:
-            raise NotImplementedError()
-        else:
-            da_bnd = None
+        _, da_bnd = self._read_forcing_geodataset(
+            boundaries_geodataset_fn, boundary_type, snap_offset
+        )
 
         # 3. Derive DataArray with boundary values at boundary locations
         # in boundaries_branch_type
@@ -1614,6 +1584,195 @@ class DFlowFMModel(MeshModel):
         self.set_forcing(da_out, name=f"boundary1d_{da_out.name}_{branch_type}")
         # FIXME: this format cannot be read back due to lack of branch type info
         # from model files
+
+    def _read_forcing_geodataset(
+        self,
+        forcing_geodataset_fn: Union[str, Path],
+        forcing_name: str = "discharge",
+        region_buffer=0.0,
+    ):
+        """Read forcing geodataset."""
+        refdate, tstart, tstop = self.get_model_time()  # time slice
+
+        if (
+            forcing_geodataset_fn is not None
+            and self.data_catalog[forcing_geodataset_fn].data_type == "GeoDataset"
+        ):
+            da = self.data_catalog.get_geodataset(
+                forcing_geodataset_fn,
+                geom=self.region.buffer(region_buffer),  # buffer region
+                variables=[forcing_name],
+                time_tuple=(tstart, tstop),
+            )
+            # error if time mismatch
+            if np.logical_and(
+                pd.to_datetime(da.time.values[0]) == pd.to_datetime(tstart),
+                pd.to_datetime(da.time.values[-1]) == pd.to_datetime(tstop),
+            ):
+                pass
+            else:
+                self.logger.error(
+                    "Forcing has different start and end time."
+                    + " Please check the forcing file. Support yyyy-mm-dd HH:MM:SS. "
+                )
+            # reproject if needed and convert to location
+            if da.vector.crs != self.crs:
+                da = da.vector.to_crs(self.crs)
+                # TODO update after hydromt release >0.9.0
+            # get geom
+            gdf = da.vector.to_gdf(reducer=np.mean)
+        elif (
+            forcing_geodataset_fn is not None
+            and self.data_catalog[forcing_geodataset_fn].data_type == "GeoDataFrame"
+        ):
+            gdf = self.data_catalog.get_geodataframe(
+                forcing_geodataset_fn,
+                geom=self.region.buffer(self._network_snap_offset),
+            )
+            # reproject
+            if gdf.crs != self.crs:
+                gdf = gdf.to_crs(self.crs)
+            da = None
+        else:
+            gdf = None
+            da = None
+        return gdf, da
+
+    def setup_1dlateral_from_points(
+        self,
+        laterals_geodataset_fn: str = None,
+        lateral_value: float = 0.0,
+        snap_offset: float = 1.0,
+        branch_type: str = "river",
+    ):
+        """
+        Prepare the 1D lateral discharge from geodataset of point geometries.
+
+        E.g. '1' m3/s for all lateral locations.
+
+        Use ``laterals_geodataset_fn`` to set the lateral values from a geodataset
+        of point locations.
+        Support also geodataframe of point locations in combination of `lateral_value`.
+
+        Only locations that are snapped to the network of `branch_type`
+        within a max distance defined in ``snap_offset`` are used.
+
+        The discharge can either be a constant using ``lateral_value`` (default) or
+        a timeseries read from ``laterals_geodataset_fn``.
+        If the timeseries has missing values, constant ``lateral_value`` will be used.
+
+        The timeseries are clipped to the model time based on the model config
+        tstart and tstop entries.
+
+        Adds/Updates model layers:
+            ** lateral1d_points** forcing: DataArray with points coordinates.
+
+        Parameters
+        ----------
+        laterals_geodataset_fn : str, Path
+            Path or data source name for geospatial point location file.
+            * Required variables if geodataset is provided ['lateral_discharge']
+            NOTE: Require equidistant time series
+        lateral_value : float, optional
+            Constant value, used if ``laterals_geodataset_fn`` is a geodataframe,
+            or for filling in missing data.
+            By default 0 [m3/s].
+        snap_offset : float, optional
+            Snapping tolerance to snap boundaries to the correct network nodes.
+            By default 0.1, a small snapping is applied to avoid precision errors.
+        branch_type: str, optional
+            Type of branch to apply laterals on. One of ["river", "pipe"].
+            If None, all branches are used.
+            By defalt None.
+        """
+        self.logger.info(f"Preparing 1D laterals for {branch_type}.")
+        network_by_branchtype = self.staticgeoms[f"{branch_type}s"]
+
+        # 1. read lateral geodataset and snap to network
+        gdf_laterals, da_lat = self._read_forcing_geodataset(
+            laterals_geodataset_fn, "lateral_discharge", snap_offset
+        )
+
+        # snap laterlas to selected branches
+        gdf_laterals = workflows.snap_geom_to_branches_and_drop_nonsnapped(
+            branches=network_by_branchtype.set_index("branchid"),
+            geoms=gdf_laterals,
+            snap_offset=snap_offset,
+        )
+
+        if len(gdf_laterals) == 0:
+            return None
+
+        # 2. Compute lateral dataarray
+        da_out = workflows.compute_forcing_values_points(
+            gdf=gdf_laterals,
+            da=da_lat,
+            forcing_value=lateral_value,
+            forcing_type="lateral_discharge",
+            forcing_unit="m3/s",
+            logger=self.logger,
+        )
+
+        # 3. set laterals
+        self.set_forcing(da_out, name="lateral1d_points")
+
+    def setup_1dlateral_from_polygons(
+        self,
+        laterals_geodataset_fn: str = None,
+        lateral_value: float = -2.5,
+    ):
+        """
+        Prepare the 1D lateral discharge from geodataset of polygons.
+
+        E.g. '1' m3/s for all lateral locations.
+
+        Use ``laterals_geodataset_fn`` to set the lateral values from a geodatasets
+        of polygons.
+        Support also geodataframe of polygons in combination of `lateral_value`.
+
+        The discharge can either be a constant using ``lateral_value`` (default) or
+        a timeseries read from ``laterals_geodataset_fn``.
+        If the timeseries has missing values, constant ``lateral_value`` will be used.
+
+        The timeseries are clipped to the model time based on the model config
+        tstart and tstop entries.
+
+        Adds/Updates model layers:
+            * ** lateral1d_polygons** forcing: DataArray with polygon coordinates.
+
+        Parameters
+        ----------
+        laterals_geodataset_fn : str, Path
+            Path or data source name for geospatial point location file.
+            * Required variables if geodataset is provided ['lateral_discharge']
+            NOTE: Require equidistant time series
+        lateral_value : float, optional
+            Constant value, used if ``laterals_geodataset_fn`` is a geodataframe,
+            or for filling in missing data.
+            By default 0 [m3/s].
+        """
+        self.logger.info("Preparing 1D laterals for polygons.")
+
+        # 1. read lateral geodataset
+        gdf_laterals, da_lat = self._read_forcing_geodataset(
+            laterals_geodataset_fn, "lateral_discharge"
+        )
+
+        if len(gdf_laterals) == 0:
+            return None
+
+        # 2. Compute lateral dataarray
+        da_out = workflows.compute_forcing_values_polygon(
+            gdf=gdf_laterals,
+            da=da_lat,
+            forcing_value=lateral_value,
+            forcing_type="lateral_discharge",
+            forcing_unit="m3/s",
+            logger=self.logger,
+        )
+
+        # 3. set laterals
+        self.set_forcing(da_out, name="lateral1d_polygons")
 
     def setup_bridges(
         self,
@@ -1680,8 +1839,8 @@ class DFlowFMModel(MeshModel):
 
         See Also
         --------
-        dflowfm._setup_1dstructures
-        """  # noqa: E501
+        workflows.prepare_1dstructures
+        """
         snap_offset = self._network_snap_offset if snap_offset is None else snap_offset
         _st_type = "bridge"
         _allowed_columns = [
@@ -1820,8 +1979,8 @@ class DFlowFMModel(MeshModel):
 
         See Also
         --------
-        dflowfm._setup_1dstructures
-        """  # noqa: E501
+        workflows.prepare_1dstructures
+        """
         snap_offset = self._network_snap_offset if snap_offset is None else snap_offset
         _st_type = "culvert"
         _allowed_columns = [
@@ -2292,6 +2451,7 @@ class DFlowFMModel(MeshModel):
 
         * **mapping_variables** maps: data from raster_mapping_fn spatially
             distributed with raster_fn
+
         Parameters
         ----------
         raster_fn: str
@@ -2781,10 +2941,20 @@ class DFlowFMModel(MeshModel):
         self._assert_read_mode()
         # Read initial fields
         inifield_model = self.dfmmodel.geometry.inifieldfile
-        if inifield_model is not None:
+        # seperate 1d and 2d
+        # inifield_model_1d = [
+        #     i for i in inifield_model.initial if "1d" in i.locationtype
+        # ] # not supported yet
+        inifield_model_2dinitial = [
+            i for i in inifield_model.initial if "2d" in i.locationtype
+        ]
+        inifield_model_2dparameter = [
+            i for i in inifield_model.parameter if "2d" in i.locationtype
+        ]
+        inifield_model_2d = inifield_model_2dinitial + inifield_model_2dparameter
+        if any(inifield_model_2d):
             # Loop over initial / parameter to read the geotif
-            inilist = inifield_model.initial.copy()
-            inilist.extend(inifield_model.parameter)
+            inilist = inifield_model_2d
 
             if len(inilist) > 0:
                 # DFM map names
@@ -2947,7 +3117,7 @@ class DFlowFMModel(MeshModel):
             crosssections = utils.read_crosssections(self.branches, self.dfmmodel)
 
             # Add friction properties from roughness files
-            self.logger.info("Reading friction files")
+            # self.logger.info("Reading friction files")
             crosssections = utils.read_friction(crosssections, self.dfmmodel)
             self.set_geoms(crosssections, "crosssections")
 
@@ -3024,6 +3194,28 @@ class DFlowFMModel(MeshModel):
             )
             self.set_config("geometry.structurefile", structures_fn)
 
+        # write hydromt
+        # Optional: also write mesh_gdf object
+        if write_mesh_gdf:
+            for name, gdf in self.mesh_gdf.items():
+                self.set_geoms(gdf, name)
+
+        # Write geojson equivalent of all objects.
+        # NOTE these files are not used for model update.
+        # convert any list in geoms to strings
+        def convert_lists_to_strings(df):
+            for column_name in df.columns:
+                if df[column_name].apply(isinstance, args=(list,)).any():
+                    df[column_name] = df[column_name].apply(
+                        lambda x: " ".join(f"{x}") if isinstance(x, list) else x
+                    )
+            return df
+
+        for name in self.geoms:
+            self.set_geoms(convert_lists_to_strings(self.geoms[name]), name)
+
+        super().write_geoms(fn="geoms/{name}.geojson")
+
     def read_forcing(
         self,
     ) -> None:  # FIXME reading of forcing should include boundary, lateral and meteo
@@ -3065,6 +3257,14 @@ class DFlowFMModel(MeshModel):
                         )
                         # Add to forcing
                         self.set_forcing(da_out)
+            # lateral
+            if len(ext_model.lateral) > 0:
+                df_ext = pd.DataFrame([f.__dict__ for f in ext_model.lateral])
+                da_out = utils.read_1dlateral(
+                    df_ext, branches=self.branches
+                )  # TODO extend support to get laterals on nodes #78
+                # Add to forcing
+                self.set_forcing(da_out)
             # meteo
             if len(ext_model.meteo) > 0:
                 df_ext = pd.DataFrame([f.__dict__ for f in ext_model.meteo])
@@ -3093,6 +3293,7 @@ class DFlowFMModel(MeshModel):
             # populate external forcing file
             utils.write_1dboundary(self.forcing, savedir, ext_fn=ext_fn)
             utils.write_2dboundary(self.forcing, savedir, ext_fn=ext_fn)
+            utils.write_1dlateral(self.forcing, savedir, ext_fn=ext_fn)
             utils.write_meteo(self.forcing, savedir, ext_fn=ext_fn)
             self.set_config("external_forcing.extforcefilenew", ext_fn)
 
@@ -3107,10 +3308,11 @@ class DFlowFMModel(MeshModel):
         # Cannot use read_geoms yet because for some some geoms
         # (crosssections, manholes) mesh needs to be read first...
         region_fn = join(self.root, "geoms", "region.geojson")
-        if isfile(region_fn):
+        if (not self._crs) and isfile(region_fn):
             crs = gpd.read_file(region_fn).crs
-        else:
-            crs = None
+            self._crs = crs
+
+        crs = self.crs
 
         # convert to xugrid
         mesh = mesh_utils.mesh_from_hydrolib_network(network, crs=crs)
@@ -3124,12 +3326,10 @@ class DFlowFMModel(MeshModel):
 
         # creates branches geometry from network1d
         if "network1d" in self.mesh_names:
-            network1d_geometry = self.mesh_gdf["network1d"]
             network1d_dataset = self.mesh_datasets["network1d"]
-            # Create the branches GeoDataFrame
-            branches = network1d_geometry
-            branches["branchid"] = network1d_dataset["network1d_branch_id"]
-            branches["branchorder"] = network1d_dataset["network1d_branch_order"]
+            # Create the branches GeoDataFrame (from geom)
+            # network1d_geometry = self.mesh_gdf["network1d"] this returns the network
+            branches = mesh_utils.network1d_geoms_geodataframe(network1d_dataset)
             # branches["branchtype"] = network1d_dataset["network1d_branch_type"]
             # might support in the future
             # https://github.com/Deltares/HYDROLIB-core/issues/561
@@ -3139,8 +3339,7 @@ class DFlowFMModel(MeshModel):
             branches = utils.read_branches_gui(branches, self.dfmmodel)
 
             # Set branches
-            self._branches = branches
-            self.set_geoms(branches, "branches")
+            self.set_branches(branches)
 
     def write_mesh(self, write_gui=True):
         """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc>."""
@@ -3396,6 +3595,21 @@ class DFlowFMModel(MeshModel):
         else:
             gdf = gpd.GeoDataFrame()
         return gdf
+
+    @property
+    def boundaries(self):
+        """1D boundary locations."""
+        if "boundaries" not in self.geoms:
+            self.set_geoms(
+                workflows.get_boundaries_with_nodeid(
+                    self.branches,
+                    mesh_utils.network1d_nodes_geodataframe(
+                        self.mesh_datasets["network1d"]
+                    ),
+                ),
+                "boundaries",
+            )
+        return self.geoms["boundaries"]
 
     def get_model_time(self):
         """

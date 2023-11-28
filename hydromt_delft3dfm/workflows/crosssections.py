@@ -551,6 +551,7 @@ def set_point_crosssections(
     maxdist : float, optional
         the maximum distant that a point crossection is snapped to the branch.
         By default 1.0
+
     Returns
     -------
     gpd.GeoDataFrame
@@ -713,7 +714,7 @@ def set_point_crosssections(
         elif shape == "yz":
             yz_crs = crosssections.loc[crosssections["shape"] == shape, :]
             check_gpd_attributes(
-                trapezoid_crs,
+                yz_crs,
                 required_columns=[
                     "branch_id",
                     "branch_offset",
