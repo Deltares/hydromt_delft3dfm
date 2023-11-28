@@ -6,14 +6,14 @@ setup_mesh2d:
     bbox: [12.15, 45.15, 12.82, 46.62]
   res: 500
 
+# setup_maps_from_rasterdataset:
+  # raster_fn: merit_hydro
+  # variables: ["elevtn"]
+  # fill_method: nearest
+  # interpolation_method: nearestNb
+
 setup_maps_from_rasterdataset:
-  raster_fn: merit_hydro
+  raster_fn: gebco_elev
   variables: ["elevtn"]
   fill_method: nearest
   interpolation_method: nearestNb
-
-# setup_maps_from_rasterdataset:
-#   raster_fn: gebco
-#   variables: ["elevtn"]
-#   fill_method: nearest
-#   interpolation_method: nearestNb
