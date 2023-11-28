@@ -2,13 +2,13 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-theme="light">
+<html lang="en" data-content_root="../" data-theme="light">
 
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>hydromt_delft3dfm.workflows.generate_boundaries_from_branches &#8212; HydroMT Delft3D FM  documentation</title>
+    <title>hydromt_delft3dfm.utils.write_1dlateral &#8212; HydroMT Delft3D FM  documentation</title>
   
   
   
@@ -18,12 +18,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -33,20 +33,20 @@
     <link rel="stylesheet" type="text/css" href="../_static/theme-deltares.css?v=17060807" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=36754332"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_generated/hydromt_delft3dfm.workflows.generate_boundaries_from_branches';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_generated/hydromt_delft3dfm.utils.write_1dlateral';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="hydromt_delft3dfm.workflows.select_boundary_type" href="hydromt_delft3dfm.workflows.select_boundary_type.html" />
-    <link rel="prev" title="hydromt_delft3dfm.workflows.get_boundaries_with_nodeid" href="hydromt_delft3dfm.workflows.get_boundaries_with_nodeid.html" />
+    <link rel="next" title="hydromt_delft3dfm.utils.read_2dboundary" href="hydromt_delft3dfm.utils.read_2dboundary.html" />
+    <link rel="prev" title="hydromt_delft3dfm.utils.read_1dlateral" href="hydromt_delft3dfm.utils.read_1dlateral.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -110,6 +110,7 @@
   <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
+
   
 
 <a class="navbar-brand logo" href="../index.html">
@@ -135,7 +136,8 @@
     
     <div class="me-auto navbar-header-items__center">
       
-        <div class="navbar-item"><nav class="navbar-nav">
+        <div class="navbar-item">
+<nav class="navbar-nav">
   <p class="sidebar-header-items__title"
      role="heading"
      aria-level="1"
@@ -188,6 +190,7 @@
       
         <div class="navbar-item navbar-persistent--container">
           
+
  <script>
  document.write(`
    <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -243,6 +246,7 @@
   
   
     <div class="navbar-persistent--mobile">
+
  <script>
  document.write(`
    <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -276,7 +280,8 @@
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item"><nav class="navbar-nav">
+          <div class="navbar-item">
+<nav class="navbar-nav">
   <p class="sidebar-header-items__title"
      role="heading"
      aria-level="1"
@@ -370,7 +375,8 @@
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
@@ -384,6 +390,8 @@
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_pipes.html">hydromt_delft3dfm.DFlowFMModel.setup_pipes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_manholes.html">hydromt_delft3dfm.DFlowFMModel.setup_manholes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_1dboundary.html">hydromt_delft3dfm.DFlowFMModel.setup_1dboundary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_1dlateral_from_points.html">hydromt_delft3dfm.DFlowFMModel.setup_1dlateral_from_points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_1dlateral_from_polygons.html">hydromt_delft3dfm.DFlowFMModel.setup_1dlateral_from_polygons</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_bridges.html">hydromt_delft3dfm.DFlowFMModel.setup_bridges</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_culverts.html">hydromt_delft3dfm.DFlowFMModel.setup_culverts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.setup_mesh2d.html">hydromt_delft3dfm.DFlowFMModel.setup_mesh2d</a></li>
@@ -459,14 +467,16 @@
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.init_dfmmodel.html">hydromt_delft3dfm.DFlowFMModel.init_dfmmodel</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.DFlowFMModel.get_model_time.html">hydromt_delft3dfm.DFlowFMModel.get_model_time</a></li>
 </ul>
-<ul class="current nav bd-sidenav">
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.get_boundaries_with_nodeid.html">hydromt_delft3dfm.workflows.get_boundaries_with_nodeid</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">hydromt_delft3dfm.workflows.generate_boundaries_from_branches</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.select_boundary_type.html">hydromt_delft3dfm.workflows.select_boundary_type</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.validate_boundaries.html">hydromt_delft3dfm.workflows.validate_boundaries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.compute_boundary_values.html">hydromt_delft3dfm.workflows.compute_boundary_values</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.compute_2dboundary_values.html">hydromt_delft3dfm.workflows.compute_2dboundary_values</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.compute_meteo_forcings.html">hydromt_delft3dfm.workflows.compute_meteo_forcings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.compute_forcing_values_points.html">hydromt_delft3dfm.workflows.compute_forcing_values_points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.compute_forcing_values_polygon.html">hydromt_delft3dfm.workflows.compute_forcing_values_polygon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.get_geometry_coords_for_polygons.html">hydromt_delft3dfm.workflows.get_geometry_coords_for_polygons</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.prepare_branches.html">hydromt_delft3dfm.workflows.prepare_branches</a></li>
@@ -477,6 +487,7 @@
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.update_data_columns_attributes.html">hydromt_delft3dfm.workflows.update_data_columns_attributes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.update_data_columns_attribute_from_query.html">hydromt_delft3dfm.workflows.update_data_columns_attribute_from_query</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.snap_newbranches_to_branches_at_snappednodes.html">hydromt_delft3dfm.workflows.snap_newbranches_to_branches_at_snappednodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.snap_geom_to_branches_and_drop_nonsnapped.html">hydromt_delft3dfm.workflows.snap_geom_to_branches_and_drop_nonsnapped</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.prepare_default_friction_and_crosssection.html">hydromt_delft3dfm.workflows.prepare_default_friction_and_crosssection</a></li>
@@ -510,7 +521,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.workflows.prepare_1dstructures.html">hydromt_delft3dfm.workflows.prepare_1dstructures</a></li>
 </ul>
-<ul class="nav bd-sidenav">
+<ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_branches_gui.html">hydromt_delft3dfm.utils.read_branches_gui</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_branches_gui.html">hydromt_delft3dfm.utils.write_branches_gui</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_crosssections.html">hydromt_delft3dfm.utils.read_crosssections</a></li>
@@ -523,6 +534,8 @@
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_manholes.html">hydromt_delft3dfm.utils.write_manholes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_1dboundary.html">hydromt_delft3dfm.utils.read_1dboundary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_1dboundary.html">hydromt_delft3dfm.utils.write_1dboundary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_1dlateral.html">hydromt_delft3dfm.utils.read_1dlateral</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">hydromt_delft3dfm.utils.write_1dlateral</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_2dboundary.html">hydromt_delft3dfm.utils.read_2dboundary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.write_2dboundary.html">hydromt_delft3dfm.utils.write_2dboundary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydromt_delft3dfm.utils.read_meteo.html">hydromt_delft3dfm.utils.read_meteo</a></li>
@@ -603,26 +616,20 @@
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="hydromt-delft3dfm-workflows-generate-boundaries-from-branches">
-<h1>hydromt_delft3dfm.workflows.generate_boundaries_from_branches<a class="headerlink" href="#hydromt-delft3dfm-workflows-generate-boundaries-from-branches" title="Link to this heading">#</a></h1>
+  <section id="hydromt-delft3dfm-utils-write-1dlateral">
+<h1>hydromt_delft3dfm.utils.write_1dlateral<a class="headerlink" href="#hydromt-delft3dfm-utils-write-1dlateral" title="Link to this heading">#</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="hydromt_delft3dfm.workflows.generate_boundaries_from_branches">
-<span class="sig-prename descclassname"><span class="pre">hydromt_delft3dfm.workflows.</span></span><span class="sig-name descname"><span class="pre">generate_boundaries_from_branches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame" title="(in GeoPandas v0.dev+untagged)"><span class="pre">GeoDataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'both'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame" title="(in GeoPandas v0.dev+untagged)"><span class="pre">GeoDataFrame</span></a></span></span><a class="reference internal" href="../_modules/hydromt_delft3dfm/workflows/boundaries.html#generate_boundaries_from_branches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hydromt_delft3dfm.workflows.generate_boundaries_from_branches" title="Link to this definition">#</a></dt>
-<dd><p>Get the possible boundary locations from the branches with id.</p>
+<dt class="sig sig-object py" id="hydromt_delft3dfm.utils.write_1dlateral">
+<span class="sig-prename descclassname"><span class="pre">hydromt_delft3dfm.utils.</span></span><span class="sig-name descname"><span class="pre">write_1dlateral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">forcing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><span class="pre">Dict</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">savedir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><span class="pre">Tuple</span></a></span></span><a class="reference internal" href="../_modules/hydromt_delft3dfm/utils.html#write_1dlateral"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hydromt_delft3dfm.utils.write_1dlateral" title="Link to this definition">#</a></dt>
+<dd><p>Write 1dlateral ext and bc files from forcing dict.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>where</strong> (<em>{'both'</em><em>, </em><em>'upstream'</em><em>, </em><em>'downstream'}</em>) – Where at the branches should the boundaries be derived.
-An upstream end node is defined as a node which has 0 incoming
-branches and 1 outgoing branch.
-A downstream end node is defined as a node which has 1 incoming
-branch and 0 outgoing branches.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A data frame containing all the upstream and downstream
-end nodes of the branches</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>forcing</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em> of </em><em>xarray DataArray</em>) – Dict of lateral DataArray for each variable
+Only forcing that starts with “lateral1d” is recognised.</p></li>
+<li><p><strong>savedir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – path to the directory where to save the file.</p></li>
+<li><p><strong>ext_fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – Path of the external forcing file (.ext) in which this function will append to.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -637,23 +644,23 @@ end nodes of the branches</p>
               
               
                 <footer class="prev-next-footer">
-                  <!-- Previous / next buttons -->
+                  
 <div class="prev-next-area">
     <a class="left-prev"
-       href="hydromt_delft3dfm.workflows.get_boundaries_with_nodeid.html"
+       href="hydromt_delft3dfm.utils.read_1dlateral.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">hydromt_delft3dfm.workflows.get_boundaries_with_nodeid</p>
+        <p class="prev-next-title">hydromt_delft3dfm.utils.read_1dlateral</p>
       </div>
     </a>
     <a class="right-next"
-       href="hydromt_delft3dfm.workflows.select_boundary_type.html"
+       href="hydromt_delft3dfm.utils.read_2dboundary.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">hydromt_delft3dfm.workflows.select_boundary_type</p>
+        <p class="prev-next-title">hydromt_delft3dfm.utils.read_2dboundary</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -667,19 +674,21 @@ end nodes of the branches</p>
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
   <div class="sidebar-secondary-item">
+
   <div class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hydromt_delft3dfm.workflows.generate_boundaries_from_branches"><code class="docutils literal notranslate"><span class="pre">generate_boundaries_from_branches()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hydromt_delft3dfm.utils.write_1dlateral"><code class="docutils literal notranslate"><span class="pre">write_1dlateral()</span></code></a></li>
 </ul>
   </nav></div>
 
   <div class="sidebar-secondary-item">
+
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/Deltares/hydromt_delft3dfm/edit/main/docs/_generated/hydromt_delft3dfm.workflows.generate_boundaries_from_branches.rst">
+    <a href="https://github.com/Deltares/hydromt_delft3dfm/edit/main/docs/_generated/hydromt_delft3dfm.utils.write_1dlateral.rst">
       <i class="fa-solid fa-pencil"></i>
       
       
@@ -692,8 +701,9 @@ end nodes of the branches</p>
 </div>
 
   <div class="sidebar-secondary-item">
+
   <div class="tocsection sourcelink">
-    <a href="../_sources/_generated/hydromt_delft3dfm.workflows.generate_boundaries_from_branches.rst.txt">
+    <a href="../_sources/_generated/hydromt_delft3dfm.utils.write_1dlateral.rst.txt">
       <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
   </div>
@@ -712,8 +722,8 @@ end nodes of the branches</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -721,6 +731,7 @@ end nodes of the branches</p>
     <div class="footer-items__start">
       
         <div class="footer-item">
+
   <p class="copyright">
     
       © Copyright Deltares.
@@ -730,6 +741,7 @@ end nodes of the branches</p>
 </div>
       
         <div class="footer-item">
+
   <p class="sphinx-version">
     Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     <br/>
@@ -742,8 +754,9 @@ end nodes of the branches</p>
   
     <div class="footer-items__end">
       
-        <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
 </p></div>
       
     </div>

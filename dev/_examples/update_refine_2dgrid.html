@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-theme="light">
+<html lang="en" data-content_root="../" data-theme="light">
 
   <head>
     <meta charset="utf-8" />
@@ -18,12 +18,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -34,9 +34,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/theme-deltares.css?v=17060807" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
@@ -113,6 +113,7 @@
   <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
+
   
 
 <a class="navbar-brand logo" href="../index.html">
@@ -138,7 +139,8 @@
     
     <div class="me-auto navbar-header-items__center">
       
-        <div class="navbar-item"><nav class="navbar-nav">
+        <div class="navbar-item">
+<nav class="navbar-nav">
   <p class="sidebar-header-items__title"
      role="heading"
      aria-level="1"
@@ -191,6 +193,7 @@
       
         <div class="navbar-item navbar-persistent--container">
           
+
  <script>
  document.write(`
    <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -246,6 +249,7 @@
   
   
     <div class="navbar-persistent--mobile">
+
  <script>
  document.write(`
    <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -279,7 +283,8 @@
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item"><nav class="navbar-nav">
+          <div class="navbar-item">
+<nav class="navbar-nav">
   <p class="sidebar-header-items__title"
      role="heading"
      aria-level="1"
@@ -373,7 +378,8 @@
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
@@ -579,55 +585,65 @@ Options:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2023-11-24 09:49:11,275 - update - log - INFO - HydroMT version: 0.9.0
-2023-11-24 09:49:11,275 - update - main - INFO - Updating dflowfm model at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/dflowfm_piave (r).
-2023-11-24 09:49:11,275 - update - main - INFO - Output dir: /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine
-2023-11-24 09:49:11,275 - update - main - INFO - User settings:
-2023-11-24 09:49:11,867 - update - model_api - INFO - Initializing dflowfm model from hydromt_delft3dfm (v0.2.1.dev0).
-2023-11-24 09:49:11,867 - update - data_catalog - INFO - Parsing data catalog from /usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt_delft3dfm/data/parameters_data.yml
-2023-11-24 09:49:11,873 - update - dflowfm - INFO - Reading mdu file at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/dflowfm_piave/dflowfm/DFlowFM.mdu
-2023-11-24 09:49:12,874 - update - dflowfm - INFO - project crs: 3857
-2023-11-24 09:49:12,874 - update - dflowfm - INFO - Reading model data from /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/dflowfm_piave
-2023-11-24 09:49:12,874 - update - dflowfm - INFO - Reading dimr file at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/dflowfm_piave/dimr_config.xml
-2023-11-24 09:49:14,040 - update - dflowfm - INFO - Reading branches GUI file
-2023-11-24 09:49:14,352 - update - dflowfm - INFO - Reading cross-sections files
-2023-11-24 09:49:14,399 - update - dflowfm - INFO - Reading friction files
-2023-11-24 09:49:14,401 - update - dflowfm - INFO - Reading manholes file
-2023-11-24 09:49:14,520 - update - model_api - WARNING - Replacing result: elevtn
-2023-11-24 09:49:14,526 - update - model_api - WARNING - Replacing result: infiltcap
-2023-11-24 09:49:14,532 - update - model_api - WARNING - Replacing result: roughness_manning
-2023-11-24 09:49:14,536 - update - model_api - WARNING - Replacing geom: region
-2023-11-24 09:49:14,537 - update - dflowfm - INFO - Reading cross-sections files
-2023-11-24 09:49:14,584 - update - dflowfm - INFO - Reading friction files
-2023-11-24 09:49:14,587 - update - model_api - WARNING - Replacing geom: crosssections
-2023-11-24 09:49:14,587 - update - dflowfm - INFO - Reading manholes file
-2023-11-24 09:49:14,665 - update - model_api - WARNING - Replacing geom: manholes
-2023-11-24 09:49:14,830 - update - model_api - WARNING - Replacing forcing: boundary1d_waterlevelbndbnd
-2023-11-24 09:49:14,831 - update - dflowfm - INFO - project crs: 3857
-2023-11-24 09:49:14,832 - update - model_api - INFO - setup_mesh2d_refine.polygon_fn: /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/data/refine.geojson
-2023-11-24 09:49:14,832 - update - model_api - INFO - setup_mesh2d_refine.sample_fn: None
-2023-11-24 09:49:14,832 - update - model_api - INFO - setup_mesh2d_refine.steps: 2
-2023-11-24 09:49:14,832 - update - dflowfm - INFO - reading geometry from file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/data/refine.geojson.
-2023-11-24 09:49:14,834 - update - geodataframe - INFO - Reading  vector data from /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/data/refine.geojson
-2023-11-24 09:49:14,879 - update - mesh - INFO - 2d mesh refined based on polygon.Number of faces before: 460 and after: 828
-2023-11-24 09:49:14,881 - update - model_mesh - WARNING - Overwriting grid mesh2d and the corresponding data variables in mesh.
-2023-11-24 09:49:15,048 - update - model_api - INFO - setup_link1d2d.link_direction: 1d_to_2d
-2023-11-24 09:49:15,048 - update - model_api - INFO - setup_link1d2d.link_type: embedded
-2023-11-24 09:49:15,048 - update - model_api - INFO - setup_link1d2d.polygon_fn: None
-2023-11-24 09:49:15,048 - update - model_api - INFO - setup_link1d2d.branch_type: None
-2023-11-24 09:49:15,048 - update - model_api - INFO - setup_link1d2d.max_length: inf
-2023-11-24 09:49:15,048 - update - model_api - INFO - setup_link1d2d.dist_factor: 2.0
-2023-11-24 09:49:15,049 - update - dflowfm - WARNING - adding 1d2d links for all branches at non boundary locations.
-2023-11-24 09:49:15,049 - update - dflowfm - INFO - setting up 1d_to_2d links.
-2023-11-24 09:49:15,221 - update - dflowfm - INFO - Writing model data to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine
-2023-11-24 09:49:15,221 - update - dflowfm - INFO - Writing maps files to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine/maps
-2023-11-24 09:49:16,164 - update - dflowfm - INFO - Writting cross-sections files crsdef and crsloc
-2023-11-24 09:49:16,561 - update - dflowfm - INFO - Writting friction file(s)
-2023-11-24 09:49:16,566 - update - dflowfm - INFO - Writting manholes file.
-2023-11-24 09:49:17,294 - update - dflowfm - INFO - Writting branches.gui file
-2023-11-24 09:49:17,445 - update - dflowfm - INFO - Writting forcing files.
-2023-11-24 09:49:18,576 - update - dflowfm - INFO - Adding dflowfm component to dimr config
-2023-11-24 09:49:18,581 - update - dflowfm - INFO - Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine/dimr_config.xml
+2023-11-28 15:12:24,013 - update - log - INFO - HydroMT version: 0.9.0
+2023-11-28 15:12:24,014 - update - main - INFO - Updating dflowfm model at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/dflowfm_piave (r).
+2023-11-28 15:12:24,014 - update - main - INFO - Output dir: /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine
+2023-11-28 15:12:24,014 - update - main - INFO - User settings:
+2023-11-28 15:12:24,586 - update - model_api - INFO - Initializing dflowfm model from hydromt_delft3dfm (v0.2.1.dev0).
+2023-11-28 15:12:24,586 - update - data_catalog - INFO - Parsing data catalog from /usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt_delft3dfm/data/parameters_data.yml
+2023-11-28 15:12:24,591 - update - dflowfm - INFO - Reading mdu file at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/dflowfm_piave/dflowfm/DFlowFM.mdu
+2023-11-28 15:12:25,573 - update - dflowfm - INFO - project crs: 3857
+2023-11-28 15:12:25,573 - update - dflowfm - INFO - Reading model data from /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/dflowfm_piave
+2023-11-28 15:12:25,573 - update - dflowfm - INFO - Reading dimr file at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/dflowfm_piave/dimr_config.xml
+2023-11-28 15:12:26,933 - update - dflowfm - INFO - Reading branches GUI file
+2023-11-28 15:12:27,128 - update - dflowfm - INFO - Reading cross-sections files
+2023-11-28 15:12:27,300 - update - dflowfm - INFO - Reading manholes file
+2023-11-28 15:12:27,417 - update - model_api - WARNING - Replacing result: elevtn
+2023-11-28 15:12:27,422 - update - model_api - WARNING - Replacing result: infiltcap
+2023-11-28 15:12:27,428 - update - model_api - WARNING - Replacing result: roughness_manning
+2023-11-28 15:12:27,432 - update - model_api - WARNING - Replacing geom: region
+2023-11-28 15:12:27,432 - update - dflowfm - INFO - Reading cross-sections files
+2023-11-28 15:12:27,478 - update - model_api - WARNING - Replacing geom: crosssections
+2023-11-28 15:12:27,479 - update - dflowfm - INFO - Reading manholes file
+2023-11-28 15:12:27,555 - update - model_api - WARNING - Replacing geom: manholes
+2023-11-28 15:12:27,692 - update - model_api - WARNING - Replacing forcing: boundary1d_waterlevelbndbnd
+2023-11-28 15:12:27,693 - update - dflowfm - INFO - project crs: 3857
+2023-11-28 15:12:27,693 - update - model_api - INFO - setup_mesh2d_refine.polygon_fn: /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/data/refine.geojson
+2023-11-28 15:12:27,694 - update - model_api - INFO - setup_mesh2d_refine.sample_fn: None
+2023-11-28 15:12:27,694 - update - model_api - INFO - setup_mesh2d_refine.steps: 2
+2023-11-28 15:12:27,694 - update - dflowfm - INFO - reading geometry from file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/data/refine.geojson.
+2023-11-28 15:12:27,695 - update - geodataframe - INFO - Reading  vector data from /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/data/refine.geojson
+2023-11-28 15:12:27,732 - update - mesh - INFO - 2d mesh refined based on polygon.Number of faces before: 460 and after: 828
+2023-11-28 15:12:27,733 - update - model_mesh - WARNING - Overwriting grid mesh2d and the corresponding data variables in mesh.
+2023-11-28 15:12:27,894 - update - model_api - INFO - setup_link1d2d.link_direction: 1d_to_2d
+2023-11-28 15:12:27,895 - update - model_api - INFO - setup_link1d2d.link_type: embedded
+2023-11-28 15:12:27,895 - update - model_api - INFO - setup_link1d2d.polygon_fn: None
+2023-11-28 15:12:27,895 - update - model_api - INFO - setup_link1d2d.branch_type: None
+2023-11-28 15:12:27,895 - update - model_api - INFO - setup_link1d2d.max_length: inf
+2023-11-28 15:12:27,895 - update - model_api - INFO - setup_link1d2d.dist_factor: 2.0
+2023-11-28 15:12:27,895 - update - dflowfm - WARNING - adding 1d2d links for all branches at non boundary locations.
+2023-11-28 15:12:27,895 - update - dflowfm - INFO - setting up 1d_to_2d links.
+2023-11-28 15:12:28,067 - update - dflowfm - INFO - Writing model data to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine
+2023-11-28 15:12:28,067 - update - dflowfm - INFO - Writing maps files to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine/maps
+2023-11-28 15:12:29,094 - update - dflowfm - INFO - Writting cross-sections files crsdef and crsloc
+2023-11-28 15:12:29,486 - update - dflowfm - INFO - Writting friction file(s)
+2023-11-28 15:12:29,491 - update - dflowfm - INFO - Writting manholes file.
+2023-11-28 15:12:29,909 - update - model_api - WARNING - Replacing geom: mesh1d
+2023-11-28 15:12:29,909 - update - model_api - WARNING - Replacing geom: mesh2d
+2023-11-28 15:12:29,909 - update - model_api - WARNING - Replacing geom: network1d
+2023-11-28 15:12:29,922 - update - model_api - WARNING - Replacing geom: crosssections
+2023-11-28 15:12:29,928 - update - model_api - WARNING - Replacing geom: manholes
+2023-11-28 15:12:29,929 - update - model_api - WARNING - Replacing geom: rivers
+2023-11-28 15:12:29,931 - update - model_api - WARNING - Replacing geom: pipes
+2023-11-28 15:12:29,933 - update - model_api - WARNING - Replacing geom: branches
+2023-11-28 15:12:29,933 - update - model_api - WARNING - Replacing geom: region
+2023-11-28 15:12:29,934 - update - model_api - WARNING - Replacing geom: mesh1d
+2023-11-28 15:12:29,935 - update - model_api - WARNING - Replacing geom: mesh2d
+2023-11-28 15:12:29,935 - update - model_api - WARNING - Replacing geom: network1d
+2023-11-28 15:12:31,090 - update - dflowfm - INFO - Writting branches.gui file
+2023-11-28 15:12:31,236 - update - dflowfm - INFO - Writting forcing files.
+2023-11-28 15:12:32,331 - update - dflowfm - INFO - Adding dflowfm component to dimr config
+2023-11-28 15:12:32,336 - update - dflowfm - INFO - Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine/dimr_config.xml
 
 </pre></div></div>
 </div>
@@ -729,7 +745,7 @@ Options:
               
               
                 <footer class="prev-next-footer">
-                  <!-- Previous / next buttons -->
+                  
 <div class="prev-next-area">
     <a class="left-prev"
        href="../user_guide/dflowfm_update.html"
@@ -759,6 +775,7 @@ Options:
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
   <div class="sidebar-secondary-item">
+
   <div class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
@@ -772,6 +789,7 @@ Options:
   </nav></div>
 
   <div class="sidebar-secondary-item">
+
   
   <div class="tocsection editthispage">
     <a href="https://github.com/Deltares/hydromt_delft3dfm/edit/main/docs/_examples/update_refine_2dgrid.ipynb">
@@ -787,6 +805,7 @@ Options:
 </div>
 
   <div class="sidebar-secondary-item">
+
   <div class="tocsection sourcelink">
     <a href="../_sources/_examples/update_refine_2dgrid.ipynb.txt">
       <i class="fa-solid fa-file-lines"></i> Show Source
@@ -807,8 +826,8 @@ Options:
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -816,6 +835,7 @@ Options:
     <div class="footer-items__start">
       
         <div class="footer-item">
+
   <p class="copyright">
     
       © Copyright Deltares.
@@ -825,6 +845,7 @@ Options:
 </div>
       
         <div class="footer-item">
+
   <p class="sphinx-version">
     Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     <br/>
@@ -837,8 +858,9 @@ Options:
   
     <div class="footer-items__end">
       
-        <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
 </p></div>
       
     </div>
