@@ -3,7 +3,7 @@ global:
 
 setup_mesh2d:
   region: 
-    bbox: [12.15, 45.15, 12.82, 46.62]
+    bbox: [11.82, 45.20, 12.95, 46.2]
   res: 500
 
 # setup_maps_from_rasterdataset:
