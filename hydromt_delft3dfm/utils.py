@@ -714,7 +714,7 @@ def read_1dboundary(
 
     data, dims, coords, bc = _read_forcingfile(
         df_forcing,
-        index_coords=nodeids,
+        index_values=nodeids,
         quantity=quantity,
         allow_constant=True,
         add_interpolation=False,
@@ -876,7 +876,7 @@ def read_1dlateral(
 
     data, dims, coords, bc = _read_forcingfile(
         df_forcing,
-        index_coords=df_forcing.name,
+        index_values=df_forcing.name,
         quantity=quantity,
         allow_constant=True,
         add_interpolation=True,
@@ -1083,7 +1083,7 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
 
     data, dims, coords, bc = _read_forcingfile(
         df_forcing,
-        index_coords=df_forcing.name.values,
+        index_values=df_forcing.name.values,
         quantity=df.quantity,
         allow_constant=False,
         add_interpolation=False,
@@ -1225,7 +1225,7 @@ def read_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
 
     data, dims, coords, bc = _read_forcingfile(
         df_forcing,
-        index_coords="global",
+        index_values="global",
         quantity=quantity,
         allow_constant=True,
         add_interpolation=True,
