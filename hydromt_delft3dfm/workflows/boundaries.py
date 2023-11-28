@@ -8,7 +8,6 @@ import hydromt.io
 import numpy as np
 import pandas as pd
 import xarray as xr
-from shapely.geometry import Point
 
 from hydromt_delft3dfm import graph_utils
 
@@ -17,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 __all__ = [
     "get_boundaries_with_nodeid",
-    "generate_boundaries_from_branches",
     "select_boundary_type",
     "validate_boundaries",
     "compute_boundary_values",
@@ -44,79 +42,12 @@ def get_boundaries_with_nodeid(
     A GeoDataFrame with boundary locations and their associated node IDs.
     """
     # generate all possible and allowed boundary locations
-    _boundaries = generate_boundaries_from_branches(branches, where="both")
+    _boundaries = graph_utils.get_endnodes_from_lines(branches, where="both")
 
     boundaries = hydromt.gis_utils.nearest_merge(
         _boundaries, network1d_nodes, max_dist=0.1, overwrite=False
     )
     return boundaries
-
-
-def generate_boundaries_from_branches(
-    branches: gpd.GeoDataFrame, where: str = "both"
-) -> gpd.GeoDataFrame:
-    """Get the possible boundary locations from the branches with id.
-
-    Parameters
-    ----------
-    where : {'both', 'upstream', 'downstream'}
-        Where at the branches should the boundaries be derived.
-        An upstream end node is defined as a node which has 0 incoming
-        branches and 1 outgoing branch.
-        A downstream end node is defined as a node which has 1 incoming
-        branch and 0 outgoing branches.
-
-    Returns
-    -------
-    gpd.GeoDataFrame
-        A data frame containing all the upstream and downstream
-        end nodes of the branches
-    """
-    # convert branches to graph
-    G = graph_utils.gpd_to_digraph(branches)
-
-    # get boundary locations at where
-    if where == "downstream":
-        endnodes = {
-            dn: {**d, **{"where": "downstream"}}
-            for up, dn, d in G.edges(data=True)
-            if G.out_degree[dn] == 0 and G.degree[dn] == 1
-        }
-    elif where == "upstream":
-        endnodes = {
-            up: {**d, **{"where": "upstream"}}
-            for up, dn, d in G.edges(data=True)
-            if G.in_degree[up] == 0 and G.degree[up] == 1
-        }
-    elif where == "both":
-        endnodes = {
-            dn: {**d, **{"where": "downstream"}}
-            for up, dn, d in G.edges(data=True)
-            if G.out_degree[dn] == 0 and G.degree[dn] == 1
-        }
-        endnodes.update(
-            {
-                up: {**d, **{"where": "upstream"}}
-                for up, dn, d in G.edges(data=True)
-                if G.in_degree[up] == 0 and G.degree[up] == 1
-            }
-        )
-    else:
-        pass
-
-    if len(endnodes) == 0:
-        logger.error(f"cannot generate boundaries for given condition {where}")
-
-    endnodes_pd = (
-        pd.DataFrame().from_dict(endnodes, orient="index").drop(columns=["geometry"])
-    )
-    endnodes_gpd = gpd.GeoDataFrame(
-        data=endnodes_pd,
-        geometry=[Point(endnode) for endnode in endnodes],
-        crs=branches.crs,
-    )
-    endnodes_gpd.reset_index(inplace=True)
-    return endnodes_gpd
 
 
 def select_boundary_type(

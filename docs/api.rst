@@ -150,7 +150,6 @@ Boundaries
    :toctree: _generated
 
    workflows.get_boundaries_with_nodeid
-   workflows.generate_boundaries_from_branches
    workflows.select_boundary_type
    workflows.validate_boundaries
    workflows.compute_boundary_values

@@ -594,6 +594,94 @@ def write_manholes(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     return storage_fn
 
 
+def _read_forcingfile(
+    df_forcing: pd.DataFrame,
+    index_values: Union[np.ndarray, str],
+    quantity: str,
+    allow_constant: bool = True,
+    add_interpolation: bool = True,
+    add_factor_offset: bool = True,
+) -> Tuple[np.ndarray, List, Dict, Dict]:
+    """
+    Read forcing dataframe and parse to xarray properties.
+
+    Parameters
+    ----------
+    df_forcing: pd.DataFrame
+        Dataframe with forcing data.
+    index_values: np.ndarray or str
+        Index values of the forcing data.
+    quantity: str
+        Name of quantity (eg 'waterlevel').
+    allow_constant: bool, optional
+        If True, allow constant forcing.
+    add_interpolation: bool, optional
+        If True, add timeinterpolation attribute.
+    add_factor_offset: bool, optional
+        If True, add factor and offset attributes.
+
+    Returns
+    -------
+    data: np.ndarray
+        Data of the forcing.
+    dims: list
+        Dimensions of the forcing.
+    coords: dict
+        Coordinates of the forcing.
+    bc: dict
+        Attributes of the forcing.
+    """
+    # Initialise dataarray attributes bc
+    bc = {"quantity": quantity}
+
+    # Get data from forcing df
+    # Check if all constant
+    if np.all(df_forcing.function == "constant") and allow_constant:
+        # Prepare data
+        data = np.array([v[0][0] for v in df_forcing.datablock])
+        data = data + df_forcing.offset.values * df_forcing.factor.values
+        # Prepare dataarray properties
+        dims = ["index"]
+        coords = dict(index=index_values)
+        bc["function"] = "constant"
+        bc["units"] = df_forcing.quantityunitpair.iloc[0][0].unit
+        if add_factor_offset:
+            bc["factor"] = 1
+            bc["offset"] = 0
+    # Check if all timeseries
+    elif np.all(df_forcing.function == "timeseries"):
+        # Prepare data
+        data = list()
+        for i in np.arange(len(df_forcing.datablock)):
+            v = df_forcing.datablock.iloc[i]
+            offset = df_forcing.offset.iloc[i]
+            factor = df_forcing.factor.iloc[i]
+            databl = [n[1] * factor + offset for n in v]
+            data.append(databl)
+        data = np.array(data)
+        # Assume unique times
+        times = np.array([n[0] for n in df_forcing.datablock.iloc[0]])
+        # Prepare dataarray properties
+        dims = ["index", "time"]
+        coords = dict(index=index_values, time=times)
+        bc["function"] = "timeseries"
+        if add_interpolation:
+            bc["timeinterpolation"] = df_forcing.timeinterpolation.iloc[0]
+        bc["units"] = df_forcing.quantityunitpair.iloc[0][1].unit
+        bc["time_unit"] = df_forcing.quantityunitpair.iloc[0][0].unit
+        if add_factor_offset:
+            bc["factor"] = 1
+            bc["offset"] = 0
+    # Else not implemented yet
+    else:
+        raise NotImplementedError(
+            "ForcingFile with several function for a single variable not implemented."
+            f"Skipping reading forcing for variable {quantity}."
+        )
+
+    return data, dims, coords, bc
+
+
 def read_1dboundary(
     df: pd.DataFrame, quantity: str, nodes: gpd.GeoDataFrame
 ) -> xr.DataArray:
@@ -616,8 +704,6 @@ def read_1dboundary(
     da_out: xr.DataArray
         External and focing values combined into a DataArray for variable quantity.
     """
-    # Initialise dataarray attributes
-    bc = {"quantity": quantity}
     nodeids = df.nodeid.values
     nodeids = nodeids[nodeids != "nan"]
     # Assume one forcing file (hydromt writer) and read
@@ -626,46 +712,14 @@ def read_1dboundary(
     # Filter for the current nodes, remove nans
     df_forcing = df_forcing[np.isin(df_forcing.name, nodeids)]
 
-    # Get data
-    # Check if all constant
-    if np.all(df_forcing.function == "constant"):
-        # Prepare data
-        data = np.array([v[0][0] for v in df_forcing.datablock])
-        data = data + df_forcing.offset.values * df_forcing.factor.values
-        # Prepare dataarray properties
-        dims = ["index"]
-        coords = dict(index=nodeids)
-        bc["function"] = "constant"
-        bc["units"] = df_forcing.quantityunitpair.iloc[0][0].unit
-        bc["factor"] = 1
-        bc["offset"] = 0
-    # Check if all timeseries
-    elif np.all(df_forcing.function == "timeseries"):
-        # Prepare data
-        data = list()
-        for i in np.arange(len(df_forcing.datablock)):
-            v = df_forcing.datablock.iloc[i]
-            offset = df_forcing.offset.iloc[i]
-            factor = df_forcing.factor.iloc[i]
-            databl = [n[1] * factor + offset for n in v]
-            data.append(databl)
-        data = np.array(data)
-        # Assume unique times
-        times = np.array([n[0] for n in df_forcing.datablock.iloc[0]])
-        # Prepare dataarray properties
-        dims = ["index", "time"]
-        coords = dict(index=nodeids, time=times)
-        bc["function"] = "timeseries"
-        bc["units"] = df_forcing.quantityunitpair.iloc[0][1].unit
-        bc["time_unit"] = df_forcing.quantityunitpair.iloc[0][0].unit
-        bc["factor"] = 1
-        bc["offset"] = 0
-    # Else not implemented yet
-    else:
-        raise NotImplementedError(
-            "ForcingFile with several function for a single variable not implemented."
-            f"Skipping reading forcing for variable {quantity}."
-        )
+    data, dims, coords, bc = _read_forcingfile(
+        df_forcing,
+        index_coords=nodeids,
+        quantity=quantity,
+        allow_constant=True,
+        add_interpolation=False,
+        add_factor_offset=True,
+    )
 
     # Get nodeid coordinates
     node_geoms = nodes.set_index("nodeid").reindex(nodeids)
@@ -816,54 +870,18 @@ def read_1dlateral(
     da_out: xr.DataArray
         External and focing values combined into a DataArray for variable quantity.
     """
-    # Initialise dataarray attributes
-    bc = {"quantity": quantity}
-
     # Assume one discharge (lateral specific) file (hydromt writer) and read
     forcing = df.discharge.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
 
-    # Get data
-    # Check if all constant
-    if np.all(df_forcing.function == "constant"):
-        # Prepare data
-        data = np.array([v[0][0] for v in df_forcing.datablock])
-        data = data + df_forcing.offset.values * df_forcing.factor.values
-        # Prepare dataarray properties
-        dims = ["index"]
-        coords = dict(index=df_forcing.name)
-        bc["function"] = "constant"
-        bc["units"] = df_forcing.quantityunitpair.iloc[0][0].unit
-        bc["factor"] = 1
-        bc["offset"] = 0
-    # Check if all timeseries
-    elif np.all(df_forcing.function == "timeseries"):
-        # Prepare data
-        data = list()
-        for i in np.arange(len(df_forcing.datablock)):
-            v = df_forcing.datablock.iloc[i]
-            offset = df_forcing.offset.iloc[i]
-            factor = df_forcing.factor.iloc[i]
-            databl = [n[1] * factor + offset for n in v]
-            data.append(databl)
-        data = np.array(data)
-        # Assume unique times
-        times = np.array([n[0] for n in df_forcing.datablock.iloc[0]])
-        # Prepare dataarray properties
-        dims = ["index", "time"]
-        coords = dict(index=df_forcing.name, time=times)
-        bc["function"] = "timeseries"
-        bc["timeinterpolation"] = df_forcing.timeinterpolation.iloc[0]
-        bc["units"] = df_forcing.quantityunitpair.iloc[0][1].unit
-        bc["time_unit"] = df_forcing.quantityunitpair.iloc[0][0].unit
-        bc["factor"] = 1
-        bc["offset"] = 0
-    # Else not implemented yet
-    else:
-        raise NotImplementedError(
-            "ForcingFile with several function for a single variable not implemented."
-            + f"Skipping reading forcing for variable {quantity}."
-        )
+    data, dims, coords, bc = _read_forcingfile(
+        df_forcing,
+        index_coords=df_forcing.name,
+        quantity=quantity,
+        allow_constant=True,
+        add_interpolation=True,
+        add_factor_offset=True,
+    )
 
     # Get lateral locations and update dimentions and coordinates
     if any(df.numcoordinates.values):
@@ -1053,46 +1071,26 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
         External and forcing values combined into a DataArray with name starts with
         "boundary2d".
     """
-    # Initialise dataarray attributes
-    bc = {"quantity": df.quantity}
     # location file
     # assume one location file has only one location (hydromt writer) and read
     locationfile = PolyFile(workdir.joinpath(df.locationfile.filepath))
     boundary_name = locationfile.objects[0].metadata.name
     boundary_points = pd.DataFrame([f.__dict__ for f in locationfile.objects[0].points])
-    bc["locationfile"] = df.locationfile.filepath.name
+
     # Assume one forcing file (hydromt writer) and read
     forcing = df.forcingfile
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
 
-    # Get data
-    # Check if all constant, Assume only timeseries exist (hydromt writer) and read
-    if np.all(df_forcing.function == "timeseries"):
-        # Prepare data
-        data = list()
-        for i in np.arange(len(df_forcing.datablock)):
-            v = df_forcing.datablock.iloc[i]
-            offset = df_forcing.offset.iloc[i]
-            factor = df_forcing.factor.iloc[i]
-            databl = [n[1] * factor + offset for n in v]
-            data.append(databl)
-        data = np.array(data)
-        # Assume unique times
-        times = np.array([n[0] for n in df_forcing.datablock.iloc[0]])
-        # prepare index
-        indexes = df_forcing.name.values
-        # Prepare dataarray properties
-        dims = ["index", "time"]
-        coords = dict(index=indexes, time=times)
-        bc["function"] = "timeseries"
-        bc["units"] = df_forcing.quantityunitpair.iloc[0][1].unit
-        bc["time_unit"] = df_forcing.quantityunitpair.iloc[0][0].unit
-    # Else not implemented yet
-    else:
-        raise NotImplementedError(
-            "ForcingFile with several function for a single variable not implemented."
-            "Skipping reading forcing."
-        )
+    data, dims, coords, bc = _read_forcingfile(
+        df_forcing,
+        index_coords=df_forcing.name.values,
+        quantity=df.quantity,
+        allow_constant=False,
+        add_interpolation=False,
+        add_factor_offset=False,
+    )
+
+    bc["locationfile"] = df.locationfile.filepath.name
 
     # Get coordinates
     coords["x"] = ("index", boundary_points.x.values)
@@ -1219,57 +1217,20 @@ def read_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
     da_out: xr.DataArray
         External and focing values combined into a DataArray for variable quantity.
     """
-    # Initialise dataarray attributes
-    bc = {"quantity": quantity}
-
     # Assume one forcing file (hydromt writer) and read
     forcing = df.forcingfile.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
     # Filter for the current nodes
     df_forcing = df_forcing[np.isin(df_forcing.name, "global")]
 
-    # Get data
-    # Check if all constant
-    if np.all(df_forcing.function == "constant"):
-        # Prepare data
-        data = np.array([v[0][0] for v in df_forcing.datablock])
-        data = data + df_forcing.offset.values * df_forcing.factor.values
-        # Prepare dataarray properties
-        dims = ["index"]
-        coords = dict(index="global")
-        bc["function"] = "constant"
-        bc["units"] = df_forcing.quantityunitpair.iloc[0][0].unit
-        bc["factor"] = 1
-        bc["offset"] = 0
-    # Check if all timeseries
-    elif np.all(df_forcing.function == "timeseries"):
-        # Prepare data
-        data = list()
-        for i in np.arange(len(df_forcing.datablock)):
-            v = df_forcing.datablock.iloc[i]
-            offset = df_forcing.offset.iloc[i]
-            factor = df_forcing.factor.iloc[i]
-            databl = [n[1] * factor + offset for n in v]
-            data.append(databl)
-        data = np.array(data)
-        # Assume unique times
-        times = np.array([n[0] for n in df_forcing.datablock.iloc[0]])
-        # Prepare dataarray properties
-        dims = ["index", "time"]
-        coords = dict(index=["global"], time=times)
-        bc["function"] = "timeseries"
-        bc["timeinterpolation"] = df_forcing.timeinterpolation.iloc[0]
-        bc["units"] = df_forcing.quantityunitpair.iloc[0][1].unit
-        bc["time_unit"] = df_forcing.quantityunitpair.iloc[0][0].unit
-        bc["factor"] = df_forcing.factor.iloc[0]
-        bc["offset"] = df_forcing.offset.iloc[0]
-    # Else not implemented yet
-    else:
-        raise NotImplementedError(
-            "ForcingFile with several function for a single variable not implemented."
-            f"Skipping reading forcing for variable {quantity}."
-        )
-
+    data, dims, coords, bc = _read_forcingfile(
+        df_forcing,
+        index_coords="global",
+        quantity=quantity,
+        allow_constant=True,
+        add_interpolation=True,
+        add_factor_offset=True,
+    )
     # Do not apply to "global" meteo
     # coords["x"]
     # coords["y"]
