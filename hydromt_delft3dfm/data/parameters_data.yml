@@ -1,4 +1,40 @@
 ---
+rivers_defaults:
+  data_type: DataFrame
+  driver: csv
+  path: branches/rivers_defaults.csv
+  meta:
+    notes: default river parameters.
+channels_defaults:
+  data_type: DataFrame
+  driver: csv
+  path: branches/channels_defaults.csv
+  meta:
+    notes: default channel parameters.
+pipes_defaults:
+  data_type: DataFrame
+  driver: csv
+  path: branches/pipes_defaults.csv
+  meta:
+    notes: default pipe parameters.
+manholes_defaults:
+  data_type: DataFrame
+  driver: csv
+  path: storages/manholes_defaults.csv
+  meta:
+    notes: default manhole parameters.
+1D_bridges_defaults:
+  data_type: DataFrame
+  driver: csv
+  path: structures/bridges_defaults.csv
+  meta:
+    notes: default bridge parameters.
+1D_culverts_defaults:
+  data_type: DataFrame
+  driver: csv
+  path: structures/culverts_defaults.csv
+  meta:
+    notes: default culvert parameters.
 vito_mapping:
   data_type: DataFrame
   driver: csv

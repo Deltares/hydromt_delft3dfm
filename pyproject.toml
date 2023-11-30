@@ -8,19 +8,19 @@ authors = [
 	{ name = "Rinske Hutten", email = "rinske.hutten@deltares.nl" },
 	{ name = "Xiaohan Li", email = "xiaohan.li@deltares.nl" },
 	{ name = "Hélène Boisgontier", email = "helene.boisgontier@deltares.nl" },
+	{ name = "Jelmer Veenstra", email = "jelmer.veenstra@deltares.nl" },
 ]
 dependencies = [
-	"hydromt >=0.7.0",
-	"dask",
+	"hydromt >=0.9.0",
 	"geopandas >=0.10",
 	"numpy",
 	"pandas",
 	"xarray",
-	"hydrolib-core",
-	"xugrid",
-	"meshkernel",
+	"hydrolib-core >=0.6.0",
+	"xugrid >=0.7.1",
+	"meshkernel >= 3.0.0",
 	"pyproj",
-	"shapely >=0.2.0",
+	"shapely >=2.0.0",
 	"scipy",
 	"pyflwdir >=0.5.4",
 	"networkx",
@@ -29,7 +29,7 @@ dependencies = [
 	"geojson", # ra2ce network module - temporary
 	"tqdm", # ra2ce network module - temporary
 ]
-requires-python = ">=3.9,<3.11" # support 3.11 after new meshkernelpy releases
+requires-python = ">=3.9"
 readme = "README.rst"
 classifiers = [
 	# https://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -60,6 +60,11 @@ doc = [
 	"pydata-sphinx-theme",
 	"sphinx_autosummary_accessors",
 ]
+examples = [
+  "jupyterlab",      # run examples in jupyter notebook
+  "notebook",        # jupyter integration
+  "cartopy",		 # plot examples
+]
 
 [project.urls]
 Documentation = "http://deltares.github.io/hydromt_delft3dfm/latest/"
@@ -79,6 +84,10 @@ select = ["E", "F", "I", "PT", "D"]
 ignore-init-module-imports = true
 ignore = ["D211", "D213", "E741", "D105", "E712"]
 exclude = ["examples", "tests", "docs"]
+
+[tool.ruff.per-file-ignores]
+"hydromt_delft3dfm/__init__.py" = ["E402", "F403"]
+"hydromt_delft3dfm/workflows/__init__.py" = ["F403"]
 
 [tool.ruff.pydocstyle]
 convention = "numpy"

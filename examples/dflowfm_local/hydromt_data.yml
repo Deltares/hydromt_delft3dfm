@@ -1,0 +1,165 @@
+1D_boundaries_timeseries:
+  data_type: GeoDataset
+  path: c:\Developments\hydromt_delft3dfm\tests\data\local_data\boundaries.geojson
+  driver: vector
+  driver_kwargs:
+    fn_data: c:\Developments\hydromt_delft3dfm\tests\data\local_data\boundaries_series.csv
+  crs: 32647
+1D_branches:
+  data_type: GeoDataFrame
+  path: c:\Developments\hydromt_delft3dfm\tests\data\local_data\1D_rivers.geojson
+  driver: vector
+  rename:
+    BRANCH_ID: branchid
+    BR_TYPE: branchtype
+  crs: 32647
+1D_bridges_defaults:
+  data_type: DataFrame
+  path: c:\Developments\hydromt_delft3dfm\hydromt_delft3dfm\data\structures\bridges_defaults.csv
+  driver: csv
+  meta:
+    notes: default bridge parameters.
+1D_culverts_defaults:
+  data_type: DataFrame
+  path: c:\Developments\hydromt_delft3dfm\hydromt_delft3dfm\data\structures\culverts_defaults.csv
+  driver: csv
+  meta:
+    notes: default culvert parameters.
+1D_laterals_polygons_timeseries:
+  data_type: GeoDataset
+  path: c:\Developments\hydromt_delft3dfm\tests\data\local_data\laterals_polygons.geojson
+  driver: vector
+  driver_kwargs:
+    fn_data: c:\Developments\hydromt_delft3dfm\tests\data\local_data\laterals_series.csv
+    assert_gtype: Polygon
+  rename:
+    1D_laterals_polygons_timeseries: lateral_discharge
+  crs: 32647
+1D_laterals_timeseries:
+  data_type: GeoDataset
+  path: c:\Developments\hydromt_delft3dfm\tests\data\local_data\laterals_points.geojson
+  driver: vector
+  driver_kwargs:
+    fn_data: c:\Developments\hydromt_delft3dfm\tests\data\local_data\laterals_series.csv
+  rename:
+    1D_laterals_timeseries: lateral_discharge
+  crs: 32647
+1D_rivers_pointcrosssections:
+  data_type: GeoDataFrame
+  path: c:\Developments\hydromt_delft3dfm\tests\data\local_data\1D_rivers_pointcrosssections.geojson
+  driver: vector
+  rename:
+    id: crsid
+    TYPE: shape
+    WIDTH: width
+    HEIGHT: height
+    BEDLEVEL: shift
+  crs: 32647
+1D_rivers_xyzcrosssections:
+  data_type: GeoDataFrame
+  path: c:\Developments\hydromt_delft3dfm\tests\data\local_data\1D_rivers_xyzcrosssections.geojson
+  driver: vector
+  rename:
+    ORDER: order
+    CRS_ID: crsid
+    Z: z
+  crs: 32647
+1d_bridges:
+  data_type: GeoDataFrame
+  path: c:\Developments\hydromt_delft3dfm\tests\data\local_data\bridges.geojson
+  driver: vector
+  rename:
+    STRUC_ID: structure_id
+    STRUC_TYPE: structure_type
+    SHAPE: shape
+    WIDTH: width
+    HEIGHT: height
+    CLOSED: closed
+    BEDLEV: shift
+    LENGTH: length
+    FLOW_DIR: allowedflowdir
+    IN_LOSS: inletlosscoeff
+    OUT_LOSS: outletlosscoeff
+  crs: 32647
+1d_culverts:
+  data_type: GeoDataFrame
+  path: c:\Developments\hydromt_delft3dfm\tests\data\local_data\culverts.geojson
+  driver: vector
+  rename:
+    STRUC_ID: structure_id
+    STRUC_TYPE: structure_type
+    SHAPE: shape
+    WIDTH: width
+    HEIGHT: height
+    CLOSED: closed
+    INVLEV_UP: leftlevel
+    INVLEV_DN: rightlevel
+    FLOW_DIR: allowedflowdir
+  crs: 32647
+1d_manholes:
+  data_type: GeoDataFrame
+  path: c:\Developments\hydromt_delft3dfm\tests\data\local_data\manholes.geojson
+  driver: vector
+  rename:
+    ID: manholeid
+    AREA: area
+    STR_AREA: streetArea
+  crs: 32647
+2D_boundary:
+  data_type: GeoDataFrame
+  path: c:\Developments\hydromt_delft3dfm\tests\data\local_data\2d_boundary.geojson
+  driver: vector
+  meta:
+    notes: created by buffer the extent by aqrt(2) * res. Must contain boundary_id
+      if timeseries is specified
+  crs: 32647
+2D_boundary_timeseries:
+  data_type: DataFrame
+  path: c:\Developments\hydromt_delft3dfm\tests\data\local_data\2dboundaries_series.csv
+  driver: csv
+  driver_kwargs:
+    index_col: time
+    parse_dates: true
+    dayfirst: true
+  meta:
+    notes: time series data for the 2D boundary, must contain time as index and boundary_id
+      as columns
+dem:
+  data_type: RasterDataset
+  path: c:\Developments\hydromt_delft3dfm\tests\data\local_data\dem.tif
+  driver: raster
+  rename:
+    dem: elevtn
+  meta:
+    category: dem
+    history: temporary dem within model extent
+  crs: 4326
+manholes_defaults:
+  data_type: DataFrame
+  path: c:\Developments\hydromt_delft3dfm\hydromt_delft3dfm\data\storages\manholes_defaults.csv
+  driver: csv
+  meta:
+    notes: default manhole parameters.
+meteo_timeseries_T2:
+  data_type: DataFrame
+  path: c:\Developments\hydromt_delft3dfm\tests\data\local_data\rainfall_series.csv
+  driver: csv
+  driver_kwargs:
+    index_col: 0
+    parse_dates: true
+  rename:
+    T2_mm/day: precip
+  meta:
+    unit: mm day-1
+pipes_defaults:
+  data_type: DataFrame
+  path: c:\Developments\hydromt_delft3dfm\hydromt_delft3dfm\data\branches\pipes_defaults.csv
+  driver: csv
+  meta:
+    notes: default pipe parameters.
+rivers_defaults:
+  data_type: DataFrame
+  path: c:\Developments\hydromt_delft3dfm\hydromt_delft3dfm\data\branches\rivers_defaults.csv
+  driver: csv
+  meta:
+    notes: default river parameters.
