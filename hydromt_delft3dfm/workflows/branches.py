@@ -1309,6 +1309,22 @@ def intersect_lines(gdf1, gdf2):
     return gdf1_cleaned, gdf2_cleaned, points_cleaned
 
 
+def explode_and_deduplicate_geometries(gpd: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """Explodes and deduplicates geometries a GeoDataFrame.
+    Parameters:
+        gpd (gpd.GeoDataFrame): Input GeoDataFrame.
+    Returns:
+        gpd.GeoDataFrame: GeoDataFrame with exploded and deduplicated geometries.
+    """
+    gpd = gpd.explode()
+    gpd = gpd[
+        gpd.index.isin(
+            gpd.geometry.apply(lambda geom: geom.wkb).drop_duplicates().index
+        )
+    ]
+    return gpd
+
+
 def snap_geom_to_branches_and_drop_nonsnapped(
     branches: gpd.GeoDataFrame, geoms: gpd.GeoDataFrame, snap_offset=0.0
 ):
