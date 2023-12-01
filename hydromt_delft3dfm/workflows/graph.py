@@ -1,28 +1,24 @@
-"""Workflows to prepare graphs from different sources (hydromt networkmixins + other workflows)"""
+"""Workflows to prepare graphs from different sources (hydromt networkmixins + other workflows)."""  # noqa: E501
 
+import itertools
 import logging
-import tempfile
+import random
 from pathlib import Path
-from typing import Union, Optional, List, Dict
+from typing import Dict, List, Optional, Union
 
-import pandas as pd
 import geopandas as gpd
+import matplotlib.pyplot as plt  # FIXME maybe remove
 import networkx as nx
 import numpy as np
 import osmnx
+import pandas as pd
 import pyproj
 import xarray as xr
-
-# hydromt
-from hydromt import flw
-from hydromt import DataCatalog
+from hydromt import DataCatalog, flw
+from hydromt.gis_utils import nearest_merge
 
 from hydromt_delft3dfm import graph_utils
-from hydromt_delft3dfm.workflows import (
-    find_nearest_branch,
-    explode_and_deduplicate_geometries,
-)
-from hydromt.gis_utils import nearest_merge
+from hydromt_delft3dfm.workflows import explode_and_deduplicate_geometries
 
 logger = logging.getLogger(__name__)
 
@@ -68,10 +64,12 @@ def create_graph_from_openstreetmap(
             waterway: Describes rivers, streams, canals, etc.
 
     osm_values: list[str]
-        OSM "values" to specify attributes assigned to a key to further detail or describe a map feature.
+        OSM "values" to specify attributes assigned to a key to further detail or
+        describe a map feature.
         Together, a key-value pair provides descriptive information about OSM entities.
         Some common values associated to the common keys include:
-            highway: motorway,motorway_link,primary,primary_link,secondary,secondary_link,tertiary,tertiary_link,residential
+            highway: motorway,motorway_link,primary,primary_link,secondary,
+            secondary_link,tertiary,tertiary_link,residential
             waterway:river,stream,brook,canal,ditch
 
     buffer: float, optional
@@ -92,7 +90,6 @@ def create_graph_from_openstreetmap(
     - osmnx.graph_from_polygon
     - graph_utils.preprocess_graph
     """
-
     # get crs
     crs = region.crs
 
@@ -113,7 +110,8 @@ def create_graph_from_openstreetmap(
     # # simplify the graph's topology by removing interstitial nodes
     # _osm_simplified_graph = osmnx.simplify_graph(
     #     _osm_graph
-    # )  # TODO #64: needs testing, too longe/too short are not beneficial for dem based direction.
+    # )  # TODO #64: needs testing,
+    # too longe/too short are not beneficial for dem based direction.
     # logger.info("Get simplified graph from osm.")
 
     # # preprocess to desired graph format
@@ -221,10 +219,12 @@ def create_graph_from_geodataframe(
     """
     Convert a GeoDataFrame of line geometries into a graph.
 
-    This function first converts a GeoDataFrame into a DiGraph using the `gpd_to_digraph` function
-    which treats the first and last coordinates of each row's geometry as source and target, respectively.
-    Then, it preprocesses the graph using the `preprocess_graph` function which may involve geometry assignments,
-    reprojections based on CRS, and graph validations.
+    This function first converts a GeoDataFrame into a DiGraph using the
+    `gpd_to_digraph` function, which treats the first and last coordinates
+    of each row's geometry as source and target, respectively.
+    Then, it preprocesses the graph using the `preprocess_graph` function,
+    which may involve geometry assignments, reprojections based on CRS,
+    and graph validations.
     Finally, a digraph or a undirected graph will be returned based on `is_directed`.
 
     Parameters
@@ -250,7 +250,8 @@ def create_graph_from_geodataframe(
     --------
     >>> import geopandas as gpd
     >>> import shapely.geometry as geom
-    >>> gdf = gpd.GeoDataFrame({'geometry': [geom.LineString([(0,0), (1,1)]), geom.LineString([(1,1), (2,2)])]})
+    >>> gdf = gpd.GeoDataFrame({'geometry': [geom.LineString([(0,0), (1,1)]),
+    geom.LineString([(1,1), (2,2)])]})
     >>> graph = create_graph_from_geodataframe(gdf)
     >>> print(type(graph))
     <class 'networkx.classes.digraph.DiGraph'>
@@ -317,12 +318,12 @@ def setup_graph_from_rasterdataset(
         If False, only pixels whose center is within the geometry or that are
         selected by Bresenham's line algorithm will be used. By default True.
         Only used when ``graph_component`` is "edges" or "both".
+
     Returns
     -------
     graph
         the new graph
     """  # noqa: E501
-
     assert graph_component in [
         "edges",
         "nodes",
@@ -361,9 +362,8 @@ def setup_graph_from_rasterdataset(
     # get sample at nodes
     if graph_component in ["nodes", "both"]:
         nodes = graph_utils.graph_nodes(graph)
-        ds_sample = ds.raster.sample(
-            nodes
-        )  # FIXME dem for sample data too small, need to add nodedata value and correct crs
+        # FIXME dem for sample data too small, need to add nodata and correct crs
+        ds_sample = ds.raster.sample(nodes)
         ds_sample = ds_sample.rename(rename)
         ds_sample_df = ds_sample.to_dataframe().set_index(nodes["id"])
         graph = update_nodes_attributes(graph, ds_sample_df)
@@ -409,12 +409,12 @@ def setup_graph_from_geodataframe(
         * "nodes" - Only processes and updates the nodes of the graph.
         * "both" - Processes and updates both nodes and edges of the graph.
         By default, it processes both nodes and edges ("both").
+
     Returns
     -------
     graph
         the new graph
     """  # noqa: E501
-
     assert graph_component in [
         "edges",
         "nodes",
@@ -461,10 +461,10 @@ def update_edges_attributes(
     edges: gpd.GeoDataFrame,
     id_col: str = "id",
 ) -> nx.Graph():
-    """This function updates the graph by adding new edges attributes specified in edges.
+    """Update the graph by adding new edges attributes specified in edges.
 
-    Only edges with matching ids specified in "id" will be updated."""
-
+    Only edges with matching ids specified in "id" will be updated.
+    """
     # graph df
     _graph_df = nx.to_pandas_edgelist(graph).set_index("id")
     _graph_df["_graph_edge_tuple"] = list(graph.edges)
@@ -499,10 +499,10 @@ def update_nodes_attributes(
     nodes: gpd.GeoDataFrame,
     id_col: str = "id",
 ) -> nx.Graph():
-    """This function updates the graph by adding new edges attributes specified in edges.
+    """Update the graph by adding new edges attributes specified in edges.
 
-    Only edges with matching ids specified in "id" will be updated."""
-
+    Only edges with matching ids specified in "id" will be updated.
+    """
     # graph df
     _graph_df = pd.DataFrame(graph.nodes(data="id"), columns=["tuple", "id"]).set_index(
         "id"
@@ -535,9 +535,8 @@ def update_nodes_attributes(
 
 
 # func from hybridurb network.py
-def _find_target_nodes(self, G: nx.DiGraph, node_query=None, edges_query=None):
-    """helper to find the target nodes"""
-
+def _find_target_nodes(G: nx.DiGraph, node_query=None, edges_query=None):
+    """Find the target nodes."""
     targets = None
 
     if all(v is None for v in [node_query, edges_query]):
@@ -545,26 +544,26 @@ def _find_target_nodes(self, G: nx.DiGraph, node_query=None, edges_query=None):
 
     if isinstance(edges_query, str):
         try:
-            _target_G = graph.query_graph_edges_attributes(
+            _target_G = query_graph_edges_attributes(
                 G,
                 edge_query=edges_query,
             )
             targets = [v for u, v in _target_G.edges()]
-            self.logger.debug("Find targets in edges")
+            logger.debug("Find targets in edges")
         except Exception as e:
-            self.logger.debug(e)
+            logger.debug(e)
             pass
 
     if isinstance(node_query, str):
         try:
-            _target_G = graph.query_graph_nodes_attributes(
+            _target_G = query_graph_nodes_attributes(
                 G,
                 node_query=node_query,
             )
             targets = [n for n in _target_G.nodes()]
-            self.logger.debug("Find targets in nodes")
+            logger.debug("Find targets in nodes")
         except Exception as e:
-            self.logger.debug(e)
+            logger.debug(e)
             pass
 
     if targets is None:
@@ -573,9 +572,8 @@ def _find_target_nodes(self, G: nx.DiGraph, node_query=None, edges_query=None):
     return targets
 
 
-def _find_target_graph(self, G: nx.DiGraph, node_query=None, edges_query=None):
-    """helper to find the target nodes"""
-
+def _find_target_graph(G: nx.DiGraph, node_query=None, edges_query=None):
+    """Find the target nodes."""
     targets = None
 
     if all(v is None for v in [node_query, edges_query]):
@@ -583,26 +581,26 @@ def _find_target_graph(self, G: nx.DiGraph, node_query=None, edges_query=None):
 
     if isinstance(edges_query, str):
         try:
-            self.logger.debug("Finding targets in edges")
-            _target_G = graph.query_graph_edges_attributes(
+            logger.debug("Finding targets in edges")
+            _target_G = query_graph_edges_attributes(
                 G,
                 edge_query=edges_query,
             )
             targets = [v for u, v in _target_G.edges()]
         except Exception as e:
-            self.logger.debug(e)
+            logger.debug(e)
             pass
 
     if isinstance(node_query, str):
         try:
-            self.logger.debug("Finding targets in nodes")
-            _target_G = graph.query_graph_nodes_attributes(
+            logger.debug("Finding targets in nodes")
+            _target_G = query_graph_nodes_attributes(
                 G,
                 node_query=node_query,
             )
             targets = [n for n in _target_G.nodes()]
         except Exception as e:
-            self.logger.debug(e)
+            logger.debug(e)
             pass
 
     if targets is None:
@@ -612,8 +610,7 @@ def _find_target_graph(self, G: nx.DiGraph, node_query=None, edges_query=None):
 
 
 def setup_dag(
-    self,
-    G: nx.Graph = None,
+    G: nx.Graph,
     targets=None,
     target_query: str = None,
     weight: str = None,
@@ -622,11 +619,12 @@ def setup_dag(
     algorithm: str = "simple",
     **kwargs,
 ):
-    """This component prepares subgraph as Directed Acyclic Graphs (dag) using shortest path
-    step 1: add a supernode to subgraph (representing graph - subgraph)
-    step 2: use shortest path to prepare dag edges (source: node in subgraph; target: super node)
+    """Prepare subgraph as Directed Acyclic Graphs (dag) using shortest path.
 
-    in progress
+    step 1: add a supernode to subgraph (representing graph - subgraph)
+    step 2: use shortest path to prepare dag edges
+    (source: node in subgraph; target: super node).
+    in progress.
 
     Parameters
     ----------
@@ -643,7 +641,8 @@ def setup_dag(
         Any edge attribute not present defaults to 1.
     loads : None or list of strings, optional (default - None)
         Load used from edges/nodes attributes.
-        If None, every node/edge has a load equal to the total number of nodes upstream (nnodes), and number of edges upstream (nedges).
+        If None, every node/edge has a load equal to the total number of
+        nodes upstream (nnodes), and number of edges upstream (nedges).
         If a list, use the attributes in the list as load.
         The attribute can be either from edges or from nodes.
         Any attributes that are not present defaults to 0.
@@ -651,37 +650,35 @@ def setup_dag(
         The algorithm to use to compute the dag.
         Supported options: 'simple', 'flowpath'.
         Other inputs produce a ValueError.
-        if 'simple', the input graph is treated as a undirected graph, the resulting graph might alter the original edges direction
-        If 'flowpath', the input graph is treated as a directed graph, the resulting graph do not alter the original edges direction.
-        Both option will have less edges. the missing edges indicates their insignificance in direction, i.e. both way are possible. # FIXME
+        if 'simple', the input graph is treated as a undirected graph,
+        the resulting graph might alter the original edges direction
+        If 'flowpath', the input graph is treated as a directed graph,
+        the resulting graph do not alter the original edges direction.
+        Both option will have less edges. the missing edges indicates
+        their insignificance in direction, i.e. both way are possible. # FIXME
 
     Arguments
     ---------
     use_super_target : bool
         whether to add a super target at the ends of all targets.
         True if the weight of DAG exist for all edges.
-        False if the weight of DAG also need to consider attribute specified for targets.
+        False if the weight of DAG also need to consider attribute for targets.
 
     See Also
     --------
-    self._setup_dag
+    _setup_dag
 
     """
-    # convert Digraph to Graph
-    if G is None:
-        G = self._graphmodel.copy()
-        self.logger.debug("Apply dag on graphmodel.")
-
     # check targets of the dag
     if isinstance(target_query, str):
-        targets = self._find_target_nodes(G, target_query, target_query)
-    self.logger.debug(f"{len(targets)} targets are selected")
+        targets = _find_target_nodes(G, target_query, target_query)
+    logger.debug(f"{len(targets)} targets are selected")
 
     # remove connected components without targets
     _remain_nodes = set()
     for comp in nx.connected_components(G.to_undirected()):
         if not any(comp.intersection(targets)):
-            self.logger.warning(f"Removing nodes disconnected from targets: {comp}.")
+            logger.warning(f"Removing nodes disconnected from targets: {comp}.")
         else:
             _remain_nodes.update(comp)
     G = G.subgraph(_remain_nodes)
@@ -690,7 +687,7 @@ def setup_dag(
     for comp in nx.connected_components(G.to_undirected()):
         _graph = G.subgraph(comp).copy()
         _targets = comp.intersection(targets)
-        self._setup_dag(
+        dag = _setup_dag(
             G=_graph,
             targets=_targets,
             weight=weight,
@@ -699,22 +696,24 @@ def setup_dag(
             algorithm=algorithm,
         )
 
+    return dag
+
 
 def _setup_dag(
-    self,
-    G: nx.Graph = None,
+    G: nx.Graph,
     targets=None,
     weight: str = None,
     loads: list = [],
     report: str = None,
     algorithm: str = "simple",
     **kwargs,
-):
-    """This component prepares subgraph as Directed Acyclic Graphs (dag) using shortest path
-    step 1: add a supernode to subgraph (representing graph - subgraph)
-    step 2: use shortest path to prepare dag edges (source: node in subgraph; target: super node)
+) -> nx.Graph:
+    """Prepare subgraph as Directed Acyclic Graphs (dag) using shortest path.
 
-    in progress
+    step 1: add a supernode to subgraph (representing graph - subgraph)
+    step 2: use shortest path to prepare dag edges
+    (source: node in subgraph; target: super node).
+    In progress.
 
     Parameters
     ----------
@@ -731,7 +730,8 @@ def _setup_dag(
         Any edge attribute not present defaults to 1.
     loads : None or list of strings, optional (default - None)
         Load used from edges/nodes attributes.
-        If None, every node/edge has a load equal to the total number of nodes upstream (nnodes), and number of edges upstream (nedges).
+        If None, every node/edge has a load equal to the total number of
+        nodes upstream (nnodes), and number of edges upstream (nedges).
         If a list, use the attributes in the list as load.
         The attribute can be either from edges or from nodes.
         Any attributes that are not present defaults to 0.
@@ -739,50 +739,50 @@ def _setup_dag(
         The algorithm to use to compute the dag.
         Supported options: 'simple', 'flowpath'.
         Other inputs produce a ValueError.
-        if 'simple', the input graph is treated as a undirected graph, the resulting graph might alter the original edges direction
-        If 'flowpath', the input graph is treated as a directed graph, the resulting graph do not alter the original edges direction.
-        Both option will have less edges. the missing edges indicates their insignificance in direction, i.e. both way are possible. # FIXME
+        if 'simple', the input graph is treated as a undirected graph,
+        the resulting graph might alter the original edges direction
+        If 'flowpath', the input graph is treated as a directed graph,
+        the resulting graph do not alter the original edges direction.
+        Both option will have less edges. the missing edges indicates
+        their insignificance in direction, i.e. both way are possible. # FIXME
 
     Arguments
     ----------
     use_super_target : bool
         whether to add a super target at the ends of all targets.
         True if the weight of DAG exist for all edges.
-        False if the weight of DAG also need to consider attribute specified for targets.
+        False if the weight of DAG also need to consider attribute for targets.
 
     """
-
     # check algorithm of the setup
     if algorithm not in ("simple", "flowpath"):
         raise ValueError(f"algorithm not supported: {algorithm}")
-    self.logger.debug(f"Performing {algorithm}")
+    logger.debug(f"Performing {algorithm}")
 
     # check method of the dag
     method = "dijkstra"
     if method not in ("dijkstra", "bellman-ford"):
         raise ValueError(f"method not supported: {method}")
-    self.logger.debug(f"Performing {method} dag")
+    logger.debug(f"Performing {method} dag")
 
     # started making dag
     DAG = nx.DiGraph()
 
     # try adding super nodes
     G.add_edges_from([(n, -1) for n in targets])
-    self.logger.debug(f"connecting targets to supernode")
+    logger.debug("connecting targets to supernode")
     if len([_ for _ in nx.connected_components(G.to_undirected())]) > 1:
         raise TypeError("Cannot apply dag on disconnected graph.")
 
     # 1. add path
     # FIXME: if don't do this step: networkx.exception.NetworkXNoPath: No path to **.
     if algorithm == "simple":
-        self.logger.info("dag based on method simple. undirected graph will be used. ")
+        logger.info("dag based on method simple. undirected graph will be used. ")
         G = G.to_undirected()
-        DAG = graph.make_dag(G, targets=targets, weight=weight, drop_unreachable=False)
+        DAG = make_dag(G, targets=targets, weight=weight, drop_unreachable=False)
     elif algorithm == "flowpath":
-        self.logger.info(
-            "dag based on method flowpath. unreachable path will be dropped. "
-        )
-        DAG = graph.make_dag(G, targets=targets, weight=weight, drop_unreachable=True)
+        logger.info("dag based on method flowpath. unreachable path will be dropped. ")
+        DAG = make_dag(G, targets=targets, weight=weight, drop_unreachable=True)
 
     # 2. add back weights
     for u, v, new_d in DAG.edges(data=True):
@@ -832,25 +832,36 @@ def _setup_dag(
 
     # validate DAG
     if nx.is_directed_acyclic_graph(DAG):
-        self.logger.debug("dag is directed acyclic graph")
+        logger.debug("dag is directed acyclic graph")
     else:
-        self.logger.error("dag is NOT directed acyclic graph")
+        logger.error("dag is NOT directed acyclic graph")
 
     # visualise DAG
     if report:
+        # preprocess
+        _DAG = DAG.copy()
+        any_has_geometry = any("geometry" in G.nodes[node] for node in G)
+        if any_has_geometry:
+            pos = {
+                xy[0]: xy[1].coords[0]
+                for xy in G.nodes(data="geometry")
+                if xy[0] in _DAG.nodes
+            }
+        else:
+            pos = {xy: xy for xy in _DAG.nodes()}
+
         # plot graphviz
-        graph.make_graphplot_for_targetnodes(DAG, targets, layout="graphviz")
+        make_graphplot_for_targetnodes(_DAG, targets, layout="graphviz")
         plt.title(report, wrap=True, loc="left")
 
         # plot xy
         plt.figure(figsize=(8, 8))
         plt.title(report, wrap=True, loc="left")
         plt.axis("off")
-        pos = {xy: xy for xy in G.nodes()}
 
         # base
         nx.draw(
-            DAG,
+            _DAG,
             pos=pos,
             node_size=0,
             with_labels=False,
@@ -860,809 +871,33 @@ def _setup_dag(
             width=0.5,
         )
         nx.draw_networkx_nodes(
-            DAG,
+            _DAG,
             pos=pos,
             nodelist=targets,
             node_size=200,
             node_shape="*",
             node_color="r",
         )
-        edge_width = [d[2] / 100 for d in DAG.edges(data="nnodes")]
+        edge_width = [d[2] / 100 for d in _DAG.edges(data="nnodes")]
         nx.draw_networkx_edges(
-            DAG,
+            _DAG,
             pos=pos,
-            edgelist=DAG.edges(),
+            edgelist=_DAG.edges(),
             arrows=False,
             width=[float(i) / (max(edge_width) + 0.1) * 20 + 0.5 for i in edge_width],
         )
 
-    self._graphmodel = DAG
     return DAG
 
 
-def setup_partition(
-    self,
-    G: nx.Graph = None,
-    subgraph_fn: str = None,
-    algorithm: str = "simple",
-    report: str = None,
-    contracted: bool = False,
-    **kwargs,
-):
-    """This component prepares the partition based on the connectivity of graph
-
-    Parameters
-    ----------
-    subgraph_fn : str
-        Name of the subgraph instance.
-        If None, self._graphmodel will be used for partition; the function will update the self._graphmodel
-        if String and new, self._graphmodel will be used for partition; the function will create the instance in self._subgraphmodels
-        if String and old, self._subgraphmodels[subgraph_fn] will be used for partition; the function will update the instance in self._subgraphmodels[subgraph_fn]
-    algorithm : str
-        Algorithm to derive partitions from subgraph. Options: ['simple', 'louvain' ]
-        testing methods:
-        "simple" : based on connected components, every connected components will be considered as a partition (undirected)
-        "flowpath" : based on direction of the edges, the graph is devided into a few partitions, each of which represents a target node with all of its sources.
-        "louvain": based on louvain algorithm (work in progress)  (undirected). "It measures the relative density of edges inside communities with respect to edges outside communities. Optimizing this value theoretically results in the best possible grouping of the nodes of a given network."(from wikipedia)
-    contracted : bool
-        Specify whether to build contracted graph from the parititons. So a new contracted graph is created, with a node representing a part of the graph; edges represernting the connectivity between the parts
-        If True, each partition will be contracted to a node
-        If False, no contraction is performed
-    """
-
-    # get graph model
-    if G is None:
-        G = self._graphmodel.copy()
-    G_targets = [n for n in G.nodes if G.out_degree[n] == 0]
-
-    # get subgraph if applicable
-    if subgraph_fn in self._subgraphmodels:
-        self.logger.warning(
-            f"subgraph instance {subgraph_fn} will be used for partition."
-        )
-        SG = self._subgraphmodels[subgraph_fn].copy()
-    elif subgraph_fn is not None:
-        self.logger.warning(f"graph will be used for partition.")
-        SG = self._graphmodel.copy()
-    else:
-        self.logger.debug(f"graph will be used for partition.")
-        SG = self._graphmodel.copy()
-    SG_targets = [n for n in SG.nodes if SG.out_degree[n] == 0]
-
-    # start partition
-    partition = {n: -1 for n in G.nodes}
-    partition_edges = {e: -1 for e in G.edges}
-
-    if algorithm == "simple":  # based on connected subgraphs
-        UG = SG.to_undirected()  # convert SG to UG for further partition
-        for i, ig in enumerate(nx.connected_components(UG)):
-            ig = UG.subgraph(ig)
-            partition.update({n: i for n in ig.nodes})
-        partition_edges.update(
-            {
-                (s, t): partition[s]
-                for s, t in partition_edges
-                if partition[s] == partition[t]
-            }
-        )
-        logger.info(
-            f"algorithm {algorithm} is applied. Note that different partitions are disconnected."
-        )
-    elif algorithm == "flowpath":
-        assert isinstance(
-            SG, nx.DiGraph
-        ), f"algorithm {algorithm} can only be applied on directional graph"
-        SG = graph.sort_direction(SG)
-        endnodes = [n[0] for n in SG.nodes(data="_type") if n[-1] == "endnode"]
-        partition.update(
-            {
-                nn: i
-                for i, n in enumerate(endnodes)
-                for nn in graph.get_predecessors(SG, n)
-            }
-        )
-        partition_edges.update(
-            {
-                (s, t): partition[s]
-                for s, t in partition_edges
-                if partition[s] == partition[t]
-            }
-        )
-        logger.info(
-            f"algorithm {algorithm} is applied. Note that flowpath might be duplicated."
-        )
-    elif algorithm == "louvain":  # based on louvain algorithm
-        UG = SG.to_undirected()  # convert SG to UG for further partition
-        partition.update(graph.louvain_partition(UG))
-        partition_edges.update(
-            {
-                (s, t): partition[s]
-                for s, t in partition_edges
-                if partition[s] == partition[t]
-            }
-        )
-    else:
-        raise ValueError(
-            f"{algorithm} is not recognised. allowed algorithms: simple, louvain"
-        )
-
-    n_partitions = max(partition.values())
-    self.logger.debug(
-        f"{n_partitions} partitions is derived from subgraph using {algorithm} algorithm"
-    )
-
-    # update partition to graph
-    nx.set_node_attributes(SG, partition, "part")
-    nx.set_edge_attributes(SG, partition_edges, "part")
-    if subgraph_fn in self._subgraphmodels:
-        self.logger.warning(
-            f"subgraph instance {subgraph_fn} will be updated with partition information (part)."
-        )
-        self._subgraphmodels[subgraph_fn] = SG
-    elif subgraph_fn is not None:
-        self.logger.warning(
-            f"subgraph instance {subgraph_fn} will be created with partition information (part)."
-        )
-        self._subgraphmodels[subgraph_fn] = SG
-    else:
-        self.logger.warning(f"graph will be updated with partition information (part).")
-        self._graphmodel = SG
-
-    # contracted graph
-    # induced graph from the partitions - faster but a bit confusing results
-    # ind = community.induced_graph(partition, G)
-    # ind.remove_edges_from(nx.selfloop_edges(ind))
-    # induced by contracting - slower but neater
-    if contracted == True:
-        ind = G.copy()
-        nx.set_node_attributes(ind, {n: {"ind_size": 1} for n in ind.nodes})
-        for part in np.unique(list(partition.values())):
-            part_nodes = [n for n in partition if partition[n] == part]
-            if part == -1:
-                # do not contract
-                pass
-            else:
-                for to_node in [n for n in part_nodes if n in SG_targets]:
-                    ind, targets = graph.contract_graph_nodes(ind, part_nodes, to_node)
-                    ind.nodes[to_node]["ind_size"] = len(part_nodes)
-
-    # visualise
-    if report:
-        # Cartesian coordinates centroid
-        pos_G = {xy: xy for xy in G.nodes()}
-        pos_SG = {xy: xy for xy in SG.nodes()}
-
-        # partitions
-        plt.figure(figsize=(8, 8))
-        plt.title(report, wrap=True, loc="left")
-        plt.axis("off")
-        nx.draw(
-            G,
-            pos=pos_G,
-            node_size=0,
-            with_labels=False,
-            arrows=False,
-            node_color="k",
-            edge_color="k",
-            width=0.2,
-        )
-        nx.draw_networkx_nodes(
-            G,
-            pos=pos_G,
-            node_size=30,
-            cmap=plt.cm.RdYlBu,
-            node_color=list(partition.values()),
-        )
-
-        # induced partition graph
-        if contracted == True:
-            pos_ind = {xy: xy for xy in ind.nodes()}
-
-            graph.make_graphplot_for_targetnodes(ind, None, None, layout="graphviz")
-            plt.title(report, wrap=True, loc="left")
-
-            plt.figure(figsize=(8, 8))
-            plt.title(report, wrap=True, loc="left")
-            plt.axis("off")
-            # base
-            nx.draw(
-                G,
-                pos=pos_G,
-                node_size=0,
-                with_labels=False,
-                arrows=False,
-                node_color="gray",
-                edge_color="silver",
-                width=0.2,
-            )
-            nx.draw_networkx_nodes(
-                ind,
-                pos=pos_ind,
-                node_size=list(dict(ind.nodes(data="ind_size")).values()),
-                cmap=plt.cm.RdYlBu,
-                node_color=range(len(ind)),
-            )
-            nx.draw_networkx_edges(ind, pos_ind, alpha=0.3)
-
-    return SG
-
-
-def setup_pruning(
-    self,
-    G: nx.Graph = None,
-    subgraph_fn: str = None,
-    algorithm: str = "simple",
-    edge_prune_query: str = None,
-    node_prune_query: str = None,
-    weight: str = None,
-    loads: list = [],
-    max_loads: float = [],
-    report: str = None,
-    **kwargs,
-):
-    """This component prepares the pruning the 1D flow network based on aggregation
-
-    Parameters
-    ----------
-    G: nx.Graph, optional (default = None)
-        Networkx graph to allow the function being called by another function.
-        If None, the network graph from self._graphmodel or self._subgraphmodels[subgraph_fn] will be used
-    subgraph_fn : str, optional (default - None)
-        Name of the subgraph instance.
-        If None, self._graphmodel will be used for partition; the function will update the self._graphmodel
-        if String and new, self._graphmodel will be used for partition; the function will create the instance in self._subgraphmodels
-        if String and old, self._subgraphmodels[subgraph_fn] will be used for partition; the function will update the instance in self._subgraphmodels[subgraph_fn]
-    algorithm : str, optional (default - simple)
-        # FIXME: after creating dag, some edges are missing, also the edge attributes. Therefore, the loads are imcomplete. will not have influence if the loads are applied on nodes.
-        Algorithm to derive partitions from subgraph. Options: ['simple', 'auto']
-        testing methods:
-        "simple" : based on user specifie.  The algorithm will prune the edges/nodes based on edge_prune_query and node_prune_query.
-        "flowpath": based on direction defined for edges.
-        "auto" : based on analysis of network. The algrithm will prune the arborescence of the tree. A threshold can be set to determine whether an arborescence is small enough to be pruned.
-    weight : None or string, optional (default = None)
-        Weight used for shortest path. Used in setup_dag.
-        If None, every edge has weight/distance/cost 1.
-        If a string, use this edge attribute as the edge weight.
-        Any edge attribute not present defaults to 1.
-    loads : None or list of strings, optional (default - None)
-        Load used from edges/nodes attributes. Used in setup_dag.
-        If None, every node/edge has a load equal to the total number of nodes upstream (nnodes), and number of edges upstream (nedges).
-        If a list, use the attributes in the list as load.
-        The attribute can be either from edges or from nodes.
-        Any attributes that are not present defaults to 0.
-    """
-
-    # create the initial graph
-    G = self._io_subgraph(subgraph_fn, G, "r")
-
-    # check algorithm
-    if algorithm is not None:
-        if algorithm not in ("simple", "auto", "flowpath"):
-            raise ValueError(f"algorithm not supported: {algorithm}")
-    else:
-        algorithm = "simple"
-        self.logger.info(f"default algorithm {algorithm} is applied")
-
-    # check prune query
-    if algorithm == "simple":
-        # check queries
-        if all(v is None for v in [edge_prune_query, node_prune_query]):
-            raise ValueError(
-                "must specify one of the following: edge_prune_query OR node_prune_query"
-            )
-        if max_loads is not None:
-            self.logger.debug(f"will ignore: max_loads")
-    elif algorithm == "auto":
-        if any(v is not None for v in [edge_prune_query, node_prune_query]):
-            self.logger.debug(f"will ignore: edge_prune_query, node_prune_query")
-
-    # check loads
-    if loads is not None:
-        if isinstance(loads, str):
-            loads = list(loads)
-    else:
-        loads = []
-
-    # check max_loads
-    if max_loads is not None:
-        if isinstance(max_loads, str):
-            max_loads = list(max_loads)
-            if len(loads) != len(max_loads):
-                raise ValueError(f"max_loads must have the same length as loads")
-    else:
-        max_loads = []
-
-    # get pruned graph
-    self.logger.debug(f"getting pruned graph based on algorithm = {algorithm}")
-    if algorithm == "auto":
-        _PG = graph.get_arborescence(G)
-        PG = self.setup_subgraph(
-            _PG,
-            edge_query="_arborescence == True"
-            # report ='plot sg for pruning'
-        )
-
-    else:
-        PG = self.setup_subgraph(
-            G,
-            edge_query=edge_prune_query,
-            node_query=node_prune_query
-            # report ='plot sg for pruning'
-        )
-
-    # remained graph
-    self.logger.debug(f"getting remained graph based on difference")
-    RG = graph.find_difference(G, PG)
-
-    # adding loads to remained graph
-    self.logger.debug(f"adding loads to remained graph using dag search")
-
-    # graph connections pruned graph VS remained graph
-    tree_roots = [n for n in RG if n in PG]
-    tree_roots_edges = {}
-    for n in tree_roots:
-        keep = []
-        dn = [e[2] for e in RG.edges(data="id") if e[0] == n]
-        if len(dn) == 0:
-            # try upstream
-            up = [e[2] for e in RG.edges(data="id") if e[1] == n]
-            if len(up) == 0:
-                pass
-            elif len(up) > 1:
-                keep = [up[0]]  # just pick one
-            else:
-                keep = up
-        elif len(dn) == 1:
-            keep = dn
-        elif len(dn) > 1:
-            keep = [dn[0]]  # just pick one
-        tree_roots_edges[n] = keep
-
-    if algorithm == "flowpath":
-        # no dag is performed
-        PG_dag = self.setup_dag(
-            PG,
-            targets=tree_roots,
-            loads=loads,
-            weight=weight,
-            report="plot dag for pruning",
-            algorithm="flowpath",
-        )
-    else:
-        # apply DAG to pruned graph -  get summed information for root nodes
-        PG_dag = self.setup_dag(
-            PG,
-            targets=tree_roots,
-            loads=loads,
-            weight=weight,
-            report="plot dag for pruning",
-            algorithm="simple",
-        )
-
-    # add new id to PG nodes
-    self.logger.debug(f"adding new id to nodes")
-    new_id = {}
-    for o in tree_roots:
-        for n in PG.nodes():
-            try:
-                if nx.has_path(PG_dag, n, o):
-                    new_id[n] = tree_roots_edges[o]
-            except nx.exception.NodeNotFound:
-                pass
-
-    new_id = {k: v[0] if len(v) > 0 else None for k, v in new_id.items()}
-    nx.set_node_attributes(PG, new_id, "new_id")
-
-    # add new id to PG edges
-    self.logger.debug(f"adding new id to edges")
-    new_id = {}
-    for o in tree_roots:
-        for e in PG.edges():
-            try:
-                if nx.has_path(PG_dag, e[0], o):
-                    new_id[e] = tree_roots_edges[o]
-            except nx.exception.NodeNotFound:
-                pass
-
-    new_id = {k: v[0] if len(v) > 0 else None for k, v in new_id.items()}
-    nx.set_edge_attributes(PG, new_id, "new_id")
-
-    # add PG_dag loads back to tree roots in RG
-    # add back missing edges (adding missing edges for weight, might alter flow path indeed)
-    self.logger.debug(f"adding missing edges")
-    for e in PG.edges:
-        if e not in PG_dag.edges():
-            if e not in PG_dag.reverse().edges():
-                PG_dag.add_edges_from(e, **PG.edges[e[0], e[1]])
-
-    # sum loads of the arborescence
-    self.logger.debug(f"adding loads")
-    for load in loads:
-        for o in tree_roots:
-            arborescence_graph = PG_dag.subgraph(
-                graph.get_predecessors(PG_dag, o, inclusive=True)
-            )
-            load_from_nodes = sum(
-                [
-                    e[-1]
-                    for e in arborescence_graph.edges(data=load)
-                    if e[-1] is not None
-                ]
-            )
-            loads_from_edges = sum(
-                [
-                    n[-1]
-                    for n in arborescence_graph.nodes(data=load)
-                    if n[-1] is not None
-                ]
-            )
-            nx.set_node_attributes(RG, {o: load_from_nodes + loads_from_edges}, load)
-            nx.set_node_attributes(RG, {o: len(arborescence_graph.nodes())}, "nnodes")
-            nx.set_node_attributes(RG, {o: len(arborescence_graph.edges())}, "nedges")
-    loads = set(loads + ["nnodes", "nedges"])
-
-    # write into graph
-    self._io_subgraph(subgraph_fn + "_RG", RG, "w")
-    self._io_subgraph(subgraph_fn + "_PG", PG, "w")
-
-    # # map arborescence to a node
-    # self.logger.debug(f"adding mapping to remained graph for missing nodes")
-    # for n in tree_roots:
-    #     uns = graph.get_predecessors(G, n, inclusive=False) # upstream nodes
-    #     ues = list(G.subgraph(uns + [n]).edges())
-    #     nx.set_node_attributes(G, {un:G.nodes[n]['id'] for un in uns}, 'mapping_id')
-    #     nx.set_edge_attributes(G, {ue:G.nodes[n]['id'] for ue in ues}, 'mapping_id')
-    #
-    # self._io_subgraph(subgraph_fn + '_mapping', G, 'w')
-
-    # draw to see
-    if report:
-        # plot xy
-        plt.figure(figsize=(8, 8))
-        plt.title(report, wrap=True, loc="left")
-        plt.axis("off")
-        pos = {xy: xy for xy in G.nodes()}
-
-        # base
-        nx.draw(
-            G,
-            pos=pos,
-            node_size=0,
-            with_labels=False,
-            arrows=False,
-            node_color="gray",
-            edge_color="silver",
-            width=0.2,
-        )
-        nx.draw(
-            RG,
-            pos=pos,
-            node_size=0,
-            with_labels=False,
-            arrows=False,
-            node_color="gray",
-            edge_color="gray",
-            width=1,
-        )
-
-        # plot size of arborescence
-        size = list(dict(RG.nodes(data=list(loads)[0])).values())
-        size = np.array([0 if v is None else v for v in size])
-        scaled_size = np.interp(size, (size.min(), size.max()), (0, 100))
-
-        nx.draw_networkx_nodes(RG, pos, node_size=scaled_size, node_color="r")
-
-    return None
-
-
-def setup_diagram(
-    self,
-    G: nx.DiGraph = None,
-    subgraph_fn: str = None,
-    target_query: str = None,
-    **kwargs,
-):
-    """function to derive flow diagram at certain target nodes/edges (in progress)
-
-    The target nodes/edges include:
-        nodes/edges identified using target_query
-        nodes that are end nodes (out degree is 0)
-
-    Arguments
-    ---------
-    G: nx.DiGraph
-        Directional Graph
-    subgraph_fn:
-        Directional Graph node that are used as target to find predecessors
-    target_query: bool
-        Whether to include the input node in the results
-    **kwargs:
-        weight = None, for setup_dag # FIXME
-        report = None, for plotting
-    """
-
-    # check arguments
-    if G is not None:
-        _G = G.copy()
-        self.logger.info(f"Performing on given graph")
-    else:
-        _G = self._io_subgraph(subgraph_fn, G, "r")
-        self.logger.info(f"Performing on subgraph instance {subgraph_fn}")
-
-    if target_query is None:
-        raise ValueError(
-            "must specify target_query (diagram will be aggregated base don target_query)"
-        )
-
-    weight = kwargs.get("weight", None)
-
-    # 1. find target nodes/edges and put them in a graph
-    target_G = self._find_target_graph(_G, target_query, target_query)
-
-    # 2. setup a subgraph instance without the target graph
-    SG = _G.copy()
-    SG.remove_edges_from(target_G.edges)
-
-    # 3. setup a dag to delineate the upstream of the targets --> results is a dag split at target nodes
-    targets = list(
-        set(
-            [n for n in target_G.nodes if target_G.in_degree[n] == 0]
-            + [n for n in SG.nodes if SG.out_degree[n] == 0]
-        )
-    )
-    G_dag = graph.make_dag(SG, targets=targets, weight=weight)
-    self._graphmodel = G_dag.copy()
-    # TODO: this method follows the flow direction specified in the DiGraph,
-    #  there fore is incapable of making correction to any flow direcitons.
-    #  to be implemented in setup_dag
-
-    # 4. setup partition --> results is a graph with partition information as attributes
-    G_part = self.setup_partition(G_dag, algorithm="simple")
-
-    # 5. add target graph back --> result is the graph has reconstructed connecitivity
-    G_part.add_edges_from(target_G.edges)
-
-    # 6. contract graph based on partition to form tree diagram
-    partition = pd.DataFrame.from_dict(G_part.nodes(data="part"))
-    partition = partition.dropna().set_index(0)
-    partition = partition.to_dict(orient="dict")[1]
-    ind = graph.contract_graph(G_part, partition=partition, tonodes=targets)
-    # TODO: improve this function in workflows, remove from setup partition
-
-    # plot
-    report = kwargs.get("report", "setup_diagram")
-
-    if report is not None:
-        G = G_part.copy()
-        pos_G = {xy: xy for xy in G.nodes()}
-        pos_ind = {xy: xy for xy in ind.nodes()}
-
-        graph.make_graphplot_for_targetnodes(ind, None, None, layout="graphviz")
-        plt.title(report, wrap=True, loc="left")
-
-        plt.figure(figsize=(8, 8))
-        plt.title(report, wrap=True, loc="left")
-        plt.axis("off")
-        # base
-        nx.draw(
-            G,
-            pos=pos_G,
-            node_size=0,
-            with_labels=False,
-            arrows=False,
-            node_color="gray",
-            edge_color="silver",
-            width=0.2,
-        )
-        nx.draw_networkx_nodes(
-            ind,
-            pos=pos_ind,
-            node_size=list(dict(ind.nodes(data="ind_size")).values()),
-            cmap=plt.cm.RdYlBu,
-            node_color=range(len(ind)),
-        )
-        nx.draw_networkx_edges(ind, pos_ind, alpha=0.3)
-
-    return
-
-
 # func from hybridurb gis_utils.py
-# create graph
-def add_edges_with_id(
-    G: nx.Graph, edges: gpd.GeoDataFrame, id_col: str, snap_offset: float = 1e-6
-) -> nx.Graph():
-    """Return graph with edges and edges ids"""
-
-    for index, row in edges.iterrows():
-        from_node = row.geometry.coords[0]
-        to_node = row.geometry.coords[-1]
-
-        G.add_edge(from_node, to_node, id=row[id_col])
-
-    return G
-
-
-def add_nodes_with_id(
-    G: nx.Graph, nodes: gpd.GeoDataFrame, id_col: str, snap_offset: float = 1e-6
-) -> nx.Graph():
-    """return graph with nodes and nodes ids"""
-
-    # derived nodes and user nodes
-    G_nodes = gpd.GeoDataFrame(
-        {
-            "geometry": [Point(p) for p in G.nodes],
-            "id": [f"{p[0]:.6f}_{p[1]:.6f}" for p in G.nodes],
-            "tuple": G.nodes,
-        }
-    ).set_index("id")
-    if "id" in nodes.columns:
-        logger.error("Abort: nodes contains id columns. Please remove the column.")
-    F_nodes = nodes.rename(columns={id_col: "id"}).set_index("id")
-
-    # map user nodes to derived nodes
-    if set(F_nodes.index).issubset(set(G_nodes.index)):
-        # check if 1-to-1 match
-        G_nodes_new = G_nodes.join(F_nodes.drop(columns="geometry"))
-
-    else:
-        G_nodes_new = snap_nodes_to_nodes(F_nodes, G_nodes, snap_offset)
-        logger.debug("performing snap nodes to graph nodes")
-
-    # assign nodes id to graph
-    dict = {row.tuple: i for i, row in G_nodes_new.iterrows()}
-    nx.set_node_attributes(G, dict, "id")
-
-    return G
-
-
-def update_edges_attributes(
-    G: nx.Graph,
-    edges: gpd.GeoDataFrame,
-    id_col: str,
-) -> nx.Graph():
-    """This function updates the graph by adding new edges attributes specified in edges"""
-
-    # graph df
-    _graph_df = nx.to_pandas_edgelist(G).set_index("id")
-
-    # check if edges id in attribute df
-    if edges.index.name == id_col:
-        edges.index.name = "id"
-    elif id_col in edges.columns:
-        edges = edges.set_index(id_col)
-        edges.index.name = "id"
-    else:
-        raise ValueError(
-            "attributes could not be updated to graph: could not perform join"
-        )
-
-    # last item that isnt NA
-    _graph_df = _graph_df.reindex(
-        columns=_graph_df.columns.union(edges.columns, sort=False)
-    )
-    graph_df = pd.concat([_graph_df, edges]).groupby(level=0).last()
-    graph_df = graph_df.loc[_graph_df.index]
-
-    G_updated = nx.from_pandas_edgelist(
-        graph_df.reset_index(),
-        source="source",
-        target="target",
-        edge_attr=True,
-        create_using=type(G),
-    )
-
-    return G_updated
-
-
-def find_edge_ids_by_snapping(
-    G: nx.Graph,
-    edges: gpd.GeoDataFrame,
-    snap_offset: float = 1,
-    snap_method: str = "overall",
-) -> gpd.GeoDataFrame:
-    """This function adds "id" to edges GeoDataFrame"""
-
-    # graph
-    _ = gpd.GeoDataFrame(nx.to_pandas_edgelist(G).set_index("id"))
-
-    # wrapper to use delft3dfmpy function to find "branch_id"
-    _ = _.rename({"id": "branch_id"}).assign(branchType=None)
-    find_nearest_branch(
-        _,
-        edges,
-        method=snap_method,
-        maxdist=snap_offset,
-        move_geometries=True,
-    )
-
-    # rename "branch_id" to "edge_id"
-    edges_with_ids = edges.rename(columns={"branch_id": "_id"})
-
-    return edges_with_ids
-
-
-def find_node_ids_by_snapping(
-    G: nx.Graph,
-    nodes: gpd.GeoDataFrame,
-    snap_offset: float = 1,
-    snap_method: str = "overall",
-) -> gpd.GeoDataFrame:
-    """This function adds "id" to nodes GeoDataFrame"""
-
-    # graph
-    G_nodes = gpd.GeoDataFrame(
-        {
-            "geometry": [Point(p) for p in G.nodes],
-            "node_id": [f"{p[0]:.6f}_{p[1]:.6f}" for p in G.nodes],
-            "_id": G.nodes(data="id"),
-        }
-    ).set_index("node_id")
-
-    # nodes
-    nodes.loc[:, "node_id"] = [
-        f"{x:.6f}_{y:.6f}" for x, y in zip(nodes.geometry.x, nodes.geometry.y)
-    ]
-    nodes = nodes.set_index("node_id")
-
-    # map user nodes to derived nodes
-    if set(nodes.index).issubset(set(G_nodes.index)):
-        # check if 1-to-1 match
-        G_nodes_new = G_nodes.join(nodes.drop(columns="geometry"))
-    else:
-        # use snap_nodes_to_nodes function to find "node_id"
-        G_nodes_new = snap_nodes_to_nodes(nodes, G_nodes, snap_offset)
-        logger.debug("performing snap nodes to graph nodes")
-
-    # assign id from graph to nodes
-    nodes = nodes.join(G_nodes_new["_id"])
-
-    return nodes
-
-
-def update_nodes_attributes(
-    G: nx.Graph,
-    nodes: gpd.GeoDataFrame,
-    id_col: str,
-) -> nx.Graph():
-    """This function updates the graph by adding new edges attributes specified in edges"""
-
-    # graph df
-    _graph_df = pd.DataFrame(G.nodes(data="id"), columns=["tuple", "id"]).set_index(
-        "id"
-    )
-
-    # check if edges id in attribute df
-    if nodes.index.name == id_col:
-        nodes.index.name = "id"
-    elif id_col in nodes.columns:
-        nodes = nodes.set_index(id_col)
-        nodes.index.name = "id"
-    else:
-        raise ValueError(
-            "attributes could not be updated to graph: could not perform join"
-        )
-
-    # last item that isnt NA
-    _graph_df = _graph_df.reindex(
-        columns=_graph_df.columns.union(nodes.columns, sort=False)
-    )
-    graph_df = pd.concat([_graph_df, nodes]).groupby(level=0).last()
-    graph_df = graph_df.loc[_graph_df.index]
-
-    # add each attribute
-    for c in nodes.columns:
-        dict = {row.tuple: row[c] for i, row in graph_df.iterrows()}
-        nx.set_node_attributes(G, dict, c)
-
-    return G
 
 
 # process graph
 
 
 def query_graph_edges_attributes(G, id_col: str = "id", edge_query: str = None):
-    """This function queries the graph by selecting only the edges specified in edge_query"""
-
+    """Query the graph by selecting only the edges specified in edge_query."""
     if edge_query is None:
         G_query = G.copy()
     else:
@@ -1681,8 +916,7 @@ def query_graph_edges_attributes(G, id_col: str = "id", edge_query: str = None):
 
 
 def query_graph_nodes_attributes(G, id_col: str = "id", node_query: str = None):
-    """This function queries the graph by selecting only the nodes specified in node_query"""
-
+    """Query the graph by selecting only the nodes specified in node_query."""
     if node_query is None:
         G_query = G
 
@@ -1699,8 +933,7 @@ def query_graph_nodes_attributes(G, id_col: str = "id", node_query: str = None):
 
 
 def contract_graph_nodes(G, nodes, to_node=None):
-    """This function contract the nodes into one node in G"""
-
+    """Contract the nodes into one node in G."""
     G_contracted = G.copy()
     node_contracted = []
 
@@ -1718,16 +951,10 @@ def contract_graph_nodes(G, nodes, to_node=None):
     return G_contracted, node_contracted
 
 
-def louvain_partition(G: nx.Graph):
-    """This function is a wrapper around best partiton method in community
-    See :py:meth:`~community.best_partition()` for more information.
-    """
-    return community.best_partition(G)
-
-
 def sort_ids(G: nx.Graph):
-    """Function to sort the ids of the graph.
-    if there are no ids for the nodes, the ids will be generated based on the geometry
+    """Sort the ids of the graph.
+
+    if there are no ids for the nodes, the ids will be generated based on the geometry.
     """
     if set(dict(G.nodes(data="id")).values()) == {None}:
         nx.set_node_attributes(G, {p: f"{p[0]:.6f}_{p[1]:.6f}" for p in G.nodes}, "id")
@@ -1736,7 +963,7 @@ def sort_ids(G: nx.Graph):
 
 
 def sort_ends(G: nx.Graph):
-    """Function to sort the ends of the graph.
+    """Sort the ends of the graph.
 
     Arguments
     ---------
@@ -1766,7 +993,7 @@ def sort_ends(G: nx.Graph):
 
 
 def sort_direction(G: nx.DiGraph) -> nx.DiGraph:
-    """Function sort the start end direction of the graph and obtain start and end nodes.
+    """Sort the start end direction of the graph and obtain start and end nodes.
 
     Arguments
     ---------
@@ -1776,8 +1003,8 @@ def sort_direction(G: nx.DiGraph) -> nx.DiGraph:
     Returns
     -------
     G: nx.DiGraph
-        Directional Graph with node attributes endnodes and startnodes"""
-
+    Directional Graph with node attributes endnodes and startnodes
+    """
     endnodes = {
         n: "endnode" for n in G.nodes if (G.degree[n] == 1 and G.out_degree[n] == 0)
     }
@@ -1790,7 +1017,8 @@ def sort_direction(G: nx.DiGraph) -> nx.DiGraph:
 
 
 def get_predecessors(G: nx.DiGraph, n, inclusive=True):
-    """Function to find the predecessors of a node n
+    """Find the predecessors of a node n.
+
     See :py:meth:`~nx.bfs_predecessors()` for more information.
 
     Arguments
@@ -1802,7 +1030,6 @@ def get_predecessors(G: nx.DiGraph, n, inclusive=True):
     inclusive: bool
         Whether to include the input node in the results
     """
-
     RG = G.reverse()
     predecessors = list(dict(nx.bfs_predecessors(RG, n)).keys())
     if inclusive:
@@ -1811,8 +1038,10 @@ def get_predecessors(G: nx.DiGraph, n, inclusive=True):
 
 
 def find_difference(G, H):
-    """function to find the difference between G and H (G-H) based on edges
-    replace :py:meth:`~nx.difference()`"""
+    """Find the difference between G and H (G-H) based on edges.
+
+    replace :py:meth:`~nx.difference()`.
+    """
     c = G.copy()
     c.remove_edges_from(H.edges)
     c.remove_nodes_from(list(nx.isolates(c)))
@@ -1820,8 +1049,11 @@ def find_difference(G, H):
 
 
 def contract_graph(G: nx.Graph, partition, tonodes):
-    """contract based on partition --> needs further improvements
-    TODO: harmonize with setup partition
+    """Contract based on partition.
+
+    Needs further improvements.
+
+    TODO: harmonize with setup partition.
     """
     ind = G.copy()
     nx.set_node_attributes(ind, {n: {"ind_size": 1} for n in ind.nodes})
@@ -1845,7 +1077,10 @@ def make_dag(
     drop_unreachable=False,
     logger=logger,
 ):
-    """dag making for digraph --> needs further improvements
+    """Make dag graph.
+
+    Needs further improvements
+
     TODO: add to setup_dag
     # test
     # G = nx.DiGraph()
@@ -1861,9 +1096,8 @@ def make_dag(
     #     path = nx.shortest_path(G, n, -1,
     #              method = algorithm)
     #     nx.add_path(X_new, path)
-    # X_new.remove_nodes_from([-1])
+    # X_new.remove_nodes_from([-1]).
     """
-
     # copy
     X = G.copy()
 
@@ -1904,6 +1138,8 @@ def make_graphplot_for_targetnodes(
     layout="xy",
     ax=None,
 ):
+    from networkx.drawing.nx_agraph import graphviz_layout
+
     if ax is None:
         fig, ax = plt.subplots(figsize=(8, 8))
 
@@ -1970,7 +1206,12 @@ def make_graphplot_for_targetnodes(
 def plot_xy(G: nx.DiGraph, plot_outfall=False):
     plt.figure(figsize=(8, 8))
     plt.axis("off")
-    pos_G = {xy: xy for xy in G.nodes()}
+    try:
+        pos_G = {xy: xy for xy in G.nodes()}
+    except IndexError:
+        # support also geometry
+        pos_G = {xy[0]: xy[1].coords[0] for xy in G.nodes(data="geometry")}
+
     nx.draw_networkx_nodes(G, pos=pos_G, node_size=1, node_color="k")
     nx.draw_networkx_edges(G, pos=pos_G, edge_color="k", arrows=False)
 
@@ -1992,8 +1233,7 @@ def plot_xy(G: nx.DiGraph, plot_outfall=False):
 
 
 def plot_graphviz(G: nx.DiGraph):
-    """This function makes plots for grahviz layout"""
-
+    """Make plots for grahviz layout."""
     # convert to undirected graph
     UG = G.to_undirected()
 
@@ -2016,8 +1256,7 @@ def plot_graphviz(G: nx.DiGraph):
 
 
 def plot_graph(G: nx.DiGraph):
-    """This function makes plots for two different layout"""
-
+    """Make plots for two different layout."""
     # convert to undirected graph
     UG = G.to_undirected()
 
@@ -2051,156 +1290,14 @@ def random_color():
     )
 
 
-# validate graph - old
-
-
-def validate_1dnetwork_connectivity(
-    branches: gpd.GeoDataFrame,
-    plotit=False,
-    ax=None,
-    exportpath=os.getcwd(),
-    logger=logging,
-):
-    """Function to validate the connectivity of provided branch"""
-
-    # affirm datatype
-    branches = gpd.GeoDataFrame(branches)
-
-    # create digraph
-    G = create_graph_from_branches(branches)
-    pos = {xy: xy for xy in G.nodes()}
-
-    # convert to undirected graph
-    UG = G.to_undirected()
-
-    # find connected components in undirected graph
-    outlets = []
-    for i, SG in enumerate(nx.connected_components(UG)):
-        # make components a subgraph
-        SG = G.subgraph(SG)
-
-        # find outlets of the subgraph
-        outlets.append([n for n in SG.nodes() if G.out_degree(n) == 0])
-
-    outlets = sum(outlets, [])
-    outlet_ids = {
-        p: [li for li, l in branches.geometry.iteritems() if l.intersects(Point(p))]
-        for p in outlets
-    }
-
-    # report
-    if i == 0:
-        logger.info(
-            "Validation results: the 1D network are fully connected.  Supress plotit function."
-        )
-    else:
-        logger.info(
-            f"Validation results: the 1D network are disconnected have {i+1} connected components"
-        )
-
-    if plotit:
-        ax = make_graphplot_for_targetnodes(G, outlets, outlet_ids, layout="graphviz")
-        ax.set_title(
-            "Connectivity of the 1d network, with outlets"
-            + "(connectivity outlets, not neccessarily network outlets due to bi-directional flow, please check these)",
-            wrap=True,
-        )
-        plt.savefig(exportpath.joinpath("validate_1dnetwork_connectivity"))
-
-    return None
-
-
-def validate_1dnetwork_flowpath(
-    branches: gpd.GeoDataFrame,
-    branchType_col="branchType",
-    plotit=False,
-    ax=None,
-    exportpath=os.getcwd(),
-    logger=logging,
-):
-    """function to validate flowpath (flowpath to outlet) for provided branch"""
-
-    # affirm datatype
-    branches = gpd.GeoDataFrame(branches)
-
-    # create digraph
-    G = gpd_to_digraph(branches)
-    pos = {xy: xy for xy in G.nodes()}
-
-    # create separate graphs for pipes and branches
-    pipes = branches.query(f"{branchType_col} == 'Pipe'")
-    channels = branches.query(f"{branchType_col} == 'Channel'")
-
-    # validate 1d network based on pipes -> channel logic
-    if len(pipes) > 0:
-        # create graph
-        PG = gpd_to_digraph(pipes)
-        # pipes outlets
-        pipes_outlets = [n for n in PG.nodes() if G.out_degree(n) == 0]
-        pipes_outlet_ids = {
-            p: [li for li, l in pipes.geometry.iteritems() if l.intersects(Point(p))]
-            for p in pipes_outlets
-        }
-        logger.info(
-            f"Validation result: the 1d network has {len(pipes_outlets)} pipe outlets."
-        )
-
-    if len(channels) > 0:
-        # create graph
-        CG = gpd_to_digraph(channels)
-        # pipes outlets
-        channels_outlets = [n for n in CG.nodes() if G.out_degree(n) == 0]
-        channels_outlet_ids = {
-            p: [li for li, l in channels.geometry.iteritems() if l.intersects(Point(p))]
-            for p in channels_outlets
-        }
-        logger.info(
-            f"Validation result: the 1d network has {len(channels_outlets)} channel outlets."
-        )
-
-    if (len(channels) > 0) and (len(pipes) > 0):
-        isolated_outlets = [
-            p
-            for p in pipes_outlets
-            if not any(Point(p).intersects(l) for _, l in channels.geometry.iteritems())
-        ]
-        isolated_outlet_ids = {}
-        for p in isolated_outlets:
-            isolated_outlet_id = [
-                li for li, l in pipes.geometry.iteritems() if l.intersects(Point(p))
-            ]
-            isolated_outlet_ids[p] = isolated_outlet_id
-            logger.warning(
-                f"Validation result: downstream of {isolated_outlet_id} are not located on channels. Please double check. "
-            )
-
-    # plot
-    if plotit:
-        ax = make_graphplot_for_targetnodes(
-            G,
-            target_nodes={**isolated_outlet_ids, **channels_outlet_ids}.keys(),
-            target_nodes_labeldict={**isolated_outlet_ids, **channels_outlet_ids},
-        )
-        ctx.add_basemap(
-            ax=ax, url=ctx.providers.OpenStreetMap.Mapnik, crs=branches.crs.to_epsg()
-        )
-        ax.set_title(
-            "Flow path of the 1d network, with outlets"
-            + "(flowpath outlets, not neccessarily network outlets due to bi-directional flow , please check these)",
-            wrap=True,
-        )
-        plt.savefig(exportpath.joinpath("validate_1dnetwork_flowpath"))
-
-    return None
-
-
 def get_arborescence(G: nx.DiGraph):
-    """function to get arborescence from Digraph
-    This function will loop through all bifurcation node and check if its predecessors forms a arborescence.
+    """Get arborescence from Digraph.
+
+    This function will loop through all bifurcation node and check if its predecessors
+    forms a arborescence.
     If yes, _arborescence = True is assigned to nodes and edges.
     See :py:meth:`networkx.algorithms.tree.recognition.is_arborescence` for more.
     """
-
     if not isinstance(G, nx.DiGraph):
         raise TypeError("Must be a DiGraph")
 
