@@ -31,6 +31,12 @@ __all__ = [
     # setup graph attributes
     "setup_graph_from_rasterdataset",
     "setup_graph_from_geodataframe",
+    # workflows
+    "query_graph_edges_attributes",
+    "query_graph_nodes_attributes",
+    "get_largest_component",
+    "add_missing_edges_to_subgraph",
+    "setup_dag",
 ]
 
 
@@ -455,6 +461,93 @@ def setup_graph_from_geodataframe(
     return graph
 
 
+# workflows
+def get_largest_component(G):
+    """
+    Get the largest connected component from a network graph.
+
+    Parameters
+    ----------
+        G (nx.Graph): The networkx graph from which to find the largest component.
+
+    Returns
+    -------
+        nx.Graph: Subgraph representing the largest connected component.
+    """
+    UG = G.to_undirected()
+    largest_cc = max(nx.connected_components(UG), key=len)
+    return G.subgraph(largest_cc)
+
+
+def add_missing_edges_to_subgraph(
+    original_subgraph: nx.Graph, complete_graph: nx.Graph
+) -> nx.Graph:
+    """
+    Add missing edges to a subgraph using a complete graph.
+
+    This function identifies and adds the edges from the complete graph to the subgraph
+    that are missing but share the same vertices as the subgraph. It preserves the
+    original attributes of the edges and nodes.
+
+    Parameters
+    ----------
+        original_subgraph (nx.Graph):
+        The subgraph to which missing edges are to be added.
+        complete_graph (nx.Graph):
+        The complete graph used as a reference to find missing edges.
+
+    Returns
+    -------
+        nx.Graph: The updated subgraph with missing edges added.
+    """
+    # Copy the original subgraph to avoid modifying it directly
+    subgraph_copy = original_subgraph.copy()
+
+    # Retrieve nodes from the original subgraph
+    subgraph_nodes = subgraph_copy.nodes
+
+    # Convert the complete graph to an undirected graph for processing
+    undirected_complete_graph = complete_graph.to_undirected()
+
+    # Create a new subgraph from the undirected complete graph
+    # using the nodes of the original subgraph
+    new_subgraph = undirected_complete_graph.__class__()
+    new_subgraph.add_nodes_from(subgraph_copy.nodes(data=True))
+    new_subgraph.add_edges_from(subgraph_copy.edges(data=True))
+
+    # Add edges that has a note in the subgraph and neighbour not in subgraph
+    if new_subgraph.is_multigraph():
+        new_subgraph.add_edges_from(
+            (node, neighbor, key, data)
+            for node, neighbors in undirected_complete_graph.adj.items()
+            if node in subgraph_nodes
+            for neighbor, keydict in neighbors.items()
+            if neighbor not in subgraph_nodes
+            for key, data in keydict.items()
+        )
+    else:
+        new_subgraph.add_edges_from(
+            (node, neighbor, data)
+            for node, neighbors in undirected_complete_graph.adj.items()
+            if node in subgraph_nodes
+            for neighbor, data in neighbors.items()
+            if neighbor not in subgraph_nodes
+        )
+    # update new nodes properties
+    nx.set_node_attributes(
+        new_subgraph,
+        {
+            n[0]: n[1]
+            for n in undirected_complete_graph.nodes(data=True)
+            if n[0] in new_subgraph.nodes
+        },
+    )
+    # Update the graph properties from the undirected complete graph
+    new_subgraph.graph.update(undirected_complete_graph.graph)
+
+    return new_subgraph
+
+
 # func from hybridurb
 def update_edges_attributes(
     graph: nx.Graph,
@@ -785,6 +878,7 @@ def _setup_dag(
         DAG = make_dag(G, targets=targets, weight=weight, drop_unreachable=True)
 
     # 2. add back weights
+    # TODO Xiaohan: for now the weight are not reversed
     for u, v, new_d in DAG.edges(data=True):
         # get the old data from X
         old_d = G[u].get(v)
@@ -792,6 +886,9 @@ def _setup_dag(
         if non_shared:
             # add old weights to new weights if not in new data
             new_d.update(dict((key, old_d[key]) for key in non_shared))
+    # add back node attributes
+    attrs = {n[0]: n[1] for n in G.nodes(data=True) if n[0] in DAG.nodes}
+    nx.set_node_attributes(DAG, attrs)
 
     # 3. add auxiliary calculations
     _ = DAG.reverse()

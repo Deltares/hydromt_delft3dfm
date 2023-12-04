@@ -951,122 +951,25 @@ class DFlowFMModel(MeshModel):
             graph_fn=Path(self.root).joinpath("graphs/graph_osm_bl.geojson"),
         )
 
-        import matplotlib.pyplot as plt
+        # make plots
+        # import matplotlib.pyplot as plt
+        # fig, ax = plt.subplots()
+        # branches.plot("branchtype", ax=ax)
+        # branch_nodes.plot("nodetype", ax=ax, cmap="Reds_r")
+        # fig, ax = plt.subplots()
+        # branches.plot("gradient", ax=ax, vmin=0.0, vmax=0.01, legend=True)
+        # plt.gcf().axes[-1].set(title="gradient", ylabel="m/m")
+        # branch_nodes.plot("elevtn", ax=ax, vmin=0.0, vmax=10.0, legend=True)
+        # plt.gcf().axes[-1].set(title="elevtn", ylabel="mAD")
 
-        fig, ax = plt.subplots()
-        branches.plot("branchtype", ax=ax)
-        branch_nodes.plot("nodetype", ax=ax, cmap="Reds_r")
-        fig, ax = plt.subplots()
-        branches.plot("gradient", ax=ax, vmin=0.0, vmax=0.01, legend=True)
-        plt.gcf().axes[-1].set(title="gradient", ylabel="m/m")
-        branch_nodes.plot("elevtn", ax=ax, vmin=0.0, vmax=10.0, legend=True)
-        plt.gcf().axes[-1].set(title="elevtn", ylabel="mAD")
-
-        # TODO 3. optimise graph directions
-        # graph_osm = workflows.optimise_graph(
-        #     graph=graph_osm,
-        #     logger=self.logger,
-        # )
-
-        # 1. inspect the graph
-        # graph type DiGraph
-        # edges (5050) attributes  ['tunnel', 'access', 'length', 'bridge', 'id',
-        # 'highway', 'lanes', 'oneway', 'junction', 'reversed', 'branchtype',
-        # 'maxspeed', 'branchid', 'node_start', 'node_end', 'geometry', 'osmid',
-        # 'name', 'service', 'gradient']
-        # nodes (4789) attributes ['id', 'geometry', 'distance_right', 'index_right',
-        # 'nodeid', 'nodetype', 'x', 'y', 'spatial_ref', 'elevtn']
-        # compute central betweenness
-
-        # 2. truncate the network to be connected pipes  only
-        import networkx as nx
-
-        from hydromt_delft3dfm.workflows.graph import query_graph_edges_attributes
-
-        g_in = graph_osm_bl
-
-        def get_largest_component(G: nx.Graph) -> nx.Graph:
-            """Get the largest connected component (cc) as a subgraph."""
-            # convert to undirected graph for searching of connected component
-            UG = G.to_undirected()
-            _sorted_components = sorted(
-                nx.connected_components(UG), key=len, reverse=True
-            )
-            largest_cc = _sorted_components[0]
-            return G.subgraph(largest_cc)
-
-        def add_missing_edges_in_subgraph(
-            g_subgraph: nx.Graph, g_complete: nx.Graph
-        ) -> nx.Graph:
-            """Add missing edges at g_subgraph nodes using g_complete.
-
-            The edges to be added share the vertices in g_subgraph.
-            """
-            # Make a copy of g_subgraph
-            g_subgraph_copy = g_subgraph.copy()
-            # get the nodes from g_subgraph
-            nodelist = g_subgraph_copy.nodes
-            # convert g_complete to undirected graph
-            UG = g_complete.to_undirected()
-            # create a new subgraph from UG using the edges touch nodelist
-            SG = UG.__class__()
-            SG.add_nodes_from((n, UG.nodes[n]) for n in nodelist)
-            if SG.is_multigraph():
-                SG.add_edges_from(
-                    (n, nbr, key, d)
-                    for n, nbrs in UG.adj.items()
-                    if n in nodelist
-                    for nbr, keydict in nbrs.items()
-                    if nbr in nodelist
-                    for key, d in keydict.items()
-                )
-            else:
-                SG.add_edges_from(
-                    (n, nbr, d)
-                    for n, nbrs in UG.adj.items()
-                    if n in nodelist
-                    for nbr, d in nbrs.items()
-                    if nbr in nodelist
-                )
-            SG.graph.update(UG.graph)
-            # add the missing egdes
-            missing_edges = nx.difference(
-                SG, g_subgraph.to_undirected()
-            )  # edges in SG but not in g_subgraph
-            # Add the missing edges from the difference graph to the subgraph copy
-            g_subgraph_copy.add_edges_from(missing_edges.edges)
-            # get the subgraph from the directed graph based on the nodes of the SG
-            return g_subgraph_copy
-
-        # filter for pipes
-        _g_out = query_graph_edges_attributes(g_in, edge_query='branchtype=="pipe"')
-        # filter for connected pipe network (result in missing of outlet pipes)
-        _g_out = get_largest_component(_g_out)
-        # add missing outlet pipes
-        _g_out = add_missing_edges_in_subgraph(_g_out, g_in)
-
-        from hydromt_delft3dfm.workflows.graph import setup_dag
-
-        # compute dag graph
-        # NOTE resulting in missing of ambigious pipes,
-        # e.g. equal distance from two outlets
-        # NOTE only toplogy, not using or returning other infomation on nodes
-        # # FIXME to check
-        dag = setup_dag(
-            _g_out,
-            target_query='nodetype=="outlet"',
-            weight="length",
-            algorithm="simple",
-            report="1",
+        # TODO Xiaohan 3. optimise graph directions
+        # TODO Xiaohan: check what else information should be passed to this function
+        graph_pipe_dag = workflows.optimise_pipe_topology(
+            graph=graph_osm_bl,
+            logger=self.logger,
         )
-        # add back ambigious pipes (use orginal direction)
-        dag = add_missing_edges_in_subgraph(dag, _g_out)
-
-        # update nodes information
-        dag.update(g_in)
-
         # add crs
-        dag.graph["crs"] = self.crs.to_epsg()
+        graph_pipe_dag.graph["crs"] = self.crs.to_epsg()
 
         # FIXME cannot write anymore due to upstream nodes info as a list
         # graph_utils.write_graph(
@@ -1074,38 +977,16 @@ class DFlowFMModel(MeshModel):
         #     graph_fn=Path(self.root).joinpath("graphs/graph_dag.gml"),
         # )
         graph_utils.write_graph(
-            dag,
+            graph_pipe_dag,
             graph_fn=Path(self.root).joinpath("graphs/graph_dag.geojson"),
         )
 
         # asign to pipe object, update branches
-        pipes, pipe_nodes = graph_utils.graph_to_network(dag)
+        pipes, pipe_nodes = graph_utils.graph_to_network(graph_pipe_dag)
 
-        # setup geoms
-        self.logger.debug("Adding pipes and pipe_nodes vector to geoms.")
-        self.set_geoms(pipes, "pipes")
-        self.set_geoms(pipe_nodes, "pipe_nodes")
-
-        # add to branches
-        branches = workflows.add_branches(
-            self.mesh_datasets.get("mesh1d"),
-            self.branches,
-            pipes,
-            self._snap_newbranches_to_branches_at_snapnodes,
-            self._network_snap_offset,
-        )
-        workflows.validate_branches(branches)
-        self.set_branches(branches)
-
-        # # update mesh
-        # # Convert self.branches to xugrid
-        # mesh1d, network1d = workflows.mesh1d_network1d_from_branches(
-        #     self.opensystem,
-        #     self.closedsystem,
-        #     self._openwater_computation_node_distance,
-        # )
-        # self.set_mesh(network1d, grid_name="network1d", overwrite_grid=True)
-        # self.set_mesh(mesh1d, grid_name="mesh1d", overwrite_grid=True)
+        # TODO setup geoms: list in data will block saving
+        # TODO add to branches
+        # TODO update mesh
 
         # Others. Setup network connections based on flow directions from DEM
         # read data

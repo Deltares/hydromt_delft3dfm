@@ -25,9 +25,8 @@ dependencies = [
 	"pyflwdir >=0.5.4",
 	"networkx",
 	"momepy", # graph utils
-	"osmnx", # ra2ce network module
-	"geojson", # ra2ce network module - temporary
-	"tqdm", # ra2ce network module - temporary
+	"osmnx", # osm graph
+	"matplotlib", # meshkernel?
 ]
 requires-python = ">=3.9"
 readme = "README.rst"
