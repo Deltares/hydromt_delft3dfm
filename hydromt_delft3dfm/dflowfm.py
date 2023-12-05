@@ -995,16 +995,19 @@ class DFlowFMModel(MeshModel):
         )
         if isinstance(ds_hydro, xr.DataArray):
             ds_hydro = ds_hydro.to_dataset()
-        workflows.create_graph_from_hydrography(
+        graph_flwdir = workflows.create_graph_from_hydrography(
             region=region,
             ds_hydro=ds_hydro,
             min_sto=1,  # all stream that starts with stream order = 1
         )
+        branches = graph_utils.graph_to_network(graph_flwdir)[0]
+        branch_nodes = graph_utils.graph_to_network(graph_flwdir)[1]
         graph_utils.write_graph(
-            graph_osm, graph_fn=Path(self.root).joinpath("graphs/graph_flwdir.gml")
+            graph_flwdir, graph_fn=Path(self.root).joinpath("graphs/graph_flwdir.gml")
         )
         graph_utils.write_graph(
-            graph_osm, graph_fn=Path(self.root).joinpath("graphs/graph_flwdir.geojson")
+            graph_flwdir,
+            graph_fn=Path(self.root).joinpath("graphs/graph_flwdir.geojson"),
         )
         # workflows.setup_network_connections_based_on_flowdirections(
         # graph_osm, graph_flwdir)
