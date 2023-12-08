@@ -9,6 +9,10 @@ setup_mesh2d:
 setup_mesh2d_refine:
   bathy_fn: gebco_elev
   min_edge_size: 200 # always in meters
+  #TODO: this does not work since the rastered sample dataset is coordinate converted, but lat/lon remain 1d and this is passed to gridded samples
+  #it does work with ravelled samples (incl converted coordinates) with a direct meshkernel implementation: build_2dmodel_coastal_meshkernel_issue.py
+  #discuss how to proceed: gridded or ravelled samples
+  #mesh refinement algorithm is different for these two sample sets: https://github.com/Deltares/MeshKernelPy/issues/71
 
 # setup_maps_from_rasterdataset:
   # raster_fn: merit_hydro
