@@ -36,7 +36,10 @@ __all__ = [
     "query_graph_nodes_attributes",
     "get_largest_component",
     "add_missing_edges_to_subgraph",
+    "preprocess_dag",
     "setup_dag",
+    "postprocess_dag",
+    "set_directions",
 ]
 
 
@@ -462,6 +465,121 @@ def setup_graph_from_geodataframe(
 
 
 # workflows
+
+
+def preprocess_dag(G: nx.digraph, weight: str = "weight") -> nx.DiGraph:
+    """Prepare graph G for setup_dag.
+
+    For being used for setup_dag properlly, the graph must be preprocessed.
+    These include 1) ensure there are bidirectional flowpath between each pair of
+    nodes, this results in a multidigraph 2) conert the multidigraph into a digraph
+    for shortest_path function to be applicable 3) truncate the negative weight for
+    Dijkstra algorithm to be applicable.
+
+    Parameters
+    ----------
+    G: nx.Graph
+    weight: str
+        Edge attribute that contains the weight used for setup_dag.
+        Note that the weight will be split into two part for each edge.
+
+    """
+    # 1) ensure there are bidirectional flowpath
+    processed_graph = digraph_to_multidigraph(G, weight=weight)
+    # 2) conert the multidigraph into a digraph
+    processed_graph = multidigraph_to_digraph_by_adding_node_at_mid_location(
+        processed_graph, weight=weight
+    )
+    # 3) truncate negative weight
+    for e in processed_graph.edges(data=True):
+        if np.isnan(e[2][weight]) or e[2][weight] < 0:
+            e[2][weight] = 0  # truncate nan or negative loss
+    return processed_graph
+
+
+def postprocess_dag(G: nx.DiGraph):
+    """Post process the dag graph resulted from setup_dag based on preprocess_graph."""
+    # remove hanging mid node
+    G.remove_nodes_from([n for n in G if G.degree(n) == 1 and "mid" in n])
+    return G
+
+
+def digraph_to_multidigraph(digraph: nx.DiGraph, weight="weight"):
+    """Make digraph to multidigraph by adding a reverse direction with negative weight.
+
+    Args:
+        digraph (nx.DiGraph): digraph
+    """
+    # create multidigraph
+    G = nx.MultiDiGraph(digraph)
+    G.add_edges_from(
+        [(e[1], e[0], {weight: -1 * e[2][weight]}) for e in G.edges(data=True)]
+    )
+    return G
+
+
+def multidigraph_to_digraph_by_adding_node_at_mid_location(
+    multidigraph: nx.MultiDiGraph, weight="weight"
+) -> nx.DiGraph:
+    """Split each pair of nodes with multiple edges into two nodes with a single edge.
+
+    The weight of the original edges will be split between the newly added edges.
+
+    e.g .
+            ->                    ->  S__T__mid  ->
+        S   <-  T              S  <-  T__S__mid  <-  T
+
+    Args:
+        multidigraph (nx.MultiDiGraph): multidigraph
+
+    Returns
+    -------
+        nx.DiGraph: (nx.Digraph) with a new node named (u__v__mid) for each edge
+    """
+    H = nx.DiGraph()
+    for u, v, data in multidigraph.edges(data=True):
+        # Create a new node name based on the edge index
+        w = f"{u}__{v}__mid"
+        # Add the new node to the graph with the same demand as the original node
+        H.add_node(w)
+        # Add an edge from the original node to the new node
+        H.add_edge(u, w, weight=data["weight"] / 2)
+        # Add an edge from the new node to the original node
+        H.add_edge(w, v, weight=data["weight"] / 2)
+
+    # update new nodes properties
+    nx.set_node_attributes(
+        H,
+        {n[0]: n[1] for n in multidigraph.nodes(data=True) if n[0] in H.nodes},
+    )
+    # Update the graph properties from the undirected complete graph
+    H.graph.update(multidigraph.graph)
+
+    return H
+
+
+def set_directions(G: nx.Graph, H: nx.DiGraph):
+    """Set directions in a undirected graph G based on a directed graph H."""
+    directed_G = nx.DiGraph()
+    directed_G.graph = G.graph
+    directed_G.add_nodes_from(G.nodes(data=True))
+
+    for edge in G.edges(data=True):
+        u, v, data = edge
+
+        # Check if there's a path from u to v in H
+        if nx.has_path(H, u, v):
+            directed_G.add_edge(u, v)
+            directed_G[u][v].update(data)
+
+        # Check if there's a path from v to u in H
+        if nx.has_path(H, v, u):
+            directed_G.add_edge(v, u)
+            directed_G[v][u].update(data)
+
+    return directed_G
+
+
 def get_largest_component(G):
     """
     Get the largest connected component from a network graph.

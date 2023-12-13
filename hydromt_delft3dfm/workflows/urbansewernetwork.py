@@ -204,13 +204,6 @@ def setup_urban_sewer_network_bedlevel_from_dem(
         graph_component="nodes",
         logger=logger,
     )
-
-    logger.info("compute gradient from elevtn")
-    graph = _compute_gradient_from_elevtn(graph)
-
-    logger.info("update graph direction")
-    graph = reverse_edges_on_negative_weight(graph, weight="gradient")
-
     # TODO set graph
 
     return graph
@@ -227,35 +220,42 @@ def optimise_pipe_topology(graph: nx.Graph, logger=logger):
     -------
         nx.Graph: Processed graph in the form of a DAG.
     """
+    logger.info("select pipes to be optimised")
+
     # Truncate to connected pipes only
-    truncated_graph = workflows.query_graph_edges_attributes(
+    graph_pipes = workflows.query_graph_edges_attributes(
         graph, edge_query='branchtype=="pipe"'
     )
-    truncated_graph = workflows.get_largest_component(truncated_graph)
+    graph_pipes = workflows.get_largest_component(graph_pipes)
 
     # Add missing outlet pipes
-    truncated_graph = workflows.add_missing_edges_to_subgraph(truncated_graph, graph)
+    graph_pipes = workflows.add_missing_edges_to_subgraph(graph_pipes, graph)
 
-    logger.info("Perform optimisation on connected pipe network only")
-
-    # Compute directed acyclic graph
+    # start optimise
+    logger.info("perform optimisation by minimising static loss")
+    # add static loss (based on elevation of nodes) as weight on both directions
+    for e in graph_pipes.edges(data=True):
+        e[2].update(
+            {
+                "weight": graph_pipes.nodes[e[1]]["elevtn"]
+                - graph_pipes.nodes[e[0]]["elevtn"]
+            }
+        )  # if upslope -> positive loss, if downslopw -> negative loss
     # TODO Xiaohan: expact more methods
-    dag = workflows.setup_dag(
-        truncated_graph,
+    _dag = workflows.setup_dag(
+        workflows.preprocess_dag(graph_pipes, weight="weight"),
         target_query='nodetype=="outlet"',
-        weight="length",
-        algorithm="simple",
-        report="1",
+        weight="weight",
     )
+    _dag = workflows.postprocess_dag(_dag)
 
-    # Add back ambiguous pipes
-    dag = workflows.add_missing_edges_to_subgraph(dag, truncated_graph)
+    logger.info("pipes optimised")
+    graph_pipes_optmised = workflows.set_directions(graph_pipes.to_undirected(), _dag)
 
-    # TODO Xiaohan: check if the information is added back correctly
-    # maybe the setup_dag already add edge info
-    # if not, maybe reverse pipe direction etc is needed.
+    logger.info("compute gradient for pipes")
+    graph_pipes_optmised = _compute_gradient_from_elevtn(graph_pipes_optmised)
 
-    return dag
+    return graph_pipes_optmised
 
 
 def optimize_graph(graph, logger=logger):

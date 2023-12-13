@@ -968,8 +968,6 @@ class DFlowFMModel(MeshModel):
             graph=graph_osm_bl,
             logger=self.logger,
         )
-        # add crs
-        graph_pipe_dag.graph["crs"] = self.crs.to_epsg()
 
         # FIXME cannot write anymore due to upstream nodes info as a list
         # graph_utils.write_graph(
@@ -978,7 +976,7 @@ class DFlowFMModel(MeshModel):
         # )
         graph_utils.write_graph(
             graph_pipe_dag,
-            graph_fn=Path(self.root).joinpath("graphs/graph_dag.geojson"),
+            graph_fn=Path(self.root).joinpath("graphs/graph_pipe_dag.geojson"),
         )
 
         # asign to pipe object, update branches
