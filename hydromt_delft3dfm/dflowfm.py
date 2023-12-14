@@ -962,10 +962,11 @@ class DFlowFMModel(MeshModel):
         # branch_nodes.plot("elevtn", ax=ax, vmin=0.0, vmax=10.0, legend=True)
         # plt.gcf().axes[-1].set(title="elevtn", ylabel="mAD")
 
-        # TODO Xiaohan 3. optimise graph directions
+        # 3. optimise graph directions
         # TODO Xiaohan: check what else information should be passed to this function
         graph_pipe_dag = workflows.optimise_pipe_topology(
             graph=graph_osm_bl,
+            method_for_weight="length",
             logger=self.logger,
         )
 
@@ -981,10 +982,16 @@ class DFlowFMModel(MeshModel):
 
         # asign to pipe object, update branches
         pipes, pipe_nodes = graph_utils.graph_to_network(graph_pipe_dag)
+        pipes.to_file(Path(self.root).joinpath("graphs/pipes.geojson"))
+        pipe_nodes.to_file(Path(self.root).joinpath("graphs/pipe_nodes.geojson"))
 
         # TODO setup geoms: list in data will block saving
         # TODO add to branches
         # TODO update mesh
+
+        # 4. Update pipe dimensions based on user-provided historical rainfall data
+        # workflows.setup_network_dimentions_from_rainfallstats()
+        # assume this already exisit
 
         # Others. Setup network connections based on flow directions from DEM
         # read data
@@ -1009,15 +1016,6 @@ class DFlowFMModel(MeshModel):
         )
         # workflows.setup_network_connections_based_on_flowdirections(
         # graph_osm, graph_flwdir)
-
-        # 3. Setup network physical parameters from raster datasets
-        # workflows.setup_network_parameters_from_rasters()
-
-        # 4. Optimize the network topology
-        # workflows.setup_network_topology_optimization()
-
-        # 5. Update pipe dimensions based on user-provided historical rainfall data
-        # workflows.setup_network_dimentions_from_rainfallstats()
 
         # TODO add geoms for network nodes and network edges
 

@@ -38,8 +38,10 @@ __all__ = [
     "add_missing_edges_to_subgraph",
     "preprocess_dag",
     "setup_dag",
+    "calculate_loads_from_dag",
     "postprocess_dag",
     "set_directions",
+    "update_edge_geometry",
 ]
 
 
@@ -573,11 +575,42 @@ def set_directions(G: nx.Graph, H: nx.DiGraph):
             directed_G[u][v].update(data)
 
         # Check if there's a path from v to u in H
-        if nx.has_path(H, v, u):
+        elif nx.has_path(H, v, u):
             directed_G.add_edge(v, u)
             directed_G[v][u].update(data)
 
+        else:
+            directed_G.add_edge(u, v)
+            directed_G[u][v].update(data)
+
     return directed_G
+
+
+def update_edge_geometry(G: nx.DiGraph) -> nx.DiGraph:
+    """Update the geometry based on edge directions.
+
+    Args:
+        G (nx.DiGraph): _description_
+
+    Returns
+    -------
+        nx.DiGraph: _description_
+    """
+    from shapely.geometry import LineString
+
+    for e in G.edges(data=True):
+        e[2].update(
+            {
+                "geometry": LineString(
+                    [
+                        G.nodes[e[0]]["geometry"],
+                        G.nodes[e[1]]["geometry"],
+                    ]
+                )
+            }
+        )
+
+    return G
 
 
 def get_largest_component(G):
@@ -1030,9 +1063,9 @@ def _setup_dag(
         DAG[t][s].update({"nnodes": nnodes, "nedges": nedges})
         DAG.nodes[s].update({"nnodes": nnodes, "nedges": nedges})
         # customised nodes
-        sumload_from_nodes = 0
-        sumload_from_edges = 0
         for l in loads:
+            sumload_from_nodes = 0
+            sumload_from_edges = 0
             if l in nodes_loads:
                 sumload_from_nodes = np.nansum([G.nodes[n][l] for n in upstream_nodes])
             elif l in edegs_loads:
@@ -1066,6 +1099,7 @@ def _setup_dag(
             pos = {xy: xy for xy in _DAG.nodes()}
 
         # plot graphviz
+        _DAG = postprocess_dag(_DAG)
         make_graphplot_for_targetnodes(_DAG, targets, layout="graphviz")
         plt.title(report, wrap=True, loc="left")
 
@@ -1102,6 +1136,65 @@ def _setup_dag(
             width=[float(i) / (max(edge_width) + 0.1) * 20 + 0.5 for i in edge_width],
         )
 
+    return DAG
+
+
+def calculate_loads_from_dag(DAG: nx.DiGraph, loads: list = []) -> nx.DiGraph:
+    """Calculate loads from all upstream nodes and edges based on a dag.
+
+    Parameters
+    ----------
+    DAG: nx.Digraph:
+        Intput directed acyclic graph.
+    loads: list
+        a list of nodes or edges attributes which will be summed up.
+
+    Returns
+    -------
+    DAG: nx.Digraph
+        Loads calculated and added to both ndoes and edges.
+    """
+    if not nx.is_directed_acyclic_graph(DAG):
+        logger.error("cannot compute loads, not a directed acyclic graph")
+        return DAG
+
+    _ = DAG.reverse()
+    nodes_attributes = [k for n in DAG.nodes for k in DAG.nodes[n].keys()]
+    edges_attribute = [k for e in DAG.edges for k in DAG.edges[e].keys()]
+    nodes_loads = [l for l in loads if l in nodes_attributes]
+    edegs_loads = [l for l in loads if l in edges_attribute]
+
+    for s, t in _.edges():
+        # fixed loads
+        upstream_nodes = list(nx.dfs_postorder_nodes(_, t))  # exclusive
+        upstream_edges = list(DAG.subgraph(upstream_nodes).edges())
+        DAG[t][s].update(
+            {"upstream_nodes": upstream_nodes, "upstream_edges": upstream_edges}
+        )
+        DAG.nodes[s].update(
+            {"upstream_nodes": upstream_nodes, "upstream_edges": upstream_edges}
+        )
+        nnodes = len(upstream_nodes)
+        nedges = len(upstream_edges)
+        DAG[t][s].update({"upstream_nnodes": nnodes, "upstream_nedges": nedges})
+        DAG.nodes[s].update({"upstream_nnodes": nnodes, "upstream_nedges": nedges})
+        # customised nodes
+        for l in loads:
+            sumload_from_nodes = 0
+            sumload_from_edges = 0
+            if l in nodes_loads:
+                sumload_from_nodes = np.nansum(
+                    [DAG.nodes[n][l] for n in upstream_nodes]
+                )
+            elif l in edegs_loads:
+                sumload_from_edges = np.nansum(
+                    [DAG[e[0]][e[1]][l] for e in upstream_edges]
+                )
+            else:
+                raise KeyError(f"Load {l} does not exist in nodes/edges attributes.")
+            sumload = sumload_from_nodes + sumload_from_edges
+            DAG[t][s].update({f"upstream_{l}": sumload})
+            DAG.nodes[s].update({f"upstream_{l}": sumload})
     return DAG
 
 

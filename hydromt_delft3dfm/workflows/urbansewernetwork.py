@@ -209,19 +209,8 @@ def setup_urban_sewer_network_bedlevel_from_dem(
     return graph
 
 
-def optimise_pipe_topology(graph: nx.Graph, logger=logger):
-    """
-    Process the graph by optimising the pipe network topology.
-
-    Include steps to truncate it to connected pipes only, compute a DAG,
-    and update the graph using input graph network informations.
-
-    Returns
-    -------
-        nx.Graph: Processed graph in the form of a DAG.
-    """
-    logger.info("select pipes to be optimised")
-
+def _select_pipes(graph):
+    """Select only connected pipe from graph."""
     # Truncate to connected pipes only
     graph_pipes = workflows.query_graph_edges_attributes(
         graph, edge_query='branchtype=="pipe"'
@@ -230,27 +219,46 @@ def optimise_pipe_topology(graph: nx.Graph, logger=logger):
 
     # Add missing outlet pipes
     graph_pipes = workflows.add_missing_edges_to_subgraph(graph_pipes, graph)
+    return graph_pipes
 
-    # start optimise
-    logger.info("perform optimisation by minimising static loss")
-    # add static loss (based on elevation of nodes) as weight on both directions
-    for e in graph_pipes.edges(data=True):
-        e[2].update(
-            {
-                "weight": graph_pipes.nodes[e[1]]["elevtn"]
-                - graph_pipes.nodes[e[0]]["elevtn"]
-            }
-        )  # if upslope -> positive loss, if downslopw -> negative loss
-    # TODO Xiaohan: expact more methods
-    _dag = workflows.setup_dag(
-        workflows.preprocess_dag(graph_pipes, weight="weight"),
-        target_query='nodetype=="outlet"',
-        weight="weight",
-    )
-    _dag = workflows.postprocess_dag(_dag)
 
-    logger.info("pipes optimised")
-    graph_pipes_optmised = workflows.set_directions(graph_pipes.to_undirected(), _dag)
+def optimise_pipe_topology(
+    graph: nx.Graph, method_for_weight: str = "length", logger=logger
+):
+    """
+    Process the graph by optimising the pipe network topology.
+
+    Include steps to truncate it to connected pipes only, compute a DAG,
+    and update the graph using input graph network informations.
+
+    Parameters
+    ----------
+    graph: nx.Graph
+        Graph that contains pipes that needs optimisation.
+        Nodes must have attribute "nodetype"; edges must have attribute "branchtype".
+    method_for_weight: str
+        Choose the method for weight calculation, e.g. "length", "static_loss".
+        If "static_loss" is used, the node must have attribute "elevtn".
+
+    Returns
+    -------
+        nx.Graph: Processed graph in the form of a DAG.
+
+    """
+    logger.info("Select only connected pipe from graph")
+    graph_pipes = _select_pipes(graph)
+
+    logger.info(f"Optimize based on {method_for_weight} method for weight.")
+    if method_for_weight == "length":
+        graph_pipes_optmised = _optimize_pipe_topology_based_on_length_as_weight(
+            graph_pipes
+        )
+    elif method_for_weight == "static_loss":
+        graph_pipes_optmised = _optimize_pipe_topology_based_on_static_loss_as_weight(
+            graph_pipes
+        )
+    else:
+        logger.error("method not supported. Use from : length, static_loss)")
 
     logger.info("compute gradient for pipes")
     graph_pipes_optmised = _compute_gradient_from_elevtn(graph_pipes_optmised)
@@ -258,20 +266,86 @@ def optimise_pipe_topology(graph: nx.Graph, logger=logger):
     return graph_pipes_optmised
 
 
-def optimize_graph(graph, logger=logger):
-    """Optimize graph based on various methods.
+def _optimize_pipe_topology_based_on_length_as_weight(graph_pipes):
+    """Optimize graph based on length as weight."""
+    # dag
+    _dag = workflows.setup_dag(
+        graph_pipes, target_query='nodetype=="outlet"', weight="length", report="1"
+    )
+    # set output graph using dag edge directions
+    graph_pipes_optmised = workflows.set_directions(graph_pipes.to_undirected(), _dag)
+
+    # recompute geometry based on new edges directions
+    graph_pipes_optmised = workflows.update_edge_geometry(graph_pipes_optmised)
+    return graph_pipes_optmised
+
+
+def _optimize_pipe_topology_based_on_static_loss_as_weight(graph_pipes):
+    """Optimize graph based on static loss as weight.
 
     if only elevtn is available at nodes, then the cost along path is used
     need to determin which nodes are sources, which nodes are targets
 
-
+    Note: not suited for flat area
     """
-    logger.info("compute gradient from elevtn")
-    graph = _compute_gradient_from_elevtn(graph)
+    # add static loss (based on elevation of nodes) as weight on both directions
+    for e in graph_pipes.edges(data=True):
+        e[2].update(
+            {
+                "weight": graph_pipes.nodes[e[1]]["elevtn"]
+                - graph_pipes.nodes[e[0]]["elevtn"]
+            }
+        )  # if upslope -> positive loss, if downslope -> negative loss
 
-    logger.info("update graph direction")
-    graph = reverse_edges_on_negative_weight(graph, weight="gradient")
-    return graph
+    # dag
+    _graph = workflows.preprocess_dag(graph_pipes, weight="weight")
+    _dag = workflows.setup_dag(
+        _graph,
+        target_query='nodetype=="outlet"',
+        weight="weight",
+        algorithm="flowpath",
+    )
+    _dag = workflows.postprocess_dag(_dag)
+
+    # set output graph using dag edge directions
+    graph_pipes_optmised = workflows.set_directions(graph_pipes.to_undirected(), _dag)
+
+    # recompute geometry based on new edges directions
+    graph_pipes_optmised = workflows.update_edge_geometry(graph_pipes_optmised)
+    return graph_pipes_optmised
+
+
+def _optimize_pipe_topology_based_on_network_simplex(graph, logger=logger):
+    # G = digraph_to_multidigraph(digraph)
+    # H = multidigraph_to_digraph_by_adding_node_at_mid_location(G)
+    # # add super target
+    # H.add_node(
+    #     "T", demand=-1 * sum([n[1] for n in H.nodes(data="demand")])
+    # )  # demand must equals to all supply
+    # H.add_edge("B", "T")  # Edge from B to T with capacity of 3 and cost of 0
+    # H.add_edge("C", "T")  # Edge from B to T with capacity of 3 and cost of 0
+    # # Find the minimum cost flow using the network simplex algorithm
+    # flow_cost, flow_dict = nx.network_simplex(H)
+    # # Print the minimum cost
+    # print("The minimum cost of the flow is", flow_cost)
+    # # Print the flow values of each edge
+    # for u, v in H.edges():
+    #     print("The flow on the edge from", u, "to", v, "is", flow_dict[u][v])
+
+    # # Create a list of edge colors based on the flow values
+    # edge_colors = []
+    # for u, v in H.edges():
+    #     if flow_dict[u][v] > 0:
+    #         edge_colors.append("green")  # Green color for edges with positive flow
+    #     else:
+    #         edge_colors.append("white")  # Black color for edges with zero flow
+
+    # # Draw the graph with the nodes, edges, and labels
+    # nx.draw(H, with_labels=True, node_color="white", edge_color=edge_colors)
+
+    # # Show the plot
+    # plt.show()
+    return None
 
 
 def _compute_gradient_from_elevtn(graph):
