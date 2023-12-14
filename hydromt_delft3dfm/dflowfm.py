@@ -963,7 +963,7 @@ class DFlowFMModel(MeshModel):
         # plt.gcf().axes[-1].set(title="elevtn", ylabel="mAD")
 
         # 3. optimise graph directions
-        # TODO Xiaohan: check what else information should be passed to this function
+        # TODO add method_for_weight as argument to main function
         graph_pipe_dag = workflows.optimise_pipe_topology(
             graph=graph_osm_bl,
             method_for_weight="length",
@@ -992,6 +992,11 @@ class DFlowFMModel(MeshModel):
         # 4. Update pipe dimensions based on user-provided historical rainfall data
         # workflows.setup_network_dimentions_from_rainfallstats()
         # assume this already exisit
+
+        # 5. Setup network physical parameters based on 4
+        # determining the radius of pipes based on the volume of water they need to
+        # accommendate
+        workflows.calculate_hydraulic_parameters(graph_pipe_dag)
 
         # Others. Setup network connections based on flow directions from DEM
         # read data

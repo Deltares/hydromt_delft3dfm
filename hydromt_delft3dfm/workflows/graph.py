@@ -609,6 +609,7 @@ def update_edge_geometry(G: nx.DiGraph) -> nx.DiGraph:
                 )
             }
         )
+        e[2].update({"length": e[2]["geometry"].length})
 
     return G
 
