@@ -963,12 +963,16 @@ class DFlowFMModel(MeshModel):
         # plt.gcf().axes[-1].set(title="elevtn", ylabel="mAD")
 
         # 3. optimise graph directions
+        # fix direction
+        # reduce to largest connected component
+        # recompute gradient
         # TODO add method_for_weight as argument to main function
         graph_pipe_dag = workflows.optimise_pipe_topology(
             graph=graph_osm_bl,
             method_for_weight="length",
             logger=self.logger,
         )
+        # FIXME missing edges in between adding them back result in a nondag
 
         # FIXME cannot write anymore due to upstream nodes info as a list
         # graph_utils.write_graph(
@@ -989,14 +993,31 @@ class DFlowFMModel(MeshModel):
         # TODO add to branches
         # TODO update mesh
 
-        # 4. Update pipe dimensions based on user-provided historical rainfall data
-        # workflows.setup_network_dimentions_from_rainfallstats()
+        # 4. get rainfall stats from historical data
+        # rainfall_depth_function = workflows.get_rainfallstats_from_historical_data()
         # assume this already exisit
 
         # 5. Setup network physical parameters based on 4
         # determining the radius of pipes based on the volume of water they need to
         # accommendate
-        workflows.calculate_hydraulic_parameters(graph_pipe_dag)
+        # add diameter (TODO add increments e.g. only 1.2; 1.4; 1.5 )
+        # add bedlevel based on depth and diameter
+        # (TODO add depth e.g. 0.5 meters below surface)
+        # TODO: a seperate function to compute contributing area.
+        # TODO: add a multiplier to rainfall
+
+        # add area # TODO add landuse to this function
+        # TODO move area_buffer_distance to input argument
+        graph_pipe_with_area = workflows.set_edge_areas(
+            graph_pipe_dag, area_buffer_distance=30
+        )
+        workflows.calculate_hydraulic_parameters(
+            graph_pipe_with_area,
+            flow_velocity=1,
+            pipe_depth=0.5,  # TODO add to main input argument
+            rainfall_depth_function=lambda x: 20,
+            rounding_precision=1,
+        )  # FIXME the calculated diameters are awfully large
 
         # Others. Setup network connections based on flow directions from DEM
         # read data

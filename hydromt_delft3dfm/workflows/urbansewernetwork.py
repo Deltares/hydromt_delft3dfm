@@ -25,6 +25,7 @@ __all__ = [
     # "setup_graph_egdes",
     # graph workflows
     "optimise_pipe_topology",
+    "set_edge_areas",
     "calculate_hydraulic_parameters",
     # TODO to be categorized
     "setup_network_connections_based_on_flowdirections",
@@ -373,11 +374,47 @@ def _compute_gradient_from_elevtn(graph):
     return graph
 
 
+def set_edge_areas(pipe_network_graph, area_buffer_distance=30):
+    """
+    Set the 'area' attribute for each edge in the graph.
+
+    Based on its geometry length and a given area buffer distance.
+
+    Parameters
+    ----------
+    pipe_network_graph: networkx.Graph
+        The graph whose edges will be updated.
+        Must have 'geometry' attribute.
+    area_buffer_distance: float
+        Estimated distance from the pipe network connected to the drainage system (m).
+        Beyond this distance, water is assumed not to drain into the system.
+        This is an estimate and may vary by region.
+        By default, 30 m is used.
+
+    Returns
+    -------
+    pipe_network_graph
+    """
+    area_attributes = {
+        (edge_start, edge_end): edge_data["geometry"].length * area_buffer_distance * 2
+        for edge_start, edge_end, edge_data in pipe_network_graph.edges(data=True)
+    }
+
+    nx.set_edge_attributes(pipe_network_graph, area_attributes, name="area")
+    return pipe_network_graph
+
+
+# Example usage:
+# set_edge_areas(pipe_network_graph, area_buffer_distance)
+
+
 def calculate_hydraulic_parameters(
     pipe_network_graph: nx.DiGraph,
-    area_buffer_distance: float = 30,
     flow_velocity: float = 1,
+    pipe_depth: float = 0.5,
     rainfall_depth_function=lambda x: 20,
+    rounding_precision: int = 1,
+    logger=logger,
 ):
     """
     Calculate radius for a pipe network.
@@ -387,98 +424,246 @@ def calculate_hydraulic_parameters(
     Parameters
     ----------
     pipe_network_graph: networkx.DiGraph
-        A directed graph representing the pipe network, where edges have 'geometry' and
-        'length' attributes.
-    area_buffer_distance: float
-        Estimated distance from the pipe network connected to the drainage system (m).
-        Beyond this distance, water is assumed not to drain into the system.
-        This is an estimate and may vary by region.
-        By default, 30 m is used.
+        A directed graph representing the pipe network, where edges have 'length'and
+        'area' attributes.
     flow_velocity : float
         Average flow velocity in the pipes during near-full conditions (m/s).
         This is an empirical value and may vary by region.
         By default 1 m/s is used.
+    pipe_depth : float
+        Average depth of pipe underground (m).
+        Depth is deinfed as the elevation different between the surface and the top of
+        the pipe.
+        This is an empirical value and may vary by region.
+        By default 0.5 m is used.
     rainfall_depth_function : function
         A function that takes concentration time as input and returns rainfall depth
         (mm).
         This can be a constant value for simpler models,
         or a more complex function reflecting design criteria which may vary by region.
         By default, a constant value of 20 mm is returned.
+    rounding_precision: int
+        Number of decimal places to round to for the estimated dimentions.
+        Applies to "diameter", "invlev_up", "invlev_dn".
+        By default 1.
 
     Returns
     -------
-    networkx.DiGraph: The graph with updated 'radius' attributes for each edge.
+    networkx.DiGraph:
+        The graph with updated attributes.
+        Each edge contains ["contributing_area", "diameter", "invlev_up", "invlev_dn"]
     """
-    # Compute contributing area for each edge in the pipe network
-    nx.set_edge_attributes(
-        pipe_network_graph,
-        {
-            (edge_start, edge_end): edge_data["geometry"]
-            .buffer(area_buffer_distance)
-            .area
-            for edge_start, edge_end, edge_data in pipe_network_graph.edges(data=True)
-        },
-        name="contributing_area",
-    )
-
-    # Initialize pipe radius to zero for all edges
-    nx.set_edge_attributes(
-        pipe_network_graph,
-        {
-            (edge_start, edge_end): 0
-            for edge_start, edge_end in pipe_network_graph.edges()
-        },
-        name="radius",
-    )
-
     if not nx.is_directed_acyclic_graph(pipe_network_graph):
         raise ValueError("The input graph must be a directed acyclic graph (DAG)")
 
     # Calculate pipe radius in topological order
+    pipe_network_graph = _calculate_pipe_radius(
+        pipe_network_graph, flow_velocity, rainfall_depth_function
+    )
+
+    # calculate other hydraulic dimentions
+    for s, t in pipe_network_graph.edges():
+        # calculate other dimentions
+        radius = pipe_network_graph[s][t]["radius"]
+        current_pipe_diameter = radius * 2
+        invertlevel_up = (
+            pipe_network_graph.nodes[s]["elevtn"] - current_pipe_diameter
+        ) - pipe_depth
+        invertlevel_down = (
+            pipe_network_graph.nodes[t]["elevtn"] - current_pipe_diameter
+        ) - pipe_depth
+        nx.set_edge_attributes(
+            pipe_network_graph,
+            {
+                (s, t): {
+                    "diameter": round(current_pipe_diameter, rounding_precision),
+                    "invlev_up": round(invertlevel_up, rounding_precision),
+                    "invlev_dn": round(invertlevel_down, rounding_precision),
+                }
+            },
+        )
+
+    return pipe_network_graph
+
+
+def __test_calculate_pipe_radius():
+    # Define a simple rainfall depth function for testing
+    def simple_rainfall_depth_function(concentration_time):
+        return 20
+
+    # Create a small directed graph
+    pipe_network_graph = nx.DiGraph()
+
+    # Add edges with 'length' and 'area' attributes
+    pipe_network_graph.add_edge("A", "B", length=100, area=100)
+    pipe_network_graph.add_edge("B", "C", length=100, area=100)
+    pipe_network_graph.add_edge("A", "D", length=100, area=100)
+    pipe_network_graph.add_edge("D", "C", length=100, area=100)
+    pipe_network_graph.add_edge("C", "E", length=100, area=100)
+
+    # Set the initial radius of all edges to zero
+    nx.set_edge_attributes(pipe_network_graph, 0, "radius")
+
+    # Apply the function
+    _calculate_pipe_radius(pipe_network_graph, 1, simple_rainfall_depth_function)
+
+    # Check the results
+    for u, v in pipe_network_graph.edges():
+        print(f"Edge ({u}, {v}) has radius: {pipe_network_graph[u][v]['radius']}")
+
+    # Visualize the graph
+    import matplotlib.pyplot as plt
+
+    nx.draw(
+        pipe_network_graph,
+        with_labels=True,
+        node_color="lightblue",
+        node_size=2000,
+        font_size=20,
+        font_weight="bold",
+    )
+    plt.show()
+
+
+def _dfs_accumulate_properties(
+    node,
+    visited,
+    reversed_graph,
+    total_upstream_area=0,
+    total_upstream_length=0,
+    total_upstream_radius=0,
+    total_upstream_edges=0,
+):
+    """
+    Perform a DFS traversal to accumulate upstream properties for a given node.
+
+    Parameters
+    ----------
+    node: The current node being visited.
+    visited: A set of nodes that have already been visited.
+    reversed_graph: The reversed graph used for upstream traversal.
+    total_upstream_area: Accumulated total area of upstream edges.
+    total_upstream_length: Accumulated total length of upstream edges.
+    total_upstream_radius: Accumulated total radius of upstream edges.
+    total_upstream_edges: Count of upstream edges.
+
+    Returns
+    -------
+    A tuple of accumulated properties (area, length, radius, edge count).
+    """
+    if node in visited:
+        return (
+            total_upstream_area,
+            total_upstream_length,
+            total_upstream_radius,
+            total_upstream_edges,
+        )
+
+    visited.add(node)
+    for start_node, target_node in reversed_graph.out_edges(node):
+        if target_node in visited:
+            continue
+
+        # Accumulate the properties of the current edge
+        current_length = reversed_graph[start_node][target_node]["length"]
+        current_area = reversed_graph[start_node][target_node]["area"]
+        current_radius = reversed_graph[start_node][target_node]["radius"]
+
+        total_upstream_area += current_area
+        total_upstream_length += current_length
+        total_upstream_radius += current_radius
+        total_upstream_edges += 1
+
+        # Recursive call for the next upstream node
+        (
+            total_upstream_area,
+            total_upstream_length,
+            total_upstream_radius,
+            total_upstream_edges,
+        ) = _dfs_accumulate_properties(
+            target_node,
+            visited,
+            reversed_graph,
+            total_upstream_area,
+            total_upstream_length,
+            total_upstream_radius,
+            total_upstream_edges,
+        )
+
+    return (
+        total_upstream_area,
+        total_upstream_length,
+        total_upstream_radius,
+        total_upstream_edges,
+    )
+
+
+def _calculate_pipe_radius(pipe_network_graph, flow_velocity, rainfall_depth_function):
+    """
+    Calculate the radius of pipes  based on hydraulic calculations.
+
+    This function iterates through the nodes in topological order.
+    For each edge, it performs hydraulic calculations to determine the required average
+    radius to accommodate the upstream volume.
+
+    Parameters
+    ----------
+    pipe_network_graph: networkx.DiGraph
+        A directed graph representing the pipe network.
+    flow_velocity: float
+        The flow velocity used in hydraulic calculations.
+    rainfall_depth_function: function
+        A function that takes concentration time upstream
+        and returns the rainfall depth.
+
+    Returns
+    -------
+    networkx.DiGraph with new properties (radius)
+
+    See Also
+    --------
+    _dfs_accumulate_properties
+    """
+    nx.set_edge_attributes(pipe_network_graph, 0, "radius")
+
+    reversed_graph = pipe_network_graph.reverse()
+
     for current_node in nx.topological_sort(pipe_network_graph):
         for start_node, target_node in pipe_network_graph.out_edges(current_node):
-            # Subgraph of all upstream edges to the target node
-            upstream_graph = pipe_network_graph.subgraph(
-                nx.dfs_tree(pipe_network_graph.reverse(), target_node).nodes
-            )
-
-            # Summation of properties for upstream pipes
-            total_upstream_area = sum(
-                edge_data
-                for _, _, edge_data in upstream_graph.edges(data="contributing_area")
-            )
-            total_upstream_length = sum(
-                edge_data for _, _, edge_data in upstream_graph.edges(data="length")
-            )
-
-            # Upstream hydraulic calculations
-            concentration_time_upstream = total_upstream_length / flow_velocity
-            rainfall_depth = rainfall_depth_function(concentration_time_upstream)
-            volume_upstream = rainfall_depth * total_upstream_area
-
-            # Average radius to accommodate upstream volume
+            # get accumulated properties upstream
+            visited = set()
+            (
+                total_upstream_area,
+                total_upstream_length,
+                total_upstream_radius,
+                total_upstream_edges,
+            ) = _dfs_accumulate_properties(start_node, visited, reversed_graph)
+            # get downstream edge properties (without radius)
+            length = pipe_network_graph[start_node][target_node]["length"]
+            area = pipe_network_graph[start_node][target_node]["area"]
+            total_area = total_upstream_area + area
+            total_length = total_upstream_length + length
+            total_edges = total_upstream_edges + 1
+            # get total properties
+            concentration_time = total_area / flow_velocity
+            rainfall_depth = rainfall_depth_function(concentration_time)
+            total_volume = rainfall_depth / 1000.0 * total_area
             avg_radius_needed = (
-                np.sqrt(volume_upstream / (np.pi * total_upstream_length))
-                if total_upstream_length > 0
+                np.sqrt(total_volume / (np.pi * total_length))
+                if total_length > 0
                 else 0
             )
+            total_radius = avg_radius_needed * total_edges
+            # compute downstream edge properties (radius)
+            radius = total_radius - total_upstream_radius
 
-            # Ensure one pipe is left to calculate the radius
-            total_upstream_radius = sum(
-                edge_data for _, _, edge_data in upstream_graph.edges(data="radius")
-            )
-            num_pipes_with_radius = sum(
-                1 for _, _, radius in upstream_graph.edges(data="radius") if radius != 0
-            )
-            assert (
-                num_pipes_with_radius == len(upstream_graph.edges()) - 1
-            ), "Exactly one pipe should be without a radius"
-
-            # Calculate current pipe radius
-            current_pipe_radius = (
-                avg_radius_needed * len(upstream_graph.edges()) - total_upstream_radius
-            )
-            pipe_network_graph[start_node][target_node]["radius"] = current_pipe_radius
+            if radius > 0:
+                pipe_network_graph[start_node][target_node]["radius"] = radius
+            else:
+                print(
+                    "Warning: Zero or negative radius calculated for edge: "
+                    + f"({start_node}, {target_node})"
+                )
 
     return pipe_network_graph
 

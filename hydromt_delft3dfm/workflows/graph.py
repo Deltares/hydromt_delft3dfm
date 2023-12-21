@@ -579,9 +579,10 @@ def set_directions(G: nx.Graph, H: nx.DiGraph):
             directed_G.add_edge(v, u)
             directed_G[v][u].update(data)
 
-        else:
-            directed_G.add_edge(u, v)
-            directed_G[u][v].update(data)
+        # FIXME: this resulted in non dag
+        # else:
+        #     directed_G.add_edge(u, v)
+        #     directed_G[u][v].update(data)
 
     return directed_G
 
