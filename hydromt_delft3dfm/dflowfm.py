@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 import geopandas as gpd
 import hydromt
+import networkx as nx
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -864,7 +865,15 @@ class DFlowFMModel(MeshModel):
         region: dict,
         waterway_types: list[str] = None,
         highway_types: list[str] = None,
-        hydrography_fn: Union[str, Path] = None,
+        dem_fn: Union[str, Path] = None,
+        landuse_fn: Union[str, Path] = None,
+        landuse_reclass_fn: Union[str, Path] = None,
+        runoff_distance: float = 30.0,
+        method_cost: str = "length",
+        pipe_spacing: float = 50.0,
+        pipe_depth: float = 0.5,
+        assumption_rainfall_intensity: float = 30.0,
+        assumption_flow_velocity: float = 1.0,
         **kwargs,
     ) -> None:
         """
@@ -907,51 +916,99 @@ class DFlowFMModel(MeshModel):
         region = workflows.parse_region_geometry(region, self.crs)
 
         # 1. Build the graph from OpenStreetMap data
-        graph_osm = workflows.setup_urban_sewer_network_topology_from_osm(
+        graph = workflows.setup_urban_sewer_network_topology_from_osm(
             region,
             waterway_types=waterway_types,
             highway_types=highway_types,
+            simplify=False,
+            use_connected_only=True,
             logger=self.logger,
         )
-
-        branches = graph_utils.graph_to_network(graph_osm)[0]  # use self.graph
-        self.set_branches(branches)
-        branch_nodes = graph_utils.graph_to_network(graph_osm)[1]
-        self.set_geoms(branch_nodes, "branch_nodes")
-
-        graph_utils.write_graph(
-            graph_osm, graph_fn=Path(self.root).joinpath("graphs/graph_osm.gml")
-        )
-        graph_utils.write_graph(
-            graph_osm, graph_fn=Path(self.root).joinpath("graphs/graph_osm.geojson")
-        )
+        self.set_geoms(graph_utils.graph_to_network(graph)[0], "osm_network")
 
         # 2. build the graph into digraph using dem data
         # add "elevtn" to nodes
-        # add "gradient" to edges
-
-        graph_osm_bl = workflows.setup_urban_sewer_network_bedlevel_from_dem(
-            graph=graph_osm,
+        graph = workflows.setup_urban_sewer_network_bedlevel_from_dem(
+            graph=graph,
             data_catalog=self.data_catalog,
-            dem_fn=hydrography_fn,
+            dem_fn=dem_fn,
             logger=self.logger,
         )
 
-        branches = graph_utils.graph_to_network(graph_osm_bl)[0]  # use self.graph
-        self.set_branches(branches)
-        branch_nodes = graph_utils.graph_to_network(graph_osm_bl)[1]
-        self.set_geoms(branch_nodes, "branch_nodes")
-
-        graph_utils.write_graph(
-            graph_osm_bl,
-            graph_fn=Path(self.root).joinpath("graphs/graph_osm_bl.gml"),
-        )
-        graph_utils.write_graph(
-            graph_osm_bl,
-            graph_fn=Path(self.root).joinpath("graphs/graph_osm_bl.geojson"),
+        # 3. add landuse data
+        # add "runoff_area" to edges
+        graph = workflows.setup_urban_sewer_network_runpoffarea_from_landuse(
+            graph=graph,
+            data_catalog=self.data_catalog,
+            landuse_fn=landuse_fn,
+            landuse_reclass_fn=landuse_reclass_fn,
+            runoff_distance=runoff_distance,
+            logger=self.logger,
         )
 
-        # make plots
+        # 4. optimise graph directions
+        # add "geometry", "length" to edges
+        # TODO add method_for_weight as argument to main function
+        graph_pipes = workflows.select_connected_branches(graph, "pipe")
+        graph_pipe_dag = workflows.optimise_pipe_topology(
+            graph=graph_pipes,
+            method_for_weight=method_cost,
+            logger=self.logger,
+        )
+        # FIXME missing edges in between adding them back result in a nondag
+
+        # TODO 4. get rainfall stats from historical data
+        # TODO: add a multiplier to rainfall
+        # rainfall_depth_function = workflows.get_idf_function_from_rainfall()
+        def rainfall_depth_function(x):
+            return assumption_rainfall_intensity * x / 3600.0
+
+        # 5. Setup network physical parameters based on 4
+        # add "diameter", "invlev_up", "invlev_dn" to edges
+        graph_pipe_dag_with_dimention = workflows.calculate_hydraulic_parameters(
+            graph_pipe_dag,
+            pipe_depth=pipe_depth,
+            flow_velocity=assumption_flow_velocity,
+            rainfall_depth_function=rainfall_depth_function,
+            rounding_precision=1,
+        )  # FIXME the calculated diameters are awfully large
+
+        graph_rivers = workflows.select_connected_branches(graph, "river")
+
+        # 6. any additional steps to add the network to delft3dfm model
+        # _setup_branches
+        # _setup_crosssections
+        graph_complete = nx.compose(graph_rivers, graph_pipe_dag_with_dimention)
+        self.set_branches(graph_utils.graph_to_network(graph_complete)[0])
+        # TODO: think about call self.setup_rivers and self.setup_pipes
+        # but then you need to put all the parameters for these two functions
+
+        # TODO setup geoms: list in data will block saving
+        # TODO add to branches
+        # TODO update mesh
+        # TODO add geoms for network nodes and network edges
+        # Appendixes.
+        # A1. Setup network connections based on flow directions from DEM
+        # read data
+        # ds_hydro = self.data_catalog.get_rasterdataset(dem_fn, geom=region, buffer=10)
+        # if isinstance(ds_hydro, xr.DataArray):
+        #     ds_hydro = ds_hydro.to_dataset()
+        # graph_flwdir = workflows.create_graph_from_hydrography(
+        #     region=region,
+        #     ds_hydro=ds_hydro,
+        #     min_sto=1,  # all stream that starts with stream order = 1
+        # )
+        # A2. extra writing for graph objects
+        # branches = graph_utils.graph_to_network(graph_flwdir)[0]
+        # branch_nodes = graph_utils.graph_to_network(graph_flwdir)[1]
+        # graph_utils.write_graph(
+        #     graph_flwdir, graph_fn=Path(self.root).joinpath("graphs/graph_flwdir.gml")
+        # )
+        # graph_utils.write_graph(
+        #     graph_flwdir,
+        #     graph_fn=Path(self.root).joinpath("graphs/graph_flwdir.geojson"),
+        # )
+        # A3. make plots
         # import matplotlib.pyplot as plt
         # fig, ax = plt.subplots()
         # branches.plot("branchtype", ax=ax)
@@ -961,96 +1018,6 @@ class DFlowFMModel(MeshModel):
         # plt.gcf().axes[-1].set(title="gradient", ylabel="m/m")
         # branch_nodes.plot("elevtn", ax=ax, vmin=0.0, vmax=10.0, legend=True)
         # plt.gcf().axes[-1].set(title="elevtn", ylabel="mAD")
-
-        # 3. optimise graph directions
-        # fix direction
-        # reduce to largest connected component
-        # recompute gradient
-        # TODO add method_for_weight as argument to main function
-        graph_pipe_dag = workflows.optimise_pipe_topology(
-            graph=graph_osm_bl,
-            method_for_weight="length",
-            logger=self.logger,
-        )
-        # FIXME missing edges in between adding them back result in a nondag
-
-        # FIXME cannot write anymore due to upstream nodes info as a list
-        # graph_utils.write_graph(
-        #     dag,
-        #     graph_fn=Path(self.root).joinpath("graphs/graph_dag.gml"),
-        # )
-        graph_utils.write_graph(
-            graph_pipe_dag,
-            graph_fn=Path(self.root).joinpath("graphs/graph_pipe_dag.geojson"),
-        )
-
-        # asign to pipe object, update branches
-        pipes, pipe_nodes = graph_utils.graph_to_network(graph_pipe_dag)
-        pipes.to_file(Path(self.root).joinpath("graphs/pipes.geojson"))
-        pipe_nodes.to_file(Path(self.root).joinpath("graphs/pipe_nodes.geojson"))
-
-        # TODO setup geoms: list in data will block saving
-        # TODO add to branches
-        # TODO update mesh
-
-        # 4. get rainfall stats from historical data
-        # rainfall_depth_function = workflows.get_rainfallstats_from_historical_data()
-        # assume this already exisit
-
-        # 5. Setup network physical parameters based on 4
-        # determining the radius of pipes based on the volume of water they need to
-        # accommendate
-        # add diameter (TODO add increments e.g. only 1.2; 1.4; 1.5 )
-        # add bedlevel based on depth and diameter
-        # (TODO add depth e.g. 0.5 meters below surface)
-        # TODO: a seperate function to compute contributing area.
-        # TODO: add a multiplier to rainfall
-
-        # add area # TODO add landuse to this function
-        # TODO move area_buffer_distance to input argument
-        graph_pipe_with_area = workflows.set_edge_areas(
-            graph_pipe_dag, area_buffer_distance=30
-        )
-        workflows.calculate_hydraulic_parameters(
-            graph_pipe_with_area,
-            flow_velocity=1,
-            pipe_depth=0.5,  # TODO add to main input argument
-            rainfall_depth_function=lambda x: 20,
-            rounding_precision=1,
-        )  # FIXME the calculated diameters are awfully large
-
-        # Others. Setup network connections based on flow directions from DEM
-        # read data
-        ds_hydro = self.data_catalog.get_rasterdataset(
-            hydrography_fn, geom=region, buffer=10
-        )
-        if isinstance(ds_hydro, xr.DataArray):
-            ds_hydro = ds_hydro.to_dataset()
-        graph_flwdir = workflows.create_graph_from_hydrography(
-            region=region,
-            ds_hydro=ds_hydro,
-            min_sto=1,  # all stream that starts with stream order = 1
-        )
-        branches = graph_utils.graph_to_network(graph_flwdir)[0]
-        branch_nodes = graph_utils.graph_to_network(graph_flwdir)[1]
-        graph_utils.write_graph(
-            graph_flwdir, graph_fn=Path(self.root).joinpath("graphs/graph_flwdir.gml")
-        )
-        graph_utils.write_graph(
-            graph_flwdir,
-            graph_fn=Path(self.root).joinpath("graphs/graph_flwdir.geojson"),
-        )
-        # workflows.setup_network_connections_based_on_flowdirections(
-        # graph_osm, graph_flwdir)
-
-        # TODO add geoms for network nodes and network edges
-
-        # 6. any additional steps to add the network to delft3dfm model
-        # _setup_branches
-        # _setup_crosssections
-        # add crosssections to exisiting ones and update geoms
-        # setup branches geoms
-        # add to branches
 
         return None
 

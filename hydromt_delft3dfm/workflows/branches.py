@@ -30,6 +30,7 @@ __all__ = [
     "intersect_lines",
     "explode_and_deduplicate_geometries",
     "snap_geom_to_branches_and_drop_nonsnapped",
+    "split_branches",
 ]
 
 
@@ -1240,15 +1241,17 @@ def _remove_branches_with_ring_geometries(
 
 def intersect_lines(gdf1, gdf2):
     """
-    Computes the intersection between two geopandas GeoDataFrames with line geometries.
+    Compute the intersection between two geopandas GeoDataFrames with line geometries.
 
-    Parameters:
+    Parameters
+    ----------
     - gdf1 : geopandas.GeoDataFrame
         The first GeoDataFrame.
     - gdf2 : geopandas.GeoDataFrame
         The second GeoDataFrame.
 
-    Returns:
+    Returns
+    -------
     - gdf1_cleaned : geopandas.GeoDataFrame
         Part of gdf1 that intersects with gdf2.
     - gdf2_cleaned : geopandas.GeoDataFrame
@@ -1256,7 +1259,6 @@ def intersect_lines(gdf1, gdf2):
     - points_cleaned : geopandas.GeoDataFrame
         The intersection points between gdf1 and gdf2.
     """
-
     # Assign identifiers to distinguish the source of the geometries later
     gdf1 = gdf1.copy()
     gdf2 = gdf2.copy()
@@ -1311,9 +1313,13 @@ def intersect_lines(gdf1, gdf2):
 
 def explode_and_deduplicate_geometries(gpd: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """Explodes and deduplicates geometries a GeoDataFrame.
-    Parameters:
+
+    Parameters
+    ----------
         gpd (gpd.GeoDataFrame): Input GeoDataFrame.
-    Returns:
+
+    Returns
+    -------
         gpd.GeoDataFrame: GeoDataFrame with exploded and deduplicated geometries.
     """
     gpd = gpd.explode()

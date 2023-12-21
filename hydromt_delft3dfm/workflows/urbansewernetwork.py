@@ -5,36 +5,32 @@ from pathlib import Path
 from typing import Optional, Union
 
 import geopandas as gpd
+import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import pandas as pd
 import xarray as xr
-import matplotlib.pyplot as plt
 
 # hydromt
 from hydromt import DataCatalog
+from hydromt.stats import extremes
 
 from hydromt_delft3dfm import graph_utils, workflows
-from hydromt.stats import extremes
-import hydromt
 
 logger = logging.getLogger(__name__)
 
 __all__ = [
     "setup_urban_sewer_network_topology_from_osm",
     "setup_urban_sewer_network_bedlevel_from_dem",
+    "setup_urban_sewer_network_runpoffarea_from_landuse",
     # graph additions
     # "setup_graph_nodes",
     # "setup_graph_egdes",
     # graph workflows
+    "select_connected_branches",
     "optimise_pipe_topology",
-    "set_edge_areas",
     "calculate_hydraulic_parameters",
-    # TODO to be categorized
-    "setup_network_connections_based_on_flowdirections",
-    "setup_network_parameters_from_rasters",
-    "setup_network_topology_optimization",
-    "setup_network_dimentions_from_rainfallstats",
+    "get_idf_function_from_rainfall",
 ]
 
 
@@ -42,6 +38,8 @@ def setup_urban_sewer_network_topology_from_osm(
     region,
     highway_types: list[str] = None,
     waterway_types: list[str] = None,
+    simplify: bool = True,
+    use_connected_only: bool = True,
     logger: logging.Logger = logger,
 ) -> nx.MultiDiGraph:
     """
@@ -59,16 +57,23 @@ def setup_urban_sewer_network_topology_from_osm(
 
     Parameters
     ----------
-    - region : object
+    region : object
         The geographical region for which the sewer network is to be constructed.
         This could be a bounding box, polygon, or any other representation of a region.
-    - highway_types : list
+    highway_types : list
         List of highway types (e.g., ["motorway", "primary"]) to include
         from the OpenStreetMap data.
-    - waterway_types : list
+    waterway_types : list
         List of waterway types (e.g., ["river", "stream"]) to include
         from the OpenStreetMap data.
-    - logger : Logger object
+    simplify: bool
+        Simplify a graph’s topology by removing interstitial nodes.
+        Cautious use because might leave fragmented edges.
+        By default True.
+    use_connected_only: bool
+        Use largest connected components in the network only.
+        by default True.
+    logger : Logger object
         An instance of a logger to capture logs and messages during the process.
         Useful for debugging and understanding the workflow steps.
 
@@ -104,6 +109,7 @@ def setup_urban_sewer_network_topology_from_osm(
         buffer=1000,
         osm_key="waterway",
         osm_values=waterway_types,
+        simplify=simplify,
         logger=logger,
     )
 
@@ -114,6 +120,7 @@ def setup_urban_sewer_network_topology_from_osm(
         buffer=500,
         osm_key="highway",
         osm_values=highway_types,
+        simplify=simplify,
         logger=logger,
     )
 
@@ -130,12 +137,16 @@ def setup_urban_sewer_network_topology_from_osm(
     outlets["nodeid"] = outlets["id"]
     outlets["nodetype"] = "outlet"
 
-    # TODO select required columns
+    # trim columns
+    branches = pd.concat([open_system, closed_system])
+    branches = branches[
+        "id", "branchid", "node_start", "node_end", "branchtype", "geometry"
+    ]
 
     # 4. Recreate the graph from the complete system topology
     logger.info("Create graph and update open system, closed system and outlets.")
     graph = workflows.create_graph_from_geodataframe(
-        pd.concat([open_system, closed_system]),
+        branches,
         is_directed=False,
         logger=logger,
     )
@@ -155,7 +166,21 @@ def setup_urban_sewer_network_topology_from_osm(
         logger=logger,
     )
 
+    if use_connected_only is True:
+        graph = filter_connected_branches(graph, ["river", "pipe"])
+
     return graph
+
+
+def filter_connected_branches(
+    graph: nx.Graph, branchtypes: list[str] = ["river", "pipe"]
+):
+    """Set up the urban sewer network based on connected componants."""
+    graph_out = nx.Graph()
+    for branchtype in branchtypes:
+        _graph = select_connected_branches(graph, branchtype)
+        graph_out = nx.compose(graph_out, _graph)
+    return graph_out
 
 
 def setup_urban_sewer_network_bedlevel_from_dem(
@@ -213,6 +238,95 @@ def setup_urban_sewer_network_bedlevel_from_dem(
     # TODO set graph
 
     return graph
+
+
+def setup_urban_sewer_network_runpoffarea_from_landuse(
+    graph: nx.Graph,  # TODO replace by self.graphs
+    data_catalog: DataCatalog,  # TODO replace by self.data_catalog
+    landuse_fn: Union[str, Path, xr.DataArray, xr.Dataset],
+    landuse_reclass_fn: Union[str, Path, pd.DataFrame],
+    runoff_distance: float,
+    fill_method: Optional[str] = None,
+    logger: logging.Logger = logger,
+):
+    """
+    Update the graph with landuse data.
+
+    Add runoff area ("runoff_area") edges.
+
+    The function samples classifies raster data in `landuse_fn` based on
+    "impervious_ratio" in `landuse_reclass_fn`.
+    The runoff area is then calculated as the total impervious area within
+    the 'runoff_distance' from the network.
+
+    Parameters
+    ----------
+    graph : nx.Graph
+        Input graph to be updated.
+    data_catalog : DataCatalog
+        Data catalog to read and process raster data.
+    landuse_fn : Union[str, Path, xr.DataArray, xr.Dataset]
+        Data catalog key, path to landuse file or landuse xarray data object.
+    landuse_reclass_fn : Union[str, Path, pd.DataFrame]
+        Data catalog key, path to landuse reclass file or landuse reclass dataframe.
+        Must contain convertion into "impervious_ratio".
+    runoff_distance: float
+        Distance within which the runoff will be routed to the network. (m)
+    fill_method : str, optional
+        If specified, fills no data values using fill_nodata method.
+        Available methods are {'linear', 'nearest', 'cubic', 'rio_idw'}.
+    logger : logging.Logger, optional
+        Logger object to log messages. Default is the global logger.
+
+    Returns
+    -------
+    nx.Graph
+        Graph with updated ["runoff_area"] (edges)
+    """
+    logger.info(
+        "Update the graph with elevation data from a DEM and compute gradient for edges"
+    )
+
+    # Sample landuse for mean impervious_ratio within runoff_distance
+    # TODO replaced by super method
+    graph = workflows.setup_graph_from_raster_reclass(
+        graph=graph,
+        raster_fn=landuse_fn,
+        reclass_table_fn=landuse_reclass_fn,
+        reclass_variables=["impervious_ratio"],
+        fill_method=fill_method,
+        resampling_method="mean",
+        graph_component="edges",
+        edge_buffer=runoff_distance,
+        data_catalog=data_catalog,
+        logger=logger,
+    )
+    # compute runoff area
+    runoff_area = {
+        (edge_start, edge_end): edge_data["geometry"].length
+        * runoff_distance
+        * 2
+        * edge_data["impervious_ratio"]
+        for edge_start, edge_end, edge_data in graph.edges(data=True)
+    }
+
+    nx.set_edge_attributes(graph, runoff_area, name="runoff_area")
+
+    return graph
+
+
+def select_connected_branches(graph, branchtype):
+    """Select connected branches based on branchtype."""
+    # Truncate to connected branches only
+    graph_branchtype = workflows.query_graph_edges_attributes(
+        graph, edge_query=f'branchtype=="{branchtype}"'
+    )
+    graph_branchtype = workflows.get_largest_component(graph_branchtype)
+
+    # Add missing outlet edges
+    graph_branchtype = workflows.add_missing_edges_to_subgraph(graph_branchtype, graph)
+
+    return graph_branchtype
 
 
 def _select_pipes(graph):
@@ -276,7 +390,9 @@ def _optimize_pipe_topology_based_on_length_as_weight(graph_pipes):
     """Optimize graph based on length as weight."""
     # dag
     _dag = workflows.setup_dag(
-        graph_pipes, target_query='nodetype=="outlet"', weight="length", report="1"
+        graph_pipes,
+        target_query='nodetype=="outlet"',
+        weight="length",  # report="1"
     )
     # set output graph using dag edge directions
     graph_pipes_optmised = workflows.set_directions(graph_pipes.to_undirected(), _dag)
@@ -427,8 +543,8 @@ def calculate_hydraulic_parameters(
     Parameters
     ----------
     pipe_network_graph: networkx.DiGraph
-        A directed graph representing the pipe network, where edges have 'length'and
-        'area' attributes.
+        A directed graph representing the pipe network, where edges have 'length' and
+        'runoff_area' attributes.
     flow_velocity : float
         Average flow velocity in the pipes during near-full conditions (m/s).
         This is an empirical value and may vary by region.
@@ -454,7 +570,7 @@ def calculate_hydraulic_parameters(
     -------
     networkx.DiGraph:
         The graph with updated attributes.
-        Each edge contains ["contributing_area", "diameter", "invlev_up", "invlev_dn"]
+        Each edge contains ["runoff_area", "diameter", "invlev_up", "invlev_dn"]
     """
     if not nx.is_directed_acyclic_graph(pipe_network_graph):
         raise ValueError("The input graph must be a directed acyclic graph (DAG)")
@@ -486,6 +602,7 @@ def calculate_hydraulic_parameters(
             },
         )
 
+    # FIXME inverstigate why there are huge pipes ('2860', '118', 4605.7)
     return pipe_network_graph
 
 
@@ -497,12 +614,12 @@ def __test_calculate_pipe_radius():
     # Create a small directed graph
     pipe_network_graph = nx.DiGraph()
 
-    # Add edges with 'length' and 'area' attributes
-    pipe_network_graph.add_edge("A", "B", length=100, area=100)
-    pipe_network_graph.add_edge("B", "C", length=100, area=100)
-    pipe_network_graph.add_edge("A", "D", length=100, area=100)
-    pipe_network_graph.add_edge("D", "C", length=100, area=100)
-    pipe_network_graph.add_edge("C", "E", length=100, area=100)
+    # Add edges with 'length' and 'runoff_area' attributes
+    pipe_network_graph.add_edge("A", "B", length=100, runoff_area=100)
+    pipe_network_graph.add_edge("B", "C", length=100, runoff_area=100)
+    pipe_network_graph.add_edge("A", "D", length=100, runoff_area=100)
+    pipe_network_graph.add_edge("D", "C", length=100, runoff_area=100)
+    pipe_network_graph.add_edge("C", "E", length=100, runoff_area=100)
 
     # Set the initial radius of all edges to zero
     nx.set_edge_attributes(pipe_network_graph, 0, "radius")
@@ -532,7 +649,7 @@ def _dfs_accumulate_properties(
     node,
     visited,
     reversed_graph,
-    total_upstream_area=0,
+    total_upstream_runoff_area=0,
     total_upstream_length=0,
     total_upstream_radius=0,
     total_upstream_edges=0,
@@ -545,18 +662,18 @@ def _dfs_accumulate_properties(
     node: The current node being visited.
     visited: A set of nodes that have already been visited.
     reversed_graph: The reversed graph used for upstream traversal.
-    total_upstream_area: Accumulated total area of upstream edges.
+    total_upstream_runoff_area: Accumulated total runoff area of upstream edges.
     total_upstream_length: Accumulated total length of upstream edges.
     total_upstream_radius: Accumulated total radius of upstream edges.
     total_upstream_edges: Count of upstream edges.
 
     Returns
     -------
-    A tuple of accumulated properties (area, length, radius, edge count).
+    A tuple of accumulated properties (runoff_area, length, radius, edge count).
     """
     if node in visited:
         return (
-            total_upstream_area,
+            total_upstream_runoff_area,
             total_upstream_length,
             total_upstream_radius,
             total_upstream_edges,
@@ -569,17 +686,17 @@ def _dfs_accumulate_properties(
 
         # Accumulate the properties of the current edge
         current_length = reversed_graph[start_node][target_node]["length"]
-        current_area = reversed_graph[start_node][target_node]["area"]
+        current_runoff_area = reversed_graph[start_node][target_node]["runoff_area"]
         current_radius = reversed_graph[start_node][target_node]["radius"]
 
-        total_upstream_area += current_area
+        total_upstream_runoff_area += current_runoff_area
         total_upstream_length += current_length
         total_upstream_radius += current_radius
         total_upstream_edges += 1
 
         # Recursive call for the next upstream node
         (
-            total_upstream_area,
+            total_upstream_runoff_area,
             total_upstream_length,
             total_upstream_radius,
             total_upstream_edges,
@@ -587,14 +704,14 @@ def _dfs_accumulate_properties(
             target_node,
             visited,
             reversed_graph,
-            total_upstream_area,
+            total_upstream_runoff_area,
             total_upstream_length,
             total_upstream_radius,
             total_upstream_edges,
         )
 
     return (
-        total_upstream_area,
+        total_upstream_runoff_area,
         total_upstream_length,
         total_upstream_radius,
         total_upstream_edges,
@@ -636,21 +753,21 @@ def _calculate_pipe_radius(pipe_network_graph, flow_velocity, rainfall_depth_fun
             # get accumulated properties upstream
             visited = set()
             (
-                total_upstream_area,
+                total_upstream_runoff_area,
                 total_upstream_length,
                 total_upstream_radius,
                 total_upstream_edges,
             ) = _dfs_accumulate_properties(start_node, visited, reversed_graph)
             # get downstream edge properties (without radius)
             length = pipe_network_graph[start_node][target_node]["length"]
-            area = pipe_network_graph[start_node][target_node]["area"]
-            total_area = total_upstream_area + area
+            runoff_area = pipe_network_graph[start_node][target_node]["runoff_area"]
+            total_runoff_area = total_upstream_runoff_area + runoff_area
             total_length = total_upstream_length + length
             total_edges = total_upstream_edges + 1
             # get total properties
-            concentration_time = total_area / flow_velocity
+            concentration_time = total_runoff_area / flow_velocity
             rainfall_depth = rainfall_depth_function(concentration_time)
-            total_volume = rainfall_depth / 1000.0 * total_area
+            total_volume = rainfall_depth / 1000.0 * total_runoff_area
             avg_radius_needed = (
                 np.sqrt(total_volume / (np.pi * total_length))
                 if total_length > 0
@@ -854,15 +971,11 @@ def setup_network_topology_optimization(
     pass
 
 
-def setup_network_dimentions_from_rainfallstats(
-    graph: nx.graph,
-    rainfall_fn: Union[str, Path],
-    rainfall_assumption,
-    capacity_assumption=None,
-    diameter_range=None,
-    velocity_range=None,
-    slope_range=None,
+def get_idf_function_from_rainfall(
+    rainfall_fn: Union[str, Path] = None,
+    rainfall_assumption=None,
     region=None,
+    data_catalog=None,
     logger: logging.Logger = logger,
 ) -> nx.graph:
     """
@@ -896,7 +1009,7 @@ def setup_network_dimentions_from_rainfallstats(
 
     region: GeoDataFrame
         Geometry file of the bounding area.
-        
+
     capacity_assumption: float, optional
         An assumption about the capacity of the sewer network (in mm/hr).
         If provided, this value is used instead of deriving capacity from historical
@@ -933,51 +1046,59 @@ def setup_network_dimentions_from_rainfallstats(
     # -     * optionally visualize data to get an idea of quality
     # - average precip for region
     # - do T2 calculation for a range of return times & event durations
-    
-    dc = DataCatalog(logger=logger, data_libs=['deltares_data'])
 
     # get era5 precipitation data cut down to region area as a data array
-    # next line causes ValueError: Invalid pattern: '**' can only be an entire path component
-    # possibly related to era5_hourly path; * after {year} (yml line 522)
-    precip_da = dc.get_rasterdataset("era5_hourly", geom=region)["precip"]
-
-    # average grid precipitation to reach a timeseries of avg. precipitation for region
-    mean_precip = precip_da.mean(dim=["x", "y"])
+    # this is very slow
+    precip_da = data_catalog.get_rasterdataset(
+        rainfall_fn,
+        bbox=region.to_crs(4326).total_bounds,
+        buffer=1,
+        variables=["precip"],
+        time_tuple=("1990-01-01", "2000-01-01"),  # shorter for faster
+    )
+    mean_precip = precip_da.mean(dim=["latitude", "longitude"])
+    mean_precip = mean_precip.chunk({"time": -1})
 
     # peaks
     # TODO: Implement peak selection that includes event duration; e.g. using moving
-    bm_peaks = extremes.get_peaks(precip_da, ev_type="POT", period=f"{rainfall_assumption}Y") 
-
+    bm_peaks = extremes.get_peaks(
+        mean_precip,
+        ev_type="POT",
+        min_dist=24,
+    )
 
     # plot for quick visualization:
     fig, ax = plt.subplots(figsize=(10, 3))
     precip_da.to_pands().plot(
-        ax=ax, xlabel="time", ylabel="discharge [m3/s]", color=["orange", "green"]
+        ax=ax, xlabel="time", ylabel="precip [m]", color=["orange"]
     )
     bm_peaks.to_pandas().plot(
-    ax=ax,
-    marker="o",
-    linestyle="none",
-    legend=False,
-    color=["darkorange", "darkgreen"],
-    markersize=4,
+        ax=ax,
+        marker="o",
+        linestyle="none",
+        legend=False,
+        color=["darkorange"],
+        markersize=4,
     )
 
     # fit EV distribution
-    precip_da_params = extremes.fit_extremes(bm_peaks, ev_type="BM") #TODO: decide on desired criterium & distribution
+    precip_da_params = extremes.fit_extremes(
+        bm_peaks, ev_type="BM"
+    )  # TODO: decide on desired criterium & distribution
     precip_da_params.load()
 
-    
-    # TODO: Retrieve return times with extremes.get_return_times(), see https://deltares.github.io/hydromt/latest/_examples/doing_extreme_value_analysis.html
+    # TODO: Retrieve return times with extremes.get_return_times(),
+    # see https://deltares.github.io/hydromt/latest/_examples/doing_extreme_value_analysis.html
 
-
-    # 2: Compute storage needed per pipe    
-    #draft substeps:
+    # 2: Compute storage needed per pipe
+    # draft substeps:
     # - multiply the T2 precipitation by node area for each node
-    # - assuming each node has one output node: add upstream nodes for each downstream node
+    # - assuming each node has one output node: add upstream nodes for each downstream
+    # node
 
     # 3: Convert storage volumes to pipe diameter
-    # - divide volumes by a timestep to arrive at a volume per time that needs to be discharged
+    # - divide volumes by a timestep to arrive at a volume per time that needs to be
+    # discharged
     # - divide by pipelength to arrive at pipe diameters
 
     pass

@@ -30,6 +30,7 @@ __all__ = [
     "create_graph_from_hydrography",
     # setup graph attributes
     "setup_graph_from_rasterdataset",
+    "setup_graph_from_raster_reclass",
     "setup_graph_from_geodataframe",
     # workflows
     "query_graph_edges_attributes",
@@ -49,6 +50,7 @@ def create_graph_from_openstreetmap(
     region: gpd.GeoDataFrame,
     osm_key: str,
     osm_values: list[str],
+    simplify: bool = True,
     buffer: float = 0.0,
     logger: logging.Logger = logger,
 ) -> nx.MultiDiGraph:
@@ -83,6 +85,10 @@ def create_graph_from_openstreetmap(
             secondary_link,tertiary,tertiary_link,residential
             waterway:river,stream,brook,canal,ditch
 
+    simplify: bool
+        Simplify a graph’s topology by removing interstitial nodes.
+        By default True.
+
     buffer: float, optional
         A buffer applied to the region polygon.
         By default 0.0.
@@ -111,19 +117,12 @@ def create_graph_from_openstreetmap(
         .to_crs(pyproj.CRS.from_epsg(4326))
         .geometry.unary_union,
         custom_filter=f'["{osm_key}"~"{"|".join(osm_values)}"]',
-        simplify=False,
+        simplify=simplify,
         retain_all=True,
     )
 
     # preprocess to desired graph format
     graph = graph_utils.preprocess_graph(_osm_graph, to_crs=crs)
-
-    # # simplify the graph's topology by removing interstitial nodes
-    # _osm_simplified_graph = osmnx.simplify_graph(
-    #     _osm_graph
-    # )  # TODO #64: needs testing,
-    # too longe/too short are not beneficial for dem based direction.
-    # logger.info("Get simplified graph from osm.")
 
     # # preprocess to desired graph format
     # graph = graph_utils.preprocess_graph(_osm_simplified_graph, to_crs=crs)
@@ -355,8 +354,8 @@ def setup_graph_from_rasterdataset(
         ds = ds.to_dataset()
     if fill_method is not None:
         ds = ds.raster.interpolate_na(method=fill_method)
-
-    # Sample raster data
+    # TODO Reprojection
+    # Sample raster data # TODO change to _sample_raster_dataset_to_graph
     # Rename variables
     rm_dict = {f"{var}_{resampling_method}": var for var in ds.data_vars}
     # get sample at edges
@@ -383,6 +382,161 @@ def setup_graph_from_rasterdataset(
     # TODO Convert to UgridDataset
     # uds_sample = xu.UgridDataset(ds_sample, grids=self.mesh_grids[grid_name])
 
+    return graph
+
+
+def setup_graph_from_raster_reclass(
+    graph: nx.Graph,  # TODO replace by self.graphs
+    raster_fn: Union[str, Path, xr.DataArray, xr.Dataset],
+    reclass_table_fn: Union[str, Path, pd.DataFrame],
+    reclass_variables: List,
+    variable: Optional[List[str]] = None,
+    fill_method: Optional[str] = None,
+    resampling_method: Optional[str] = "mean",
+    all_touched: Optional[bool] = True,
+    rename: Optional[Dict[str, str]] = dict(),
+    graph_component: Optional[str] = "both",
+    edge_buffer: Optional[float] = 0.0,
+    node_buffer: Optional[float] = 0.0,
+    reproject_method: Optional[str] = None,
+    data_catalog: DataCatalog = None,  # TODO replace by self.data_catalog
+    logger: logging.Logger = logger,
+    **kwargs,
+) -> List[str]:
+    r"""Add data variable(s) to maps object by reclassifying the data in ``raster_fn`` based on ``reclass_table_fn``.
+
+    This is done by reclassifying the data in
+    ``raster_fn`` based on ``reclass_table_fn``.
+
+    Parameters
+    ----------
+    raster_fn: str, Path, xr.DataArray
+        Data catalog key, path to raster file or raster xarray data object.
+        Should be a DataArray. Else use `variable` argument for selection.
+    reclass_table_fn: str, Path, pd.DataFrame
+        Data catalog key, path to tabular data file or tabular pandas dataframe
+        object for the reclassification table of `raster_fn`.
+    reclass_variables: list
+        List of reclass_variables from reclass_table_fn table to add to maps. Index
+        column should match values in `raster_fn`.
+    variable: str, optional
+        Name of raster dataset variable to use. This is only required when reading
+        datasets with multiple variables. By default None.
+    fill_method : str, optional
+        If specified, fills nodata values in `raster_fn` using fill_nodata method
+        before reclassifying. Available methods are {'linear', 'nearest',
+        'cubic', 'rio_idw'}.
+    reproject_method: str, optional
+        See rasterio.warp.reproject for existing methods, by default the data is
+        not reprojected (None).
+    name: str, optional
+        Name of new maps variable, only in case split_dataset=False.
+    split_dataset: bool, optional
+        If data is a xarray.Dataset split it into several xarray.DataArrays.
+    rename: dict, optional
+        Dictionary to rename variable names in reclass_variables before adding to
+        grid {'name_in_reclass_table': 'name_in_grid'}. By default empty.
+    graph_component: str, optional
+        Specifies which component of the graph to process. Can be one of the following:
+        * "edges" - Only processes and updates the edges of the graph.
+        * "nodes" - Only processes and updates the nodes of the graph.
+        * "both" - Processes and updates both nodes and edges of the graph.
+        By default, it processes both nodes and edges ("both").
+    \**kwargs:
+        Additional keyword arguments that are passed to the
+        `data_catalog.get_rasterdataset` function.
+
+    Returns
+    -------
+    list
+        Names of added model map layers
+    """  # noqa: E501
+    assert graph_component in [
+        "edges",
+        "nodes",
+        "both",
+    ], "Invalid graph_component value."
+
+    logger.info(f"Preparing graph data from raster source {raster_fn}")
+    region = graph_utils.graph_region(graph)
+
+    rename = rename or {}
+    logger.info(
+        f"Preparing map data by reclassifying the data in {raster_fn} based"
+        f" on {reclass_table_fn}"
+    )
+    # Read raster data and remapping table
+    da = data_catalog.get_rasterdataset(
+        raster_fn, geom=region, buffer=2, variables=variable, **kwargs
+    )
+    if not isinstance(da, xr.DataArray):
+        raise ValueError(
+            f"raster_fn {raster_fn} should be a single variable. "
+            "Please select one using the 'variable' argument"
+        )
+    df_vars = data_catalog.get_dataframe(reclass_table_fn, variables=reclass_variables)
+    # Fill nodata
+    if fill_method is not None:
+        da = da.raster.interpolate_na(method=fill_method)
+    # Mapping function
+    ds_vars = da.raster.reclassify(reclass_table=df_vars, method="exact")
+    # Reprojection
+    if ds_vars.rio.crs != region.crs and reproject_method is not None:
+        ds_vars = ds_vars.raster.reproject(dst_crs=region.crs)
+    # sample to graph
+    graph = _sample_raster_dataset_to_graph(
+        graph,
+        ds_vars,
+        graph_component,
+        resampling_method,
+        all_touched,
+        rename,
+        edge_buffer=edge_buffer,
+        node_buffer=node_buffer,
+    )
+
+    return graph
+
+
+def _sample_raster_dataset_to_graph(
+    graph,
+    ds,
+    graph_component,
+    resampling_method,
+    all_touched,
+    rename,
+    edge_buffer=0.0,
+    node_buffer=0.0,
+):
+    # Sample raster data
+    # Rename variables
+    rm_dict = {f"{var}_{resampling_method}": var for var in ds.data_vars}
+    # get sample at edges
+    if graph_component in ["edges", "both"]:
+        edges = graph_utils.graph_edges(graph)
+        edges.geometry = edges.geometry.buffer(edge_buffer)
+        ds_sample = ds.raster.zonal_stats(
+            gdf=edges,
+            stats=resampling_method,
+            all_touched=all_touched,
+        )
+        ds_sample = ds_sample.rename(rm_dict).rename(rename)
+        ds_sample_df = ds_sample.to_dataframe().set_index(edges["id"])
+        graph = update_edges_attributes(graph, ds_sample_df, id_col="id")
+    # get sample at nodes
+    if graph_component in ["nodes", "both"]:
+        nodes = graph_utils.graph_nodes(graph)
+        # FIXME dem for sample data too small, need to add nodata and correct crs
+        # ds_sample = ds.raster.sample(nodes)
+        nodes.geometry = nodes.geometry.buffer(node_buffer)
+        ds_sample = ds.raster.zonal_stats(
+            gdf=nodes,
+            stats=resampling_method,
+            all_touched=all_touched,
+        )
+        ds_sample = ds_sample.rename(rename)
+        ds_sample_df = ds_sample.to_dataframe().set_index(nodes["id"])
+        graph = update_nodes_attributes(graph, ds_sample_df)
     return graph
 
 
@@ -735,7 +889,7 @@ def update_edges_attributes(
     # add each attribute
     for c in edges.columns:
         dict = {row._graph_edge_tuple: row[c] for i, row in graph_df.iterrows()}
-        nx.set_node_attributes(graph, dict, c)
+        nx.set_edge_attributes(graph, dict, c)
 
     return graph
 
