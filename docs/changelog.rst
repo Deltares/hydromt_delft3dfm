@@ -19,6 +19,7 @@ Changed
 Fixed
 -----
 - Bugfixing of reading of frictions (global), crosssections and boundaries when update. (PR #81)
+- Bugfixing of mesh refinement (PR #124)
 
 v0.2.0 (20 November 2023)
 =========================
