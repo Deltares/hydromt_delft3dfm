@@ -9,11 +9,14 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 import xarray as xr
+import matplotlib.pyplot as plt
 
 # hydromt
 from hydromt import DataCatalog
 
 from hydromt_delft3dfm import graph_utils, workflows
+from hydromt.stats import extremes
+import hydromt
 
 logger = logging.getLogger(__name__)
 
@@ -859,6 +862,7 @@ def setup_network_dimentions_from_rainfallstats(
     diameter_range=None,
     velocity_range=None,
     slope_range=None,
+    region=None,
     logger: logging.Logger = logger,
 ) -> nx.graph:
     """
@@ -890,6 +894,9 @@ def setup_network_dimentions_from_rainfallstats(
         return period (in years).
         This is used to derive statistics from the historical rainfall data.
 
+    region: GeoDataFrame
+        Geometry file of the bounding area.
+        
     capacity_assumption: float, optional
         An assumption about the capacity of the sewer network (in mm/hr).
         If provided, this value is used instead of deriving capacity from historical
@@ -919,6 +926,60 @@ def setup_network_dimentions_from_rainfallstats(
     Function used to derive statistics from historical rainfall data.
     """
     # method implementation goes here
+
+    # 1: Get T2 rainfall amount per region
+    # draft substeps:
+    # - read data from catalog based on region
+    # -     * optionally visualize data to get an idea of quality
+    # - average precip for region
+    # - do T2 calculation for a range of return times & event durations
+    
+    dc = DataCatalog(logger=logger, data_libs=['deltares_data'])
+
+    # get era5 precipitation data cut down to region area as a data array
+    # next line causes ValueError: Invalid pattern: '**' can only be an entire path component
+    # possibly related to era5_hourly path; * after {year} (yml line 522)
+    precip_da = dc.get_rasterdataset("era5_hourly", geom=region)["precip"]
+
+    # average grid precipitation to reach a timeseries of avg. precipitation for region
+    mean_precip = precip_da.mean(dim=["x", "y"])
+
+    # peaks
+    # TODO: Implement peak selection that includes event duration; e.g. using moving
+    bm_peaks = extremes.get_peaks(precip_da, ev_type="POT", period=f"{rainfall_assumption}Y") 
+
+
+    # plot for quick visualization:
+    fig, ax = plt.subplots(figsize=(10, 3))
+    precip_da.to_pands().plot(
+        ax=ax, xlabel="time", ylabel="discharge [m3/s]", color=["orange", "green"]
+    )
+    bm_peaks.to_pandas().plot(
+    ax=ax,
+    marker="o",
+    linestyle="none",
+    legend=False,
+    color=["darkorange", "darkgreen"],
+    markersize=4,
+    )
+
+    # fit EV distribution
+    precip_da_params = extremes.fit_extremes(bm_peaks, ev_type="BM") #TODO: decide on desired criterium & distribution
+    precip_da_params.load()
+
+    
+    # TODO: Retrieve return times with extremes.get_return_times(), see https://deltares.github.io/hydromt/latest/_examples/doing_extreme_value_analysis.html
+
+
+    # 2: Compute storage needed per pipe    
+    #draft substeps:
+    # - multiply the T2 precipitation by node area for each node
+    # - assuming each node has one output node: add upstream nodes for each downstream node
+
+    # 3: Convert storage volumes to pipe diameter
+    # - divide volumes by a timestep to arrive at a volume per time that needs to be discharged
+    # - divide by pipelength to arrive at pipe diameters
+
     pass
 
 
