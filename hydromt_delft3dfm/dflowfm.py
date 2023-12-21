@@ -2880,7 +2880,7 @@ class DFlowFMModel(MeshModel):
         if self._maps:
             self.write_maps()
         if self._geoms:
-            self.write_geoms()
+            self.write_geoms(write_mesh_gdf=False)
         if self._mesh is not None or not self.branches.empty:
             self.write_mesh()
         if self._forcing:
