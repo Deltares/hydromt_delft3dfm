@@ -4,8 +4,6 @@ import logging
 from pathlib import Path
 from typing import Optional, Union
 
-import geopandas as gpd
-import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import pandas as pd
@@ -13,7 +11,7 @@ import xarray as xr
 
 # hydromt
 from hydromt import DataCatalog
-from hydromt.stats import extremes
+from scipy.optimize import curve_fit
 
 from hydromt_delft3dfm import graph_utils, workflows
 
@@ -23,14 +21,11 @@ __all__ = [
     "setup_urban_sewer_network_topology_from_osm",
     "setup_urban_sewer_network_bedlevel_from_dem",
     "setup_urban_sewer_network_runpoffarea_from_landuse",
-    # graph additions
-    # "setup_graph_nodes",
-    # "setup_graph_egdes",
-    # graph workflows
+    "setup_rainfall_function_from_stats",
+    # calculation workflows
     "select_connected_branches",
     "optimise_pipe_topology",
     "calculate_hydraulic_parameters",
-    "get_idf_function_from_rainfall",
 ]
 
 
@@ -100,7 +95,14 @@ def setup_urban_sewer_network_topology_from_osm(
             "residential",
         ]
     # output
-    _required_columns = None
+    _required_columns = [
+        "id",
+        "branchid",
+        "node_start",
+        "node_end",
+        "branchtype",
+        "geometry",
+    ]
 
     # 1. Build the graph for waterways (open system)
     logger.info(f"Download waterway {waterway_types} form osm")
@@ -136,12 +138,8 @@ def setup_urban_sewer_network_topology_from_osm(
     closed_system["branchtype"] = "pipe"
     outlets["nodeid"] = outlets["id"]
     outlets["nodetype"] = "outlet"
-
     # trim columns
-    branches = pd.concat([open_system, closed_system])
-    branches = branches[
-        "id", "branchid", "node_start", "node_end", "branchtype", "geometry"
-    ]
+    branches = pd.concat([open_system, closed_system])[_required_columns]
 
     # 4. Recreate the graph from the complete system topology
     logger.info("Create graph and update open system, closed system and outlets.")
@@ -365,6 +363,8 @@ def optimise_pipe_topology(
         nx.Graph: Processed graph in the form of a DAG.
 
     """
+    # FIXME missing edges in between adding them back result in a nondag
+
     logger.info("Select only connected pipe from graph")
     graph_pipes = _select_pipes(graph)
 
@@ -382,7 +382,6 @@ def optimise_pipe_topology(
 
     logger.info("compute gradient for pipes")
     graph_pipes_optmised = _compute_gradient_from_elevtn(graph_pipes_optmised)
-
     return graph_pipes_optmised
 
 
@@ -437,7 +436,7 @@ def _optimize_pipe_topology_based_on_static_loss_as_weight(graph_pipes):
     return graph_pipes_optmised
 
 
-def _optimize_pipe_topology_based_on_network_simplex(graph, logger=logger):
+def _optimize_pipe_topology_based_on_network_simplex(graph_pipes):
     # G = digraph_to_multidigraph(digraph)
     # H = multidigraph_to_digraph_by_adding_node_at_mid_location(G)
     # # add super target
@@ -493,40 +492,6 @@ def _compute_gradient_from_elevtn(graph):
     return graph
 
 
-def set_edge_areas(pipe_network_graph, area_buffer_distance=30):
-    """
-    Set the 'area' attribute for each edge in the graph.
-
-    Based on its geometry length and a given area buffer distance.
-
-    Parameters
-    ----------
-    pipe_network_graph: networkx.Graph
-        The graph whose edges will be updated.
-        Must have 'geometry' attribute.
-    area_buffer_distance: float
-        Estimated distance from the pipe network connected to the drainage system (m).
-        Beyond this distance, water is assumed not to drain into the system.
-        This is an estimate and may vary by region.
-        By default, 30 m is used.
-
-    Returns
-    -------
-    pipe_network_graph
-    """
-    area_attributes = {
-        (edge_start, edge_end): edge_data["geometry"].length * area_buffer_distance * 2
-        for edge_start, edge_end, edge_data in pipe_network_graph.edges(data=True)
-    }
-
-    nx.set_edge_attributes(pipe_network_graph, area_attributes, name="area")
-    return pipe_network_graph
-
-
-# Example usage:
-# set_edge_areas(pipe_network_graph, area_buffer_distance)
-
-
 def calculate_hydraulic_parameters(
     pipe_network_graph: nx.DiGraph,
     flow_velocity: float = 1,
@@ -577,7 +542,7 @@ def calculate_hydraulic_parameters(
 
     # Calculate pipe radius in topological order
     pipe_network_graph = _calculate_pipe_radius(
-        pipe_network_graph, flow_velocity, rainfall_depth_function
+        pipe_network_graph, flow_velocity, rainfall_depth_function, logger
     )
 
     # calculate other hydraulic dimentions
@@ -602,14 +567,14 @@ def calculate_hydraulic_parameters(
             },
         )
 
-    # FIXME inverstigate why there are huge pipes ('2860', '118', 4605.7)
+    # FIXME inverstigate why there are still huge pipes ('2889', '4637', 8.3)
     return pipe_network_graph
 
 
 def __test_calculate_pipe_radius():
     # Define a simple rainfall depth function for testing
     def simple_rainfall_depth_function(concentration_time):
-        return 20
+        return 20 * concentration_time
 
     # Create a small directed graph
     pipe_network_graph = nx.DiGraph()
@@ -625,7 +590,9 @@ def __test_calculate_pipe_radius():
     nx.set_edge_attributes(pipe_network_graph, 0, "radius")
 
     # Apply the function
-    _calculate_pipe_radius(pipe_network_graph, 1, simple_rainfall_depth_function)
+    pipe_network_graph = _calculate_pipe_radius(
+        pipe_network_graph, 1, simple_rainfall_depth_function
+    )
 
     # Check the results
     for u, v in pipe_network_graph.edges():
@@ -645,80 +612,96 @@ def __test_calculate_pipe_radius():
     plt.show()
 
 
-def _dfs_accumulate_properties(
-    node,
-    visited,
-    reversed_graph,
-    total_upstream_runoff_area=0,
-    total_upstream_length=0,
-    total_upstream_radius=0,
-    total_upstream_edges=0,
+def _dfs_longest_path_properties(
+    node, visited, reversed_graph, current_path_length=0, longest_path=0
 ):
     """
-    Perform a DFS traversal to accumulate upstream properties for a given node.
+    Perform a DFS traversal to find the longest upstream path for a given node.
 
     Parameters
     ----------
     node: The current node being visited.
     visited: A set of nodes that have already been visited.
-    reversed_graph: The reversed graph used for upstream traversal.
-    total_upstream_runoff_area: Accumulated total runoff area of upstream edges.
-    total_upstream_length: Accumulated total length of upstream edges.
-    total_upstream_radius: Accumulated total radius of upstream edges.
-    total_upstream_edges: Count of upstream edges.
+    reversed_graph: The graph used for traversal.
+    current_path_length: The length of the current path in the traversal.
+    longest_path: The length of the longest path found so far.
 
     Returns
     -------
-    A tuple of accumulated properties (runoff_area, length, radius, edge count).
+    The length of the longest upstream path.
     """
     if node in visited:
-        return (
-            total_upstream_runoff_area,
-            total_upstream_length,
-            total_upstream_radius,
-            total_upstream_edges,
-        )
+        return longest_path
 
     visited.add(node)
     for start_node, target_node in reversed_graph.out_edges(node):
         if target_node in visited:
             continue
 
-        # Accumulate the properties of the current edge
-        current_length = reversed_graph[start_node][target_node]["length"]
-        current_runoff_area = reversed_graph[start_node][target_node]["runoff_area"]
-        current_radius = reversed_graph[start_node][target_node]["radius"]
+        edge_length = reversed_graph[start_node][target_node]["length"]
+        new_path_length = current_path_length + edge_length
 
-        total_upstream_runoff_area += current_runoff_area
-        total_upstream_length += current_length
-        total_upstream_radius += current_radius
-        total_upstream_edges += 1
+        longest_path = max(
+            longest_path,
+            _dfs_longest_path_properties(
+                target_node,
+                visited.copy(),
+                reversed_graph,
+                new_path_length,
+                longest_path,
+            ),
+            new_path_length,
+        )
 
-        # Recursive call for the next upstream node
-        (
+    return longest_path
+
+
+def _dfs_accumulate_properties(
+    node,
+    visited,
+    reversed_graph,
+    total_upstream_runoff_area=0,
+    total_upstream_volume=0,
+):
+    if node in visited:
+        return (
             total_upstream_runoff_area,
-            total_upstream_length,
-            total_upstream_radius,
-            total_upstream_edges,
+            total_upstream_volume,
+        )
+
+    visited.add(node)
+    for start_node, target_node in reversed_graph.out_edges(node):
+        if target_node in visited:
+            continue
+        edge_runoff_area = reversed_graph[start_node][target_node]["runoff_area"]
+        edge_length = reversed_graph[start_node][target_node]["length"]
+        edge_radius = reversed_graph[start_node][target_node]["radius"]
+        edge_volume = np.pi * (edge_radius**2) * edge_length
+
+        (
+            child_runoff_area,
+            child_volume,
         ) = _dfs_accumulate_properties(
             target_node,
-            visited,
+            visited.copy(),
             reversed_graph,
-            total_upstream_runoff_area,
-            total_upstream_length,
-            total_upstream_radius,
-            total_upstream_edges,
+            total_upstream_runoff_area + edge_runoff_area,
+            total_upstream_volume + edge_volume,
         )
+
+        # Update the totals with the maximum values from all branches
+        total_upstream_runoff_area = max(total_upstream_runoff_area, child_runoff_area)
+        total_upstream_volume = max(total_upstream_volume, child_volume)
 
     return (
         total_upstream_runoff_area,
-        total_upstream_length,
-        total_upstream_radius,
-        total_upstream_edges,
+        total_upstream_volume,
     )
 
 
-def _calculate_pipe_radius(pipe_network_graph, flow_velocity, rainfall_depth_function):
+def _calculate_pipe_radius(
+    pipe_network_graph, flow_velocity, rainfall_depth_function, logger=logger
+):
     """
     Calculate the radius of pipes  based on hydraulic calculations.
 
@@ -743,6 +726,7 @@ def _calculate_pipe_radius(pipe_network_graph, flow_velocity, rainfall_depth_fun
     See Also
     --------
     _dfs_accumulate_properties
+    _dfs_longest_path_properties
     """
     nx.set_edge_attributes(pipe_network_graph, 0, "radius")
 
@@ -751,485 +735,172 @@ def _calculate_pipe_radius(pipe_network_graph, flow_velocity, rainfall_depth_fun
     for current_node in nx.topological_sort(pipe_network_graph):
         for start_node, target_node in pipe_network_graph.out_edges(current_node):
             # get accumulated properties upstream
-            visited = set()
             (
-                total_upstream_runoff_area,
-                total_upstream_length,
-                total_upstream_radius,
-                total_upstream_edges,
-            ) = _dfs_accumulate_properties(start_node, visited, reversed_graph)
-            # get downstream edge properties (without radius)
-            length = pipe_network_graph[start_node][target_node]["length"]
-            runoff_area = pipe_network_graph[start_node][target_node]["runoff_area"]
-            total_runoff_area = total_upstream_runoff_area + runoff_area
-            total_length = total_upstream_length + length
-            total_edges = total_upstream_edges + 1
+                upstream_runoff_area,
+                upstream_volume,
+            ) = _dfs_accumulate_properties(start_node, set(), reversed_graph)
+            # get longest path properties upstream
+            upstream_longestpath = _dfs_longest_path_properties(
+                start_node, set(), reversed_graph
+            )
+            # get downstream edge properties (volume unknown and to be solved)
+            runoff_area = reversed_graph[target_node][start_node]["runoff_area"]
+            length = reversed_graph[target_node][start_node]["length"]
             # get total properties
-            concentration_time = total_runoff_area / flow_velocity
+            total_runoff_area = upstream_runoff_area + runoff_area
+            total_longestpath = upstream_longestpath + length
+            concentration_time = total_longestpath / flow_velocity / 3600.0
             rainfall_depth = rainfall_depth_function(concentration_time)
             total_volume = rainfall_depth / 1000.0 * total_runoff_area
-            avg_radius_needed = (
-                np.sqrt(total_volume / (np.pi * total_length))
-                if total_length > 0
-                else 0
+            # solve volume and radius
+            volume = total_volume - upstream_volume
+            radius = np.sqrt(volume / (np.pi * length)) if length > 0 else 0
+            # get immediate upstream radius to compare --> no sharp increase
+            immediate_upstream_radius = sum(
+                [e[2] for e in reversed_graph.out_edges(current_node, data="radius")]
             )
-            total_radius = avg_radius_needed * total_edges
-            # compute downstream edge properties (radius)
-            radius = total_radius - total_upstream_radius
-
-            if radius > 0:
-                pipe_network_graph[start_node][target_node]["radius"] = radius
-            else:
-                print(
-                    "Warning: Zero or negative radius calculated for edge: "
-                    + f"({start_node}, {target_node})"
+            # assign radius
+            reversed_graph[target_node][start_node]["radius"] = radius
+            # quality check
+            # TODO: there are still very large pipes
+            if radius > immediate_upstream_radius and immediate_upstream_radius > 0:
+                logger.debug(
+                    f"radius {radius} exceeds limits(sum of upstream radius): "
+                    + f"Fall back to maximum allowed {immediate_upstream_radius}"
                 )
+                reversed_graph[target_node][start_node][
+                    "radius"
+                ] = immediate_upstream_radius
 
-    return pipe_network_graph
+    return reversed_graph.reverse()
 
 
-def setup_network_connections_based_on_flowdirections(
-    user_input_graph: nx.graph,
-    dem_fn: Union[str, Path],
-    logger: logging.Logger = logger,
-    **kwargs,
-) -> nx.graph:
+def _get_rainfall_from_gpex(
+    ds: xr.Dataset,
+    rt: int = 2,
+):
     """
-    Set up flow directions from a Digital Elevation Model (DEM).
+    Calculate the rainfall depth function from gpex data.
 
-    The method performs the following steps:
-    1. Retrieves a flow direction raster from a DEM.
-    2. Converts the flow direction raster into a graph and a network, using the network
-    to represent flow directions.
-    3. Snaps nodes from the `user_input_graph` to the flow direction network to ensure
-    that the network aligns with natural flow paths.
-    4. Identifies and fills in any missing links in the `user_input_graph`, ensuring
-    a fully connected network.
-    5. Fills in any missing geometry in the `user_input_graph` and converts it into
-    a network.
+    Temporal downscaling is done by exponential model fitted to
+    GEV estimates for a given return period.
 
     Parameters
     ----------
-    user_input_graph: nx.graph
-        The initial graph provided by the user, which will be updated to align
-        with the flow direction network.
-
-    dem_fn: Union[str, Path]
-        The file path to the digital elevation model (DEM) used to derive the
-        flow direction raster. This can be provided as a string or a Path object.
-
-    **kwargs:
-        Other keyword arguments that may be required for specific implementations
-        of the function.
+    ds: xarray.Dataset
+        Contain 'gev_estimates' data variable with coodinates 'dur' and 'rt'.
+    rt: int
+        Return period for which to calculate the rainfall depth (in years).
+        Must be among [2 5 10 20 39 50 100 200 500 1000]
+        By default 2.
 
     Returns
     -------
-    nx.graph:
-        The processed `user_input_graph`, now an instance of nx.graph class,
-        with any missing links and geometry filled in based on flow directions.
-        The graph represents the urban drainage network.
-
-    Notes
-    -----
-    The function reprojects the DEM-derived flow network to the local CRS
-    (Coordinate Reference System) of the `user_input_graph` to ensure
-    that all spatial data aligns correctly.
+    np.array
+        Rainfall intensity as an exponential function
     """
-    # method implementation goes here
-    pass
+    # Check if 'gev_estimate' in the dataset
+    if "gev_estimate" not in ds:
+        raise ValueError("Dataset does not contain the required data.")
+    durations = ds.coords["dur"].values
+    rainfall_rate = ds["gev_estimate"].sel(tr=rt).values / durations
+
+    # Fitting the extremes using the specified distribution and duration
+    def exponential_model(duration, rainfall_rate, alpha):
+        return rainfall_rate * (duration**alpha)
+
+    # Curve fitting
+    params, params_covariance = curve_fit(
+        exponential_model, durations, rainfall_rate, p0=[1, 0.5]
+    )
+    rainfall_rate_max_fitted, alpha_fitted = params
+
+    # plt.figure(figsize=(8, 5))
+    # plt.scatter(durations, rainfall_rate, label='Provided Data')
+    # plt.plot(durations, exponential_model(durations,
+    # rainfall_rate_max_fitted,alpha_fitted),
+    # label='Fitted Curve', color='red')
+    # # Setting the scale of both axes to logarithmic
+    # plt.xscale('log')
+    # plt.yscale('log')
+    # plt.xlabel('Duration (hours) [Log Scale]')
+    # plt.ylabel('Rainfall rate (mm/hr) [Log Scale]')
+    # plt.title('Rainfall rate vs Duration with Fitted Curve (Log-Log Plot)')
+    # plt.legend()
+    # plt.grid(True, which="both", ls="--")  # Grid lines for log scale
+    # plt.show()
+
+    def rainfall_depth_function(tc):
+        # compute intensity for tc
+        I = exponential_model(tc, rainfall_rate_max_fitted, alpha_fitted)
+        # convert to depth
+        return I * tc
+
+    return rainfall_depth_function
 
 
-def setup_network_parameters_from_rasters(
-    graph: nx.graph,
-    dem_fn,
-    landuse_fn,
-    water_demand_fn,
-    population_fn,
-    building_footprint_fn,
-    logger: logging.Logger = logger,
-    **kwargs,
-) -> nx.graph:
+def setup_rainfall_function_from_stats(
+    rainfall_fn=None,
+    region=None,
+    data_catalog=None,
+    assumption_rainfall_intensity: float = 40,
+):
     """
-    Set up physical parameters of pipes using raster data sources.
+    Set up a function to calculate rainfall depth based on concentration time.
 
-    The method performs the following steps:
-    1. Adds upstream and downstream street levels to the graph using a
-    digital elevation model (DEM).
-    2. Adds upstream areas to the graph using land use data.
-    3. Adds water demand, population, and building footprint data to the graph using
-    corresponding raster data sources.
-    4. Approximates the size of the network based on the street size/type using data
-    from the graph itself. --> use as weight for the next step.
-    5. Approximates the slope of the network based on upstream and downstream street
-    levels, the depths, and the length of the edge geometry in the graph.
-    --> use as weight for the next step.
+    Using rainfall statistics derived from historical data (gpex only) or
+    a default assumption of rainfall intensity.
 
     Parameters
     ----------
-    graph: nx.graph
-        The network graph to be filled with physical parameters.
-        This is an instance of the nx.graph class, which wraps around NetworkX Graph.
-
-    dem_fn: Union[str, Path]
-        The file path to the digital elevation model (DEM) used to derive the upstream
-        and downstream street levels.
-
-    landuse_fn: Union[str, Path]
-        The file path to the land use data used to derive the upstream area.
-
-    water_demand_fn: Union[str, Path]
-        The file path to the water demand data used to add water demand information
-        to the graph.
-
-    population_fn: Union[str, Path]
-        The file path to the population data used to add population information
-        to the graph.
-
-    building_footprint_fn: Union[str, Path]
-        The file path to the building footprint data used to add building footprint
-        information to the graph.
-
-    **kwargs:
-         Additional keyword arguments for more specific implementations of the function.
+    rainfall_fn: Union[str, Path], optional
+        The file path to the historical rainfall data or the identifier of the rainfall
+        data source.
+        Currently, only "gpex" is supported.
+        If None, a default assumption is used.
+    region: GeoDataFrame or similar, optional
+        The geographical region for which the rainfall data is relevant.
+        Used to filter the data source.
+        To be replaced by self.region
+    data_catalog: DataCatalog or similar, optional
+        A catalog or repository from which the rainfall data (e.g., "gpex")
+        can be retrieved.
+        To be replaced by self.data_catalog
+    assumption_rainfall_intensity: float, default 40
+        The assumed rainfall intensity (in mm/hr) to be used if no historical data is
+        specified or available.
+        This value is typically based on the capacity of the sewer system in the region.
 
     Returns
     -------
-    nx.graph:
-        The updated graph, an instance of nx.graph class, representing the
-        urban drainage network with physical parameters filled in.
-    """
-    # method implementation goes here
-    pass
-
-
-def setup_network_topology_optimization(
-    graph: nx.graph, method: str, logger: logging.Logger = logger, **kwargs
-) -> nx.graph:
-    """
-    Optimise the topology of the urban drainage network represented by the graph.
-
-    The method performs the following steps:
-    1. Computes the selected graph metric (defined by 'method') for all nodes
-    in the graph.
-    2. Removes unnecessary links based on the computed graph metric.
-    3. Iterates the above steps as needed until the network is optimized.
-
-    Parameters
-    ----------
-    graph: nx.graph
-        The network graph to be optimized. This is an instance of the nx.graph class,
-        which wraps around the NetworkX Graph class.
-
-    method: str
-        The method to use for optimization. This determines the graph metric that will
-        be computed and used for the optimization process.
-
-    **kwargs:
-        Additional keyword arguments for more specific implementations of the function.
-
-    Returns
-    -------
-    nx.graph:
-        The optimized graph, an instance of nx.graph class, representing the
-        urban drainage network.
-
-    Notes
-    -----
-    The betweenness centrality of a node in a graph is a measure of how often it
-    appears on the shortest paths between nodes. Nodes with high betweenness centrality
-    can be considered 'hubs' in the network. By removing links with low betweenness
-    centrality, we can potentially simplify the network topology without significantly
-    impacting the overall connectivity.
-
-    The optimal way to optimize network topology will highly depend on the specific
-    characteristics of the network, which are often determined by previous steps in the
-    network analysis process.
-
-    Other candidate graph metrics that might be useful for network topology optimization
-    include:
-    - Degree centrality: Measures the number of edges connected to a node. This can
-    be useful for identifying nodes that are most connected.
-    - Closeness centrality: Measures how close a node is to all other nodes
-    in the network. This can be useful for identifying nodes that are centrally located.
-    - Eigenvector centrality: Measures a node's influence based on the number of links
-    it has to other influential nodes. This can be useful for identifying influential
-    nodes in the network.
-
-    If the network's weights have physical meanings, shortest path or
-    maximum flow methods can also be considered for optimization.
-    These methods, such as the Ford-Fulkerson or Edmonds-Karp algorithm,
-    can be used to identify critical paths in the network. This can be particularly
-    useful for identifying vulnerabilities in the network or for identifying potential
-    areas for network enhancement.
+    function
+        A function that calculates the rainfall depth (in mm) based on the
+        given concentration time (in hours).
+        The function uses either the derived rainfall statistics from the
+        "gpex" data or the default assumption.
 
     See Also
     --------
-    https://github.com/xldeltares/hydrolib-nowcasting/tree/master
-
+    _get_rainfall_intensity_assumption_from_gpex
     """
-    # method implementation goes here
-    pass
-
-
-def get_idf_function_from_rainfall(
-    rainfall_fn: Union[str, Path] = None,
-    rainfall_assumption=None,
-    region=None,
-    data_catalog=None,
-    logger: logging.Logger = logger,
-) -> nx.graph:
-    """
-    Update the dimensions of the pipes using historical rainfall data.
-
-    After the graph topology is optimized, this method updates the physical parameters
-    of the network, such as the diameter of the pipes. Rainfall statistics are obtained
-    from historical rainfall datasets, and assumptions are made about the capacity of
-    the sewer network (for example, based on the rainfall return period).
-    Alternatively, the problem can be simplified by directly assuming a
-    capacity (in mm/hr) for the network, bypassing the need for historical rainfall
-    data.
-
-    The dimensions of the pipe (such as diameter) are then approximated based on the
-    edge weights used for network optimization, subject to reasonable ranges for
-    diameter, velocity, and slope.
-
-    Parameters
-    ----------
-    graph: nx.graph
-        The network graph to be updated with new pipe dimensions. This is an instance
-        of the nx.graph class, which wraps around the NetworkX Graph class.
-
-    rainfall_fn: Union[str, Path]
-        The file path to the historical rainfall data used to derive rainfall stats.
-
-    rainfall_assumption: float
-        An assumption about the capacity of the sewer system based on the rainfall
-        return period (in years).
-        This is used to derive statistics from the historical rainfall data.
-
-    region: GeoDataFrame
-        Geometry file of the bounding area.
-
-    capacity_assumption: float, optional
-        An assumption about the capacity of the sewer network (in mm/hr).
-        If provided, this value is used instead of deriving capacity from historical
-        rainfall data.
-
-    diameter_range: tuple, optional
-        A tuple specifying the minimum and maximum feasible pipe diameters.
-        Used to constrain the approximation of pipe dimensions.
-
-    velocity_range: tuple, optional
-        A tuple specifying the minimum and maximum feasible pipe velocities.
-        Used to constrain the approximation of pipe dimensions.
-
-    slope_range: tuple, optional
-        A tuple specifying the minimum and maximum feasible pipe slopes.
-        Used to constrain the approximation of pipe dimensions.
-
-    Returns
-    -------
-    nx.graph:
-        The updated graph, an instance of nx.graph class,
-        representing the urban drainage network with new pipe dimensions.
-
-    References
-    ----------
-    - hydromt.stats.extremes:
-    Function used to derive statistics from historical rainfall data.
-    """
-    # method implementation goes here
-
-    # 1: Get T2 rainfall amount per region
-    # draft substeps:
-    # - read data from catalog based on region
-    # -     * optionally visualize data to get an idea of quality
-    # - average precip for region
-    # - do T2 calculation for a range of return times & event durations
-
-    # get era5 precipitation data cut down to region area as a data array
-    # this is very slow
-    precip_da = data_catalog.get_rasterdataset(
-        rainfall_fn,
-        bbox=region.to_crs(4326).total_bounds,
-        buffer=1,
-        variables=["precip"],
-        time_tuple=("1990-01-01", "2000-01-01"),  # shorter for faster
-    )
-    mean_precip = precip_da.mean(dim=["latitude", "longitude"])
-    mean_precip = mean_precip.chunk({"time": -1})
-
-    # peaks
-    # TODO: Implement peak selection that includes event duration; e.g. using moving
-    bm_peaks = extremes.get_peaks(
-        mean_precip,
-        ev_type="POT",
-        min_dist=24,
-    )
-
-    # plot for quick visualization:
-    fig, ax = plt.subplots(figsize=(10, 3))
-    precip_da.to_pands().plot(
-        ax=ax, xlabel="time", ylabel="precip [m]", color=["orange"]
-    )
-    bm_peaks.to_pandas().plot(
-        ax=ax,
-        marker="o",
-        linestyle="none",
-        legend=False,
-        color=["darkorange"],
-        markersize=4,
-    )
-
-    # fit EV distribution
-    precip_da_params = extremes.fit_extremes(
-        bm_peaks, ev_type="BM"
-    )  # TODO: decide on desired criterium & distribution
-    precip_da_params.load()
-
-    # TODO: Retrieve return times with extremes.get_return_times(),
-    # see https://deltares.github.io/hydromt/latest/_examples/doing_extreme_value_analysis.html
-
-    # 2: Compute storage needed per pipe
-    # draft substeps:
-    # - multiply the T2 precipitation by node area for each node
-    # - assuming each node has one output node: add upstream nodes for each downstream
-    # node
-
-    # 3: Convert storage volumes to pipe diameter
-    # - divide volumes by a timestep to arrive at a volume per time that needs to be
-    # discharged
-    # - divide by pipelength to arrive at pipe diameters
-
-    pass
-
-
-# func from hybridurb
-def update_edges_attributes(
-    graph: nx.Graph,
-    edges: gpd.GeoDataFrame,
-    id_col: str = "id",
-) -> nx.Graph():
-    """Update the graph by adding new edges attributes specified in edges.
-
-    Only edges with matching ids specified in "id" will be updated.
-    """
-    # graph df
-    _graph_df = nx.to_pandas_edgelist(graph).set_index("id")
-    _graph_df["_graph_edge_tuple"] = list(graph.edges)
-
-    # check if edges id in attribute df
-    if edges.index.name == id_col:
-        edges.index.name = "id"
-    elif id_col in edges.columns:
-        edges = edges.set_index(id_col)
-        edges.index.name = "id"
-    else:
-        raise ValueError(
-            "attributes could not be updated to graph: could not perform join"
+    if rainfall_fn == "gpex":
+        logger.info("Get rainfall functions from gpex (return period 2 year)")
+        # read gpex data
+        ds = data_catalog.get_rasterdataset(
+            "gpex",
+            bbox=region.to_crs(4326).total_bounds,
+            buffer=1,  # ensure there is data
+        )
+        # get func from data
+        calculate_rainfall_depth_given_concentration_time = _get_rainfall_from_gpex(
+            ds.isel(lat=0, lon=0)
         )
 
-    # last item that isnt NA
-    graph_df = _graph_df.reindex(
-        columns=_graph_df.columns.union(edges.columns, sort=False)
-    )
-    graph_df.update(edges)
-
-    # add each attribute
-    for c in edges.columns:
-        dict = {row._graph_edge_tuple: row[c] for i, row in graph_df.iterrows()}
-        nx.set_node_attributes(graph, dict, c)
-
-    return graph
-
-
-# func from hybridurb
-def update_nodes_attributes(
-    graph: nx.Graph,
-    nodes: gpd.GeoDataFrame,
-    id_col: str = "id",
-) -> nx.Graph():
-    """Update the graph by adding new edges attributes specified in edges.
-
-    Only edges with matching ids specified in "id" will be updated.
-    """
-    # graph df
-    _graph_df = pd.DataFrame(graph.nodes(data="id"), columns=["tuple", "id"]).set_index(
-        "id"
-    )
-
-    # check if edges id in attribute df
-    if nodes.index.name == id_col:
-        nodes.index.name = "id"
-    elif id_col in nodes.columns:
-        nodes = nodes.set_index(id_col)
-        nodes.index.name = "id"
     else:
-        raise ValueError(
-            "attributes could not be updated to graph: could not perform join"
-        )
+        logger.error("NotImplementedError: cannot use rainfall file {rainfall_fn}.")
+        logger.debug(f"Fall back to default {assumption_rainfall_intensity} mm/hr.")
 
-    # last item that isnt NA
-    _graph_df = _graph_df.reindex(
-        columns=_graph_df.columns.union(nodes.columns, sort=False)
-    )
-    graph_df = pd.concat([_graph_df, nodes]).groupby(level=0).last()
-    graph_df = graph_df.loc[_graph_df.index]
+        def calculate_rainfall_depth_given_concentration_time(tc):
+            return assumption_rainfall_intensity * tc
 
-    # add each attribute
-    for c in nodes.columns:
-        dict = {row.tuple: row[c] for i, row in graph_df.iterrows()}
-        nx.set_node_attributes(graph, dict, c)
-
-    return graph
-
-
-def reverse_edges_on_negative_weight(
-    graph: Union[nx.MultiDiGraph, nx.DiGraph], weight: str = "gradient"
-) -> Union[nx.MultiDiGraph, nx.DiGraph]:
-    """Reverse graph edges based on a negative weight attribute.
-
-    Parameters
-    ----------
-    graph : Union[nx.DiGraph,nx.MultiDiGraph]
-        Input graph.
-    weight : str
-        Name of the edge attribute to check. Default is 'gradient'.
-
-    Returns
-    -------
-    Union[nx.DiGraph,nx.MultiDiGraph]
-        The function modifies the graph in-place and returns it.
-    """
-    if isinstance(graph, nx.MultiDiGraph):
-        # Collect edges that need to be reversed for MultiDiGraph
-        edges_to_reverse = [
-            (u, v, key, data)
-            for u, v, key, data in graph.edges(keys=True, data=True)
-            if data.get(weight, 0) < 0
-        ]
-        for u, v, key, data in edges_to_reverse:
-            # Remove original edge
-            graph.remove_edge(u, v, key=key)
-            # Add reversed edge with preserved attributes
-            data[weight] = data[weight] * -1.0
-            graph.add_edge(v, u, key=key, **data)
-
-    elif isinstance(graph, nx.DiGraph):
-        # Collect edges that need to be reversed for DiGraph
-        edges_to_reverse = [
-            (u, v, data)
-            for u, v, data in graph.edges(data=True)
-            if data.get(weight, 0) < 0
-        ]
-        for u, v, data in edges_to_reverse:
-            # Remove original edge
-            graph.remove_edge(u, v)
-            # Add reversed edge with preserved attributes and reversed weights
-            data[weight] = data[weight] * -1.0
-            graph.add_edge(v, u, **data)
-
-    else:
-        raise ValueError("The graph should be either a DiGraph or a MultiDiGraph.")
-
-    return graph
+    return calculate_rainfall_depth_given_concentration_time
