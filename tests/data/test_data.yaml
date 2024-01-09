@@ -185,3 +185,15 @@ gpex:
     source_url: https://data.4tu.nl/articles/_/12764429/4
     source_version: 20210830
   path: ./urbansewer_data/gpex_clip.nc
+
+urbansewernetwork_rivers:
+  data_type: GeoDataFrame
+  driver: vector
+  path: urbansewer_data/rivers.geojson
+  crs: 32647
+
+urbansewernetwork_pipes:
+  data_type: GeoDataFrame
+  driver: vector
+  path: urbansewer_data/pipes.geojson
+  crs: 32647
