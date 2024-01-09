@@ -775,6 +775,7 @@ class DFlowFMModel(MeshModel):
 
         # Read data and filter within region
         region = workflows.parse_region_geometry(region, self.crs)
+        rivers_fn = rivers_fn.name if isinstance(rivers_fn, Path) else rivers_fn
         gdf_br = self.data_catalog.get_geodataframe(
             rivers_fn, geom=region, buffer=0, predicate="intersects"
         )
@@ -981,6 +982,7 @@ class DFlowFMModel(MeshModel):
             graph=graph,
             data_catalog=self.data_catalog,
             dem_fn=dem_fn,
+            fill_method="nearest",
             logger=self.logger,
         )
 
@@ -1027,8 +1029,11 @@ class DFlowFMModel(MeshModel):
 
         # 6. any additional steps to add the network to delft3dfm model
         rivers = graph_utils.graph_to_network(graph_rivers)[0]
+        # reindex
+        rivers["branchid"] = [f"river_{i}" for i in rivers.index]
         self.set_geoms(rivers, "rivers")
         pipes = graph_utils.graph_to_network(graph_pipe_dag_with_dimention)[0]
+        pipes["branchid"] = [f"pipe_{i}" for i in pipes.index]
         self.set_geoms(pipes, "pipes")
         self.write_geoms()
 
@@ -1215,11 +1220,12 @@ class DFlowFMModel(MeshModel):
             "width",  # rectangle
             "height",  # rectangle
             "invlev_up",
-            "inlev_dn",
+            "invlev_dn",
         ]
 
         # Read data and filter within region
         region = workflows.parse_region_geometry(region, self.crs)
+        pipes_fn = pipes_fn.name if isinstance(pipes_fn, Path) else pipes_fn
         gdf_br = self.data_catalog.get_geodataframe(
             pipes_fn, geom=region, buffer=0, predicate="intersects"
         )

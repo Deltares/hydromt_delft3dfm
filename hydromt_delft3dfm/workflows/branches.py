@@ -1229,7 +1229,7 @@ def _remove_branches_with_ring_geometries(
 ) -> gpd.GeoDataFrame:
     first_nodes = [l.coords[0] for l in branches.geometry]
     last_nodes = [l.coords[-1] for l in branches.geometry]
-    duplicate_ids = np.isclose(first_nodes, last_nodes)
+    duplicate_ids = np.isclose(first_nodes, last_nodes, atol=0, rtol=1e-10)
     duplicate_ids = [
         branches.index[i] for i in range(len(branches)) if np.all(duplicate_ids[i])
     ]

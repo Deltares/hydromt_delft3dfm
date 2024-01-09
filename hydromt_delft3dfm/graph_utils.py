@@ -6,8 +6,8 @@ from pathlib import Path
 from typing import Tuple, Union
 
 import geopandas as gpd
-import momepy
 import networkx as nx
+import pandas as pd
 from pyproj import CRS, Transformer
 from shapely.geometry import LineString, Point, box
 from shapely.ops import transform
@@ -39,13 +39,13 @@ graph: nx.Graph
     graph property ["crs"]
     edge property ["id", "geometry", "node_start", "node_end"]
     node property ["id", "geometry"]
-    
+
 graph_edges: gpd.GeoDataFrame
     columns: ["id", "geometry", "node_start", "node_end"]
 
 graph_nodes: gpd.GeoDataFrame
     columns: ["id", "geometry"]
-    
+
 graph_region: gpd.GeoDataFrame
 """
 
@@ -66,7 +66,6 @@ def gpd_to_digraph(data: gpd.GeoDataFrame) -> nx.DiGraph():
     nx.DiGraph
         The converted directed graph.
     """
-
     _ = data.copy()
 
     _["from_node"] = [row.geometry.coords[0] for index, row in _.iterrows()]
@@ -104,7 +103,9 @@ def preprocess_graph(graph: nx.Graph, to_crs: CRS = None) -> nx.Graph:
         edge properties ['id', 'geometry','node_start', and 'node_end']
         node properties ['id', 'geometry']
     """
-    # TODO Allow for more preprocessing steps, like cleaning up isolated nodes, adding weights to edges based on distance, etc.
+    # TODO Allow for more preprocessing steps,
+    # like cleaning up isolated nodes,
+    # adding weights to edges based on distance, etc.
 
     crs = graph.graph.get("crs")
     if not crs:
@@ -131,7 +132,8 @@ def preprocess_graph(graph: nx.Graph, to_crs: CRS = None) -> nx.Graph:
 def _add_missing_geoms_one_by_one(
     graph: nx.Graph, geom_name: str = "geometry"
 ) -> nx.Graph:
-    # Not all nodes have geometry attributed (some only x and y coordinates) so add a geometry columns
+    # Not all nodes have geometry attributed (some only x and y coordinates)
+    # so add a geometry columns
     nodes_without_geom = [n[0] for n in graph.nodes(data=geom_name) if n[1] is None]
     for nd in nodes_without_geom:
         graph.nodes[nd][geom_name] = Point(graph.nodes[nd]["x"], graph.nodes[nd]["y"])
@@ -304,7 +306,6 @@ def network_to_graph(
         edge properties ['id', 'geometry','node_start', and 'node_end']
         node properties ['id', 'geometry']
     """
-
     # create graph from edges
     edges["source"] = edges["node_start"]
     edges["target"] = edges["node_end"]
@@ -351,7 +352,8 @@ def graph_to_network(
     Tuple
         gpd.GeoDataFrame
             edges of the graph.
-            Contains attributes ['id', 'geometry', node_start', 'node_end', '_graph_edge_index']
+            Contains attributes ['id', 'geometry', node_start', 'node_end',
+            '_graph_edge_index']
         gpd.GeoDataFrame
             nodes of the graph.
             Contains attributes ['id', 'geometry', '_graph_node_index']
@@ -527,17 +529,17 @@ def write_graph(graph: nx.Graph, graph_fn: str) -> None:
 
 # properties
 def graph_edges(graph: nx.Graph) -> gpd.GeoDataFrame:
-    """Get graph edges as geodataframe"""
+    """Get graph edges as geodataframe."""
     return graph_to_network(graph)[0]
 
 
 def graph_nodes(graph: nx.Graph) -> gpd.GeoDataFrame:
-    """Get graph nodes as geodataframe"""
+    """Get graph nodes as geodataframe."""
     return graph_to_network(graph)[1]
 
 
 def graph_region(graph: nx.Graph) -> gpd.GeoDataFrame:
-    """Get graph region as geodataframe"""
+    """Get graph region as geodataframe."""
     edges = graph_to_network(graph)[0]
     region = gpd.GeoDataFrame(geometry=[box(*edges.total_bounds)], crs=edges.crs)
     return region
