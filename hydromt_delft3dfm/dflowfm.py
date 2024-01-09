@@ -773,6 +773,7 @@ class DFlowFMModel(MeshModel):
 
         # Read data and filter within region
         region = workflows.parse_region_geometry(region, self.crs)
+
         gdf_br = self.data_catalog.get_geodataframe(
             rivers_fn, geom=region, buffer=0, predicate="intersects"
         )
@@ -996,7 +997,7 @@ class DFlowFMModel(MeshModel):
             "width",  # rectangle
             "height",  # rectangle
             "invlev_up",
-            "inlev_dn",
+            "invlev_dn",
         ]
 
         # Read data and filter within region
@@ -1182,11 +1183,13 @@ class DFlowFMModel(MeshModel):
 
             * Required variables: crsid, shape, shift
             * Optional variables:
-                if shape = 'rectangle': 'width', 'height', 'closed'
-                if shape = 'trapezoid': 'width', 't_width', 'height', 'closed'
-                if shape = 'yz': 'yzcount','ycoordinates','zcoordinates','closed'
+                if shape = 'rectangle': 'width', 'height', 'closed',
+                if shape = 'trapezoid': 'width', 't_width', 'height', 'closed',
+                if shape = 'yz': 'yzcount','ycoordinates','zcoordinates','closed',
                 if shape = 'zw': 'numlevels', 'levels', 'flowwidths','totalwidths',
-                'closed'.
+                    'closed','fricitonid', 'frictiontype', 'frictionvalue'
+                if shape = 'xyz': 'xyzcount','xcoordinates','ycoordinates',
+                    'zcoordinates','closed','frictionpositions'
                 if shape = 'zwRiver': Not Supported
                 Note that list input must be strings seperated by a whitespace ''.
             By default None, crosssections will be set from branches
@@ -1288,6 +1291,24 @@ class DFlowFMModel(MeshModel):
             gdf_cs = workflows.set_point_crosssections(
                 branches, gdf_cs, maxdist=self._network_snap_offset
             )
+
+        elif crosssections_type == "special":  # read from the output
+            # required columns
+
+            # Read the crosssection data
+            gdf_cs = self.data_catalog.get_geodataframe(
+                crosssections_fn,
+                geom=region,
+                buffer=100,
+                predicate="contains",
+            )
+            # assign id
+            id_col = "crsid"
+            gdf_cs.index = gdf_cs[id_col]
+            gdf_cs.index.name = id_col
+
+            # reproject to model crs
+            gdf_cs.to_crs(self.crs)
 
         else:
             raise NotImplementedError(
