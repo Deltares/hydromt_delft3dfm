@@ -1188,8 +1188,8 @@ class DFlowFMModel(MeshModel):
                 if shape = 'yz': 'yzcount','ycoordinates','zcoordinates',
                 if shape = 'zw': 'numlevels', 'levels', 'flowwidths','totalwidths',
                     'fricitonid', 'frictiontype', 'frictionvalue'
-                if shape = 'xyz': 'xyzcount','xcoordinates','ycoordinates',
-                    'zcoordinates','frictionpositions'
+                if shape = 'xyz': Not Supported, 
+                    xyz coordinates cannot be applied directly as profile
                 if shape = 'zwRiver': Not Supported
                 Note that list input must be strings seperated by a whitespace ''.
             By default None, crosssections will be set from branches
