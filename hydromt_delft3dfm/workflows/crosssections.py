@@ -600,13 +600,17 @@ def set_point_crosssections(
         return pd.DataFrame()
 
     # get branch friction (regard crosssections')
+    _friction_cols = ["frictionid", "frictiontype", "frictionvalue"]
     crosssections = crosssections.drop(
-        columns=["frictionid", "frictiontype", "frictionvalue"]
+        columns=[c for c in _friction_cols if c in crosssections.columns], 
     ).merge(
-        branches[["frictionid", "frictiontype", "frictionvalue"]],
+        branches[_friction_cols],
         left_on="branch_id",
         right_index=True,
     )
+    
+    # get "closed" in the correct format
+    crosssections["closed"].replace({1: "yes", 0: "no"}, inplace=True)
 
     # NOTE: below is removed because in case of multiple structures
     # at the same location,
@@ -654,7 +658,7 @@ def set_point_crosssections(
                 lambda x: "rect_h{:,.3f}_w{:,.3f}_c{:s}_{:s}".format(
                     x["height"],
                     x["width"],
-                    str(int(x["closed"])),
+                    x["closed"],
                     "point",
                 ),
                 axis=1,
@@ -682,7 +686,7 @@ def set_point_crosssections(
                     x["height"],
                     x["width"],
                     x["t_width"],
-                    str(int(x["closed"])),
+                    x["closed"],
                     "point",
                 ),
                 axis=1,
