@@ -207,6 +207,11 @@ def compute_boundary_values(
             overwrite=True,
         )
         gdf_bnd = gdf_bnd[~gdf_bnd["nodeid"].isna()]
+        if gdf_bnd.empty:
+            logging.error("Unable to snap boundaries to model boundries." +
+                          f"Try using snap_offset > {snap_offset}")
+            return None
+        
         da_bnd = da_bnd.sel(index=gdf_bnd.index)
 
         # get forcing data time indes
