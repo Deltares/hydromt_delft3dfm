@@ -1181,15 +1181,15 @@ class DFlowFMModel(MeshModel):
             * Optional variables:
             If ``crosssections_type`` = "point"
 
-            * Required variables: crsid, shape, shift
+            * Required variables: crsid, shape, shift, closed
             * Optional variables:
-                if shape = 'rectangle': 'width', 'height', 'closed',
-                if shape = 'trapezoid': 'width', 't_width', 'height', 'closed',
-                if shape = 'yz': 'yzcount','ycoordinates','zcoordinates','closed',
+                if shape = 'rectangle': 'width', 'height',
+                if shape = 'trapezoid': 'width', 't_width', 'height', 
+                if shape = 'yz': 'yzcount','ycoordinates','zcoordinates',
                 if shape = 'zw': 'numlevels', 'levels', 'flowwidths','totalwidths',
-                    'closed','fricitonid', 'frictiontype', 'frictionvalue'
+                    'fricitonid', 'frictiontype', 'frictionvalue'
                 if shape = 'xyz': 'xyzcount','xcoordinates','ycoordinates',
-                    'zcoordinates','closed','frictionpositions'
+                    'zcoordinates','frictionpositions'
                 if shape = 'zwRiver': Not Supported
                 Note that list input must be strings seperated by a whitespace ''.
             By default None, crosssections will be set from branches
@@ -2665,7 +2665,7 @@ class DFlowFMModel(MeshModel):
         if boundaries_fn is not None:
             gdf_bnd = self.data_catalog.get_geodataframe(
                 boundaries_fn,
-                geom=_boundary_region,
+                #geom=_boundary_region,
                 crs=self.crs,
                 predicate="contains",
             )
