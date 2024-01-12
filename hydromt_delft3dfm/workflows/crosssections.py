@@ -451,7 +451,16 @@ def set_xyz_crosssections(
             f"Crosssection with id: {list(set(_old_ids) - set(_new_ids))}"
             "are dropped: unable to find closest branch. "
         )
-
+    # setup failed due to invalid crosssections
+    xyzcounts = crosssections.x.map(len)
+    _invalid_ids = crosssections[xyzcounts<4].index
+    if not _invalid_ids.empty:
+        crosssections = crosssections.drop(_invalid_ids)
+        logger.warning(
+            f"Crosssection with id: {list(_invalid_ids)}"
+            "are dropped: invalid crosssections with less than 4 survery points. "
+        )
+        
     # setup crsdef from xyz
     crsdefs = pd.DataFrame(
         {
