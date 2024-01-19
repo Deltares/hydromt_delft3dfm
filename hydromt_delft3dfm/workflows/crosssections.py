@@ -955,7 +955,7 @@ def _set_yz_crs(crosssections: gpd.GeoDataFrame):
                 "crsdef_yzcount": c.yzcount,
                 "crsdef_ycoordinates": c.ycoordinates,
                 "crsdef_zcoordinates": c.zcoordinates,
-                "crsdef_frictionid": c.frictionid,
+                "crsdef_frictionids": c.frictionid,
                 "frictiontype": c.frictiontype,
                 "frictionvalue": c.frictionvalue,
             }
