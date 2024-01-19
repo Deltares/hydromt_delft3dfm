@@ -151,6 +151,8 @@ class DFlowFMModel(MeshModel):
             Global option for composition of the 1d network.
             By default 0.0 m.
         snap_newbranches_to_branches_at_snapnodes: bool, optional
+            Automatically snap newbranches to existing branches
+            using `network_snap_offset`.
             Global option for composition of the 1d network.
             By default True.
         openwater_computation_node_distance: float, optional
@@ -217,6 +219,7 @@ class DFlowFMModel(MeshModel):
         crosssections_type: str = None,
         spacing: int = None,
         snap_offset: float = 0.0,
+        maxdist: float = 1.0,
         allow_intersection_snapping: bool = True,
     ):
         """Prepare the 1D channels and adds to branches 1D network.
@@ -268,8 +271,12 @@ class DFlowFMModel(MeshModel):
             * Required variables: [crsid, order, z]
             By default None, crosssections will be set from branches
         crosssections_type : str, optional
-            Type of crosssections read from crosssections_fn. One of ["xyzpoints"].
+            Type of crosssections read from crosssections_fn. One of ["xyz", "point"].
             By default None.
+        maxdist: float, optional
+            Maximum distance allowed for crosssections to be applied on branches.
+            Only used for `crosssections_type` = point.
+            By default 1.0.
         snap_offset: float, optional
             Snapping tolerance to automatically connecting branches.
             By default 0.0, no snapping is applied.
@@ -343,6 +350,7 @@ class DFlowFMModel(MeshModel):
             region=region,
             crosssections_fn=crosssections_fn,
             crosssections_type=crosssections_type,
+            maxdist=maxdist,
         )
 
         # add crosssections to exisiting ones and update geoms
@@ -621,6 +629,7 @@ class DFlowFMModel(MeshModel):
             branches=rivers,
             crosssections_fn=None,
             crosssections_type="branch",
+            maxdist=maxdist,
         )
 
         # add crosssections to exisiting ones and update geoms
@@ -667,6 +676,7 @@ class DFlowFMModel(MeshModel):
         crosssections_fn: Union[int, list] = None,
         crosssections_type: Union[int, list] = None,
         snap_offset: float = 0.0,
+        maxdist: float = 1.0,
         allow_intersection_snapping: bool = True,
     ):
         """Prepare the 1D rivers and adds to 1D branches.
@@ -739,6 +749,10 @@ class DFlowFMModel(MeshModel):
             Type of crosssections read from crosssections_fn. One or a list of
             ["branch", "xyz", "point"].
             By default None.
+        maxdist: float, optional
+            Maximum distance allowed for crosssections to be applied on branches.
+            Only used for `crosssections_type` = point.
+            By default 1.0.
         snap_offset: float, optional
             Snapping tolerance to apply crosssections to nearest branch.
             By default 0.0, no snapping is applied.
@@ -811,6 +825,7 @@ class DFlowFMModel(MeshModel):
                 region=region,
                 crosssections_fn=crs_fn,
                 crosssections_type=crs_type,
+                maxdist=maxdist,
             )
             crosssections = workflows.add_crosssections(
                 self.geoms.get("crosssections"), crosssections
@@ -869,6 +884,7 @@ class DFlowFMModel(MeshModel):
         friction_value: float = 0.003,
         crosssections_shape: str = "circle",
         crosssections_value: Union[int, list] = 0.5,
+        maxdist: float = 1.0,
         dem_fn: Union[str, None] = None,
         pipes_depth: float = 2.0,
         pipes_invlev: float = -2.5,
@@ -953,6 +969,10 @@ class DFlowFMModel(MeshModel):
             (default with 0.5 m) [m]
             If ``crosssections_shape`` = "rectangle", expects a list with
             [width, height] (e.g. [1.0, 1.0]) [m]. closed rectangle by default.
+        maxdist: float, optional
+            Maximum distance allowed for crosssections to be applied on branches.
+            Only used for `crosssections_type` = point.
+            By default 1.0.
         dem_fn: str, optional
             Name of data source for dem data. Used to derive default invert levels
             values (DEM - pipes_depth - pipes diameter/height).
@@ -1095,6 +1115,7 @@ class DFlowFMModel(MeshModel):
             pipes,
             crosssections_type="branch",
             midpoint=False,
+            maxdist=maxdist,
         )
         # add crosssections to exisiting ones and update geoms
         self.logger.debug("Adding crosssections vector to geoms.")
@@ -1136,6 +1157,7 @@ class DFlowFMModel(MeshModel):
         crosssections_fn: str = None,
         crosssections_type: str = "branch",
         midpoint=True,
+        maxdist=1.0,
     ) -> gpd.GeoDataFrame:
         """Prepare 1D crosssections from branches, points and xyz.
 
@@ -1197,6 +1219,10 @@ class DFlowFMModel(MeshModel):
             Type of crosssections read from crosssections_fn. One of
             ['branch', 'xyz', 'point'].
             By default `branch`.
+        maxdist: float, optional
+            Maximum distance allowed for crosssections to be applied on branches.
+            Only used for `crosssections_type` = point.
+            By default 1.0.
 
         Returns
         -------
@@ -1289,7 +1315,7 @@ class DFlowFMModel(MeshModel):
             # set crsloc and crsdef attributes to crosssections
             self.logger.info(f"Preparing 1D point crossections from {crosssections_fn}")
             gdf_cs = workflows.set_point_crosssections(
-                branches, gdf_cs, maxdist=self._network_snap_offset
+                branches, gdf_cs, maxdist=maxdist
             )
 
         elif crosssections_type == "special":  # read from the output

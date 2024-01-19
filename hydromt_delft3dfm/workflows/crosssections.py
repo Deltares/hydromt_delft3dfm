@@ -453,14 +453,14 @@ def set_xyz_crosssections(
         )
     # setup failed due to invalid crosssections
     xyzcounts = crosssections.x.map(len)
-    _invalid_ids = crosssections[xyzcounts<4].index
+    _invalid_ids = crosssections[xyzcounts < 4].index
     if not _invalid_ids.empty:
         crosssections = crosssections.drop(_invalid_ids)
         logger.warning(
             f"Crosssection with id: {list(_invalid_ids)}"
             "are dropped: invalid crosssections with less than 4 survery points. "
         )
-        
+
     # setup crsdef from xyz
     crsdefs = pd.DataFrame(
         {
@@ -602,13 +602,13 @@ def set_point_crosssections(
     # get branch friction (regard crosssections')
     _friction_cols = ["frictionid", "frictiontype", "frictionvalue"]
     crosssections = crosssections.drop(
-        columns=[c for c in _friction_cols if c in crosssections.columns], 
+        columns=[c for c in _friction_cols if c in crosssections.columns],
     ).merge(
         branches[_friction_cols],
         left_on="branch_id",
         right_index=True,
     )
-    
+
     # get "closed" in the correct format
     crosssections["closed"].replace({1: "yes", 0: "no"}, inplace=True)
 
@@ -753,7 +753,8 @@ def set_point_crosssections(
     crosssections_["crsdef_thalweg"] = 0.0
 
     # support both string and boolean for closed column
-    crosssections_["crsdef_closed"].replace({"yes": 1, "no": 0}, inplace=True)
+    if "crsdef_closed" in crosssections_.columns:
+        crosssections_["crsdef_closed"].replace({"yes": 1, "no": 0}, inplace=True)
 
     crosssections_ = gpd.GeoDataFrame(crosssections_, crs=branches.crs)
 
@@ -981,6 +982,7 @@ def _set_yz_crs(crosssections: gpd.GeoDataFrame):
     crosssections_.index = crosssections.index
 
     return crosssections_
+
 
 def xyzp2xyzl(xyz: pd.DataFrame, sort_by: list = ["x", "y"]):
     """Convert xyz points to xyz lines.
