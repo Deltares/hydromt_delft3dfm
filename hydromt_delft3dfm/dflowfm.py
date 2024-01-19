@@ -119,8 +119,8 @@ class DFlowFMModel(MeshModel):
         data_libs: List[str] = [],  # yml
         crs: Union[int, str] = None,
         dimr_fn: str = None,
-        network_snap_offset=25,
-        snap_newbranches_to_branches_at_snapnodes=True,
+        network_snap_offset=0.0,
+        snap_newbranches_to_branches_at_snapnodes=False,
         openwater_computation_node_distance=40,
         logger=logger,
     ):
@@ -147,15 +147,15 @@ class DFlowFMModel(MeshModel):
             If None, default dimr configuration file is used.
             Default is None.
         network_snap_offset: float, optional
-            Global option for generation of the mesh1d network. Snapping tolerance to
-            automatically connecting branches.
-            By default 25 m.
+            Snapping tolerance to automatically connecting branches.
+            Global option for composition of the 1d network.
+            By default 0.0 m.
         snap_newbranches_to_branches_at_snapnodes: bool, optional
-            Global option for generation of the mesh1d network.
+            Global option for composition of the 1d network.
             By default True.
         openwater_computation_node_distance: float, optional
-            Global option for generation of the mesh1d network. Distance to generate
-            mesh1d nodes for open water system (rivers, channels). By default 40 m.
+            Distance to generate mesh1d nodes for open water system (rivers, channels).
+            Global option for the mesh1d network.  By default 40 m.
         logger
             The logger used to log messages.
         """
@@ -740,7 +740,7 @@ class DFlowFMModel(MeshModel):
             ["branch", "xyz", "point"].
             By default None.
         snap_offset: float, optional
-            Snapping tolerance to automatically connecting branches.
+            Snapping tolerance to apply crosssections to nearest branch.
             By default 0.0, no snapping is applied.
         allow_intersection_snapping: bool, optional
             Switch to choose whether snapping of multiple branch ends are allowed when
@@ -1184,11 +1184,11 @@ class DFlowFMModel(MeshModel):
             * Required variables: crsid, shape, shift, closed
             * Optional variables:
                 if shape = 'rectangle': 'width', 'height',
-                if shape = 'trapezoid': 'width', 't_width', 'height', 
+                if shape = 'trapezoid': 'width', 't_width', 'height',
                 if shape = 'yz': 'yzcount','ycoordinates','zcoordinates',
                 if shape = 'zw': 'numlevels', 'levels', 'flowwidths','totalwidths',
                     'fricitonid', 'frictiontype', 'frictionvalue'
-                if shape = 'xyz': Not Supported, 
+                if shape = 'xyz': Not Supported,
                     xyz coordinates cannot be applied directly as profile
                 if shape = 'zwRiver': Not Supported
                 Note that list input must be strings seperated by a whitespace ''.
@@ -2665,7 +2665,7 @@ class DFlowFMModel(MeshModel):
         if boundaries_fn is not None:
             gdf_bnd = self.data_catalog.get_geodataframe(
                 boundaries_fn,
-                #geom=_boundary_region,
+                # geom=_boundary_region,
                 crs=self.crs,
                 predicate="contains",
             )
