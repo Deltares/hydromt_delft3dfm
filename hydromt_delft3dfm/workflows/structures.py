@@ -143,9 +143,7 @@ def prepare_1dstructures(
         ]
     )
     # add to structures
-    gdf_st = gdf_st.merge(
-        gdf_st_crsdefs.drop(columns="geometry"), left_index=True, right_index=True
-    )
+    gdf_st = gdf_st.sjoin(gdf_st_crsdefs, how="left")
 
     # 6. replace np.nan as None
     gdf_st = gdf_st.replace(np.nan, None)
