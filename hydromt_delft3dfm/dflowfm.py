@@ -122,6 +122,7 @@ class DFlowFMModel(MeshModel):
         network_snap_offset=0.0,
         snap_newbranches_to_branches_at_snapnodes=False,
         openwater_computation_node_distance=40,
+        write_mesh_gdf=False,
         logger=logger,
     ):
         """Initialize the DFlowFMModel.
@@ -191,6 +192,7 @@ class DFlowFMModel(MeshModel):
         )
         self._openwater_computation_node_distance = openwater_computation_node_distance
         self._res = None
+        self._write_mesh_gdf = write_mesh_gdf
 
         # crs
         self._crs = CRS.from_user_input(crs) if crs else None
@@ -2446,6 +2448,12 @@ class DFlowFMModel(MeshModel):
             split_dataset=split_dataset,
         )
 
+        # force -999.0 as no data
+        for var in variables:
+            da = self.maps[var]
+            da.where(da == da.raster.nodata, -999.0)
+            self.set_maps(da, var)
+
         allowed_methods = [
             "triangulation",
             "mean",
@@ -2743,7 +2751,7 @@ class DFlowFMModel(MeshModel):
                     "time": pd.date_range(
                         start=pd.to_datetime(tstart),
                         end=pd.to_datetime(tstop),
-                        freq="D",
+                        freq="H",
                     )
                 }
             )
@@ -2794,7 +2802,7 @@ class DFlowFMModel(MeshModel):
         df_meteo = pd.DataFrame(
             {
                 "time": pd.date_range(
-                    start=pd.to_datetime(tstart), end=pd.to_datetime(tstop), freq="D"
+                    start=pd.to_datetime(tstart), end=pd.to_datetime(tstop), freq="H"
                 ),
                 "precip": constant_value,
             }
@@ -2927,7 +2935,7 @@ class DFlowFMModel(MeshModel):
         if self._maps:
             self.write_maps()
         if self._geoms:
-            self.write_geoms(write_mesh_gdf=False)
+            self.write_geoms(self._write_mesh_gdf)
         if self._mesh is not None or not self.branches.empty:
             self.write_mesh()
         if self._forcing:
@@ -3201,10 +3209,6 @@ class DFlowFMModel(MeshModel):
         if write_mesh_gdf:
             for name, gdf in self.mesh_gdf.items():
                 self.set_geoms(gdf, name)
-
-        # Write geojson equivalent of all objects.
-        # Note that these files are not directly used when updating the model
-        super().write_geoms(fn="geoms/{name}.geojson")
 
         # Write dfm files
         savedir = dirname(join(self.root, self._config_fn))
