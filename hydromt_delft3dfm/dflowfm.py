@@ -1521,6 +1521,134 @@ class DFlowFMModel(MeshModel):
         self.logger.debug("Adding manholes vector to geoms.")
         self.set_geoms(manholes, "manholes")
 
+    def setup_retentions(
+        self,
+        retentions_fn: str = None,
+        retention_defaults_fn: str = "retentions_defaults",
+        snap_offset: float = 1.0,
+    ):
+        """
+        Prepare the 1D retentions branches.
+
+        Can only be used after all branches are setup.
+
+        The retentions are read from ``retentions_fn``.
+
+        Use ``retentions_fn`` to set the retentions from a dataset of point locations.
+        Only locations within the model region are selected. They are snapped to the
+        model network nodes within a max distance defined in ``snap_offset``.
+        
+        #TODO: allow branch and chainage 
+
+        retention attributes ["numLevels", "levels", "storageArea", "interpolate"]
+        are either taken from ``retentions_fn`` or filled in using defaults in
+        ``retention_defaults_fn``.
+
+        Adds/Updates model layers:
+
+        * **retentions** geom: 1D retentions vector
+
+        Parameters
+        ----------
+        retentions_fn: str Path, optional
+            Path or data source name for retentions_fn see data/data_sources.yml.
+            Note only the points that are within the region polygon will be used.
+
+            * Optional variables: ["numLevels", "levels", "storageArea", "interpolate"]
+        retention_defaults_fn : str Path, optional
+            Path to a csv file containing all defaults values per "branchtype".
+            By default `hydrolib.hydromt_delft3dfm.data.storages.retentions_defaults.csv`
+            is used.
+
+            * Allowed variables: ["numLevels", "levels", "storageArea", "interpolate"]
+        snap_offset: float, optional
+            Snapping tolenrance to automatically connecting retentions to network nodes.
+            By default 0.001. Use a higher value if needed.
+        """
+        _allowed_columns = [
+            "geometry",
+            "id",
+            "name",
+            "nodeid",
+            "numlevels",
+            "levels",
+            "storagearea",
+            "interpolate",
+            "usetable",
+        ]
+
+
+        # read user manhole
+        if retentions_fn:
+            self.logger.info(f"reading retentions from {retentions_fn}. ")
+            # read
+            gdf_retentions = self.data_catalog.get_geodataframe(
+                retentions_fn,
+                geom=self.region,
+                buffer=self._network_snap_offset,
+                predicate="contains",
+            )
+            # reproject
+            if gdf_retentions.crs != self.crs:
+                gdf_retentions = gdf_retentions.to_crs(self.crs)
+            # set index
+            if "id" not in gdf_retentions:
+                gdf_retentions["id"] = [
+                    f"retention_{i}" for i in range(len(gdf_retentions))
+                ]
+            else:
+                gdf_retentions["id"] = gdf_retentions["id"].astype(str)
+            # filter for allowed columns
+            allowed_columns = set(_allowed_columns).intersection(gdf_retentions.columns)
+            self.logger.debug(
+                f'filtering for allowed columns:{",".join(allowed_columns)}'
+            )
+            gdf_retentions = gpd.GeoDataFrame(
+                gdf_retentions[list(allowed_columns)], crs=gdf_retentions.crs
+            )
+            # add defaults
+            gdf_retentions["branchtype"] = 'river'
+            defaults = self.data_catalog.get_dataframe(retention_defaults_fn)
+            gdf_retentions = workflows.update_data_columns_attributes(gdf_retentions, defaults) 
+            if len(gdf_retentions) == 0:
+                self.logger.error("No retention ponds were setup.")
+                return None
+        else:
+            return None
+
+        if len(gdf_retentions) > 0:
+
+            # add nodeid to retentions
+            network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
+                self.mesh_datasets["network1d"]
+            )
+            retentions = hydromt.gis_utils.nearest_merge(
+                gdf_retentions, network1d_nodes, 
+                max_dist=snap_offset, 
+                overwrite=False
+            )
+            # drop not snapped
+            retentions = retentions[~retentions["nodeid"].isna()]
+            self.logger.info(f'Drop {retentions[retentions["nodeid"].isna()]},'
+                              +
+                              "probabaly due to not close to a network node")
+            # drop duplicated nodeid
+            self.logger.debug("dropping duplicated retentions")
+            retentions.drop_duplicates(subset=["nodeid"])
+            
+            # add additional required columns
+            retentions["name"] = retentions["id"]
+            retentions["usetable"] = True
+            retentions["numlevels"] = retentions['levels'].apply(lambda x: len(x.split()))
+
+            retentions = gpd.GeoDataFrame(
+                retentions[list(_allowed_columns)], crs=gdf_retentions.crs
+            )
+
+            # setup geoms
+            self.logger.debug("Adding retentions vector to geoms.")
+            self.set_geoms(retentions, "retentions")
+
     def setup_1dboundary(
         self,
         boundaries_geodataset_fn: str = None,
@@ -3228,11 +3356,17 @@ class DFlowFMModel(MeshModel):
             self.set_config("geometry.frictfile", ";".join(friction_fns))
 
         # Write structures
-        # Manholes
+        # storages
+        gdf_storage = pd.DataFrame()
         if "manholes" in self._geoms:
+            gdf_storage= pd.concat([gdf_storage, self.geoms["manholes"]])
             self.logger.info("Writting manholes file.")
+        if "retentions" in self._geoms:
+            gdf_storage = pd.concat([gdf_storage, self.geoms["retentions"]])
+            self.logger.info("Writting retention file.")
+        if len(gdf_storage)>0:
             storage_fn = utils.write_manholes(
-                self.geoms["manholes"],
+                gdf_storage,
                 savedir,
             )
             self.set_config("geometry.storagenodefile", storage_fn)
@@ -3659,6 +3793,7 @@ class DFlowFMModel(MeshModel):
     @property
     def boundaries(self):
         """1D boundary locations."""
+        # FIXME: preliminary boundaries should not be written as geoms
         if "boundaries" not in self.geoms:
             self.set_geoms(
                 workflows.get_boundaries_with_nodeid(
