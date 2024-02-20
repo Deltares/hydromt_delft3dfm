@@ -308,8 +308,8 @@ class DFlowFMModel(MeshModel):
             "height",
             "bedlev",
             "closed",
-            "friction_type",
-            "friction_value",
+            "frictiontype",
+            "frictionvalue",
         ]
 
         # Read data and filter within region
@@ -783,8 +783,8 @@ class DFlowFMModel(MeshModel):
             "height",
             "bedlev",
             "closed",
-            "friction_type",
-            "friction_value",
+            "frictiontype",
+            "frictionvalue",
         ]
 
         # Read data and filter within region
@@ -1537,8 +1537,8 @@ class DFlowFMModel(MeshModel):
         Use ``retentions_fn`` to set the retentions from a dataset of point locations.
         Only locations within the model region are selected. They are snapped to the
         model network nodes within a max distance defined in ``snap_offset``.
-        
-        #TODO: allow branch and chainage 
+
+        #TODO: allow branch and chainage
 
         retention attributes ["numLevels", "levels", "storageArea", "interpolate"]
         are either taken from ``retentions_fn`` or filled in using defaults in
@@ -1577,7 +1577,6 @@ class DFlowFMModel(MeshModel):
             "usetable",
         ]
 
-
         # read user manhole
         if retentions_fn:
             self.logger.info(f"reading retentions from {retentions_fn}. ")
@@ -1607,9 +1606,11 @@ class DFlowFMModel(MeshModel):
                 gdf_retentions[list(allowed_columns)], crs=gdf_retentions.crs
             )
             # add defaults
-            gdf_retentions["branchtype"] = 'river'
+            gdf_retentions["branchtype"] = "river"
             defaults = self.data_catalog.get_dataframe(retention_defaults_fn)
-            gdf_retentions = workflows.update_data_columns_attributes(gdf_retentions, defaults) 
+            gdf_retentions = workflows.update_data_columns_attributes(
+                gdf_retentions, defaults
+            )
             if len(gdf_retentions) == 0:
                 self.logger.error("No retention ponds were setup.")
                 return None
@@ -1623,23 +1624,24 @@ class DFlowFMModel(MeshModel):
                 self.mesh_datasets["network1d"]
             )
             retentions = hydromt.gis_utils.nearest_merge(
-                gdf_retentions, network1d_nodes, 
-                max_dist=snap_offset, 
-                overwrite=False
+                gdf_retentions, network1d_nodes, max_dist=snap_offset, overwrite=False
             )
             # drop not snapped
             retentions = retentions[~retentions["nodeid"].isna()]
-            self.logger.info(f'Drop {retentions[retentions["nodeid"].isna()]},'
-                              +
-                              "probabaly due to not close to a network node")
+            self.logger.info(
+                f'Drop {retentions[retentions["nodeid"].isna()]},'
+                + "probabaly due to not close to a network node"
+            )
             # drop duplicated nodeid
             self.logger.debug("dropping duplicated retentions")
             retentions.drop_duplicates(subset=["nodeid"])
-            
+
             # add additional required columns
             retentions["name"] = retentions["id"]
             retentions["usetable"] = True
-            retentions["numlevels"] = retentions['levels'].apply(lambda x: len(x.split()))
+            retentions["numlevels"] = retentions["levels"].apply(
+                lambda x: len(x.split())
+            )
 
             retentions = gpd.GeoDataFrame(
                 retentions[list(_allowed_columns)], crs=gdf_retentions.crs
@@ -1870,12 +1872,14 @@ class DFlowFMModel(MeshModel):
             laterals_geodataset_fn, "lateral_discharge", snap_offset
         )
 
-        # snap laterlas to selected branches
+        # snap laterals to selected branches
         gdf_laterals = workflows.snap_geom_to_branches_and_drop_nonsnapped(
             branches=network_by_branchtype.set_index("branchid"),
             geoms=gdf_laterals,
             snap_offset=snap_offset,
         )
+        # drop nonsnapped in da
+        da_lat = da_lat.sel(index=gdf_laterals.index)
 
         if len(gdf_laterals) == 0:
             return None
@@ -3128,12 +3132,16 @@ class DFlowFMModel(MeshModel):
         # inifield_model_1d = [
         #     i for i in inifield_model.initial if "1d" in i.locationtype
         # ] # not supported yet
-        inifield_model_2dinitial = [
-            i for i in inifield_model.initial if "2d" in i.locationtype
-        ] if inifield_model else []
-        inifield_model_2dparameter = [
-            i for i in inifield_model.parameter if "2d" in i.locationtype
-        ] if inifield_model else []
+        inifield_model_2dinitial = (
+            [i for i in inifield_model.initial if "2d" in i.locationtype]
+            if inifield_model
+            else []
+        )
+        inifield_model_2dparameter = (
+            [i for i in inifield_model.parameter if "2d" in i.locationtype]
+            if inifield_model
+            else []
+        )
         inifield_model_2d = inifield_model_2dinitial + inifield_model_2dparameter
         if any(inifield_model_2d):
             # Loop over initial / parameter to read the geotif
@@ -3359,12 +3367,12 @@ class DFlowFMModel(MeshModel):
         # storages
         gdf_storage = pd.DataFrame()
         if "manholes" in self._geoms:
-            gdf_storage= pd.concat([gdf_storage, self.geoms["manholes"]])
+            gdf_storage = pd.concat([gdf_storage, self.geoms["manholes"]])
             self.logger.info("Writting manholes file.")
         if "retentions" in self._geoms:
             gdf_storage = pd.concat([gdf_storage, self.geoms["retentions"]])
             self.logger.info("Writting retention file.")
-        if len(gdf_storage)>0:
+        if len(gdf_storage) > 0:
             storage_fn = utils.write_manholes(
                 gdf_storage,
                 savedir,
