@@ -860,14 +860,21 @@ def _set_trapezoid_crs(crosssections: gpd.GeoDataFrame):
     crsdefs = []
     crslocs = []
     for c in crosssections.itertuples():
-        levels = f"0 {c.height:.6f}"
-        flowwidths = f"{c.width:.6f} {c.t_width:.6f}"
+        # add closed crosssection definition
+        if c.closed == "yes":
+            levels = f"0 {c.height:.6f} {c.height+0.01:.6f}"
+            flowwidths = f"{c.width:.6f} {c.t_width:.6f} 0"
+            numlevels = 3
+        else:
+            levels = f"0 {c.height:.6f}"
+            flowwidths = f"{c.width:.6f} {c.t_width:.6f}"
+            numlevels = 3
         crsdefs.append(
             {
                 "crsdef_id": c.definitionid,
                 "crsdef_type": "zw",
                 "crsdef_branchid": c.branch_id,
-                "crsdef_numlevels": 2,
+                "crsdef_numlevels": numlevels,
                 "crsdef_levels": levels,
                 "crsdef_flowwidths": flowwidths,
                 "crsdef_totalwidths": flowwidths,
