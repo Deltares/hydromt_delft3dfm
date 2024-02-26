@@ -258,7 +258,6 @@ def mesh2d_refine(
         )
         # get steps
         steps = int(zv.max())
-        # refine parameters
         parameters = mk.MeshRefinementParameters(
             refinement_type=2,
             max_refinement_iterations=steps,
@@ -266,7 +265,9 @@ def mesh2d_refine(
             account_for_samples_outside_face=False,
             connect_hanging_nodes=True,
             refine_intersected=False,
-            use_mass_center_when_refining=False,
+            use_mass_center_when_refining=True,
+            smoothing_iterations=0,
+            max_courant_time=60,
         )
         # refine assuming sample spacing is the same as end result resolution
         # (hence relative_search_radius=1, minimum_num_samples=1 )
