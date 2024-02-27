@@ -1,0 +1,16 @@
+global:
+  crs: 32647
+  
+setup_urban_sewer_network_from_osm:
+  region:
+    geom: 
+      "urbansewer_data/region.geojson"
+  dem_fn: dem
+  landuse_fn: vito
+  landuse_reclass_fn: vito_mapping
+  method_cost: length
+  pipe_depth: 0.5
+  assumption_rainfall_intensity: 40
+  assumption_flow_velocity: 1
+  rainfall_stats_fn: gpex
+

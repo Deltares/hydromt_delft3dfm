@@ -29,6 +29,14 @@ _models = {
         "snap_offset": 25,
         "crs": 32647,  # global section needs to be passed to build as arguments
     },
+    "urbansewernetwork": {
+        "example": "dflowfm_urbansewernetwork",
+        "ini": "dflowfm_build_urbansewernetwork.yml",
+        "model": DFlowFMModel,
+        "data": join(TESTDATADIR, "test_data.yaml"),
+        "snap_offset": 25,
+        "crs": 32647,
+    },
 }
 
 

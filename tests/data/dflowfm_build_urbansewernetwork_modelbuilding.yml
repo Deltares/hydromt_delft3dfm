@@ -1,0 +1,22 @@
+global:
+  crs: 32647
+  snap_newbranches_to_branches_at_snapnodes: False
+  network_snap_offset: 0.
+  
+setup_rivers: 
+  region:
+    geom: "urbansewer_data/region_river.geojson"
+  rivers_fn: urbansewernetwork_rivers
+  river_filter: river
+
+setup_pipes:
+  pipes_fn: urbansewernetwork_pipes
+  pipe_filter: pipe
+  friction_type: WhiteColeBrook
+  friction_value: 0.003
+  region:
+    geom: "urbansewer_data/region.geojson"
+  spacing: 50
+
+setup_manholes:
+  bedlevel_shift: -0.5
