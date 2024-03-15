@@ -145,7 +145,7 @@ def mesh1d_add_branch(
         branch = Branch(
             geometry=np.array(round_geometry(line).coords[:])
         )  # avoid error caused by rounding precision
-        branch.generate_nodes(node_distance)  # change here if structure needs nodes
+        branch.generate_nodes(node_distance) # change here if structure needs nodes
         branchid = network.mesh1d_add_branch(
             branch,
             name=branch_name,
