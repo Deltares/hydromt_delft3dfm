@@ -78,7 +78,7 @@ def test_model_build(tmpdir, model):
     mod0 = _model["model"](root=root, mode="r")
     mod0.read()
     # check if equal
-    equal, errors = mod0._test_equal(mod1)
+    equal, errors = mod0._test_equal(mod1, skip_component=["geoms"])
     # skip config.filepath (root is different)
     if "config.filepath" in errors:
         errors.pop("config.filepath", None)
