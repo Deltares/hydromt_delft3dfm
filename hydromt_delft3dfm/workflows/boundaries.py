@@ -208,10 +208,12 @@ def compute_boundary_values(
         )
         gdf_bnd = gdf_bnd[~gdf_bnd["nodeid"].isna()]
         if gdf_bnd.empty:
-            logging.error("Unable to snap boundaries to model boundries." +
-                          f"Try using snap_offset > {snap_offset}")
+            logging.error(
+                "Unable to snap boundaries to model boundries."
+                + f"Try using snap_offset > {snap_offset}"
+            )
             return None
-        
+
         da_bnd = da_bnd.sel(index=gdf_bnd.index)
 
         # get forcing data time indes
@@ -324,7 +326,7 @@ def compute_2dboundary_values(
     else:
         # prepare boundary data
         # get data freq in seconds
-        _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
+        _TIMESTR = {"D": "days", "H": "hours", "min": "minutes", "S": "seconds"}
         dt = df_bnd.time[1] - df_bnd.time[0]
         freq = dt.resolution_string
         multiplier = 1
@@ -513,7 +515,7 @@ def compute_meteo_forcings(
 
     logger.info("Preparing global (spatially uniform) timeseries.")
     # get data freq in seconds
-    _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
+    _TIMESTR = {"D": "days", "H": "hours", "min": "minutes", "S": "seconds"}
     dt = df_meteo.time[1] - df_meteo.time[0]
     freq = dt.resolution_string
     multiplier = 1
@@ -564,7 +566,7 @@ def compute_meteo_forcings(
 
 def _standardize_forcing_timeindexes(da):
     """Standardize timeindexes frequency based on forcing DataArray."""
-    _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
+    _TIMESTR = {"D": "days", "H": "hours", "min": "minutes", "S": "seconds"}
     dt = pd.to_timedelta((da.time[1].values - da.time[0].values))
     freq = dt.resolution_string
     multiplier = 1

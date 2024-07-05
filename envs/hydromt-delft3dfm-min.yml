@@ -8,19 +8,19 @@ channels:
 dependencies:
   - flit>=3.4
   - geopandas
-  - hydromt>= 0.9.0
+  - hydromt=0.9.*
   - numpy
-  - pandas
+  - pandas=2.1.*
   - pip
-  - pyflwdir >=0.5.4
+  - pyflwdir>=0.5.4
   - pyproj
-  - python=3.9.*
+  - python=3.11.*
   - scipy
   - shapely>=2.0.0
   - xarray
   - networkx
   - llvmlite>=0.39.1 # hydrolib-core
   - pip:
-      - hydrolib-core>=0.6.0
-      - xugrid>=0.7.1
-      - meshkernel>=3.0.0
+      - hydrolib-core==0.6.0
+      - xugrid==0.7.1
+      - meshkernel==3.0.0

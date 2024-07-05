@@ -421,6 +421,16 @@ def set_xyz_crosssections(
     crosssections.loc[:, "z"] = crosssections.z
     crosssections.loc[:, "order"] = crosssections.loc[:, "order"].astype("int")
 
+    # setup failed due to invalid crosssections
+    xyzcounts = crosssections.groupby(level=0)["crsid"].apply(np.count_nonzero)
+    _invalid_ids = crosssections[xyzcounts < 4].index
+    if not _invalid_ids.empty:
+        crosssections = crosssections.drop(_invalid_ids)
+        logger.warning(
+            f"Crosssection with id: {list(_invalid_ids)}"
+            "are dropped: invalid crosssections with less than 4 survery points. "
+        )
+
     # convert xyz crosssection into yz profile
     crosssections = crosssections.groupby(level=0).apply(xyzp2xyzl, (["order"]))
     crosssections.crs = branches.crs
@@ -450,15 +460,6 @@ def set_xyz_crosssections(
         logger.warning(
             f"Crosssection with id: {list(set(_old_ids) - set(_new_ids))}"
             "are dropped: unable to find closest branch. "
-        )
-    # setup failed due to invalid crosssections
-    xyzcounts = crosssections.x.map(len)
-    _invalid_ids = crosssections[xyzcounts < 4].index
-    if not _invalid_ids.empty:
-        crosssections = crosssections.drop(_invalid_ids)
-        logger.warning(
-            f"Crosssection with id: {list(_invalid_ids)}"
-            "are dropped: invalid crosssections with less than 4 survery points. "
         )
 
     # setup crsdef from xyz
