@@ -1,6 +1,6 @@
 ---
 # note that these are the developer dependencies
-name: hydromt-delft3dfm
+name: hydromt-delft3dfm-santacruz-20240729
 
 channels:
   - conda-forge
@@ -8,7 +8,7 @@ channels:
 dependencies:
   - flit>=3.4
   - geopandas
-  - hydromt=0.9.*
+  - hydromt=0.9.0
   - numpy
   - pandas=2.1.*
   - pip
@@ -21,6 +21,6 @@ dependencies:
   - networkx
   - llvmlite>=0.39.1 # hydrolib-core
   - pip:
-      - hydrolib-core==0.6.0
+      - hydrolib-core==0.6.1
       - xugrid==0.7.1
       - meshkernel==3.0.0
