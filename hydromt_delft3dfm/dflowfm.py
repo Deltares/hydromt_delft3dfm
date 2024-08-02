@@ -2928,6 +2928,7 @@ class DFlowFMModel(MeshModel):
         mdu_fn = Path(join(self.root, self._config_fn))
         cwd = os.getcwd()
         os.chdir(dirname(mdu_fn))
+        print(cf_dict)
         mdu = FMModel(**cf_dict)
         # add filepath
         mdu.filepath = mdu_fn
