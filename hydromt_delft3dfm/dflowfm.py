@@ -2928,7 +2928,6 @@ class DFlowFMModel(MeshModel):
         mdu_fn = Path(join(self.root, self._config_fn))
         cwd = os.getcwd()
         os.chdir(dirname(mdu_fn))
-        print(cf_dict)
         mdu = FMModel(**cf_dict)
         # add filepath
         mdu.filepath = mdu_fn
@@ -3058,7 +3057,7 @@ class DFlowFMModel(MeshModel):
                     # update config if friction
                     if "frictype" in self._MAPS[name]:
                         self.set_config(
-                            "physics.UniFrictType", self._MAPS[name]["frictype"]
+                            "physics.UnifFrictType", self._MAPS[name]["frictype"]
                         )
                     # update config if infiltration
                     if name == "infiltcap":
@@ -3071,7 +3070,7 @@ class DFlowFMModel(MeshModel):
                         # update config if frcition
                         if "frictype" in self._MAPS[name]:
                             self.set_config(
-                                "physics.UniFrictType", self._MAPS[name]["frictype"]
+                                "physics.UnifFrictType", self._MAPS[name]["frictype"]
                             )
                         # update config if infiltration
                         if name == "infiltcap":

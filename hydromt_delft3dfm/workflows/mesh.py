@@ -507,7 +507,7 @@ def links1d2d_add_links_2d_to_1d_embedded(
     mpgl = GeometryList(*faces2d.T.copy())
     idx = np.zeros(len(faces2d), dtype=bool)
     if isinstance(area, MultiPolygon):
-        area = [a for a in area]
+        area = list(area.geoms)
     else:
         area = [area]
     for subarea in area:
