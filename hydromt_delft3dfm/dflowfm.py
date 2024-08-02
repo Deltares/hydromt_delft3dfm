@@ -337,7 +337,7 @@ class DFlowFMModel(MeshModel):
         if crosssections_type is None:
             crosssections_type = "branch"
             # TODO: maybe assign a specific one for river, like branch_river
-        assert {crosssections_type}.issubset({"xyzpoints", "branch"})
+        assert {crosssections_type}.issubset({"xyz", "point", "branch"})
         crosssections = self._setup_crosssections(
             branches=channels,
             region=region,
