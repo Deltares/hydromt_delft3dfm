@@ -9,6 +9,7 @@ import numpy as np
 import xarray as xr
 import xugrid as xu
 from hydrolib.core.dflowfm import Branch, Network
+from hydrolib.core.dflowfm.net.models import split_by
 from meshkernel import GeometryList
 from shapely.geometry import (
     LineString,
@@ -321,12 +322,12 @@ def round_geometry(geometry, rounding_precision: int = 6):
     return loads(dumps(geometry, rounding_precision=rounding_precision))
 
 
-# below function is a copy of functions from hydrolib, to avoid installation error.
-
-
+# The function below is an altered version of the from_polygon method from hydrolib
+# hydrolib > dhydamo > geometry > models.py > GeometryList > from_polygon
+# hydrolib uses class methods to access the inner_outer_separator; here an object is used
 def polygon_to_geometrylist(polygon):
     # Create a list of coordinate lists
-    cls = GeometryList
+    geometrylist = GeometryList()
     # Add exterior
     x_ext, y_ext = np.array(polygon.exterior.coords[:]).T
     x_crds = [x_ext]
@@ -334,13 +335,29 @@ def polygon_to_geometrylist(polygon):
     # Add interiors, seperated by inner_outer_separator
     for interior in polygon.interiors:
         x_int, y_int = np.array(interior.coords[:]).T
-        x_crds.append([cls.inner_outer_separator])
+        x_crds.append([geometrylist.inner_outer_separator])
         x_crds.append(x_int)
-        y_crds.append([cls.inner_outer_separator])
+        y_crds.append([geometrylist.inner_outer_separator])
         y_crds.append(y_int)
-    gl = cls(x_coordinates=np.concatenate(x_crds), y_coordinates=np.concatenate(y_crds))
+    gl = GeometryList(x_coordinates=np.concatenate(x_crds), y_coordinates=np.concatenate(y_crds))
     return gl
 
+# The function below is an altered version of the from_polygon method from hydrolib
+# hydrolib > dhydamo > geometry > models.py > GeometryList > _to_polygon, to_geometry
+def polygon_to_geometry(geometrylist):
+    geometries = [
+        geo
+        for geo in split_by(geometrylist, geometrylist.geometry_separator)
+        if geo.x_coordinates.size > 0
+    ]
+    polygons = []
+    for geometry in geometries:
+        parts = [
+            np.stack([p.x_coordinates, p.y_coordinates], axis=1)
+            for p in split_by(geometry, geometrylist.inner_outer_separator)
+        ]
+        polygons.append(Polygon(shell=parts[0], holes=parts[1:]))
+    return MultiPolygon(polygons)  
 
 def links1d2d_add_links_1d_to_2d(
     mesh: xu.UgridDataset,
@@ -533,7 +550,7 @@ def links1d2d_add_links_2d_to_1d_embedded(
 
     # Generate links
     network._link1d2d.meshkernel.contacts_compute_with_points(
-        node_mask=node_mask, points=multipoint
+        node_mask=node_mask, polygons=multipoint
     )
     network._link1d2d._process()
 
@@ -586,9 +603,9 @@ def links1d2d_add_links_2d_to_1d_lateral(
     """
     # Initialise hydrolib network object
     network = mutils.hydrolib_network_from_mesh(mesh)
-
+    print(within)
     geometrylist = network.meshkernel.mesh2d_get_mesh_boundaries_as_polygons()
-    mpboundaries = GeometryList(**geometrylist.__dict__).to_geometry()
+    mpboundaries = polygon_to_geometry(geometrylist)
     if within is not None:
         # If a 'within' polygon was provided, get the intersection with
         # the meshboundaries and convert it to a geometrylist
@@ -609,15 +626,14 @@ def links1d2d_add_links_2d_to_1d_lateral(
     network._link1d2d._link_from_2d_to_1d_lateral(
         node_mask, polygon=geometrylist, search_radius=max_length
     )
-
     # If the provided distance factor was None,
     # no further selection is needed, all links are kept.
-    if dist_factor is None:
-        return
+    if dist_factor is None or dist_factor == 'None':
+        link1d2d = mutils.links1d2d_from_hydrolib_network(network)
+        return link1d2d
 
     # Create multilinestring
     multilinestring = MultiLineString([poly.exterior for poly in mpboundaries.geoms])
-
     # Find the links that intersect the boundary close to the origin
     id1d = network._link1d2d.link1d2d[npresent:, 0]
     id2d = network._link1d2d.link1d2d[npresent:, 1]
