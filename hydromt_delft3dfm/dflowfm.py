@@ -215,7 +215,7 @@ class DFlowFMModel(MeshModel):
         friction_value: float = 0.023,
         crosssections_fn: str = None,
         crosssections_type: str = None,
-        spacing: int = None,
+        spacing: float = np.inf,
         snap_offset: float = 0.0,
         allow_intersection_snapping: bool = True,
     ):
