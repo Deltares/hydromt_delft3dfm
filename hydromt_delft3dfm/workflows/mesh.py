@@ -324,7 +324,7 @@ def round_geometry(geometry, rounding_precision: int = 6):
 
 # The function below is an altered version of the from_polygon method from hydrolib
 # hydrolib > dhydamo > geometry > models.py > GeometryList > from_polygon
-# hydrolib uses class methods to access the inner_outer_separator; here an object is used
+# hydrolib uses class methods to access inner_outer_separator; here an object is used
 def polygon_to_geometrylist(polygon):
     # Create a list of coordinate lists
     geometrylist = GeometryList()
