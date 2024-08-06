@@ -339,8 +339,11 @@ def polygon_to_geometrylist(polygon):
         x_crds.append(x_int)
         y_crds.append([geometrylist.inner_outer_separator])
         y_crds.append(y_int)
-    gl = GeometryList(x_coordinates=np.concatenate(x_crds), y_coordinates=np.concatenate(y_crds))
+    gl = GeometryList(
+        x_coordinates=np.concatenate(x_crds), y_coordinates=np.concatenate(y_crds)
+    )
     return gl
+
 
 # The function below is an altered version of the from_polygon method from hydrolib
 # hydrolib > dhydamo > geometry > models.py > GeometryList > _to_polygon, to_geometry
@@ -357,7 +360,8 @@ def polygon_to_geometry(geometrylist):
             for p in split_by(geometry, geometrylist.inner_outer_separator)
         ]
         polygons.append(Polygon(shell=parts[0], holes=parts[1:]))
-    return MultiPolygon(polygons)  
+    return MultiPolygon(polygons)
+
 
 def links1d2d_add_links_1d_to_2d(
     mesh: xu.UgridDataset,
@@ -628,7 +632,7 @@ def links1d2d_add_links_2d_to_1d_lateral(
     )
     # If the provided distance factor was None,
     # no further selection is needed, all links are kept.
-    if dist_factor is None or dist_factor == 'None':
+    if dist_factor is None or dist_factor == "None":
         link1d2d = mutils.links1d2d_from_hydrolib_network(network)
         return link1d2d
 
