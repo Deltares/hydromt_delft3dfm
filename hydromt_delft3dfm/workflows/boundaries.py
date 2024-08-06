@@ -2,6 +2,7 @@
 
 import logging
 from pathlib import Path
+from packaging.version import parse
 
 import geopandas as gpd
 import hydromt.io
@@ -25,6 +26,11 @@ __all__ = [
     "compute_forcing_values_polygon",
     "get_geometry_coords_for_polygons",
 ]
+
+if parse(pd.__version__) >= parse("2.2.0"):
+    _TIMESTR = {"D": "days", "h": "hours", "min": "minutes", "s": "seconds"}
+else:
+    _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
 
 
 def get_boundaries_with_nodeid(
@@ -319,7 +325,7 @@ def compute_2dboundary_values(
     else:
         # prepare boundary data
         # get data freq in seconds
-        _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
+
         dt = df_bnd.time[1] - df_bnd.time[0]
         freq = dt.resolution_string
         multiplier = 1
@@ -508,7 +514,6 @@ def compute_meteo_forcings(
 
     logger.info("Preparing global (spatially uniform) timeseries.")
     # get data freq in seconds
-    _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
     dt = df_meteo.time[1] - df_meteo.time[0]
     freq = dt.resolution_string
     multiplier = 1
@@ -559,7 +564,6 @@ def compute_meteo_forcings(
 
 def _standardize_forcing_timeindexes(da):
     """Standardize timeindexes frequency based on forcing DataArray."""
-    _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
     dt = pd.to_timedelta((da.time[1].values - da.time[0].values))
     freq = dt.resolution_string
     multiplier = 1
