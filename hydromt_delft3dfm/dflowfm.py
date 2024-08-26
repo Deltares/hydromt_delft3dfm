@@ -3137,7 +3137,7 @@ class DFlowFMModel(MeshModel):
             for st_type in structures["type"].unique():
                 self.set_geoms(structures[structures["type"] == st_type], f"{st_type}s")
 
-    def write_geoms(self, write_mesh_gdf=True) -> None:
+    def write_geoms(self, write_mesh_gdf=False) -> None:
         """Write model geometries to a GeoJSON file at <root>/<geoms>."""
         self._assert_write_mode()
 
