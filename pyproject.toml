@@ -11,7 +11,7 @@ authors = [
 	{ name = "Jelmer Veenstra", email = "jelmer.veenstra@deltares.nl" },
 ]
 dependencies = [
-	"hydromt==0.10.0",
+	"hydromt>=0.10.0, <0.15",
 	"geopandas>=0.10, <1",
 	"numpy<2",
 	"pandas>=2.2.0",
