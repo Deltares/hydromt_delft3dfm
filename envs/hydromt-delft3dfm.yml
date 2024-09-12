@@ -9,29 +9,32 @@ dependencies:
   - black # linting
   - cartopy # to run examples
   - flit>=3.4
+  - geopandas<1
   - jupyter # to run examples
   - matplotlib # to run examples
-  - hydromt>= 0.9.0
+  - hydromt==0.10.0
   - nbsphinx # docs notebook examples
-  - numpy
-  - pandas
+  - numpy<2
+  - pandas>=2.2.0
   - pip
   - pre-commit # linting
   - pydata-sphinx-theme # docs
+  - pyogrio<0.8
   - pyproj
   - pytest # tests
   - pytest-cov # tests
   - pytest-mock # tests
   - pytest-timeout # test
+  - python<=3.11
   - responses # tests
   - ruff # linting
   - shapely>=2.0.0
   - sphinx # docs
   - sphinx-design # docs
-  - xarray
+  - xarray<=2024.3.0
+  - xugrid>=0.9.0
   - networkx
   - llvmlite>=0.39.1 # hydrolib-core
   - pip:
-      - hydrolib-core>=0.6.0
-      - xugrid>=0.7.1
+      - hydrolib-core>=0.6.1,<0.8
       - meshkernel>=3.0.0
