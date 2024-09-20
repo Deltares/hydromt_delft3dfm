@@ -13,10 +13,6 @@ from hydromt_delft3dfm import graph_utils
 
 logger = logging.getLogger(__name__)
 
-_TIMESTR = {"D": "days", "h": "hours", "min": "minutes", "s": "seconds",
-            "H": "hours", "S": "seconds", # support for pandas<2.2.0
-            }
-
 __all__ = [
     "get_boundaries_with_nodeid",
     "select_boundary_type",
@@ -28,6 +24,14 @@ __all__ = [
     "compute_forcing_values_polygon",
     "get_geometry_coords_for_polygons",
 ]
+
+_TIMESTR = {"D": "days",
+            "h": "hours",
+            "min": "minutes",
+            "s": "seconds",
+            "H": "hours", # support for pandas<2.2.0
+            "S": "seconds", # support for pandas<2.2.0
+            }
 
 
 def get_boundaries_with_nodeid(
