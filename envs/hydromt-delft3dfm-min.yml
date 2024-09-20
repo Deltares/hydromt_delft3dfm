@@ -10,7 +10,7 @@ dependencies:
   - geopandas<1
   - hydromt==0.10.0
   - numpy<2
-  - pandas
+  - pandas>=2.0.0
   - pip
   - pyflwdir >=0.5.4
   - pyproj

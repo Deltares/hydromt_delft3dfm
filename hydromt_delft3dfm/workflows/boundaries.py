@@ -13,6 +13,9 @@ from hydromt_delft3dfm import graph_utils
 
 logger = logging.getLogger(__name__)
 
+_TIMESTR = {"D": "days", "h": "hours", "min": "minutes", "s": "seconds",
+            "H": "hours", "S": "seconds", # support for pandas<2.2.0
+            }
 
 __all__ = [
     "get_boundaries_with_nodeid",
@@ -319,7 +322,6 @@ def compute_2dboundary_values(
     else:
         # prepare boundary data
         # get data freq in seconds
-        _TIMESTR = {"D": "days", "h": "hours", "min": "minutes", "s": "seconds"}
         dt = df_bnd.time[1] - df_bnd.time[0]
         freq = dt.resolution_string
         multiplier = 1
@@ -508,7 +510,6 @@ def compute_meteo_forcings(
 
     logger.info("Preparing global (spatially uniform) timeseries.")
     # get data freq in seconds
-    _TIMESTR = {"D": "days", "h": "hours", "min": "minutes", "s": "seconds"}
     dt = df_meteo.time[1] - df_meteo.time[0]
     freq = dt.resolution_string
     multiplier = 1
@@ -559,7 +560,6 @@ def compute_meteo_forcings(
 
 def _standardize_forcing_timeindexes(da):
     """Standardize timeindexes frequency based on forcing DataArray."""
-    _TIMESTR = {"D": "days", "h": "hours", "min": "minutes", "s": "seconds"}
     dt = pd.to_timedelta((da.time[1].values - da.time[0].values))
     freq = dt.resolution_string
     multiplier = 1

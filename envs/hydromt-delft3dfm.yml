@@ -15,7 +15,7 @@ dependencies:
   - hydromt>=0.10.0,<0.15 # To avoid getting v1 alpha
   - nbsphinx # docs notebook examples
   - numpy<2
-  - pandas>=2.2.0
+  - pandas>=2.0.0
   - pip
   - pre-commit # linting
   - pydata-sphinx-theme # docs
