@@ -19,7 +19,6 @@ dependencies:
   - pip
   - pre-commit # linting
   - pydata-sphinx-theme # docs
-  - pyogrio<0.8
   - pyproj
   - pytest # tests
   - pytest-cov # tests

@@ -13,7 +13,6 @@ dependencies:
   - pandas
   - pip
   - pyflwdir >=0.5.4
-  - pyogrio<0.8
   - pyproj
   - python<=3.11
   - scipy

@@ -24,7 +24,6 @@ dependencies = [
 	"scipy",
 	"universal_pathlib>=0.2", # provides path compatibility between different filesystems
 	"pyflwdir>=0.5.4",
-	"pyogrio<0.8",
 	"networkx",
 ]
 requires-python = ">=3.9, <3.12"
