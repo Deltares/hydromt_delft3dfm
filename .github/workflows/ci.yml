@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       max-parallel: 5
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11"] #, "3.12"] # TODO: add 3.12 by fixing https://github.com/Deltares/hydromt_delft3dfm/issues/136
         os: ["windows-latest"]
 
     name: ${{ matrix.os }} - py${{ matrix.python-version }}

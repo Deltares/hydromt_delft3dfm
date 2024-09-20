@@ -15,7 +15,7 @@ dependencies = [
 	"geopandas>=0.10, <1",
 	"numpy<2",
 	"pandas>=2.2.0",
-	"xarray<=2024.3",
+	"xarray",
 	"hydrolib-core>=0.6.1, <0.8",
 	"xugrid>=0.9.0",
 	"meshkernel>=3.0.0",
