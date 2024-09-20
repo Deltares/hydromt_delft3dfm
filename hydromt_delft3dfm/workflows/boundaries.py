@@ -25,13 +25,14 @@ __all__ = [
     "get_geometry_coords_for_polygons",
 ]
 
-_TIMESTR = {"D": "days",
-            "h": "hours",
-            "min": "minutes",
-            "s": "seconds",
-            "H": "hours", # support for pandas<2.2.0
-            "S": "seconds", # support for pandas<2.2.0
-            }
+_TIMESTR = {
+    "D": "days",
+    "h": "hours",
+    "min": "minutes",
+    "s": "seconds",
+    "H": "hours",  # support for pandas<2.2.0
+    "S": "seconds",  # support for pandas<2.2.0
+}
 
 
 def get_boundaries_with_nodeid(
