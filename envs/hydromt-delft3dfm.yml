@@ -12,9 +12,9 @@ dependencies:
   - geopandas<1
   - jupyter # to run examples
   - matplotlib # to run examples
-  - hydromt>=0.10.0,<0.15 # To avoid getting v1 alpha
+  - hydromt>=0.10.0,<1 # To avoid getting v1 alpha
   - nbsphinx # docs notebook examples
-  - numpy<2
+  - numpy
   - pandas>=2.0.0
   - pip
   - pre-commit # linting
