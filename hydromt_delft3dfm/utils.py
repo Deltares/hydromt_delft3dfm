@@ -228,9 +228,6 @@ def read_crosssections(
     df_crsloc = pd.DataFrame.from_dict(crsloc_dict, orient="index")
     df_crsloc = df_crsloc.drop("comments", axis=1)
     df_crsloc["crs_id"] = df_crsloc["definitionid"]  # column to merge
-    # convert locationtype from enum to str (due to hydrolib-core bug)
-    if isinstance(df_crsloc["locationtype"][0], Enum):
-        df_crsloc["locationtype"] = df_crsloc["locationtype"].apply(lambda x: x.value)
     # get crsloc geometry
     if df_crsloc.dropna(axis=1).columns.isin(["x", "y"]).all():
         df_crsloc["geometry"] = [
