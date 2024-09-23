@@ -436,9 +436,7 @@ def _filter_links_on_idx(network: Network, keep: np.ndarray) -> None:
     # set contacts on meshkernel, use .copy() to avoid strided arrays
     mesh1d_indices = link1d2d_arr[:, 0].copy()
     mesh2d_indices = link1d2d_arr[:, 1].copy()
-    contacts = Contacts(
-        mesh1d_indices=mesh1d_indices, mesh2d_indices=mesh2d_indices
-    )
+    contacts = Contacts(mesh1d_indices=mesh1d_indices, mesh2d_indices=mesh2d_indices)
     network._link1d2d.meshkernel.contacts_set(contacts)
 
 
@@ -536,7 +534,7 @@ def links1d2d_add_links_2d_to_1d_embedded(
     network._link1d2d.meshkernel.contacts_compute_with_points(
         node_mask=node_mask, points=multipoint
     )
-    
+
     # extract links from network object
     link1d2d = mutils.links1d2d_from_hydrolib_network(network)
 
@@ -584,7 +582,6 @@ def links1d2d_add_links_2d_to_1d_lateral(
     link1d2d: xr.Dataset
         Link1d2d Dataset.
     """
-    
     # Initialise hydrolib network object
     network = mutils.hydrolib_network_from_mesh(mesh)
 
