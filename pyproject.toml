@@ -13,7 +13,7 @@ authors = [
 dependencies = [
 	"hydromt>=0.10.0, <1", # TODO: move to hydromt>=1: https://github.com/Deltares/hydromt_delft3dfm/issues/137
 	"geopandas>=0.10, <1", # TODO: remove upper bound: https://github.com/Deltares/hydromt_delft3dfm/issues/135
-	"numpy<2",
+	"numpy",
 	"pandas>=2.0.0",
 	"xarray",
 	"hydrolib-core>=0.6.1, <0.8",
