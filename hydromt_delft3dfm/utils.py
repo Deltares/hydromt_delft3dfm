@@ -954,7 +954,6 @@ def write_1dlateral(
                 ext = dict()
                 ext["id"] = latid
                 ext["name"] = latid
-                ext["quantity"] = "discharge"
                 ext["locationType"] = "1d"
                 if "nodeid" in da.coords:
                     # TODO laterals on nodes #78
