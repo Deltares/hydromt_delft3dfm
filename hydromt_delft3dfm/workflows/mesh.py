@@ -9,7 +9,7 @@ import numpy as np
 import xarray as xr
 import xugrid as xu
 from hydrolib.core.dflowfm import Branch, Network
-from meshkernel import GeometryList
+from meshkernel import GeometryList, Contacts
 from shapely.geometry import (
     LineString,
     MultiLineString,
@@ -406,8 +406,7 @@ def links1d2d_add_links_1d_to_2d(
     network._link1d2d.meshkernel.contacts_compute_single(
         node_mask=node_mask, polygons=geometrylist, projection_factor=1.0
     )
-    network._link1d2d._process()
-
+    
     # Filter the links that are longer than the max distance
     id1d = network._link1d2d.link1d2d[npresent:, 0]
     id2d = network._link1d2d.link1d2d[npresent:, 1]
@@ -433,12 +432,14 @@ def links1d2d_add_links_1d_to_2d(
 
 def _filter_links_on_idx(network: Network, keep: np.ndarray) -> None:
     # Select the remaining links
-    network._link1d2d.link1d2d = network._link1d2d.link1d2d[keep]
-    network._link1d2d.link1d2d_contact_type = network._link1d2d.link1d2d_contact_type[
-        keep
-    ]
-    network._link1d2d.link1d2d_id = network._link1d2d.link1d2d_id[keep]
-    network._link1d2d.link1d2d_long_name = network._link1d2d.link1d2d_long_name[keep]
+    link1d2d_arr = network._link1d2d.link1d2d[keep]
+    # set contacts on meshkernel, use .copy() to avoid strided arrays
+    mesh1d_indices = link1d2d_arr[:, 0].copy()
+    mesh2d_indices = link1d2d_arr[:, 1].copy()
+    contacts = Contacts(
+        mesh1d_indices=mesh1d_indices, mesh2d_indices=mesh2d_indices
+    )
+    network._link1d2d.meshkernel.contacts_set(contacts)
 
 
 def links1d2d_add_links_2d_to_1d_embedded(
@@ -535,8 +536,7 @@ def links1d2d_add_links_2d_to_1d_embedded(
     network._link1d2d.meshkernel.contacts_compute_with_points(
         node_mask=node_mask, points=multipoint
     )
-    network._link1d2d._process()
-
+    
     # extract links from network object
     link1d2d = mutils.links1d2d_from_hydrolib_network(network)
 
@@ -584,6 +584,7 @@ def links1d2d_add_links_2d_to_1d_lateral(
     link1d2d: xr.Dataset
         Link1d2d Dataset.
     """
+    
     # Initialise hydrolib network object
     network = mutils.hydrolib_network_from_mesh(mesh)
 
