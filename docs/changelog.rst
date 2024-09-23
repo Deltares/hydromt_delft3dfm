@@ -19,6 +19,7 @@ Changed
 Fixed
 -----
 - Bugfixing of reading of frictions (global), crosssections and boundaries when update. (PR #81)
+- Fixing bug related to changes to pandas TimeDelta formatting, see also https://pandas.pydata.org/docs/whatsnew/v2.2.0.html#other-deprecations. (PR #129)
 
 v0.2.0 (20 November 2023)
 =========================

@@ -11,18 +11,19 @@ authors = [
 	{ name = "Jelmer Veenstra", email = "jelmer.veenstra@deltares.nl" },
 ]
 dependencies = [
-	"hydromt >=0.9.0",
-	"geopandas >=0.10",
+	"hydromt>=0.10.0, <1", # TODO: move to hydromt>=1: https://github.com/Deltares/hydromt_delft3dfm/issues/137
+	"geopandas>=0.10, <1", # TODO: remove upper bound: https://github.com/Deltares/hydromt_delft3dfm/issues/135
 	"numpy",
-	"pandas",
+	"pandas>=2.0.0",
 	"xarray",
-	"hydrolib-core >=0.6.0",
-	"xugrid >=0.7.1",
-	"meshkernel >= 3.0.0",
+	"hydrolib-core>=0.6.1, <0.8",
+	"xugrid>=0.9.0",
+	"meshkernel>=4.3.0",
 	"pyproj",
-	"shapely >=2.0.0",
+	"shapely>=2.0.0",
 	"scipy",
-	"pyflwdir >=0.5.4",
+	"universal_pathlib>=0.2", # provides path compatibility between different filesystems
+	"pyflwdir>=0.5.4",
 	"networkx",
 ]
 requires-python = ">=3.9"
@@ -38,6 +39,7 @@ classifiers = [
 	"Programming Language :: Python :: 3.9",
 	"Programming Language :: Python :: 3.10",
 	"Programming Language :: Python :: 3.11",
+	"Programming Language :: Python :: 3.12",
 ]
 dynamic = ['version', 'description']
 
