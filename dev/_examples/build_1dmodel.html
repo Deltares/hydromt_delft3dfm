@@ -18,30 +18,30 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
     <link rel="stylesheet" type="text/css" href="../_static/theme-deltares.css?v=17060807" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
-  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -57,27 +57,23 @@
 
   
   
-  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -99,18 +95,25 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
-  </label>
+  </button>
   
   
   <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
 
+  
+    
   
 
 <a class="navbar-brand logo" href="../index.html">
@@ -137,43 +140,43 @@
     <div class="me-auto navbar-header-items__center">
       
         <div class="navbar-item">
-<nav class="navbar-nav">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../getting_started/intro.html">
-                        Getting started
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/intro.html">
+    Getting started
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../user_guide/intro.html">
-                        User guide
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../api.html">
-                        API reference
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/intro.html">
+    User guide
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../dev_guide/intro.html">
-                        Developments
-                      </a>
-                    </li>
-                
 
-                <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
-                    HydroMT core
-                  </a>
-                </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../dev_guide/intro.html">
+    Developments
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
+    HydroMT core
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -187,7 +190,7 @@
 
  <script>
  document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
     <span class="search-button__default-text">Search</span>
     <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -197,7 +200,7 @@
         </div>
       
       
-        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+        <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
           
@@ -208,7 +211,7 @@
           
           
           
-          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
         </li>
         <li class="nav-item">
           
@@ -219,7 +222,7 @@
           
           
           
-          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
+          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
         </li>
         <li class="nav-item">
           
@@ -230,7 +233,7 @@
           
           
           
-          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
+          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
         </li>
 </ul></div>
       
@@ -243,7 +246,7 @@
 
  <script>
  document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
     <span class="search-button__default-text">Search</span>
     <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -254,9 +257,9 @@
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
-    </label>
+    </button>
   
 </div>
 
@@ -279,46 +282,49 @@
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item">
-<nav class="navbar-nav">
+          
+          
+            <div class="navbar-item">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../getting_started/intro.html">
-                        Getting started
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/intro.html">
+    Getting started
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../user_guide/intro.html">
-                        User guide
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../api.html">
-                        API reference
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/intro.html">
+    User guide
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../dev_guide/intro.html">
-                        Developments
-                      </a>
-                    </li>
-                
 
-                <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
-                    HydroMT core
-                  </a>
-                </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../dev_guide/intro.html">
+    Developments
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
+    HydroMT core
+  </a>
+</li>
+
   </ul>
 </nav></div>
+          
         
       </div>
     
@@ -326,7 +332,7 @@
     
       <div class="sidebar-header-items__end">
         
-          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+          <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
           
@@ -337,7 +343,7 @@
           
           
           
-          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
         </li>
         <li class="nav-item">
           
@@ -348,7 +354,7 @@
           
           
           
-          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
+          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
         </li>
         <li class="nav-item">
           
@@ -359,7 +365,7 @@
           
           
           
-          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
+          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
         </li>
 </ul></div>
         
@@ -376,13 +382,13 @@
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -391,7 +397,7 @@
 
 
 
-<nav aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
@@ -440,7 +446,7 @@
 <div class="highlight"><pre>
 model plugins:
  - dflowfm (hydromt_delft3dfm 0.2.1.dev0)
-generic models (hydromt 0.9.3):
+generic models (hydromt 0.10.0):
  - grid_model
  - vector_model
  - mesh_model
@@ -471,11 +477,11 @@ Usage: hydromt build [OPTIONS] MODEL MODEL_ROOT
 
   To build a wflow model for a subbasin using a point coordinates snapped to
   cells with upstream area &gt;= 50 km2 hydromt build wflow /path/to/model_root
-  -i /path/to/wflow_config.ini  -r &#34;{&#39;subbasin&#39;: [-7.24, 62.09], &#39;uparea&#39;:
+  -i /path/to/wflow_config.yml  -r &#34;{&#39;subbasin&#39;: [-7.24, 62.09], &#39;uparea&#39;:
   50}&#34; -d deltares_data -d /path/to/data_catalog.yml -v
 
   To build a sfincs model based on a bbox hydromt build sfincs
-  /path/to/model_root  -i /path/to/sfincs_config.ini  -r &#34;{&#39;bbox&#39;:
+  /path/to/model_root  -i /path/to/sfincs_config.yml  -r &#34;{&#39;bbox&#39;:
   [4.6891,52.9750,4.9576,53.1994]}&#34;  -d /path/to/data_catalog.yml -v
 
 Options:
@@ -604,188 +610,189 @@ setup_1dboundary:
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:09:57,428 - build - log - DEBUG - Writing log messages to new file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_1d/hydromt.log.
-2024-02-16 09:09:57,428 - build - log - INFO - HydroMT version: 0.9.3
-2024-02-16 09:09:57,428 - build - main - INFO - Building instance of dflowfm model at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_1d.
-2024-02-16 09:09:57,428 - build - main - INFO - User settings:
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:09:58,153 - build - data_catalog - INFO - Reading data catalog archive artifact_data v0.0.8
-2024-02-16 09:09:58,154 - build - data_catalog - INFO - Parsing data catalog from /home/runner/.hydromt_data/artifact_data/v0.0.8/data_catalog.yml
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:09:58,213 - build - model_api - INFO - Initializing dflowfm model from hydromt_delft3dfm (v0.2.1.dev0).
-2024-02-16 09:09:58,214 - build - data_catalog - INFO - Parsing data catalog from /usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt_delft3dfm/data/parameters_data.yml
-2024-02-16 09:09:58,219 - build - dflowfm - INFO - Initialising empty mdu file
-2024-02-16 09:09:58,223 - build - dflowfm - INFO - project crs: 3857
-2024-02-16 09:09:58,223 - build - model_api - INFO - setup_rivers_from_dem.region: {&#39;bbox&#39;: [12.4331, 46.4661, 12.5212, 46.5369]}
-2024-02-16 09:09:58,223 - build - model_api - INFO - setup_rivers_from_dem.hydrography_fn: merit_hydro
-2024-02-16 09:09:58,224 - build - model_api - INFO - setup_rivers_from_dem.river_geom_fn: rivers_lin2019_v1
-2024-02-16 09:09:58,224 - build - model_api - INFO - setup_rivers_from_dem.rivers_defaults_fn: rivers_defaults
-2024-02-16 09:09:58,224 - build - model_api - INFO - setup_rivers_from_dem.rivdph_method: gvf
-2024-02-16 09:09:58,224 - build - model_api - INFO - setup_rivers_from_dem.rivwth_method: geom
-2024-02-16 09:09:58,224 - build - model_api - INFO - setup_rivers_from_dem.river_upa: 25.0
-2024-02-16 09:09:58,224 - build - model_api - INFO - setup_rivers_from_dem.river_len: 1000
-2024-02-16 09:09:58,224 - build - model_api - INFO - setup_rivers_from_dem.min_rivwth: 50.0
-2024-02-16 09:09:58,224 - build - model_api - INFO - setup_rivers_from_dem.min_rivdph: 1.0
-2024-02-16 09:09:58,224 - build - model_api - INFO - setup_rivers_from_dem.rivbank: True
-2024-02-16 09:09:58,224 - build - model_api - INFO - setup_rivers_from_dem.rivbankq: 25
-2024-02-16 09:09:58,224 - build - model_api - INFO - setup_rivers_from_dem.segment_length: 3000.0
-2024-02-16 09:09:58,224 - build - model_api - INFO - setup_rivers_from_dem.smooth_length: 10000.0
-2024-02-16 09:09:58,224 - build - model_api - INFO - setup_rivers_from_dem.friction_type: Manning
-2024-02-16 09:09:58,224 - build - model_api - INFO - setup_rivers_from_dem.friction_value: 0.023
-2024-02-16 09:09:58,224 - build - model_api - INFO - setup_rivers_from_dem.constrain_rivbed: True
-2024-02-16 09:09:58,224 - build - model_api - INFO - setup_rivers_from_dem.constrain_estuary: True
-2024-02-16 09:09:58,224 - build - dflowfm - INFO - Preparing river shape from hydrography data.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:09:58,231 - build - rasterdataset - INFO - Reading merit_hydro raster data from /home/runner/.hydromt_data/artifact_data/v0.0.8/merit_hydro/{variable}.tif
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:09:58,345 - build - rasterdataset - DEBUG - Clip to [12.433, 46.466, 12.521, 46.537] (epsg:4326))
-2024-02-16 09:09:58,347 - build - rasterdataset - WARNING - Dataset does [12.433333333333342, 46.46583333333333, 12.520833333333341, 46.53666666666666] does not fully cover bbox [12.433, 46.466, 12.521, 46.537]
-2024-02-16 09:09:58,347 - build - geodataframe - INFO - Reading rivers_lin2019_v1 vector data from /home/runner/.hydromt_data/artifact_data/v0.0.8/rivers_lin2019_v1.gpkg
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:09:58,420 - build - geodataframe - DEBUG - Clip intersects [1384045.361, 5855358.290, 1393854.608, 5866810.259] (EPSG:3857)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:10:05,957 - build - dem - INFO - Deriving bankfull river surface elevation from its banks.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:10:12,700 - build - dem - INFO - Smoothing river width (n=2).
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:10:14,267 - build - dataframe - INFO - Reading rivers_defaults csv data from /usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt_delft3dfm/data/branches/rivers_defaults.csv
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:10:14,278 - build - branches - INFO - Processing branches
-2024-02-16 09:10:14,279 - build - branches - DEBUG - Cleaning up branches
-2024-02-16 09:10:14,282 - build - branches - DEBUG - Exploding branches.
-2024-02-16 09:10:14,283 - build - branches - DEBUG - Removing 0 branches which have duplicated geometry.
-2024-02-16 09:10:14,284 - build - branches - DEBUG - Removing 1 branches that are shorter than 0.1 meter.
-2024-02-16 09:10:14,287 - build - branches - DEBUG - Renaming 0 id_col duplicates. Convention:BRANCH_1, BRANCH_1 --&gt; BRANCH_1, BRANCH_1-2.
-2024-02-16 09:10:14,291 - build - branches - DEBUG - Reducing precision of the GeoDataFrame.Rounding precision (e-6) .
-2024-02-16 09:10:14,292 - build - branches - DEBUG - Performing snapping at all branch ends, excluding intersections(To avoid messy results, please use a lower snap_offset)..
-2024-02-16 09:10:14,292 - build - branches - DEBUG - Splitting branches based on spacing
-2024-02-16 09:10:14,293 - build - branches - DEBUG - clipping branches into 5 segments
-2024-02-16 09:10:14,294 - build - branches - DEBUG - Generating branchnodes
-2024-02-16 09:10:14,298 - build - branches - INFO - Validating branches
-2024-02-16 09:10:14,299 - build - crosssections - INFO - Adding/Filling branches attributes values
-2024-02-16 09:10:14,301 - build - dflowfm - INFO - Preparing crossections from branch.
-2024-02-16 09:10:14,310 - build - dflowfm - DEBUG - Adding crosssections vector to geoms.
-2024-02-16 09:10:14,310 - build - dflowfm - DEBUG - Adding rivers and river_nodes vector to geoms.
-2024-02-16 09:10:14,313 - build - model_api - WARNING - Replacing geom: rivers
-2024-02-16 09:10:14,314 - build - dflowfm - DEBUG - Adding branches vector to geoms.
-2024-02-16 09:10:14,314 - build - dflowfm - DEBUG - Updating branches in network.
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2024-02-16 09:10:14,346 - build - main - ERROR - Grids share dimension names but do not are not identical. Matching dimensions: {&#39;network1d_nNodes&#39;, &#39;network1d_nEdges&#39;}
-Traceback (most recent call last):
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt/cli/main.py&#34;, line 228, in build
-    mod.build(region, opt=opt)
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt/models/model_api.py&#34;, line 246, in build
-    self._run_log_method(method, **kwargs)
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt/models/model_api.py&#34;, line 188, in _run_log_method
-    return func(*args, **kwargs)
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt_delft3dfm/dflowfm.py&#34;, line 657, in setup_rivers_from_dem
-    self.set_mesh(mesh1d, grid_name=&#34;mesh1d&#34;, overwrite_grid=True)
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt_delft3dfm/dflowfm.py&#34;, line 3688, in set_mesh
-    self.mesh_datasets[&#34;network1d&#34;]
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt/models/model_mesh.py&#34;, line 494, in mesh_datasets
-    datasets[grid.name] = self.get_mesh(
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt/models/model_mesh.py&#34;, line 392, in get_mesh
-    uds[var] = self.mesh[var]
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/xugrid/core/wrap.py&#34;, line 378, in __setitem__
-    raise ValueError(
-ValueError: Grids share dimension names but do not are not identical. Matching dimensions: {&#39;network1d_nNodes&#39;, &#39;network1d_nEdges&#39;}
-Traceback (most recent call last):
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/bin/hydromt&#34;, line 10, in &lt;module&gt;
-    sys.exit(main())
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/click/core.py&#34;, line 1157, in __call__
-    return self.main(*args, **kwargs)
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/click/core.py&#34;, line 1078, in main
-    rv = self.invoke(ctx)
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/click/core.py&#34;, line 1688, in invoke
-    return _process_result(sub_ctx.command.invoke(sub_ctx))
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/click/core.py&#34;, line 1434, in invoke
-    return ctx.invoke(self.callback, **ctx.params)
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/click/core.py&#34;, line 783, in invoke
-    return __callback(*args, **kwargs)
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/click/decorators.py&#34;, line 33, in new_func
-    return f(get_current_context(), *args, **kwargs)
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt/cli/main.py&#34;, line 228, in build
-    mod.build(region, opt=opt)
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt/models/model_api.py&#34;, line 246, in build
-    self._run_log_method(method, **kwargs)
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt/models/model_api.py&#34;, line 188, in _run_log_method
-    return func(*args, **kwargs)
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt_delft3dfm/dflowfm.py&#34;, line 657, in setup_rivers_from_dem
-    self.set_mesh(mesh1d, grid_name=&#34;mesh1d&#34;, overwrite_grid=True)
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt_delft3dfm/dflowfm.py&#34;, line 3688, in set_mesh
-    self.mesh_datasets[&#34;network1d&#34;]
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt/models/model_mesh.py&#34;, line 494, in mesh_datasets
-    datasets[grid.name] = self.get_mesh(
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt/models/model_mesh.py&#34;, line 392, in get_mesh
-    uds[var] = self.mesh[var]
-  File &#34;/usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/xugrid/core/wrap.py&#34;, line 378, in __setitem__
-    raise ValueError(
-ValueError: Grids share dimension names but do not are not identical. Matching dimensions: {&#39;network1d_nNodes&#39;, &#39;network1d_nEdges&#39;}
+2024-09-23 13:04:39,308 - build - log - DEBUG - Writing log messages to new file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_1d/hydromt.log.
+2024-09-23 13:04:39,308 - build - log - INFO - HydroMT version: 0.10.0
+2024-09-23 13:04:39,308 - build - main - INFO - Building instance of dflowfm model at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_1d.
+2024-09-23 13:04:39,308 - build - main - INFO - User settings:
+2024-09-23 13:04:39,892 - build - data_catalog - INFO - Reading data catalog artifact_data latest
+2024-09-23 13:04:39,892 - build - data_catalog - INFO - Parsing data catalog from /home/runner/.hydromt_data/artifact_data/v0.0.9/data_catalog.yml
+2024-09-23 13:04:40,517 - build - model_api - INFO - Initializing dflowfm model from hydromt_delft3dfm (v0.2.1.dev0).
+2024-09-23 13:04:40,517 - build - data_catalog - INFO - Parsing data catalog from /usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt_delft3dfm/data/parameters_data.yml
+2024-09-23 13:04:40,523 - build - dflowfm - INFO - Initialising empty mdu file
+2024-09-23 13:04:40,527 - build - dflowfm - INFO - project crs: 3857
+2024-09-23 13:04:40,527 - build - model_api - INFO - setup_rivers_from_dem.region: {&#39;bbox&#39;: [12.4331, 46.4661, 12.5212, 46.5369]}
+2024-09-23 13:04:40,527 - build - model_api - INFO - setup_rivers_from_dem.hydrography_fn: merit_hydro
+2024-09-23 13:04:40,527 - build - model_api - INFO - setup_rivers_from_dem.river_geom_fn: rivers_lin2019_v1
+2024-09-23 13:04:40,527 - build - model_api - INFO - setup_rivers_from_dem.rivers_defaults_fn: rivers_defaults
+2024-09-23 13:04:40,527 - build - model_api - INFO - setup_rivers_from_dem.rivdph_method: gvf
+2024-09-23 13:04:40,527 - build - model_api - INFO - setup_rivers_from_dem.rivwth_method: geom
+2024-09-23 13:04:40,528 - build - model_api - INFO - setup_rivers_from_dem.river_upa: 25.0
+2024-09-23 13:04:40,528 - build - model_api - INFO - setup_rivers_from_dem.river_len: 1000
+2024-09-23 13:04:40,528 - build - model_api - INFO - setup_rivers_from_dem.min_rivwth: 50.0
+2024-09-23 13:04:40,528 - build - model_api - INFO - setup_rivers_from_dem.min_rivdph: 1.0
+2024-09-23 13:04:40,528 - build - model_api - INFO - setup_rivers_from_dem.rivbank: True
+2024-09-23 13:04:40,528 - build - model_api - INFO - setup_rivers_from_dem.rivbankq: 25
+2024-09-23 13:04:40,528 - build - model_api - INFO - setup_rivers_from_dem.segment_length: 3000.0
+2024-09-23 13:04:40,528 - build - model_api - INFO - setup_rivers_from_dem.smooth_length: 10000.0
+2024-09-23 13:04:40,528 - build - model_api - INFO - setup_rivers_from_dem.friction_type: Manning
+2024-09-23 13:04:40,528 - build - model_api - INFO - setup_rivers_from_dem.friction_value: 0.023
+2024-09-23 13:04:40,528 - build - model_api - INFO - setup_rivers_from_dem.constrain_rivbed: True
+2024-09-23 13:04:40,528 - build - model_api - INFO - setup_rivers_from_dem.constrain_estuary: True
+2024-09-23 13:04:40,528 - build - dflowfm - INFO - Preparing river shape from hydrography data.
+2024-09-23 13:04:40,535 - build - rasterdataset - INFO - Reading merit_hydro raster data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/merit_hydro/{variable}.tif
+2024-09-23 13:04:40,654 - build - rasterdataset - DEBUG - Clip to [12.433, 46.466, 12.521, 46.537] (epsg:4326))
+2024-09-23 13:04:40,657 - build - geodataframe - INFO - Reading rivers_lin2019_v1 vector data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/rivers_lin2019_v1.gpkg
+2024-09-23 13:04:40,688 - build - geodataframe - DEBUG - Clip intersects [1384045.361, 5855358.290, 1393854.608, 5866810.259] (EPSG:3857)
+2024-09-23 13:04:48,248 - build - dem - INFO - Deriving bankfull river surface elevation from its banks.
+2024-09-23 13:04:54,908 - build - dem - INFO - Smoothing river width (n=2).
+2024-09-23 13:04:56,453 - build - dataframe - INFO - Reading rivers_defaults csv data from /usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt_delft3dfm/data/branches/rivers_defaults.csv
+2024-09-23 13:04:56,466 - build - branches - INFO - Processing branches
+2024-09-23 13:04:56,466 - build - branches - DEBUG - Cleaning up branches
+2024-09-23 13:04:56,470 - build - branches - DEBUG - Exploding branches.
+2024-09-23 13:04:56,471 - build - branches - DEBUG - Removing 0 branches which have duplicated geometry.
+2024-09-23 13:04:56,472 - build - branches - DEBUG - Removing 1 branches that are shorter than 0.1 meter.
+2024-09-23 13:04:56,474 - build - branches - DEBUG - Renaming 0 id_col duplicates. Convention:BRANCH_1, BRANCH_1 --&gt; BRANCH_1, BRANCH_1-2.
+2024-09-23 13:04:56,479 - build - branches - DEBUG - Reducing precision of the GeoDataFrame.Rounding precision (e-6) .
+2024-09-23 13:04:56,480 - build - branches - DEBUG - Performing snapping at all branch ends, excluding intersections(To avoid messy results, please use a lower snap_offset)..
+2024-09-23 13:04:56,480 - build - branches - DEBUG - Splitting branches based on spacing
+2024-09-23 13:04:56,481 - build - branches - DEBUG - clipping branches into 5 segments
+2024-09-23 13:04:56,482 - build - branches - DEBUG - Generating branchnodes
+2024-09-23 13:04:56,486 - build - branches - INFO - Validating branches
+2024-09-23 13:04:56,487 - build - crosssections - INFO - Adding/Filling branches attributes values
+2024-09-23 13:04:56,490 - build - dflowfm - INFO - Preparing crossections from branch.
+2024-09-23 13:04:56,498 - build - dflowfm - DEBUG - Adding crosssections vector to geoms.
+2024-09-23 13:04:56,498 - build - dflowfm - DEBUG - Adding rivers and river_nodes vector to geoms.
+2024-09-23 13:04:56,501 - build - model_api - WARNING - Replacing geom: rivers
+2024-09-23 13:04:56,502 - build - dflowfm - DEBUG - Adding branches vector to geoms.
+2024-09-23 13:04:56,502 - build - dflowfm - DEBUG - Updating branches in network.
+2024-09-23 13:04:56,570 - build - model_api - INFO - setup_pipes.region: {&#39;bbox&#39;: [12.4331, 46.4661, 12.5212, 46.5369]}
+2024-09-23 13:04:56,570 - build - model_api - INFO - setup_pipes.pipes_fn: grip_roads
+2024-09-23 13:04:56,570 - build - model_api - INFO - setup_pipes.pipes_defaults_fn: pipes_defaults
+2024-09-23 13:04:56,570 - build - model_api - INFO - setup_pipes.pipe_filter: pipe
+2024-09-23 13:04:56,570 - build - model_api - INFO - setup_pipes.spacing: 50
+2024-09-23 13:04:56,570 - build - model_api - INFO - setup_pipes.friction_type: WhiteColeBrook
+2024-09-23 13:04:56,570 - build - model_api - INFO - setup_pipes.friction_value: 0.003
+2024-09-23 13:04:56,570 - build - model_api - INFO - setup_pipes.crosssections_shape: circle
+2024-09-23 13:04:56,570 - build - model_api - INFO - setup_pipes.crosssections_value: 0.5
+2024-09-23 13:04:56,570 - build - model_api - INFO - setup_pipes.dem_fn: merit_hydro
+2024-09-23 13:04:56,570 - build - model_api - INFO - setup_pipes.pipes_depth: 2.0
+2024-09-23 13:04:56,570 - build - model_api - INFO - setup_pipes.pipes_invlev: 3.0
+2024-09-23 13:04:56,570 - build - model_api - INFO - setup_pipes.snap_offset: 0.5
+2024-09-23 13:04:56,570 - build - model_api - INFO - setup_pipes.allow_intersection_snapping: True
+2024-09-23 13:04:56,570 - build - dflowfm - INFO - Preparing 1D pipes.
+2024-09-23 13:04:56,573 - build - geodataframe - INFO - Reading grip_roads vector data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/grip_roads.gpkg
+2024-09-23 13:04:56,589 - build - geodataframe - DEBUG - Clip intersects [1384046.361, 5855359.290, 1393853.608, 5866809.259] (EPSG:3857)
+2024-09-23 13:04:56,590 - build - dataframe - INFO - Reading pipes_defaults csv data from /usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt_delft3dfm/data/branches/pipes_defaults.csv
+2024-09-23 13:04:56,596 - build - branches - INFO - Processing branches
+2024-09-23 13:04:56,598 - build - branches - DEBUG - Cleaning up branches
+2024-09-23 13:04:56,604 - build - branches - DEBUG - Exploding branches.
+2024-09-23 13:04:56,606 - build - branches - DEBUG - Removing 0 branches which have duplicated geometry.
+2024-09-23 13:04:56,606 - build - branches - DEBUG - Removing 0 branches that are shorter than 0.1 meter.
+2024-09-23 13:04:56,618 - build - branches - DEBUG - Renaming 0 id_col duplicates. Convention:BRANCH_1, BRANCH_1 --&gt; BRANCH_1, BRANCH_1-2.
+2024-09-23 13:04:56,645 - build - branches - DEBUG - Reducing precision of the GeoDataFrame.Rounding precision (e-6) .
+2024-09-23 13:04:56,650 - build - branches - DEBUG - Performing snapping at all branch ends, including intersections(To avoid messy results, please use a lower snap_offset).
+2024-09-23 13:04:56,651 - build - branches - DEBUG - Splitting branches based on spacing
+2024-09-23 13:04:58,628 - build - branches - DEBUG - clipping branches into 2826 segments
+2024-09-23 13:04:58,628 - build - branches - DEBUG - Generating branchnodes
+2024-09-23 13:04:59,060 - build - branches - INFO - Validating branches
+2024-09-23 13:04:59,062 - build - crosssections - INFO - Adding/Filling branches attributes values
+2024-09-23 13:04:59,076 - build - dflowfm - INFO - grip_roads does not have columns [invlev_up, invlev_dn].Invert levels will be generated from dem_fn ordefault value 3.0
+2024-09-23 13:04:59,076 - build - rasterdataset - INFO - Reading merit_hydro raster data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/merit_hydro/{variable}.tif
+2024-09-23 13:04:59,095 - build - rasterdataset - DEBUG - Clip to [12.433, 46.466, 12.521, 46.537] (epsg:4326))
+2024-09-23 13:04:59,526 - build - dflowfm - INFO - Preparing crossections from branch.
+2024-09-23 13:04:59,596 - build - dflowfm - DEBUG - Adding crosssections vector to geoms.
+2024-09-23 13:04:59,615 - build - model_api - WARNING - Replacing geom: crosssections
+2024-09-23 13:04:59,615 - build - dflowfm - DEBUG - Adding pipes and pipe_nodes vector to geoms.
+2024-09-23 13:05:00,057 - build - model_api - WARNING - Replacing geom: rivers
+2024-09-23 13:05:00,058 - build - model_api - WARNING - Replacing geom: pipes
+2024-09-23 13:05:00,058 - build - dflowfm - DEBUG - Adding branches vector to geoms.
+2024-09-23 13:05:00,058 - build - model_api - WARNING - Replacing geom: branches
+2024-09-23 13:05:00,059 - build - dflowfm - DEBUG - Updating branches in network.
+2024-09-23 13:05:01,027 - build - model_mesh - WARNING - Overwriting grid network1d and the corresponding data variables in mesh.
+2024-09-23 13:05:01,077 - build - model_mesh - WARNING - Overwriting grid mesh1d and the corresponding data variables in mesh.
+2024-09-23 13:05:01,298 - build - model_api - WARNING - Replacing geom: boundaries
+2024-09-23 13:05:01,299 - build - model_api - INFO - setup_manholes.manholes_fn: None
+2024-09-23 13:05:01,299 - build - model_api - INFO - setup_manholes.manhole_defaults_fn: manholes_defaults
+2024-09-23 13:05:01,299 - build - model_api - INFO - setup_manholes.bedlevel_shift: 0.5
+2024-09-23 13:05:01,299 - build - model_api - INFO - setup_manholes.dem_fn: merit_hydro
+2024-09-23 13:05:01,299 - build - model_api - INFO - setup_manholes.snap_offset: 0.001
+2024-09-23 13:05:01,299 - build - dflowfm - INFO - generating manholes locations and bedlevels.
+2024-09-23 13:05:01,299 - build - manholes - INFO - Generating manholes on pipes and/or tunnels
+2024-09-23 13:05:01,702 - build - manholes - INFO - Shifting manholes bedlevels based on bedlevel_shift = 0.5
+2024-09-23 13:05:01,894 - build - model_api - WARNING - Replacing geom: rivers
+2024-09-23 13:05:01,896 - build - model_api - WARNING - Replacing geom: pipes
+2024-09-23 13:05:01,896 - build - dflowfm - DEBUG - Adding branches vector to geoms.
+2024-09-23 13:05:01,896 - build - model_api - WARNING - Replacing geom: branches
+2024-09-23 13:05:01,897 - build - dflowfm - DEBUG - Updating branches in network.
+2024-09-23 13:05:01,897 - build - dataframe - INFO - Reading manholes_defaults csv data from /usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt_delft3dfm/data/storages/manholes_defaults.csv
+2024-09-23 13:05:01,908 - build - dflowfm - INFO - overwriting manholes street level from dem.
+2024-09-23 13:05:01,908 - build - rasterdataset - INFO - Reading merit_hydro raster data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/merit_hydro/{variable}.tif
+2024-09-23 13:05:01,927 - build - rasterdataset - DEBUG - Clip to [12.433, 46.466, 12.521, 46.537] (epsg:4326))
+2024-09-23 13:05:01,945 - build - dflowfm - DEBUG - street level mean is 863.6583862304688
+2024-09-23 13:05:01,945 - build - dflowfm - DEBUG - dropping duplicated manholeid
+2024-09-23 13:05:01,991 - build - dflowfm - DEBUG - Adding manholes vector to geoms.
+2024-09-23 13:05:01,992 - build - model_api - INFO - setup_1dboundary.boundaries_geodataset_fn: None
+2024-09-23 13:05:01,992 - build - model_api - INFO - setup_1dboundary.boundaries_timeseries_fn: None
+2024-09-23 13:05:01,992 - build - model_api - INFO - setup_1dboundary.boundary_value: -2.0
+2024-09-23 13:05:01,992 - build - model_api - INFO - setup_1dboundary.branch_type: river
+2024-09-23 13:05:01,992 - build - model_api - INFO - setup_1dboundary.boundary_type: waterlevel
+2024-09-23 13:05:01,992 - build - model_api - INFO - setup_1dboundary.boundary_unit: m
+2024-09-23 13:05:01,992 - build - model_api - INFO - setup_1dboundary.boundary_locs: both
+2024-09-23 13:05:01,992 - build - model_api - INFO - setup_1dboundary.snap_offset: 1.0
+2024-09-23 13:05:01,992 - build - dflowfm - INFO - Preparing 1D waterlevel boundaries for river.
+2024-09-23 13:05:01,993 - build - boundaries - INFO - Using constant value -2.0 mfor all waterlevel boundaries.
+2024-09-23 13:05:01,994 - build - dflowfm - INFO - Writing model data to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_1d
+2024-09-23 13:05:02,002 - build - model_api - DEBUG - Writing file geoms/crosssections.geojson
+2024-09-23 13:05:02,235 - build - model_api - DEBUG - Writing file geoms/rivers.geojson
+2024-09-23 13:05:02,247 - build - model_api - DEBUG - Writing file geoms/rivers_nodes.geojson
+2024-09-23 13:05:02,256 - build - model_api - DEBUG - Writing file geoms/branches.geojson
+2024-09-23 13:05:02,438 - build - model_api - DEBUG - Writing file geoms/boundaries.geojson
+2024-09-23 13:05:02,452 - build - model_api - DEBUG - Writing file geoms/pipes.geojson
+2024-09-23 13:05:02,631 - build - model_api - DEBUG - Writing file geoms/pipe_nodes.geojson
+2024-09-23 13:05:02,925 - build - model_api - DEBUG - Writing file geoms/region.geojson
+2024-09-23 13:05:02,932 - build - model_api - DEBUG - Writing file geoms/manholes.geojson
+2024-09-23 13:05:03,058 - build - model_api - DEBUG - Writing file geoms/network1d.geojson
+2024-09-23 13:05:03,125 - build - model_api - DEBUG - Writing file geoms/mesh1d.geojson
+2024-09-23 13:05:03,233 - build - dflowfm - INFO - Writting cross-sections files crsdef and crsloc
+2024-09-23 13:05:03,682 - build - dflowfm - INFO - Writting friction file(s)
+2024-09-23 13:05:03,687 - build - dflowfm - INFO - Writting manholes file.
+2024-09-23 13:05:04,034 - build - model_api - WARNING - Replacing geom: network1d
+2024-09-23 13:05:04,034 - build - model_api - WARNING - Replacing geom: mesh1d
+2024-09-23 13:05:04,048 - build - model_api - WARNING - Replacing geom: crosssections
+2024-09-23 13:05:04,050 - build - model_api - WARNING - Replacing geom: rivers
+2024-09-23 13:05:04,052 - build - model_api - WARNING - Replacing geom: rivers_nodes
+2024-09-23 13:05:04,061 - build - model_api - WARNING - Replacing geom: branches
+2024-09-23 13:05:04,064 - build - model_api - WARNING - Replacing geom: boundaries
+2024-09-23 13:05:04,073 - build - model_api - WARNING - Replacing geom: pipes
+2024-09-23 13:05:04,081 - build - model_api - WARNING - Replacing geom: pipe_nodes
+2024-09-23 13:05:04,081 - build - model_api - WARNING - Replacing geom: region
+2024-09-23 13:05:04,089 - build - model_api - WARNING - Replacing geom: manholes
+2024-09-23 13:05:04,089 - build - model_api - WARNING - Replacing geom: network1d
+2024-09-23 13:05:04,090 - build - model_api - WARNING - Replacing geom: mesh1d
+2024-09-23 13:05:04,090 - build - model_api - DEBUG - Writing file geoms/crosssections.geojson
+2024-09-23 13:05:04,319 - build - model_api - DEBUG - Writing file geoms/rivers.geojson
+2024-09-23 13:05:04,331 - build - model_api - DEBUG - Writing file geoms/rivers_nodes.geojson
+2024-09-23 13:05:04,340 - build - model_api - DEBUG - Writing file geoms/branches.geojson
+2024-09-23 13:05:04,519 - build - model_api - DEBUG - Writing file geoms/boundaries.geojson
+2024-09-23 13:05:04,532 - build - model_api - DEBUG - Writing file geoms/pipes.geojson
+2024-09-23 13:05:04,708 - build - model_api - DEBUG - Writing file geoms/pipe_nodes.geojson
+2024-09-23 13:05:05,002 - build - model_api - DEBUG - Writing file geoms/region.geojson
+2024-09-23 13:05:05,009 - build - model_api - DEBUG - Writing file geoms/manholes.geojson
+2024-09-23 13:05:05,133 - build - model_api - DEBUG - Writing file geoms/network1d.geojson
+2024-09-23 13:05:05,200 - build - model_api - DEBUG - Writing file geoms/mesh1d.geojson
+2024-09-23 13:05:05,492 - build - dflowfm - INFO - Writting branches.gui file
+2024-09-23 13:05:05,808 - build - dflowfm - INFO - Writting forcing files.
+2024-09-23 13:05:06,911 - build - dflowfm - INFO - Initialising empty dimr file
+INFO:build:Initialising empty dimr file
+2024-09-23 13:05:06,911 - build - dflowfm - INFO - Adding dflowfm component to dimr config
+INFO:build:Adding dflowfm component to dimr config
+2024-09-23 13:05:06,911 - build - dflowfm - INFO - Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_1d/dimr_config.xml
+INFO:build:Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_1d/dimr_config.xml
 
 </pre></div></div>
 </div>
@@ -822,10 +829,33 @@ ValueError: Grids share dimension names but do not are not identical. Matching d
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 ./build/dflowfm_1d/
+ - dimr_config.xml
  - hydromt.log
-./build/dflowfm_1d/geoms
-./build/dflowfm_1d/dflowfm
+ - hydromt_data.yml
 ./build/dflowfm_1d/maps
+./build/dflowfm_1d/dflowfm
+ - boundarycondition1d.bc
+ - crsloc.ini
+ - branches.gui
+ - roughness_Manning_0.023.ini
+ - bnd.ext
+ - crsdef.ini
+ - roughness_WhiteColeBrook_0.003.ini
+ - fm_net.nc
+ - DFlowFM.mdu
+ - nodeFile.ini
+./build/dflowfm_1d/geoms
+ - network1d.geojson
+ - mesh1d.geojson
+ - rivers.geojson
+ - rivers_nodes.geojson
+ - crosssections.geojson
+ - branches.geojson
+ - pipe_nodes.geojson
+ - boundaries.geojson
+ - pipes.geojson
+ - region.geojson
+ - manholes.geojson
 </pre></div></div>
 </div>
 <p>The model root should contain three files and four folders:</p>
@@ -854,7 +884,7 @@ ValueError: Grids share dimension names but do not are not identical. Matching d
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
 </div>
@@ -921,8 +951,8 @@ ValueError: Grids share dimension names but do not are not identical. Matching d
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -942,7 +972,7 @@ ValueError: Grids share dimension names but do not are not identical. Matching d
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
     <br/>
   </p>
 </div>
@@ -955,7 +985,7 @@ ValueError: Grids share dimension names but do not are not identical. Matching d
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
 </p></div>
       
     </div>

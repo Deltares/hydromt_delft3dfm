@@ -18,30 +18,30 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
     <link rel="stylesheet" type="text/css" href="../_static/theme-deltares.css?v=17060807" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
-  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -57,27 +57,23 @@
 
   
   
-  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -99,18 +95,25 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
-  </label>
+  </button>
   
   
   <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
 
+  
+    
   
 
 <a class="navbar-brand logo" href="../index.html">
@@ -137,43 +140,43 @@
     <div class="me-auto navbar-header-items__center">
       
         <div class="navbar-item">
-<nav class="navbar-nav">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../getting_started/intro.html">
-                        Getting started
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/intro.html">
+    Getting started
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../user_guide/intro.html">
-                        User guide
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../api.html">
-                        API reference
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/intro.html">
+    User guide
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../dev_guide/intro.html">
-                        Developments
-                      </a>
-                    </li>
-                
 
-                <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
-                    HydroMT core
-                  </a>
-                </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../dev_guide/intro.html">
+    Developments
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
+    HydroMT core
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -187,7 +190,7 @@
 
  <script>
  document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
     <span class="search-button__default-text">Search</span>
     <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -197,7 +200,7 @@
         </div>
       
       
-        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+        <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
           
@@ -208,7 +211,7 @@
           
           
           
-          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
         </li>
         <li class="nav-item">
           
@@ -219,7 +222,7 @@
           
           
           
-          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
+          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
         </li>
         <li class="nav-item">
           
@@ -230,7 +233,7 @@
           
           
           
-          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
+          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
         </li>
 </ul></div>
       
@@ -243,7 +246,7 @@
 
  <script>
  document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
     <span class="search-button__default-text">Search</span>
     <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -254,9 +257,9 @@
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
-    </label>
+    </button>
   
 </div>
 
@@ -279,46 +282,49 @@
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item">
-<nav class="navbar-nav">
+          
+          
+            <div class="navbar-item">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../getting_started/intro.html">
-                        Getting started
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/intro.html">
+    Getting started
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../user_guide/intro.html">
-                        User guide
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../api.html">
-                        API reference
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/intro.html">
+    User guide
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../dev_guide/intro.html">
-                        Developments
-                      </a>
-                    </li>
-                
 
-                <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
-                    HydroMT core
-                  </a>
-                </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../dev_guide/intro.html">
+    Developments
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
+    HydroMT core
+  </a>
+</li>
+
   </ul>
 </nav></div>
+          
         
       </div>
     
@@ -326,7 +332,7 @@
     
       <div class="sidebar-header-items__end">
         
-          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+          <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
           
@@ -337,7 +343,7 @@
           
           
           
-          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
         </li>
         <li class="nav-item">
           
@@ -348,7 +354,7 @@
           
           
           
-          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
+          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
         </li>
         <li class="nav-item">
           
@@ -359,7 +365,7 @@
           
           
           
-          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
+          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
         </li>
 </ul></div>
         
@@ -376,13 +382,13 @@
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -391,7 +397,7 @@
 
 
 
-<nav aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
@@ -440,7 +446,7 @@
 <div class="highlight"><pre>
 model plugins:
  - dflowfm (hydromt_delft3dfm 0.2.1.dev0)
-generic models (hydromt 0.9.3):
+generic models (hydromt 0.10.0):
  - grid_model
  - vector_model
  - mesh_model
@@ -471,11 +477,11 @@ Usage: hydromt build [OPTIONS] MODEL MODEL_ROOT
 
   To build a wflow model for a subbasin using a point coordinates snapped to
   cells with upstream area &gt;= 50 km2 hydromt build wflow /path/to/model_root
-  -i /path/to/wflow_config.ini  -r &#34;{&#39;subbasin&#39;: [-7.24, 62.09], &#39;uparea&#39;:
+  -i /path/to/wflow_config.yml  -r &#34;{&#39;subbasin&#39;: [-7.24, 62.09], &#39;uparea&#39;:
   50}&#34; -d deltares_data -d /path/to/data_catalog.yml -v
 
   To build a sfincs model based on a bbox hydromt build sfincs
-  /path/to/model_root  -i /path/to/sfincs_config.ini  -r &#34;{&#39;bbox&#39;:
+  /path/to/model_root  -i /path/to/sfincs_config.yml  -r &#34;{&#39;bbox&#39;:
   [4.6891,52.9750,4.9576,53.1994]}&#34;  -d /path/to/data_catalog.yml -v
 
 Options:
@@ -582,137 +588,67 @@ method.</p></li>
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:10:23,267 - build - log - DEBUG - Writing log messages to new file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/hydromt.log.
-2024-02-16 09:10:23,267 - build - log - INFO - HydroMT version: 0.9.3
-2024-02-16 09:10:23,267 - build - main - INFO - Building instance of dflowfm model at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d.
-2024-02-16 09:10:23,267 - build - main - INFO - User settings:
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:10:23,895 - build - data_catalog - INFO - Reading data catalog archive artifact_data v0.0.8
-2024-02-16 09:10:23,895 - build - data_catalog - INFO - Parsing data catalog from /home/runner/.hydromt_data/artifact_data/v0.0.8/data_catalog.yml
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:10:23,956 - build - model_api - INFO - Initializing dflowfm model from hydromt_delft3dfm (v0.2.1.dev0).
-2024-02-16 09:10:23,956 - build - data_catalog - INFO - Parsing data catalog from /usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt_delft3dfm/data/parameters_data.yml
-2024-02-16 09:10:23,962 - build - dflowfm - INFO - Initialising empty mdu file
-2024-02-16 09:10:23,966 - build - dflowfm - INFO - project crs: 3857
-2024-02-16 09:10:23,966 - build - model_api - INFO - setup_mesh2d.region: {&#39;bbox&#39;: [12.4331, 46.4661, 12.5212, 46.5369]}
-2024-02-16 09:10:23,966 - build - model_api - INFO - setup_mesh2d.res: 500
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:10:24,001 - build - model_api - INFO - setup_maps_from_rasterdataset.raster_fn: merit_hydro
-2024-02-16 09:10:24,001 - build - model_api - INFO - setup_maps_from_rasterdataset.variables: [&#39;elevtn&#39;]
-2024-02-16 09:10:24,001 - build - model_api - INFO - setup_maps_from_rasterdataset.fill_method: nearest
-2024-02-16 09:10:24,001 - build - model_api - INFO - setup_maps_from_rasterdataset.reproject_method: nearest
-2024-02-16 09:10:24,002 - build - model_api - INFO - setup_maps_from_rasterdataset.interpolation_method: nearestNb
-2024-02-16 09:10:24,002 - build - model_api - INFO - setup_maps_from_rasterdataset.locationtype: 2d
-2024-02-16 09:10:24,002 - build - model_api - INFO - setup_maps_from_rasterdataset.name: None
-2024-02-16 09:10:24,002 - build - model_api - INFO - setup_maps_from_rasterdataset.split_dataset: True
-2024-02-16 09:10:24,002 - build - model_api - INFO - Preparing maps data from raster source merit_hydro
-2024-02-16 09:10:24,003 - build - rasterdataset - INFO - Reading merit_hydro raster data from /home/runner/.hydromt_data/artifact_data/v0.0.8/merit_hydro/{variable}.tif
-2024-02-16 09:10:24,030 - build - rasterdataset - DEBUG - Clip to [12.433, 46.467, 12.523, 46.538] (epsg:4326))
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:10:24,173 - build - model_api - INFO - setup_maps_from_raster_reclass.raster_fn: vito
-2024-02-16 09:10:24,173 - build - model_api - INFO - setup_maps_from_raster_reclass.reclass_table_fn: vito_mapping
-2024-02-16 09:10:24,173 - build - model_api - INFO - setup_maps_from_raster_reclass.reclass_variables: [&#39;roughness_manning&#39;, &#39;infiltcap&#39;]
-2024-02-16 09:10:24,173 - build - model_api - INFO - setup_maps_from_raster_reclass.fill_method: None
-2024-02-16 09:10:24,173 - build - model_api - INFO - setup_maps_from_raster_reclass.reproject_method: nearest
-2024-02-16 09:10:24,174 - build - model_api - INFO - setup_maps_from_raster_reclass.interpolation_method: triangulation
-2024-02-16 09:10:24,174 - build - model_api - INFO - setup_maps_from_raster_reclass.locationtype: 2d
-2024-02-16 09:10:24,174 - build - model_api - INFO - setup_maps_from_raster_reclass.name: None
-2024-02-16 09:10:24,174 - build - model_api - INFO - setup_maps_from_raster_reclass.split_dataset: True
-2024-02-16 09:10:24,174 - build - model_api - INFO - Preparing map data by reclassifying the data in vito based on vito_mapping
-2024-02-16 09:10:24,174 - build - rasterdataset - INFO - Reading vito raster data from /home/runner/.hydromt_data/artifact_data/v0.0.8/vito.tif
-2024-02-16 09:10:24,188 - build - rasterdataset - DEBUG - Clip to [12.433, 46.467, 12.523, 46.538] (epsg:4326))
-2024-02-16 09:10:24,189 - build - dataframe - INFO - Reading vito_mapping csv data from /usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt_delft3dfm/data/landuse/vito_mapping.csv
-The nodata value None is not in the reclass table.None will be used for the params.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:10:24,269 - build - model_api - INFO - setup_rainfall_from_constant.constant_value: 150
-2024-02-16 09:10:24,269 - build - dflowfm - INFO - Preparing rainfall meteo forcing from uniform timeseries.
-2024-02-16 09:10:24,271 - build - boundaries - INFO - Preparing global (spatially uniform) timeseries.
-2024-02-16 09:10:24,271 - build - boundaries - WARNING - time unit days is not supported by the current GUI version: 2022.04
-2024-02-16 09:10:24,273 - build - dflowfm - INFO - Writing model data to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d
-2024-02-16 09:10:24,273 - build - dflowfm - INFO - Writing maps files to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/maps
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:10:24,330 - build - model_api - DEBUG - Writing file geoms/region.geojson
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:10:24,356 - build - model_api - DEBUG - Writing file geoms/mesh2d.geojson
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:10:24,431 - build - model_api - WARNING - Replacing geom: mesh2d
-2024-02-16 09:10:24,431 - build - model_api - WARNING - Replacing geom: region
-2024-02-16 09:10:24,432 - build - model_api - WARNING - Replacing geom: mesh2d
-2024-02-16 09:10:24,432 - build - model_api - DEBUG - Writing file geoms/region.geojson
-2024-02-16 09:10:24,436 - build - model_api - DEBUG - Writing file geoms/mesh2d.geojson
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-02-16 09:10:24,522 - build - dflowfm - INFO - Writting forcing files.
-2024-02-16 09:10:24,550 - build - dflowfm - INFO - Initialising empty dimr file
-INFO:build:Initialising empty dimr file
-2024-02-16 09:10:24,550 - build - dflowfm - INFO - Adding dflowfm component to dimr config
-INFO:build:Adding dflowfm component to dimr config
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2024-02-16 09:10:24,551 - build - dflowfm - INFO - Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/dimr_config.xml
+2024-09-23 13:05:15,477 - build - log - DEBUG - Writing log messages to new file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/hydromt.log.
+2024-09-23 13:05:15,477 - build - log - INFO - HydroMT version: 0.10.0
+2024-09-23 13:05:15,477 - build - main - INFO - Building instance of dflowfm model at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d.
+2024-09-23 13:05:15,477 - build - main - INFO - User settings:
+2024-09-23 13:05:16,055 - build - data_catalog - INFO - Reading data catalog artifact_data latest
+2024-09-23 13:05:16,055 - build - data_catalog - INFO - Parsing data catalog from /home/runner/.hydromt_data/artifact_data/v0.0.9/data_catalog.yml
+2024-09-23 13:05:16,682 - build - model_api - INFO - Initializing dflowfm model from hydromt_delft3dfm (v0.2.1.dev0).
+2024-09-23 13:05:16,682 - build - data_catalog - INFO - Parsing data catalog from /usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt_delft3dfm/data/parameters_data.yml
+2024-09-23 13:05:16,687 - build - dflowfm - INFO - Initialising empty mdu file
+2024-09-23 13:05:16,691 - build - dflowfm - INFO - project crs: 3857
+2024-09-23 13:05:16,691 - build - model_api - INFO - setup_mesh2d.region: {&#39;bbox&#39;: [12.4331, 46.4661, 12.5212, 46.5369]}
+2024-09-23 13:05:16,691 - build - model_api - INFO - setup_mesh2d.res: 500
+2024-09-23 13:05:16,723 - build - model_api - INFO - setup_maps_from_rasterdataset.raster_fn: merit_hydro
+2024-09-23 13:05:16,724 - build - model_api - INFO - setup_maps_from_rasterdataset.variables: [&#39;elevtn&#39;]
+2024-09-23 13:05:16,724 - build - model_api - INFO - setup_maps_from_rasterdataset.fill_method: nearest
+2024-09-23 13:05:16,724 - build - model_api - INFO - setup_maps_from_rasterdataset.reproject_method: nearest
+2024-09-23 13:05:16,724 - build - model_api - INFO - setup_maps_from_rasterdataset.interpolation_method: nearestNb
+2024-09-23 13:05:16,724 - build - model_api - INFO - setup_maps_from_rasterdataset.locationtype: 2d
+2024-09-23 13:05:16,724 - build - model_api - INFO - setup_maps_from_rasterdataset.name: None
+2024-09-23 13:05:16,724 - build - model_api - INFO - setup_maps_from_rasterdataset.split_dataset: True
+2024-09-23 13:05:16,724 - build - model_api - INFO - Preparing maps data from raster source merit_hydro
+2024-09-23 13:05:16,725 - build - rasterdataset - INFO - Reading merit_hydro raster data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/merit_hydro/{variable}.tif
+2024-09-23 13:05:16,751 - build - rasterdataset - DEBUG - Clip to [12.433, 46.467, 12.523, 46.538] (epsg:4326))
+2024-09-23 13:05:16,896 - build - model_api - INFO - setup_maps_from_raster_reclass.raster_fn: vito
+2024-09-23 13:05:16,896 - build - model_api - INFO - setup_maps_from_raster_reclass.reclass_table_fn: vito_mapping
+2024-09-23 13:05:16,896 - build - model_api - INFO - setup_maps_from_raster_reclass.reclass_variables: [&#39;roughness_manning&#39;, &#39;infiltcap&#39;]
+2024-09-23 13:05:16,896 - build - model_api - INFO - setup_maps_from_raster_reclass.fill_method: None
+2024-09-23 13:05:16,896 - build - model_api - INFO - setup_maps_from_raster_reclass.reproject_method: nearest
+2024-09-23 13:05:16,896 - build - model_api - INFO - setup_maps_from_raster_reclass.interpolation_method: triangulation
+2024-09-23 13:05:16,896 - build - model_api - INFO - setup_maps_from_raster_reclass.locationtype: 2d
+2024-09-23 13:05:16,896 - build - model_api - INFO - setup_maps_from_raster_reclass.name: None
+2024-09-23 13:05:16,896 - build - model_api - INFO - setup_maps_from_raster_reclass.split_dataset: True
+2024-09-23 13:05:16,896 - build - model_api - INFO - Preparing map data by reclassifying the data in vito based on vito_mapping
+2024-09-23 13:05:16,897 - build - rasterdataset - INFO - Reading vito raster data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/vito.tif
+2024-09-23 13:05:16,912 - build - rasterdataset - DEBUG - Clip to [12.433, 46.467, 12.523, 46.538] (epsg:4326))
+2024-09-23 13:05:16,913 - build - dataframe - INFO - Reading vito_mapping csv data from /usr/share/miniconda3/envs/hydromt-delft3dfm/lib/python3.9/site-packages/hydromt_delft3dfm/data/landuse/vito_mapping.csv
+The nodata value None is not in the reclass table.None will be used for the params.
+2024-09-23 13:05:16,982 - build - model_api - INFO - setup_rainfall_from_constant.constant_value: 150
+2024-09-23 13:05:16,982 - build - dflowfm - INFO - Preparing rainfall meteo forcing from uniform timeseries.
+2024-09-23 13:05:16,984 - build - boundaries - INFO - Preparing global (spatially uniform) timeseries.
+2024-09-23 13:05:16,984 - build - boundaries - WARNING - time unit days is not supported by the current GUI version: 2022.04
+2024-09-23 13:05:16,986 - build - dflowfm - INFO - Writing model data to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d
+2024-09-23 13:05:16,986 - build - dflowfm - INFO - Writing maps files to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/maps
+2024-09-23 13:05:17,046 - build - model_api - DEBUG - Writing file geoms/region.geojson
+2024-09-23 13:05:17,070 - build - model_api - DEBUG - Writing file geoms/mesh2d.geojson
+2024-09-23 13:05:17,145 - build - model_api - WARNING - Replacing geom: mesh2d
+2024-09-23 13:05:17,146 - build - model_api - WARNING - Replacing geom: region
+2024-09-23 13:05:17,146 - build - model_api - WARNING - Replacing geom: mesh2d
+2024-09-23 13:05:17,146 - build - model_api - DEBUG - Writing file geoms/region.geojson
+2024-09-23 13:05:17,153 - build - model_api - DEBUG - Writing file geoms/mesh2d.geojson
+2024-09-23 13:05:17,424 - build - dflowfm - INFO - Writting forcing files.
+2024-09-23 13:05:17,451 - build - dflowfm - INFO - Initialising empty dimr file
+INFO:build:Initialising empty dimr file
+2024-09-23 13:05:17,451 - build - dflowfm - INFO - Adding dflowfm component to dimr config
+INFO:build:Adding dflowfm component to dimr config
+2024-09-23 13:05:17,451 - build - dflowfm - INFO - Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/dimr_config.xml
 INFO:build:Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/dimr_config.xml
 
 </pre></div></div>
@@ -751,21 +687,21 @@ INFO:build:Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydrom
 <div class="highlight"><pre>
 ./build/dflowfm_2d/
  - dimr_config.xml
- - hydromt_data.yml
  - hydromt.log
-./build/dflowfm_2d/geoms
- - mesh2d.geojson
- - region.geojson
-./build/dflowfm_2d/dflowfm
- - fm_net.nc
- - bnd.ext
- - DFlowFM.mdu
- - fieldFile.ini
- - meteo_boundaryconditions.bc
+ - hydromt_data.yml
 ./build/dflowfm_2d/maps
- - frictioncoefficient.tif
- - bedlevel.tif
  - InfiltrationCapacity.tif
+ - bedlevel.tif
+ - frictioncoefficient.tif
+./build/dflowfm_2d/dflowfm
+ - fieldFile.ini
+ - bnd.ext
+ - fm_net.nc
+ - meteo_boundaryconditions.bc
+ - DFlowFM.mdu
+./build/dflowfm_2d/geoms
+ - region.geojson
+ - mesh2d.geojson
 </pre></div></div>
 </div>
 <p>The model root should contain three files and four folders:</p>
@@ -794,7 +730,7 @@ INFO:build:Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydrom
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
 </div>
@@ -861,8 +797,8 @@ INFO:build:Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydrom
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -882,7 +818,7 @@ INFO:build:Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydrom
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
     <br/>
   </p>
 </div>
@@ -895,7 +831,7 @@ INFO:build:Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydrom
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
 </p></div>
       
     </div>
