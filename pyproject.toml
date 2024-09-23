@@ -11,7 +11,7 @@ authors = [
 	{ name = "Jelmer Veenstra", email = "jelmer.veenstra@deltares.nl" },
 ]
 dependencies = [
-	"hydromt>=0.10.0, <0.15",
+	"hydromt>=0.10.0, <1",
 	"geopandas>=0.10, <1", # TODO: remove upper bound: https://github.com/Deltares/hydromt_delft3dfm/issues/135
 	"numpy<2",
 	"pandas>=2.0.0",
