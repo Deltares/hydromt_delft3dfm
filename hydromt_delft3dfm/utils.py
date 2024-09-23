@@ -1,6 +1,5 @@
 """Utilities read/write functions for Delft3D-FM model."""
 
-from enum import Enum
 from os.path import join
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
