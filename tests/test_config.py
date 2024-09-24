@@ -26,7 +26,7 @@ def test_read_write_config_empty_paths(tmpdir):
     # Check whether the path is an emtpy string
     # TODO: should be an empty string: https://github.com/Deltares/HYDROLIB-core/issues/703
     from pathlib import Path
-    assert model2.config["output"]["outputdir"] == Path()".")
+    assert model2.config["output"]["outputdir"] == Path(".")
 
 
 def test_setup_link1d2d(tmpdir):
