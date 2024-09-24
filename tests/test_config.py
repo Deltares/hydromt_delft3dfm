@@ -1,26 +1,33 @@
+from os.path import abspath, dirname, join
 from hydromt_delft3dfm import DFlowFMModel
 
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 
-def test_model_config(tmpdir):
+
+# from pathlib import Path; tmpdir = Path(r"c:\Users\veenstra\Downloads\hydromt_tmpdir")
+def test_read_write_config_empty_paths(tmpdir):
     # Instantiate an empty model
-    model = DFlowFMModel(root=tmpdir, mode="w")
-    # Get the template mdu
+    dir_root = join(EXAMPLEDIR, "dflowfm_piave")
+    dir_model = join(tmpdir, "dflowfm_piave")
+    import shutil
+    shutil.copytree(dir_root, dir_model)
+    model = DFlowFMModel(root=dir_model, mode="r+")
+    # Get the mdu settings
     model.read_config()
-    # Check an option
-    assert model.config["output"]["outputdir"] = "output"
+    # Check whether the path is an emtpy string
+    assert model.config["output"]["outputdir"] == ""
+    
+    # write the mdu to read again
     model.write_config()
-
-    model2 = DFlowFMModel(root=tmpdir, mode="r+")
+    # re-read the model
+    model2 = DFlowFMModel(root=dir_model, mode="r")
+    # Get the mdu settings
     model2.read_config()
+    # Check whether the path is an emtpy string
+    # TODO: should be an empty string: https://github.com/Deltares/HYDROLIB-core/issues/703
+    from pathlib import Path
+    assert model2.config["output"]["outputdir"] == Path()".")
 
-def test_read_config(tmpdir):
-    # Instantiate an empty model
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_piave"), mode="r+")
-    # Get the template mdu
-    model.read_config()
-    # Check an option
-    assert model.config["output"]["outputdir"] = "output"
 
 def test_setup_link1d2d(tmpdir):
     # Instantiate an empty model
