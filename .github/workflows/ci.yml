@@ -37,10 +37,8 @@ jobs:
           python -m pip install -e .[dev]
           hydromt --models
 
-      - name: Conda info
+      - name: list env contents
         run: |
-          conda info
-          conda list
           pip list
 
       - name: Test with pytest
