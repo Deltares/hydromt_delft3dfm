@@ -26,4 +26,5 @@ def test_read_write_config_empty_paths(tmpdir):
     model2.read_config()
     # Check whether the path is an emtpy string
     # TODO: should be an empty string: https://github.com/Deltares/HYDROLIB-core/issues/703
+    # then update this test: https://github.com/Deltares/hydromt_delft3dfm/issues/148
     assert model2.config["output"]["outputdir"] == Path(".")
