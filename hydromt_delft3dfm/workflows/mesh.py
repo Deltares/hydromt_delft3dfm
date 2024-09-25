@@ -9,6 +9,7 @@ import numpy as np
 import xarray as xr
 import xugrid as xu
 from hydrolib.core.dflowfm import Branch, Network
+from hydrolib.core.dflowfm.net.models import split_by
 from meshkernel import Contacts, GeometryList
 from shapely.geometry import (
     LineString,
@@ -426,7 +427,6 @@ def links1d2d_add_links_1d_to_2d(
     network._link1d2d.meshkernel.contacts_compute_single(
         node_mask=node_mask, polygons=geometrylist, projection_factor=1.0
     )
-
     # Filter the links that are longer than the max distance
     id1d = network._link1d2d.link1d2d[npresent:, 0]
     id2d = network._link1d2d.link1d2d[npresent:, 1]
