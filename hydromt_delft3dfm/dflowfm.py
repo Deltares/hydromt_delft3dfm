@@ -3715,8 +3715,6 @@ class DFlowFMModel(MeshModel):
                     "link1d2d_contact_type",
                 ]
             )
-            # Remove unused dims nLink1D2D_edge and Two
-            self._mesh = self._mesh.drop_dims(["nLink1D2D_edge", "Two"])
 
         # Add link1d2d to mesh
         self._mesh = self._mesh.merge(link1d2d)
