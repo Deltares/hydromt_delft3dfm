@@ -96,6 +96,3 @@ exclude = ["docs", "examples", "envs", "tests", ".github"]
 
 [tool.pytest.ini_options]
 addopts = "--durations=0"
-filterwarnings = [
-	"ignore:distutils Version classes are deprecated:DeprecationWarning",
-]
