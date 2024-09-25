@@ -456,7 +456,7 @@ def _set_link1d2d(network, link1d2d_arr):
     mesh2d_indices = link1d2d_arr[:, 1].copy()
     contacts = Contacts(mesh1d_indices=mesh1d_indices, mesh2d_indices=mesh2d_indices)
     network._link1d2d.meshkernel.contacts_set(contacts)
-    
+
 
 def _filter_links_on_idx(network: Network, keep: np.ndarray) -> None:
     # Select the remaining links
