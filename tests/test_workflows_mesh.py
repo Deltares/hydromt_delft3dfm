@@ -36,6 +36,7 @@ def test_setup_inks1d2d_add_links(tmpdir):
     model.set_root(tmpdir, mode="w")
     
     # TODO: make fixture of model?
+    # TODO: this test takes 35 seconds, speed it up
 
     # TODO: add checks with assertions, but at the moment nothing much seems to change compared to the initial model
     # at least not with respect to 1d2dlinks shape
