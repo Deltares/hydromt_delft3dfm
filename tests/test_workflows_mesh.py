@@ -1,6 +1,5 @@
 from os.path import abspath, dirname, join
 from hydromt_delft3dfm import DFlowFMModel
-from pathlib import Path
 
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 

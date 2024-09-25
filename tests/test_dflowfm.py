@@ -2,6 +2,7 @@ from os.path import abspath, dirname, join
 from hydromt_delft3dfm import DFlowFMModel
 from pathlib import Path
 
+TESTDATADIR = join(dirname(abspath(__file__)), "data")
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 
 
@@ -28,3 +29,22 @@ def test_read_write_config_empty_paths(tmpdir):
     # TODO: should be an empty string: https://github.com/Deltares/HYDROLIB-core/issues/703
     # then update this test: https://github.com/Deltares/hydromt_delft3dfm/issues/148
     assert model2.config["output"]["outputdir"] == Path(".")
+
+
+def test_setup_channels(tmpdir):
+    """
+    to increase code coverage, we are not actually doing anything here since all options fail
+    nevertheless a convenient setup for a sort of unit test, 
+    so good to keep somewhere and improve in the future
+    """
+    # Instantiate an empty model
+    # model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_piave"), mode="r")
+    # model.read()
+    # model.set_root(tmpdir, mode="w")
+    region = {'geom': join(TESTDATADIR, "local_data","1D_extent.geojson")}
+    channels_fn = join(TESTDATADIR, "local_data","1D_rivers.geojson")
+    crosssections_fn = join(TESTDATADIR, "local_data","1D_rivers_pointcrosssections.geojson")
+    # TODO: enable this test as soon as it can succeed. This is useful to increase test coverage
+    #model.setup_channels(region=region, channels_fn=channels_fn,
+    #                     crosssections_fn=crosssections_fn,
+    #                     crosssections_type='point')
