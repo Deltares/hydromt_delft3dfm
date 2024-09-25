@@ -268,7 +268,8 @@ class DFlowFMModel(MeshModel):
             * Required variables: [crsid, order, z]
             By default None, crosssections will be set from branches
         crosssections_type : str, optional
-            Type of crosssections read from crosssections_fn. One of ["xyzpoints"].
+            Type of crosssections read from crosssections_fn.
+            One of ["xyzpoints", "point"].
             By default None.
         snap_offset: float, optional
             Snapping tolerance to automatically connecting branches.
@@ -337,7 +338,7 @@ class DFlowFMModel(MeshModel):
         if crosssections_type is None:
             crosssections_type = "branch"
             # TODO: maybe assign a specific one for river, like branch_river
-        assert {crosssections_type}.issubset({"xyzpoints", "branch"})
+        assert {crosssections_type}.issubset({"xyzpoints", "branch", "point"})
         crosssections = self._setup_crosssections(
             branches=channels,
             region=region,
@@ -2987,13 +2988,10 @@ class DFlowFMModel(MeshModel):
                         self._MAPS[rm_dict[name]].update(inidict)
                         # Update default interpolation method
                         if inidict.interpolationmethod == "averaging":
-                            self._MAPS[rm_dict[name]][
-                                "interpolation"
-                            ] = inidict.averagingtype
+                            interpmethod = inidict.averagingtype
                         else:
-                            self._MAPS[rm_dict[name]][
-                                "interpolation"
-                            ] = inidict.interpolationmethod
+                            interpmethod = inidict.interpolationmethod
+                        self._MAPS[rm_dict[name]]["interpolation"] = interpmethod
                         # Rename to hydromt name
                         name = rm_dict[name]
                     # Add to maps
@@ -3057,7 +3055,7 @@ class DFlowFMModel(MeshModel):
                     # update config if friction
                     if "frictype" in self._MAPS[name]:
                         self.set_config(
-                            "physics.UniFrictType", self._MAPS[name]["frictype"]
+                            "physics.uniffricttype", self._MAPS[name]["frictype"]
                         )
                     # update config if infiltration
                     if name == "infiltcap":
