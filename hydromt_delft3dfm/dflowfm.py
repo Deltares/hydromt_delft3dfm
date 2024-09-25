@@ -268,7 +268,7 @@ class DFlowFMModel(MeshModel):
             * Required variables: [crsid, order, z]
             By default None, crosssections will be set from branches
         crosssections_type : str, optional
-            Type of crosssections read from crosssections_fn. One of ["xyzpoints"].
+            Type of crosssections read from crosssections_fn. One of ["xyzpoints", "point"].
             By default None.
         snap_offset: float, optional
             Snapping tolerance to automatically connecting branches.
@@ -337,7 +337,7 @@ class DFlowFMModel(MeshModel):
         if crosssections_type is None:
             crosssections_type = "branch"
             # TODO: maybe assign a specific one for river, like branch_river
-        assert {crosssections_type}.issubset({"xyzpoints", "branch"})
+        assert {crosssections_type}.issubset({"xyzpoints", "branch", "point"})
         crosssections = self._setup_crosssections(
             branches=channels,
             region=region,
