@@ -671,12 +671,7 @@ def links1d2d_add_links_2d_to_1d_lateral(
             keep.append(i)
 
     # Select the remaining links
-    network._link1d2d.link1d2d = network._link1d2d.link1d2d[keep]
-    network._link1d2d.link1d2d_contact_type = network._link1d2d.link1d2d_contact_type[
-        keep
-    ]
-    network._link1d2d.link1d2d_id = network._link1d2d.link1d2d_id[keep]
-    network._link1d2d.link1d2d_long_name = network._link1d2d.link1d2d_long_name[keep]
+    _filter_links_on_idx(network, keep)
 
     # extract links from network object
     link1d2d = mutils.links1d2d_from_hydrolib_network(network)
