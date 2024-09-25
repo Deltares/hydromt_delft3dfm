@@ -450,14 +450,18 @@ def links1d2d_add_links_1d_to_2d(
     return link1d2d
 
 
-def _filter_links_on_idx(network: Network, keep: np.ndarray) -> None:
-    # Select the remaining links
-    link1d2d_arr = network._link1d2d.link1d2d[keep]
+def _set_link1d2d(network, link1d2d_arr):
     # set contacts on meshkernel, use .copy() to avoid strided arrays
     mesh1d_indices = link1d2d_arr[:, 0].copy()
     mesh2d_indices = link1d2d_arr[:, 1].copy()
     contacts = Contacts(mesh1d_indices=mesh1d_indices, mesh2d_indices=mesh2d_indices)
     network._link1d2d.meshkernel.contacts_set(contacts)
+    
+
+def _filter_links_on_idx(network: Network, keep: np.ndarray) -> None:
+    # Select the remaining links
+    link1d2d_arr = network._link1d2d.link1d2d[keep]
+    _set_link1d2d(network, link1d2d_arr)
 
 
 def links1d2d_add_links_2d_to_1d_embedded(
