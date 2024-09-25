@@ -268,7 +268,8 @@ class DFlowFMModel(MeshModel):
             * Required variables: [crsid, order, z]
             By default None, crosssections will be set from branches
         crosssections_type : str, optional
-            Type of crosssections read from crosssections_fn. One of ["xyzpoints", "point"].
+            Type of crosssections read from crosssections_fn.
+            One of ["xyzpoints", "point"].
             By default None.
         snap_offset: float, optional
             Snapping tolerance to automatically connecting branches.
@@ -2987,13 +2988,13 @@ class DFlowFMModel(MeshModel):
                         self._MAPS[rm_dict[name]].update(inidict)
                         # Update default interpolation method
                         if inidict.interpolationmethod == "averaging":
-                            self._MAPS[rm_dict[name]][
-                                "interpolation"
-                            ] = inidict.averagingtype
+                            self._MAPS[rm_dict[name]]["interpolation"] = (
+                                inidict.averagingtype
+                            )
                         else:
-                            self._MAPS[rm_dict[name]][
-                                "interpolation"
-                            ] = inidict.interpolationmethod
+                            self._MAPS[rm_dict[name]]["interpolation"] = (
+                                inidict.interpolationmethod
+                            )
                         # Rename to hydromt name
                         name = rm_dict[name]
                     # Add to maps
