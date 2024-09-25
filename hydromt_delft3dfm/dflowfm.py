@@ -3342,7 +3342,7 @@ class DFlowFMModel(MeshModel):
     def write_mesh(self, write_gui=True):
         """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc>."""
         self._assert_write_mode()
-        savedir = dirname(join(self.root, self._config_fn))
+        savedir = join(self.root, "dflowfm")
         mesh_filename = "fm_net.nc"
 
         # write mesh
@@ -3710,8 +3710,8 @@ class DFlowFMModel(MeshModel):
             self._mesh = self._mesh.drop_vars(
                 [
                     "link1d2d",
-                    "link1d2d_ids",
-                    "link1d2d_long_names",
+                    "link1d2d_id",
+                    "link1d2d_long_name",
                     "link1d2d_contact_type",
                 ]
             )
