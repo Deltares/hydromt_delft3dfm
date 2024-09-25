@@ -12,7 +12,7 @@ dependencies:
   - geopandas<1
   - jupyter # to run examples
   - matplotlib # to run examples
-  - hydromt>=0.10.0,<1 # To avoid getting v1 alpha
+  - hydromt>=0.10.0,<1.0.0a0 # To avoid getting v1 alpha
   - nbsphinx # docs notebook examples
   - numpy
   - pandas>=2.0.0
@@ -35,5 +35,5 @@ dependencies:
   - networkx
   - llvmlite>=0.39.1 # hydrolib-core
   - pip:
-      - hydrolib-core>=0.6.1,<0.8
+      - hydrolib-core>=0.8.0
       - meshkernel>=4.3.0
