@@ -35,5 +35,5 @@ dependencies:
   - networkx
   - llvmlite>=0.39.1 # hydrolib-core
   - pip:
-      - hydrolib-core>=0.6.1,<0.8
+      - hydrolib-core>=0.8.0
       - meshkernel>=4.3.0
