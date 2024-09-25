@@ -2988,13 +2988,10 @@ class DFlowFMModel(MeshModel):
                         self._MAPS[rm_dict[name]].update(inidict)
                         # Update default interpolation method
                         if inidict.interpolationmethod == "averaging":
-                            self._MAPS[rm_dict[name]]["interpolation"] = (
-                                inidict.averagingtype
-                            )
+                            interpmethod = inidict.averagingtype
                         else:
-                            self._MAPS[rm_dict[name]]["interpolation"] = (
-                                inidict.interpolationmethod
-                            )
+                            interpmethod = inidict.interpolationmethod
+                        self._MAPS[rm_dict[name]]["interpolation"] = interpmethod
                         # Rename to hydromt name
                         name = rm_dict[name]
                     # Add to maps
