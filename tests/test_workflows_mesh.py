@@ -6,7 +6,6 @@ EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 
 
 def test_hydrolib_network_from_mesh(tmpdir):
-    # from pathlib import Path; tmpdir = Path(r"c:\Users\veenstra\Downloads\hydromt_tmpdir")
     model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_piave"), mode="r")
     model.read()
     model.set_root(tmpdir, mode="w")
