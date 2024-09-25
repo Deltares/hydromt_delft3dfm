@@ -429,7 +429,7 @@
 <span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
 <span class="kn">import</span> <span class="nn">xugrid</span> <span class="k">as</span> <span class="nn">xu</span>
 <span class="kn">from</span> <span class="nn">hydrolib.core.dflowfm</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Network</span>
-<span class="kn">from</span> <span class="nn">meshkernel</span> <span class="kn">import</span> <span class="n">GeometryList</span>
+<span class="kn">from</span> <span class="nn">meshkernel</span> <span class="kn">import</span> <span class="n">Contacts</span><span class="p">,</span> <span class="n">GeometryList</span>
 <span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">LineString</span><span class="p">,</span>
     <span class="n">MultiLineString</span><span class="p">,</span>
@@ -837,7 +837,6 @@
     <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">contacts_compute_single</span><span class="p">(</span>
         <span class="n">node_mask</span><span class="o">=</span><span class="n">node_mask</span><span class="p">,</span> <span class="n">polygons</span><span class="o">=</span><span class="n">geometrylist</span><span class="p">,</span> <span class="n">projection_factor</span><span class="o">=</span><span class="mf">1.0</span>
     <span class="p">)</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">_process</span><span class="p">()</span>
 
     <span class="c1"># Filter the links that are longer than the max distance</span>
     <span class="n">id1d</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">[</span><span class="n">npresent</span><span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
@@ -865,12 +864,12 @@
 
 <span class="k">def</span> <span class="nf">_filter_links_on_idx</span><span class="p">(</span><span class="n">network</span><span class="p">:</span> <span class="n">Network</span><span class="p">,</span> <span class="n">keep</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># Select the remaining links</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_contact_type</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_contact_type</span><span class="p">[</span>
-        <span class="n">keep</span>
-    <span class="p">]</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_id</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_id</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_long_name</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_long_name</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+    <span class="n">link1d2d_arr</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+    <span class="c1"># set contacts on meshkernel, use .copy() to avoid strided arrays</span>
+    <span class="n">mesh1d_indices</span> <span class="o">=</span> <span class="n">link1d2d_arr</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">mesh2d_indices</span> <span class="o">=</span> <span class="n">link1d2d_arr</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">contacts</span> <span class="o">=</span> <span class="n">Contacts</span><span class="p">(</span><span class="n">mesh1d_indices</span><span class="o">=</span><span class="n">mesh1d_indices</span><span class="p">,</span> <span class="n">mesh2d_indices</span><span class="o">=</span><span class="n">mesh2d_indices</span><span class="p">)</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">contacts_set</span><span class="p">(</span><span class="n">contacts</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="links1d2d_add_links_2d_to_1d_embedded">
@@ -969,7 +968,6 @@
     <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">contacts_compute_with_points</span><span class="p">(</span>
         <span class="n">node_mask</span><span class="o">=</span><span class="n">node_mask</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">multipoint</span>
     <span class="p">)</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">_process</span><span class="p">()</span>
 
     <span class="c1"># extract links from network object</span>
     <span class="n">link1d2d</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">links1d2d_from_hydrolib_network</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
@@ -1110,12 +1108,7 @@
             <span class="n">keep</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 
     <span class="c1"># Select the remaining links</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_contact_type</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_contact_type</span><span class="p">[</span>
-        <span class="n">keep</span>
-    <span class="p">]</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_id</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_id</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
-    <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_long_name</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d_long_name</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+    <span class="n">_filter_links_on_idx</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="p">)</span>
 
     <span class="c1"># extract links from network object</span>
     <span class="n">link1d2d</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">links1d2d_from_hydrolib_network</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>

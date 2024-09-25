@@ -695,7 +695,8 @@
 <span class="sd">            * Required variables: [crsid, order, z]</span>
 <span class="sd">            By default None, crosssections will be set from branches</span>
 <span class="sd">        crosssections_type : str, optional</span>
-<span class="sd">            Type of crosssections read from crosssections_fn. One of [&quot;xyzpoints&quot;].</span>
+<span class="sd">            Type of crosssections read from crosssections_fn.</span>
+<span class="sd">            One of [&quot;xyzpoints&quot;, &quot;point&quot;].</span>
 <span class="sd">            By default None.</span>
 <span class="sd">        snap_offset: float, optional</span>
 <span class="sd">            Snapping tolerance to automatically connecting branches.</span>
@@ -764,7 +765,7 @@
         <span class="k">if</span> <span class="n">crosssections_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">crosssections_type</span> <span class="o">=</span> <span class="s2">&quot;branch&quot;</span>
             <span class="c1"># TODO: maybe assign a specific one for river, like branch_river</span>
-        <span class="k">assert</span> <span class="p">{</span><span class="n">crosssections_type</span><span class="p">}</span><span class="o">.</span><span class="n">issubset</span><span class="p">({</span><span class="s2">&quot;xyzpoints&quot;</span><span class="p">,</span> <span class="s2">&quot;branch&quot;</span><span class="p">})</span>
+        <span class="k">assert</span> <span class="p">{</span><span class="n">crosssections_type</span><span class="p">}</span><span class="o">.</span><span class="n">issubset</span><span class="p">({</span><span class="s2">&quot;xyzpoints&quot;</span><span class="p">,</span> <span class="s2">&quot;branch&quot;</span><span class="p">,</span> <span class="s2">&quot;point&quot;</span><span class="p">})</span>
         <span class="n">crosssections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_crosssections</span><span class="p">(</span>
             <span class="n">branches</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
             <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
@@ -3480,13 +3481,10 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">rm_dict</span><span class="p">[</span><span class="n">name</span><span class="p">]]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">inidict</span><span class="p">)</span>
                         <span class="c1"># Update default interpolation method</span>
                         <span class="k">if</span> <span class="n">inidict</span><span class="o">.</span><span class="n">interpolationmethod</span> <span class="o">==</span> <span class="s2">&quot;averaging&quot;</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">rm_dict</span><span class="p">[</span><span class="n">name</span><span class="p">]][</span>
-                                <span class="s2">&quot;interpolation&quot;</span>
-                            <span class="p">]</span> <span class="o">=</span> <span class="n">inidict</span><span class="o">.</span><span class="n">averagingtype</span>
+                            <span class="n">interpmethod</span> <span class="o">=</span> <span class="n">inidict</span><span class="o">.</span><span class="n">averagingtype</span>
                         <span class="k">else</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">rm_dict</span><span class="p">[</span><span class="n">name</span><span class="p">]][</span>
-                                <span class="s2">&quot;interpolation&quot;</span>
-                            <span class="p">]</span> <span class="o">=</span> <span class="n">inidict</span><span class="o">.</span><span class="n">interpolationmethod</span>
+                            <span class="n">interpmethod</span> <span class="o">=</span> <span class="n">inidict</span><span class="o">.</span><span class="n">interpolationmethod</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">rm_dict</span><span class="p">[</span><span class="n">name</span><span class="p">]][</span><span class="s2">&quot;interpolation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpmethod</span>
                         <span class="c1"># Rename to hydromt name</span>
                         <span class="n">name</span> <span class="o">=</span> <span class="n">rm_dict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
                     <span class="c1"># Add to maps</span>
@@ -3553,7 +3551,7 @@
                     <span class="c1"># update config if friction</span>
                     <span class="k">if</span> <span class="s2">&quot;frictype&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">name</span><span class="p">]:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">set_config</span><span class="p">(</span>
-                            <span class="s2">&quot;physics.UniFrictType&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;frictype&quot;</span><span class="p">]</span>
+                            <span class="s2">&quot;physics.uniffricttype&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;frictype&quot;</span><span class="p">]</span>
                         <span class="p">)</span>
                     <span class="c1"># update config if infiltration</span>
                     <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;infiltcap&quot;</span><span class="p">:</span>
