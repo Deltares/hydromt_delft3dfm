@@ -421,18 +421,19 @@ def set_xyz_crosssections(
     crosssections.loc[:, "z"] = crosssections.z
     crosssections.loc[:, "order"] = crosssections.loc[:, "order"].astype("int")
 
-  # setup failed due to invalid crosssections
-    xyzcounts = crosssections.groupby(level=0)["crsid"].apply(np.count_nonzero)
+    # count number of points per cross-section id
+    crosssections = crosssections.reset_index(drop=True)
+    xyzcounts = crosssections.copy().groupby('crsid')['crsid'].transform('size')
     _invalid_ids = crosssections[xyzcounts < 3].index
     if not _invalid_ids.empty:
         crosssections = crosssections.drop(_invalid_ids)
         logger.warning(
             f"Crosssection with id: {list(_invalid_ids)}"
-            "are dropped: invalid crosssections with less than 3 survey points. "
+            "is dropped: invalid crosssections with less than 3 survey points. "
         )
 
     # convert xyz crosssection into yz profile
-    crosssections = crosssections.groupby(level=0).apply(xyzp2xyzl, (["order"]))
+    crosssections = crosssections.groupby("crsid").apply(xyzp2xyzl, (["order"]))
     crosssections.crs = branches.crs
 
     # snap to branch
@@ -993,20 +994,20 @@ def _set_yz_crs(crosssections: gpd.GeoDataFrame):
     return crosssections_
 
 
-def xyzp2xyzl(xyz: pd.DataFrame, sort_by: list = ["x", "y"]):
+def xyzp2xyzl(xyz: pd.DataFrame, sort_by: list = ["x", "y"]) -> gpd.GeoDataFrame:
     """Convert xyz points to xyz lines.
 
     Parameters
     ----------
     xyz: pd.DataFrame
-        The xyz points.
+        A DataFrame with the xyz-points stored in columns ['x', 'y', 'z'].
     sort_by: list, optional
         List of attributes to sort by. Defaults to ["x", "y"].
 
     Returns
     -------
-    gpd.GeoSeries
-        The xyz lines.
+    gpd.GeoDataframe
+        A GeoDataframe with the xy-profile as a LineString and a column for z.
     """
     sort_by = [s.lower() for s in sort_by]
 
