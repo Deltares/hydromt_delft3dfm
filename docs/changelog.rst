@@ -18,7 +18,7 @@ Added
 
 Changed
 -------
-- Change default spacing in setup_channels from None to np.inf. (PR #133)
+- Change default spacing in setup_channels from ``None`` to ``np.inf``. (PR #133)
 Fixed
 -----
 - Bugfixing of reading of frictions (global), crosssections and boundaries when update. (PR #81)
