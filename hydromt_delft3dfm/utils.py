@@ -497,7 +497,7 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
 
     # replace nan with None
     gdf = gdf.replace(np.nan, None)
-    
+
     # Write structures
     structures = StructureModel(structure=gdf.to_dict("records"))
 
