@@ -423,12 +423,12 @@ def set_xyz_crosssections(
 
   # setup failed due to invalid crosssections
     xyzcounts = crosssections.groupby(level=0)["crsid"].apply(np.count_nonzero)
-    _invalid_ids = crosssections[xyzcounts < 4].index
+    _invalid_ids = crosssections[xyzcounts < 3].index
     if not _invalid_ids.empty:
         crosssections = crosssections.drop(_invalid_ids)
         logger.warning(
             f"Crosssection with id: {list(_invalid_ids)}"
-            "are dropped: invalid crosssections with less than 4 survery points. "
+            "are dropped: invalid crosssections with less than 3 survey points. "
         )
 
     # convert xyz crosssection into yz profile
