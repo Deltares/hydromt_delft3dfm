@@ -1,3 +1,4 @@
+import pytest
 from os.path import abspath, dirname, join
 from hydromt_delft3dfm import DFlowFMModel
 from pathlib import Path
@@ -48,3 +49,16 @@ def test_setup_channels(tmpdir):
     #model.setup_channels(region=region, channels_fn=channels_fn,
     #                     crosssections_fn=crosssections_fn,
     #                     crosssections_type='point')
+
+
+def test_write_structures(tmpdir):
+    """
+    failed before for dflowfm_local model due to nan values in gdf
+    https://github.com/Deltares/hydromt_delft3dfm/issues/150
+    """
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model.read()
+    model.set_root(tmpdir, mode="w")
+    
+    # indirectly call hidden write_structures() method
+    model.write_geoms(write_mesh_gdf=False)
