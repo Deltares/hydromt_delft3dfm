@@ -3068,7 +3068,7 @@ class DFlowFMModel(MeshModel):
                         # update config if frcition
                         if "frictype" in self._MAPS[name]:
                             self.set_config(
-                                "physics.unifFrictType", self._MAPS[name]["frictype"]
+                                "physics.uniffricttype", self._MAPS[name]["frictype"]
                             )
                         # update config if infiltration
                         if name == "infiltcap":
