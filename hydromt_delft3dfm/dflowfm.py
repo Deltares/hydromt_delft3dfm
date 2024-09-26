@@ -215,7 +215,7 @@ class DFlowFMModel(MeshModel):
         friction_value: float = 0.023,
         crosssections_fn: str = None,
         crosssections_type: str = None,
-        spacing: int = None,
+        spacing: float = np.inf,
         snap_offset: float = 0.0,
         allow_intersection_snapping: bool = True,
     ):
@@ -3068,7 +3068,7 @@ class DFlowFMModel(MeshModel):
                         # update config if frcition
                         if "frictype" in self._MAPS[name]:
                             self.set_config(
-                                "physics.UniFrictType", self._MAPS[name]["frictype"]
+                                "physics.uniffricttype", self._MAPS[name]["frictype"]
                             )
                         # update config if infiltration
                         if name == "infiltcap":
@@ -3342,7 +3342,7 @@ class DFlowFMModel(MeshModel):
     def write_mesh(self, write_gui=True):
         """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc>."""
         self._assert_write_mode()
-        savedir = dirname(join(self.root, self._config_fn))
+        savedir = join(self.root, "dflowfm")
         mesh_filename = "fm_net.nc"
 
         # write mesh
@@ -3710,13 +3710,11 @@ class DFlowFMModel(MeshModel):
             self._mesh = self._mesh.drop_vars(
                 [
                     "link1d2d",
-                    "link1d2d_ids",
-                    "link1d2d_long_names",
+                    "link1d2d_id",
+                    "link1d2d_long_name",
                     "link1d2d_contact_type",
                 ]
             )
-            # Remove unused dims nLink1D2D_edge and Two
-            self._mesh = self._mesh.drop_dims(["nLink1D2D_edge", "Two"])
 
         # Add link1d2d to mesh
         self._mesh = self._mesh.merge(link1d2d)
