@@ -642,7 +642,7 @@
         <span class="n">friction_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.023</span><span class="p">,</span>
         <span class="n">crosssections_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">crosssections_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">spacing</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">spacing</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
         <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">allow_intersection_snapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
@@ -3564,7 +3564,7 @@
                         <span class="c1"># update config if frcition</span>
                         <span class="k">if</span> <span class="s2">&quot;frictype&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">name</span><span class="p">]:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">set_config</span><span class="p">(</span>
-                                <span class="s2">&quot;physics.UniFrictType&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;frictype&quot;</span><span class="p">]</span>
+                                <span class="s2">&quot;physics.uniffricttype&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;frictype&quot;</span><span class="p">]</span>
                             <span class="p">)</span>
                         <span class="c1"># update config if infiltration</span>
                         <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;infiltcap&quot;</span><span class="p">:</span>
@@ -3856,7 +3856,7 @@
     <span class="k">def</span> <span class="nf">write_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">write_gui</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write 1D branches and 2D mesh at &lt;root/dflowfm/fm_net.nc&gt;.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_assert_write_mode</span><span class="p">()</span>
-        <span class="n">savedir</span> <span class="o">=</span> <span class="n">dirname</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_fn</span><span class="p">))</span>
+        <span class="n">savedir</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;dflowfm&quot;</span><span class="p">)</span>
         <span class="n">mesh_filename</span> <span class="o">=</span> <span class="s2">&quot;fm_net.nc&quot;</span>
 
         <span class="c1"># write mesh</span>
@@ -4252,13 +4252,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span><span class="o">.</span><span class="n">drop_vars</span><span class="p">(</span>
                 <span class="p">[</span>
                     <span class="s2">&quot;link1d2d&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;link1d2d_ids&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;link1d2d_long_names&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;link1d2d_id&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;link1d2d_long_name&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;link1d2d_contact_type&quot;</span><span class="p">,</span>
                 <span class="p">]</span>
             <span class="p">)</span>
-            <span class="c1"># Remove unused dims nLink1D2D_edge and Two</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span><span class="o">.</span><span class="n">drop_dims</span><span class="p">([</span><span class="s2">&quot;nLink1D2D_edge&quot;</span><span class="p">,</span> <span class="s2">&quot;Two&quot;</span><span class="p">])</span>
 
         <span class="c1"># Add link1d2d to mesh</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">link1d2d</span><span class="p">)</span>

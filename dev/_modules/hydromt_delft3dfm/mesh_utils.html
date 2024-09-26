@@ -430,6 +430,9 @@
 <span class="kn">from</span> <span class="nn">pyproj</span> <span class="kn">import</span> <span class="n">CRS</span>
 <span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">LineString</span>
 
+<span class="c1"># TODO: maybe move this function here instead of under workflows?</span>
+<span class="kn">from</span> <span class="nn">hydromt_delft3dfm.workflows.mesh</span> <span class="kn">import</span> <span class="n">_set_link1d2d</span>
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
@@ -491,13 +494,10 @@
         <span class="n">dfm_network</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">_set_mesh1d</span><span class="p">()</span>  <span class="c1"># TODO: avoid this private function</span>
         <span class="c1"># dfm_network._mesh1d.meshkernel.mesh1d_set(grids[&quot;mesh1d&quot;].mesh)</span>
 
-    <span class="c1"># add 1d2dlinks</span>
-    <span class="n">_link1d2d_attrs</span> <span class="o">=</span> <span class="n">dfm_network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
     <span class="k">if</span> <span class="s2">&quot;link1d2d&quot;</span> <span class="ow">in</span> <span class="n">mesh</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">mesh</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">_link1d2d_attrs</span><span class="p">:</span>
-                <span class="c1"># use hydrolib-core conventions as it does harmonization when reading.</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="n">dfm_network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">val</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="c1"># add 1d2dlinks to network</span>
+        <span class="n">link1d2d_arr</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">[</span><span class="s2">&quot;link1d2d&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="n">_set_link1d2d</span><span class="p">(</span><span class="n">dfm_network</span><span class="p">,</span> <span class="n">link1d2d_arr</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dfm_network</span></div>
 
