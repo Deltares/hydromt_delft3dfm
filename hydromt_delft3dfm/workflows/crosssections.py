@@ -423,7 +423,7 @@ def set_xyz_crosssections(
 
     # count number of points per cross-section id
     crosssections = crosssections.reset_index(drop=True)
-    xyzcounts = crosssections.copy().groupby('crsid')['crsid'].transform('size')
+    xyzcounts = crosssections.copy().groupby("crsid")["crsid"].transform("size")
     _invalid_ids = crosssections[xyzcounts < 3].index
     if not _invalid_ids.empty:
         crosssections = crosssections.drop(_invalid_ids)
