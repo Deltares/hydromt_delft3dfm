@@ -14,14 +14,16 @@ This makes the code more robust and future-proof.
 Added
 -----
 - Setup 1D laterals at branches from points and polygons. (PR #81)
+- Adding tests for Mesh workflows. (PR #133)
 
 Changed
 -------
-
+- Change default spacing in setup_channels from ``None`` to ``np.inf``. (PR #133)
 Fixed
 -----
 - Bugfixing of reading of frictions (global), crosssections and boundaries when update. (PR #81)
 - Fixing bug related to changes to pandas TimeDelta formatting, see also https://pandas.pydata.org/docs/whatsnew/v2.2.0.html#other-deprecations. (PR #129)
+- Fixing setup_links1d2d for 2d to 1d direction. (PR #133)
 
 v0.2.0 (20 November 2023)
 =========================

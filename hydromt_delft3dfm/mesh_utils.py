@@ -10,6 +10,9 @@ from hydrolib.core.dflowfm import Network
 from pyproj import CRS
 from shapely.geometry import LineString
 
+# TODO: maybe move this function here instead of under workflows?
+from hydromt_delft3dfm.workflows.mesh import _set_link1d2d
+
 logger = logging.getLogger(__name__)
 
 
@@ -69,13 +72,10 @@ def hydrolib_network_from_mesh(
         dfm_network._mesh1d._set_mesh1d()  # TODO: avoid this private function
         # dfm_network._mesh1d.meshkernel.mesh1d_set(grids["mesh1d"].mesh)
 
-    # add 1d2dlinks
-    _link1d2d_attrs = dfm_network._link1d2d.__dict__.keys()
     if "link1d2d" in mesh:
-        for var, val in mesh.variables.items():
-            if var in _link1d2d_attrs:
-                # use hydrolib-core conventions as it does harmonization when reading.
-                setattr(dfm_network._link1d2d, var, val.values)
+        # add 1d2dlinks to network
+        link1d2d_arr = mesh["link1d2d"].to_numpy()
+        _set_link1d2d(dfm_network, link1d2d_arr)
 
     return dfm_network
 
