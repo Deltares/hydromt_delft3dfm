@@ -610,6 +610,9 @@ def set_point_crosssections(
         right_index=True,
     )
 
+    # get "closed" in the correct format
+    crosssections["closed"].replace({1: "yes", 0: "no"}, inplace=True)
+
     # NOTE: below is removed because in case of multiple structures
     # at the same location,
     # there can be multiple crossections
@@ -751,7 +754,8 @@ def set_point_crosssections(
     crosssections_["crsdef_thalweg"] = 0.0
 
     # support both string and boolean for closed column
-    crosssections_["crsdef_closed"].replace({"yes": 1, "no": 0}, inplace=True)
+    if "crsdef_closed" in crosssections_.columns:
+        crosssections_["crsdef_closed"].replace({"yes": 1, "no": 0}, inplace=True)
 
     crosssections_ = gpd.GeoDataFrame(crosssections_, crs=branches.crs)
 
@@ -857,14 +861,21 @@ def _set_trapezoid_crs(crosssections: gpd.GeoDataFrame):
     crsdefs = []
     crslocs = []
     for c in crosssections.itertuples():
-        levels = f"0 {c.height:.6f}"
-        flowwidths = f"{c.width:.6f} {c.t_width:.6f}"
+        # add closed crosssection definition
+        if c.closed == "yes":
+            levels = f"0 {c.height:.6f} {c.height+0.01:.6f}"
+            flowwidths = f"{c.width:.6f} {c.t_width:.6f} 0"
+            numlevels = 3
+        else:
+            levels = f"0 {c.height:.6f}"
+            flowwidths = f"{c.width:.6f} {c.t_width:.6f}"
+            numlevels = 3
         crsdefs.append(
             {
                 "crsdef_id": c.definitionid,
                 "crsdef_type": "zw",
                 "crsdef_branchid": c.branch_id,
-                "crsdef_numlevels": 2,
+                "crsdef_numlevels": numlevels,
                 "crsdef_levels": levels,
                 "crsdef_flowwidths": flowwidths,
                 "crsdef_totalwidths": flowwidths,
@@ -952,7 +963,8 @@ def _set_yz_crs(crosssections: gpd.GeoDataFrame):
                 "crsdef_yzcount": c.yzcount,
                 "crsdef_ycoordinates": c.ycoordinates,
                 "crsdef_zcoordinates": c.zcoordinates,
-                "crsdef_frictionid": c.frictionid,
+                "crsdef_frictionpositions": f"0 { c.ycoordinates.split(' ')[-1]}",
+                "crsdef_frictionids": c.frictionid,
                 "frictiontype": c.frictiontype,
                 "frictionvalue": c.frictionvalue,
             }
