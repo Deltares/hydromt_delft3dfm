@@ -421,6 +421,16 @@ def set_xyz_crosssections(
     crosssections.loc[:, "z"] = crosssections.z
     crosssections.loc[:, "order"] = crosssections.loc[:, "order"].astype("int")
 
+  # setup failed due to invalid crosssections
+    xyzcounts = crosssections.groupby(level=0)["crsid"].apply(np.count_nonzero)
+    _invalid_ids = crosssections[xyzcounts < 4].index
+    if not _invalid_ids.empty:
+        crosssections = crosssections.drop(_invalid_ids)
+        logger.warning(
+            f"Crosssection with id: {list(_invalid_ids)}"
+            "are dropped: invalid crosssections with less than 4 survery points. "
+        )
+
     # convert xyz crosssection into yz profile
     crosssections = crosssections.groupby(level=0).apply(xyzp2xyzl, (["order"]))
     crosssections.crs = branches.crs
@@ -590,9 +600,12 @@ def set_point_crosssections(
         logger.error("No crossections are set up.")
         return pd.DataFrame()
 
-    # get branch friction
-    crosssections = crosssections.merge(
-        branches[["frictionid", "frictiontype", "frictionvalue"]],
+    # get branch friction (regard crosssections')
+    _friction_cols = ["frictionid", "frictiontype", "frictionvalue"]
+    crosssections = crosssections.drop(
+        columns=[c for c in _friction_cols if c in crosssections.columns],
+    ).merge(
+        branches[_friction_cols],
         left_on="branch_id",
         right_index=True,
     )
