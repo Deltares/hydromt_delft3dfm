@@ -217,6 +217,7 @@ class DFlowFMModel(MeshModel):
         crosssections_type: str = None,
         spacing: float = np.inf,
         snap_offset: float = 0.0,
+        maxdist: float = 1.0,
         allow_intersection_snapping: bool = True,
     ):
         """Prepare the 1D channels and adds to branches 1D network.
@@ -274,6 +275,10 @@ class DFlowFMModel(MeshModel):
         snap_offset: float, optional
             Snapping tolerance to automatically connecting branches.
             By default 0.0, no snapping is applied.
+        maxdist: float, optional
+            Maximum distance allowed for crosssections to be applied on branches.
+            Only used for `crosssections_type` = point.
+            By default 1.0.
         allow_intersection_snapping: bool, optional
             Switch to choose whether snapping of multiple branch ends are allowed when
             ``snap_offset`` is used.
@@ -344,6 +349,7 @@ class DFlowFMModel(MeshModel):
             region=region,
             crosssections_fn=crosssections_fn,
             crosssections_type=crosssections_type,
+            maxdist=maxdist,
         )
 
         # add crosssections to exisiting ones and update geoms
@@ -668,6 +674,7 @@ class DFlowFMModel(MeshModel):
         crosssections_fn: Union[int, list] = None,
         crosssections_type: Union[int, list] = None,
         snap_offset: float = 0.0,
+        maxdist: float = 1.0,
         allow_intersection_snapping: bool = True,
     ):
         """Prepare the 1D rivers and adds to 1D branches.
@@ -743,6 +750,10 @@ class DFlowFMModel(MeshModel):
         snap_offset: float, optional
             Snapping tolerance to automatically connecting branches.
             By default 0.0, no snapping is applied.
+        maxdist: float, optional
+            Maximum distance allowed for crosssections to be applied on branches.
+            Only used for `crosssections_type` = point.
+            By default 1.0.
         allow_intersection_snapping: bool, optional
             Switch to choose whether snapping of multiple branch ends are allowed when
             ``snap_offset`` is used.
@@ -811,6 +822,7 @@ class DFlowFMModel(MeshModel):
                 region=region,
                 crosssections_fn=crs_fn,
                 crosssections_type=crs_type,
+                maxdist=maxdist,
             )
             crosssections = workflows.add_crosssections(
                 self.geoms.get("crosssections"), crosssections
