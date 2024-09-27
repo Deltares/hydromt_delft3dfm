@@ -52,7 +52,7 @@ via conda-forge and then hydromt-delft3dfm and the additionnal libraries via pip
 
 .. code-block:: console
 
-  $ conda env create -n hydromt-delft3dfm -c conda-forge python
+  $ conda create -n hydromt-delft3dfm -c conda-forge python
 
 Then, activate the environment (as stated by mamba/conda) to start making use of HydroMT-delft3dfm:
 
