@@ -10,15 +10,11 @@ on:
 jobs:
   build:
 
-    defaults:
-      run:
-        shell: bash -l {0}
-
     strategy:
       fail-fast: false
       max-parallel: 5
       matrix:
-        python-version: ["3.9", "3.10", "3.11"] #, "3.12"] # TODO: add 3.12 by fixing https://github.com/Deltares/hydromt_delft3dfm/issues/136
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
         os: ["windows-latest"]
 
     name: ${{ matrix.os }} - py${{ matrix.python-version }}
@@ -29,28 +25,26 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: conda-incubator/setup-miniconda@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-          miniforge-variant: Mambaforge
-          channels: conda-forge
-          channel-priority: strict
-          environment-file: envs/hydromt-delft3dfm.yml
-          activate-environment: hydromt-delft3dfm
 
-      - name: Conda info
+      - name: Install hydromt_delft3dfm and dependencies
         run: |
-          conda info
-          conda list
-
-      - name: Install hydromt_delft3dfm
-        run: |
-          flit install --pth-file
+          python -m pip install --upgrade pip
+          python -m pip install -e .[dev,test]
           hydromt --models
+
+      - name: list env contents
+        run: |
+          pip list
 
       - name: Test with pytest
         run: |
           python -m pytest --cov=hydromt_delft3dfm --cov-report xml --cov-report term
+
       - uses: codecov/codecov-action@v4
         env:
           CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
