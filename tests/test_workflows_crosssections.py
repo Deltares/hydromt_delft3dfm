@@ -7,10 +7,6 @@ from shapely import Point, LineString
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 
 
-def test_set_branch_crosssections():
-    # xsec.set_branch_crosssections(branches)
-    pass
-
 def test_set_xyz_crosssections():
     # test on a single branch with 3 cross-sections (id = 1 .. 3)
     branches = gpd.GeoDataFrame(data={"frictionid": ["Manning_0.023"], "frictiontype": ["Manning"], "frictionvalue": [0.023]}, geometry=[LineString([[0, 0], [1000, 1000]])], crs=28992)
@@ -31,27 +27,3 @@ def test_set_xyz_crosssections():
 
     assert len(crosssections) == 2 # check if the cross-section containing only 2 points is dropped
     #TODO more checks can be added 
-
-def test_set_point_crosssections():
-    # xsec.set_point_crosssections(branches, point_crosssections)
-    pass
-
-def test_set_circle_crs():
-    # xsec._set_circle_crs(circle_crosssections)
-    pass
-
-def test_set_rectangle_crs():
-    # xsec._set_rectangle_crs(rectangle_crosssections)
-    pass
-
-def test_set_trapezoid_crs():
-    # xsec._set_trapezoid_crs(trapezoid_crosssections)
-    pass
-
-def test_set_zw_crs():
-    # xsec._set_zw_crs(zw_crosssections)
-    pass
-
-def test_set_yz_crs():
-    # xsec._set_yz_crs(yz_crosssections)
-    pass
