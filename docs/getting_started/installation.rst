@@ -24,7 +24,7 @@ we recommend installing it into your *base* environment using:
 
   $ conda install mamba -n base -c conda-forge
 
-If conda is prefered, we recommond install libmamba as the solver. See explaination `here <https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community>`_.
+If conda is prefered, we recommend install libmamba as the solver. See explaination `here <https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community>`_.
 
 .. code-block:: console
 
@@ -52,7 +52,7 @@ via conda-forge and then hydromt-delft3dfm and the additionnal libraries via pip
 
 .. code-block:: console
 
-  $ conda env create -n hydromt-delft3dfm -c conda-forge hydromt
+  $ conda env create -n hydromt-delft3dfm -c conda-forge python
 
 Then, activate the environment (as stated by mamba/conda) to start making use of HydroMT-delft3dfm:
 
