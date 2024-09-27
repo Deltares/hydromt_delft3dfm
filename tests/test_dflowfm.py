@@ -33,19 +33,16 @@ def test_read_write_config_empty_paths(tmpdir):
 
 
 def test_setup_channels(tmpdir):
-    """
-    to increase code coverage, we are not actually doing anything here since all options fail
-    nevertheless a convenient setup for a sort of unit test, 
-    so good to keep somewhere and improve in the future
-    """
-    # Instantiate an empty model
+    # Instantiate a dummy model
     model = DFlowFMModel(
-        root=join(EXAMPLEDIR, "dflowfm_piave"), 
+        root=join(EXAMPLEDIR, "dflowfm_local"), 
         mode="r", 
         data_libs=[join(TESTDATADIR, "test_data.yaml")]
     )
     model.read()
     model.set_root(tmpdir, mode="w")
+
+    # setup_channels
     region = {'geom': join(TESTDATADIR, "local_data","1D_extent.geojson")}
     channels_fn = join(TESTDATADIR, "local_data","1D_rivers.geojson")
     crosssections_fn = join(TESTDATADIR, "local_data","1D_rivers_pointcrosssections.geojson")

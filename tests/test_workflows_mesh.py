@@ -45,4 +45,3 @@ def test_setup_links1d2d_add_links(tmpdir):
     
     # much of the validation is done upon writing, so maybe write the result also
     model.write_mesh()
-    model.write()
