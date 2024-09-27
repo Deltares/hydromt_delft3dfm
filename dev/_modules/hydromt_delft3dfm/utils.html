@@ -938,6 +938,9 @@
             <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">)</span>
 
+    <span class="c1"># replace nan with None</span>
+    <span class="n">gdf</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
     <span class="c1"># Write structures</span>
     <span class="n">structures</span> <span class="o">=</span> <span class="n">StructureModel</span><span class="p">(</span><span class="n">structure</span><span class="o">=</span><span class="n">gdf</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;records&quot;</span><span class="p">))</span>
 
