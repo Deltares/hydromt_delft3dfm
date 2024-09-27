@@ -17,7 +17,7 @@ _models = {
         "example": "dflowfm_piave",
         "ini": "dflowfm_build.yml",
         "model": DFlowFMModel,
-        "data": "artifact_data",
+        "data": "artifact_data==v0.0.6",
         "snap_offset": 25,
         "crs": 3857,  # global section needs to be passed to build as arguments
     },
