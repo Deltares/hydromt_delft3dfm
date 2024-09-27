@@ -45,5 +45,4 @@ def test_setup_links1d2d_add_links(tmpdir):
     
     # much of the validation is done upon writing, so maybe write the result also
     model.write_mesh()
-    # TODO: writing the model fails with "pydantic.v1.error_wrappers.ValidationError: 12 validation errors for StructureModel"
-    # model.write()
+    model.write()
