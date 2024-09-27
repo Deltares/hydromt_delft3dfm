@@ -32,6 +32,24 @@ def test_read_write_config_empty_paths(tmpdir):
     assert model2.config["output"]["outputdir"] == Path(".")
 
 
+def test_setup_mesh2d_refine(tmpdir):
+    # get dummy model
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_piave"), mode="r")
+    mesh2d = model.get_mesh('mesh2d')
+    assert mesh2d.face_coordinates.shape == (460, 2)
+    assert mesh2d.edge_coordinates.shape == (963, 2)
+    mesh1d = model.get_mesh('mesh1d')
+    assert mesh1d.edge_coordinates.shape == (1732, 2)
+
+    # refine and assert
+    model.setup_mesh2d_refine(polygon_fn=join(EXAMPLEDIR, "data","refine.geojson"))
+    mesh2d = model.get_mesh('mesh2d')
+    assert mesh2d.face_coordinates.shape == (656, 2)
+    assert mesh2d.edge_coordinates.shape == (1306, 2)
+    mesh1d = model.get_mesh('mesh1d')
+    assert mesh1d.edge_coordinates.shape == (1732, 2)
+
+
 def test_setup_channels(tmpdir):
     # Instantiate a dummy model
     model = DFlowFMModel(
