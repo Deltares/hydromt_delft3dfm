@@ -1032,7 +1032,7 @@ class DFlowFMModel(MeshModel):
             logger=self.logger,
         )
         # filter extra time for geting clipped pipes within the region (better match)
-        # remove the index name to avoid "ValueError: cannot insert branchid, 
+        # remove the index name to avoid "ValueError: cannot insert branchid,
         # already exists" in geopandas>=1
         pipes.index.name = None
         pipes = gpd.sjoin(pipes, region, predicate="within")
