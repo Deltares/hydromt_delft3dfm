@@ -2390,7 +2390,7 @@ class DFlowFMModel(MeshModel):
         if split_dataset is False and name is None:
             self.logger.error("name must be specified when split_dataset = False")
 
-        # Call super method
+        # Call super method from HydroMT Core
         variables = super().setup_maps_from_rasterdataset(
             raster_fn=raster_fn,
             variables=variables,
@@ -2399,6 +2399,11 @@ class DFlowFMModel(MeshModel):
             name=name,
             split_dataset=split_dataset,
         )
+
+        for var in variables:
+            da = self.maps[var]
+            da.where(da == da.raster.nodata, -999.0)
+            self.set_maps(da, var)
 
         allowed_methods = [
             "triangulation",
@@ -2946,12 +2951,16 @@ class DFlowFMModel(MeshModel):
         # inifield_model_1d = [
         #     i for i in inifield_model.initial if "1d" in i.locationtype
         # ] # not supported yet
-        inifield_model_2dinitial = [
-            i for i in inifield_model.initial if "2d" in i.locationtype
-        ]
-        inifield_model_2dparameter = [
-            i for i in inifield_model.parameter if "2d" in i.locationtype
-        ]
+        inifield_model_2dinitial = (
+            [i for i in inifield_model.initial if "2d" in i.locationtype]
+            if inifield_model
+            else []
+        )
+        inifield_model_2dparameter = (
+            [i for i in inifield_model.parameter if "2d" in i.locationtype]
+            if inifield_model
+            else []
+        )
         inifield_model_2d = inifield_model_2dinitial + inifield_model_2dparameter
         if any(inifield_model_2d):
             # Loop over initial / parameter to read the geotif
