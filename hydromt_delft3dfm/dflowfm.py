@@ -2370,10 +2370,10 @@ class DFlowFMModel(MeshModel):
             'lanczos', 'average', 'mode', 'gauss', 'max', 'min', 'med', 'q1', 'q3',
             'sum', 'rms']
         interpolation_method : str, optional
-            Interpolation method for DFlow-FM. By default triangulation. Except for
-            waterlevel and waterdepth then the default is mean.
-            When methods other than 'triangulation', the relative search cell size will
-            be estimated based on resolution of the raster.
+            Interpolation method for DFlow-FM. By default mean for waterlevel and
+            waterdepth, and triangulation for all other variables. When methods other
+            than 'triangulation' are used, the relative search cell size will be
+            estimated based on resolution of the raster.
             Available methods: ['triangulation', 'mean', 'nearestNb', 'max', 'min',
             'invDist', 'minAbs', 'median']
         locationtype : str, optional
