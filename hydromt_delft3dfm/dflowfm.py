@@ -3029,6 +3029,7 @@ class DFlowFMModel(MeshModel):
             if da.raster.nodata is None or np.isnan(da.raster.nodata):
                 da.raster.set_nodata(-999)
             da.raster.to_raster(_fn)
+            self.logger.info(f"Writing file {mapsroot}/{name}.tif")
             # Prepare dict
             if interp_method == "triangulation":
                 inidict = {
@@ -3069,20 +3070,26 @@ class DFlowFMModel(MeshModel):
                     # update config if infiltration
                     if name == "infiltcap":
                         self.set_config("grw.infiltrationmodel", 2)
-
+                else:
+                    self.logger.error(
+                        f"Could not write map to model: {name} not recognized"
+                    )
             elif isinstance(ds, xr.Dataset):
                 for v in ds.data_vars:
                     if v in self._MAPS:
                         _prepare_inifields(self._MAPS[v], ds[v])
                         # update config if frcition
-                        if "frictype" in self._MAPS[name]:
+                        if self._MAPS[v] == "frictype":
                             self.set_config(
                                 "physics.uniffricttype", self._MAPS[name]["frictype"]
                             )
                         # update config if infiltration
-                        if name == "infiltcap":
+                        if v == "infiltcap":
                             self.set_config("grw.infiltrationmodel", 2)
-
+                    else:
+                        self.logger.error(
+                            f"Could not write map to model: {v} not found in map {name}"
+                        )
         # Assign initial fields to model and write
         inifield_model = IniFieldModel(initial=inilist, parameter=paramlist)
         # Bug: when initialising IniFieldModel hydrolib-core does not parse correclty
