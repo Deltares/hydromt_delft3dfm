@@ -82,3 +82,20 @@ def test_write_structures(tmpdir):
     
     # indirectly call hidden write_structures() method
     model.write_geoms(write_mesh_gdf=False)
+
+
+def test_setup_maps_from_rasterdataset(tmpdir):
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model.read()
+    model.set_root(tmpdir, mode="w")
+    raster_fn = ""
+    variables = []
+    #TODO expand this test
+    #TODO assert if there are no NaN values, should be -999
+    model.setup_maps_from_rasterdataset(raster_fn, variables)
+
+
+def test_read_maps():
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    #TODO assert if initialfields are read correctly
+    #TODO check if NaN values are read correctly
