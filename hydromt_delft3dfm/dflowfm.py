@@ -2382,8 +2382,8 @@ class DFlowFMModel(MeshModel):
             Variable name, only in case data is of type DataArray or if a Dataset is
             added as is (split_dataset=False).
         split_dataset: bool, optional
-            If data is a xarray.Dataset, either add it as is to maps or split it into
-            several xarray.DataArrays.
+            If data is a xarray.Dataset, either add it as a Dataset to maps or split it
+            into a xarray.DataArrays per variable.
             Default to True.
         """
         # check for name when split_dataset is False
