@@ -7,8 +7,8 @@ import geopandas as gpd
 import numpy as np
 import pyflwdir
 import xarray as xr
-from hydromt.gis._vector_utils import _nearest, _nearest_merge
 from hydromt.gis._raster_utils import _spread2d
+from hydromt.gis._vector_utils import _nearest, _nearest_merge
 from hydromt.model.processes import rivers
 from scipy import ndimage
 from shapely.geometry import Point
