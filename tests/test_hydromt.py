@@ -93,7 +93,7 @@ def test_model_build_local_code(tmp_path):
     This test can be removed once the entire hydromt_delft3dfm is properly
     covered by unittests.
     """
-    logger = setuplog(__name__, join(tmp_path, "hydromt.log"), log_level=10)
+    # logger = setuplog(__name__, join(tmp_path, "hydromt.log"), log_level=10)
     _model = _models["local"]
     model = DFlowFMModel(
         root=tmp_path,
@@ -102,7 +102,7 @@ def test_model_build_local_code(tmp_path):
         network_snap_offset=_model["snap_offset"],
         crs=_model["crs"],
         openwater_computation_node_distance=40,
-        logger=logger
+        # logger=logger
     )
 
     config = join(TESTDATADIR, _model["ini"])
@@ -128,7 +128,7 @@ def test_model_build_piave_code(tmp_path):
     This test can be removed once the entire hydromt_delft3dfm is properly
     covered by unittests.
     """
-    logger = setuplog(__name__, join(tmp_path, "hydromt.log"), log_level=10)
+    # logger = setuplog(__name__, join(tmp_path, "hydromt.log"), log_level=10)
     _model = _models["piave"]
     model = DFlowFMModel(
         root=tmp_path,
@@ -137,7 +137,7 @@ def test_model_build_piave_code(tmp_path):
         network_snap_offset=_model["snap_offset"],
         crs=_model["crs"],
         openwater_computation_node_distance=40,
-        logger=logger
+        # logger=logger
     )
 
     config = join(TESTDATADIR, _model["ini"])
