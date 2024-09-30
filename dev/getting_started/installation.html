@@ -452,47 +452,30 @@ and related dependencies, please visit the documentation of
 <li><p><a class="reference external" href="https://github.com/Deltares/MeshKernelPy">meshkernel-py</a></p></li>
 <li><p><a class="reference external" href="https://networkx.org/">networkx</a></p></li>
 </ul>
-<p>If you already have a python &amp; conda installation but do not yet have mamba installed,
-we recommend installing it into your <em>base</em> environment using:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>install<span class="w"> </span>mamba<span class="w"> </span>-n<span class="w"> </span>base<span class="w"> </span>-c<span class="w"> </span>conda-forge
-</pre></div>
-</div>
-<p>If conda is prefered, we recommond install libmamba as the solver. See explaination <a class="reference external" href="https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community">here</a>.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>install<span class="w"> </span>-n<span class="w"> </span>base<span class="w"> </span>conda-libmamba-solver
-<span class="gp">$ </span>conda<span class="w"> </span>config<span class="w"> </span>--set<span class="w"> </span>solver<span class="w"> </span>libmamba
-</pre></div>
-</div>
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
-<p>HydroMT-Delft3DFM is available from pypi.
-We recommend installing using mamba/conda from conda-forge in a new environment.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>In the commands below you can exchange <cite>mamba</cite> for <cite>conda</cite>, see
-<a class="reference external" href="https://deltares.github.io/hydromt/latest/getting_started/installation.html#installation-guide">here</a>
-for the difference between both.</p>
-</div>
-<section id="install-hydromt-delft3dfm-in-a-new-environment-recommended">
-<h3>Install HydroMT-Delft3DFM in a new environment (recommended!)<a class="headerlink" href="#install-hydromt-delft3dfm-in-a-new-environment-recommended" title="Link to this heading">#</a></h3>
-<p>You can install HydroMT-Delft3DFM in a new environment called <cite>hydromt-delft3dfm</cite>.
-HydroMT-Delft3DFM is not yet available on conda-forge so we recommend installling HydroMT (core) first
-via conda-forge and then hydromt-delft3dfm and the additionnal libraries via pip.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>hydromt-delft3dfm<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>hydromt
+<p>HydroMT-Delft3DFM is available on pypi.</p>
+<section id="install-hydromt-delft3dfm-in-a-new-environment">
+<h3>Install HydroMT-Delft3DFM in a new environment<a class="headerlink" href="#install-hydromt-delft3dfm-in-a-new-environment" title="Link to this heading">#</a></h3>
+<p>You can install HydroMT-Delft3DFM in a new environment (recommended!) called <cite>hydromt-delft3dfm</cite>.
+HydroMT-Delft3DFM is available on pypi but not yet available on conda-forge.
+Therefore, we recommend creating a conda environment and install everything with pip.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>hydromt-delft3dfm<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11<span class="w"> </span>-c<span class="w"> </span>conda-forge
 </pre></div>
 </div>
-<p>Then, activate the environment (as stated by mamba/conda) to start making use of HydroMT-delft3dfm:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">conda activate hydromt-delft3dfm</span>
+<p>Then, activate the environment:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>activate<span class="w"> </span>hydromt-delft3dfm
 </pre></div>
 </div>
-<p>Finally, install Hydromt-Delft3DFM using pypi.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install hydromt-delft3dfm</span>
+<p>Finally, install Hydromt-Delft3DFM from pypi using pip.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>hydromt-delft3dfm
 </pre></div>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>If you already have this environment with this name either remove it with
-<cite>conda env remove -n hydromt-delft3dfm</cite> <strong>or</strong> set a new name for the environment
+<cite>conda remove -n hydromt-delft3dfm –all</cite> <strong>or</strong> set a new name for the environment
 by adding <cite>-n &lt;name&gt;</cite> to the line below.</p>
 </div>
 </section>
@@ -551,7 +534,7 @@ by adding <cite>-n &lt;name&gt;</cite> to the line below.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-hydromt-delft3dfm-in-a-new-environment-recommended">Install HydroMT-Delft3DFM in a new environment (recommended!)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-hydromt-delft3dfm-in-a-new-environment">Install HydroMT-Delft3DFM in a new environment</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#developer-install">Developer install</a></li>
