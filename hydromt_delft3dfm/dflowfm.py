@@ -17,10 +17,8 @@ import xugrid as xu
 from hydrolib.core.dflowfm import FMModel, IniFieldModel
 from hydrolib.core.dimr import DIMR, FMComponent, Start
 from hydromt.model import Model
-from hydromt.model.components import MeshComponent, GeomsComponent
 from hydromt.model.processes.mesh import create_mesh2d_from_region
 from pyproj import CRS
-from shapely.geometry import box
 
 from . import DATADIR, gis_utils, mesh_utils, utils, workflows
 
@@ -164,9 +162,10 @@ class DFlowFMModel(Model):
         if not isinstance(root, (str, Path)):
             raise ValueError("The 'root' parameter should be a of str or Path.")
 
-        components = {"mesh":{"type":"MeshComponent"},
-                      "geoms":{"type":"GeomsComponent"},
-                      }
+        components = {
+            "mesh": {"type": "MeshComponent"},
+            "geoms": {"type": "GeomsComponent"},
+        }
         super().__init__(
             root=root,
             components=components,
@@ -3421,8 +3420,9 @@ class DFlowFMModel(Model):
     #     # self.geoms has region attribute (not always), but it is sometimes None
     #     # if present and not None, it behaves different than legacy region
     #     # so it seems quite complex to update this part of the code
-    #     # self.region does also exist, but `TypeError: argument of type 'GeomsComponent' is not iterable`
-    #     # and `RecursionError: maximum recursion depth exceeded`, probably because we redefine region here
+    #     # self.region does also exist, but `TypeError: argument of
+    #     # type 'GeomsComponent' is not iterable` and `RecursionError: maximum
+    #     # recursion depth exceeded`, probably because we redefine region here
     #     if "region" in self.geoms:
     #         region = self.geoms["region"]
     #     # Else derives from mesh or branches
@@ -3753,7 +3753,7 @@ class DFlowFMModel(Model):
     def _check_crs(self):
         """Check if model crs is defined."""
         if self.crs is None:
-            if self._read: # TODO: `KeyError: '_read'`
+            if self._read:  # TODO: `KeyError: '_read'`
                 self.logger.warning(
                     "Could not derive CRS from reading the mesh file."
                     "Please define the CRS in the [global] init attributes before"
