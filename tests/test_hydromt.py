@@ -87,7 +87,9 @@ def test_model_build(tmpdir, model):
 
 def test_model_build_local_code(tmp_path):
     """
-    a python code version of the local model, to make debugging easier
+    A python code version of the local model, to make debugging easier.
+    This test can be removed once the entire hydromt_delft3dfm is properly
+    covered by unittests.
     """
     logger = setuplog(__name__, join(tmp_path, "hydromt.log"), log_level=10)
     _model = _models["local"]
@@ -120,7 +122,9 @@ def test_model_build_local_code(tmp_path):
 
 def test_model_build_piave_code(tmp_path):
     """
-    a python code version of the piave model, to make debugging easier
+    A python code version of the piave model, to make debugging easier.
+    This test can be removed once the entire hydromt_delft3dfm is properly
+    covered by unittests.
     """
     logger = setuplog(__name__, join(tmp_path, "hydromt.log"), log_level=10)
     _model = _models["piave"]
