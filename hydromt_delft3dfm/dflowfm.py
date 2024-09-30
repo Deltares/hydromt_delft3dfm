@@ -1,7 +1,6 @@
 """Implement Delft3D-FM hydromt plugin model class."""
 
 import itertools
-import logging
 import os
 from datetime import datetime, timedelta
 from os.path import basename, dirname, isfile, join
@@ -23,7 +22,7 @@ from pyproj import CRS
 from . import DATADIR, gis_utils, mesh_utils, utils, workflows
 
 __all__ = ["DFlowFMModel"]
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 
 class DFlowFMModel(Model):
@@ -122,7 +121,7 @@ class DFlowFMModel(Model):
         network_snap_offset=25,
         snap_newbranches_to_branches_at_snapnodes=True,
         openwater_computation_node_distance=40,
-        logger=logger,
+        # logger=logger,
     ):
         """Initialize the DFlowFMModel.
 
@@ -2161,7 +2160,7 @@ class DFlowFMModel(Model):
 
         """
         if "mesh2d" not in self.mesh_names:
-            logger.error(
+            self.logger.error(
                 "2d mesh is not available, use setup_mesh2d before refinement."
             )
             return
@@ -3753,7 +3752,7 @@ class DFlowFMModel(Model):
     def _check_crs(self):
         """Check if model crs is defined."""
         if self.crs is None:
-            if self._read:  # TODO: `KeyError: '_read'`
+            if self.read:
                 self.logger.warning(
                     "Could not derive CRS from reading the mesh file."
                     "Please define the CRS in the [global] init attributes before"
