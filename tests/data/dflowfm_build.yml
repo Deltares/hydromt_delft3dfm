@@ -2,7 +2,7 @@ setup_rivers_from_dem:
   region: 
     bbox: [12.4331, 46.4661, 12.5212, 46.5369]
   hydrography_fn: merit_hydro
-  river_geom_fn: hydro_rivers_lin
+  river_geom_fn: rivers_lin2019_v1
   rivdph_method: gvf
   rivwth_method: geom
   river_upa: 25.0
@@ -48,7 +48,7 @@ setup_maps_from_rasterdataset:
   split_dataset: True
 
 setup_maps_from_raster_reclass:
-  raster_fn: vito_2015
+  raster_fn: vito
   reclass_table_fn: vito_mapping
   reclass_variables: ['roughness_manning', 'infiltcap']
   interpolation_method: triangulation

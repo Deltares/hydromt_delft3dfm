@@ -4,8 +4,8 @@ import pdb
 from os.path import abspath, dirname, join
 
 import pytest
-from hydromt.cli.cli_utils import parse_config
-from hydromt.log import setuplog
+from hydromt.cli._utils import parse_config
+# from hydromt._utils.log import setuplog
 
 from hydromt_delft3dfm import DFlowFMModel
 
@@ -17,7 +17,7 @@ _models = {
         "example": "dflowfm_piave",
         "ini": "dflowfm_build.yml",
         "model": DFlowFMModel,
-        "data": "artifact_data",
+        "data": "artifact_data=v0.0.6",
         "snap_offset": 25,
         "crs": 3857,  # global section needs to be passed to build as arguments
     },
@@ -51,7 +51,9 @@ def test_model_build(tmpdir, model):
     # test build method
     # compare results with model from examples folder
     root = str(tmpdir.join(model))
-    logger = setuplog(__name__, join(root, "hydromt.log"), log_level=10)
+    # TODO: passing the logger does not seem to be necessary anymore according to
+    # https://github.com/Deltares/hydromt/blob/main/docs/guides/plugin_dev/migrating_to_v1.rst#logging
+    # logger = setuplog(__name__, join(root, "hydromt.log"), log_level=10)
     mod1 = _model["model"](
         root=root,
         mode="w",
@@ -59,7 +61,7 @@ def test_model_build(tmpdir, model):
         network_snap_offset=_model["snap_offset"],
         crs=_model["crs"],
         openwater_computation_node_distance=40,
-        logger=logger,
+        # logger=logger,
     )
     # Build method options
     config = join(TESTDATADIR, _model["ini"])
@@ -72,7 +74,7 @@ def test_model_build(tmpdir, model):
 
     # Compare with model from examples folder
     # (need to read it again for proper geoms check)
-    mod1 = _model["model"](root=root, mode="r", logger=logger)
+    mod1 = _model["model"](root=root, mode="r") #, logger=logger)
     mod1.read()
     root = join(EXAMPLEDIR, _model["example"])
     mod0 = _model["model"](root=root, mode="r")

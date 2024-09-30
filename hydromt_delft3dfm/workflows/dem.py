@@ -7,8 +7,9 @@ import geopandas as gpd
 import numpy as np
 import pyflwdir
 import xarray as xr
-from hydromt.gis_utils import nearest, nearest_merge, spread2d
-from hydromt.workflows import rivers
+from hydromt.gis._vector_utils import _nearest, _nearest_merge
+from hydromt.gis._raster_utils import _spread2d
+from hydromt.model.processes import rivers
 from scipy import ndimage
 from shapely.geometry import Point
 
@@ -123,7 +124,7 @@ def get_rivbank_dz(
     )
     da_mask.raster.set_crs(da_hnd.raster.crs)
     # find nearest stream segment for all river bank cells
-    segid_spread = spread2d(da_obs=segid, da_mask=da_mask)
+    segid_spread = _spread2d(da_obs=segid, da_mask=da_mask)
     # get edge of riv mask -> riv banks
     da_bnk_mask = np.logical_and(da_hnd > 0, np.logical_xor(da_mask, _mask))
     da_riv_mask = np.logical_and(
@@ -249,7 +250,7 @@ def get_river_bathymetry(
     # merge gdf_riv with gdf_stream
     if gdf_riv is not None:
         cols = [c for c in ["rivwth", "qbankfull"] if c in gdf_riv]
-        gdf_riv = nearest_merge(gdf_stream, gdf_riv, columns=cols, max_dist=max_dist)
+        gdf_riv = _nearest_merge(gdf_stream, gdf_riv, columns=cols, max_dist=max_dist)
         gdf_riv["rivlen"] = gdf_riv["rivdst"] - flw.downstream(gdf_riv["rivdst"])
     else:
         gdf_riv = gdf_stream
@@ -257,7 +258,7 @@ def get_river_bathymetry(
     if gdf_qbf is not None and "qbankfull" in gdf_qbf.columns:
         if "qbankfull" in gdf_riv:
             gdf_riv = gdf_riv.drop(colums="qbankfull")
-        idx_nn, dists = nearest(gdf_qbf, gdf_riv)
+        idx_nn, dists = _nearest(gdf_qbf, gdf_riv)
         valid = dists < max_dist
         gdf_riv.loc[idx_nn[valid], "qbankfull"] = gdf_qbf["qbankfull"].values[valid]
         logger.info(f"{sum(valid)}/{len(idx_nn)} qbankfull boundary points set.")

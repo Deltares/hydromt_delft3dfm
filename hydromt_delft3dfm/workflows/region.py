@@ -3,7 +3,7 @@
 import logging
 
 import geopandas as gpd
-from hydromt.workflows import parse_region
+from hydromt.model.processes.region import parse_region_geom
 from pyproj.crs import CRS
 from shapely.geometry import box
 
@@ -20,7 +20,7 @@ def parse_region_geometry(
     logger: logging.Logger = logger,
 ):
     """Parse hydromt stype region argument into region geometry."""
-    kind, region = parse_region(region, logger=logger)
+    kind, region = parse_region_geom(region, logger=logger)
     if kind == "bbox":
         bbox = region["bbox"]
         geom = gpd.GeoDataFrame(geometry=[box(*bbox)], crs=4326)

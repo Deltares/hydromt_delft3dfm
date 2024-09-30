@@ -49,8 +49,7 @@ def test_setup_mesh2d_refine(tmpdir):
     mesh1d = model.get_mesh('mesh1d')
     assert mesh1d.edge_coordinates.shape == (1732, 2)
 
-
-def test_setup_channels(tmpdir):
+def test_setup_channels():#tmpdir):
     # Instantiate a dummy model
     model = DFlowFMModel(
         root=join(EXAMPLEDIR, "dflowfm_local"), 
@@ -58,7 +57,7 @@ def test_setup_channels(tmpdir):
         data_libs=[join(TESTDATADIR, "test_data.yaml")]
     )
     model.read()
-    model.set_root(tmpdir, mode="w")
+    # model.set_root(tmpdir, mode="w")
 
     # setup_channels
     region = {'geom': join(TESTDATADIR, "local_data","1D_extent.geojson")}
@@ -69,6 +68,7 @@ def test_setup_channels(tmpdir):
         crosssections_fn=crosssections_fn,
         crosssections_type='point'
     )
+# test_setup_channels()
 
 
 def test_write_structures(tmpdir):
