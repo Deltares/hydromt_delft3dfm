@@ -7,6 +7,7 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import xarray as xr
+from hydromt.gis._vector_utils import _nearest_merge
 
 from hydromt_delft3dfm import graph_utils
 
@@ -51,7 +52,7 @@ def get_boundaries_with_nodeid(
     # generate all possible and allowed boundary locations
     _boundaries = graph_utils.get_endnodes_from_lines(branches, where="both")
 
-    boundaries = hydromt.gis_utils.nearest_merge(
+    boundaries = _nearest_merge(
         _boundaries, network1d_nodes, max_dist=0.1, overwrite=False
     )
     return boundaries
@@ -207,7 +208,7 @@ def compute_boundary_values(
         gdf_bnd = da_bnd.vector.to_gdf()
         gdf_bnd.crs = boundaries.crs
         # TODO remove after hydromt release>0.9.0
-        gdf_bnd = hydromt.gis_utils.nearest_merge(
+        gdf_bnd = _nearest_merge(
             gdf_bnd,
             boundaries,
             max_dist=snap_offset,
