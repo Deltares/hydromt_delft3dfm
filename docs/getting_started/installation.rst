@@ -17,59 +17,38 @@ Compared to HydroMT, HydroMT-delft3dfm has additional dependencies, namely:
 - `meshkernel-py <https://github.com/Deltares/MeshKernelPy>`_
 - `networkx <https://networkx.org/>`_
 
-If you already have a python & conda installation but do not yet have mamba installed,
-we recommend installing it into your *base* environment using:
-
-.. code-block:: console
-
-  $ conda install mamba -n base -c conda-forge
-
-If conda is prefered, we recommend install libmamba as the solver. See explaination `here <https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community>`_.
-
-.. code-block:: console
-
-  $ conda install -n base conda-libmamba-solver
-  $ conda config --set solver libmamba
-
 Installation
 ============
 
-HydroMT-Delft3DFM is available from pypi.
-We recommend installing using mamba/conda from conda-forge in a new environment.
+HydroMT-Delft3DFM is available on pypi.
 
-.. Note::
+Install HydroMT-Delft3DFM in a new environment 
+----------------------------------------------
 
-    In the commands below you can exchange `mamba` for `conda`, see
-    `here <https://deltares.github.io/hydromt/latest/getting_started/installation.html#installation-guide>`_
-    for the difference between both.
-
-Install HydroMT-Delft3DFM in a new environment (recommended!)
--------------------------------------------------------------
-
-You can install HydroMT-Delft3DFM in a new environment called `hydromt-delft3dfm`.
-HydroMT-Delft3DFM is not yet available on conda-forge so we recommend installling HydroMT (core) first
-via conda-forge and then hydromt-delft3dfm and the additionnal libraries via pip.
+You can install HydroMT-Delft3DFM in a new environment (recommended!) called `hydromt-delft3dfm`.
+HydroMT-Delft3DFM is available on pypi but not yet available on conda-forge.
+Therefore, we recommend creating a conda environment and install everything with pip.
 
 .. code-block:: console
 
-  $ conda create -n hydromt-delft3dfm -c conda-forge python
+  $ conda create -n hydromt-delft3dfm python=3.11 -c conda-forge
 
-Then, activate the environment (as stated by mamba/conda) to start making use of HydroMT-delft3dfm:
-
-.. code-block:: console
-
-  conda activate hydromt-delft3dfm
-
-Finally, install Hydromt-Delft3DFM using pypi.
+Then, activate the environment:
 
 .. code-block:: console
 
-  pip install hydromt-delft3dfm
+  $ conda activate hydromt-delft3dfm
+
+Finally, install Hydromt-Delft3DFM from pypi using pip.
+
+.. code-block:: console
+
+  $ pip install hydromt-delft3dfm
 
 .. Tip::
 
     If you already have this environment with this name either remove it with
-    `conda env remove -n hydromt-delft3dfm` **or** set a new name for the environment
+    `conda remove -n hydromt-delft3dfm --all` **or** set a new name for the environment
     by adding `-n <name>` to the line below.
 
 
