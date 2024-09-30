@@ -1468,6 +1468,9 @@
             <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># filter extra time for geting clipped pipes within the region (better match)</span>
+        <span class="c1"># remove the index name to avoid &quot;ValueError: cannot insert branchid,</span>
+        <span class="c1"># already exists&quot; in geopandas&gt;=1</span>
+        <span class="n">pipes</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">pipes</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">sjoin</span><span class="p">(</span><span class="n">pipes</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="s2">&quot;within&quot;</span><span class="p">)</span>
 
         <span class="c1"># setup crosssections</span>
