@@ -13,7 +13,7 @@ setup_maps_from_rasterdataset:
   interpolation_method: nearestNb
 
 setup_maps_from_raster_reclass:
-  raster_fn: vito
+  raster_fn: vito_2015
   reclass_table_fn: vito_mapping
   reclass_variables: ['roughness_manning', 'infiltcap']
   interpolation_method: triangulation
