@@ -22,7 +22,7 @@ Installation
 
 HydroMT-Delft3DFM is available on pypi.
 
-Install HydroMT-Delft3DFM in a new environment 
+Install HydroMT-Delft3DFM in a new environment
 ----------------------------------------------
 
 You can install HydroMT-Delft3DFM in a new environment (recommended!) called `hydromt-delft3dfm`.
