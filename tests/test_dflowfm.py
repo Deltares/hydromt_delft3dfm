@@ -71,6 +71,35 @@ def test_setup_channels(tmpdir):
     )
 
 
+def test_setup_bridges(tmpdir):
+    # Instantiate a dummy model
+    model = DFlowFMModel(
+        root=join(EXAMPLEDIR, "dflowfm_local"), 
+        mode="r", 
+        data_libs=[join(TESTDATADIR, "test_data.yaml")]
+    )
+    model.read()
+    model.set_root(tmpdir, mode="w")
+
+    # setup bridges
+    bridges_fn = join(TESTDATADIR, "local_data","bridges.geojson")
+    model.setup_bridges(bridge_filter=bridges_fn)
+
+
+def test_setup_culverts(tmpdir):
+    # Instantiate a dummy model
+    model = DFlowFMModel(
+        root=join(EXAMPLEDIR, "dflowfm_local"), 
+        mode="r", 
+        data_libs=[join(TESTDATADIR, "test_data.yaml")]
+    )
+    model.read()
+    model.set_root(tmpdir, mode="w")
+
+    # setup culverts
+    culverts_fn = join(TESTDATADIR, "local_data","bridges.geojson")
+    model.setup_culverts(cuverts_fn=culverts_fn)
+
 def test_write_structures(tmpdir):
     """
     failed before for dflowfm_local model due to nan values in gdf
