@@ -15,6 +15,7 @@ Added
 -----
 - Setup 1D laterals at branches from points and polygons. (PR #81)
 - Adding tests for Mesh workflows. (PR #133)
+- Add new method **setup_retentions**. (PR #170)
 
 Changed
 -------
