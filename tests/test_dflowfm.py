@@ -82,6 +82,7 @@ def test_setup_bridges(tmpdir):
     model.set_root(tmpdir, mode="w")
     
     # first add channels to obtain friction values for branches
+    # see also https://github.com/Deltares/hydromt_delft3dfm/issues/168
     region = {'geom': join(TESTDATADIR, "local_data","1D_extent.geojson")}
     channels_fn = join(TESTDATADIR, "local_data","1D_rivers.geojson")
     crosssections_fn = join(TESTDATADIR, "local_data","1D_rivers_pointcrosssections.geojson")
@@ -106,10 +107,21 @@ def test_setup_culverts(tmpdir):
     model.read()
     model.set_root(tmpdir, mode="w")
 
-    # setup culverts
+    # first add channels to obtain friction values for branches
+    # see also https://github.com/Deltares/hydromt_delft3dfm/issues/168
+    region = {'geom': join(TESTDATADIR, "local_data","1D_extent.geojson")}
+    channels_fn = join(TESTDATADIR, "local_data","1D_rivers.geojson")
+    crosssections_fn = join(TESTDATADIR, "local_data","1D_rivers_pointcrosssections.geojson")
+    model.setup_channels(
+        region=region, channels_fn=channels_fn,
+        crosssections_fn=crosssections_fn,
+        crosssections_type='point'
+    )
+
+    # setup culverts (total of 1 culvert)
     culverts_fn = join(TESTDATADIR, "local_data","culverts.geojson")
     model.setup_culverts(culverts_fn=culverts_fn)
-
+    assert len(model.geoms['culverts']) == 1
 
 def test_write_structures(tmpdir):
     """
