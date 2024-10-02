@@ -477,12 +477,13 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     """
     # Add compound structures
     cmp_structures = gdf.groupby(["chainage", "branchid"])["id"].apply(list)
+    gdf_cmp = pd.DataFrame()
     for cmp_count, cmp_st in enumerate(cmp_structures, start=1):
-        gdf = pd.concat(
+        gdf_cmp = pd.concat(
             [
-                gdf,
+                gdf_cmp,
                 pd.DataFrame(
-                    index=[max(gdf.index) + 1],
+                    index=[len(gdf_cmp) + 1],
                     data={
                         "id": [f"CompoundStructure_{cmp_count}"],
                         "name": [f"CompoundStructure_{cmp_count}"],
@@ -499,7 +500,9 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     gdf = gdf.replace(np.nan, None)
 
     # Write structures
-    structures = StructureModel(structure=gdf.to_dict("records"))
+    structures = StructureModel(
+        structure=gdf.to_dict("records") + gdf_cmp.to_dict("records")
+    )
 
     structures_fn = structures._filename() + ".ini"
     structures.save(
