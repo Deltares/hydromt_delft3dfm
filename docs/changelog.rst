@@ -19,6 +19,7 @@ Added
 Changed
 -------
 - Change default spacing in setup_channels from ``None`` to ``np.inf``. (PR #133)
+- No data values in maps from ``setup_maps_from_rasterdataset`` are now handled as -999.0. (PR #161)
 
 Fixed
 -----
