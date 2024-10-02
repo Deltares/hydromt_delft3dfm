@@ -80,11 +80,21 @@ def test_setup_bridges(tmpdir):
     )
     model.read()
     model.set_root(tmpdir, mode="w")
+    
+    # first add channels to obtain friction values for branches
+    region = {'geom': join(TESTDATADIR, "local_data","1D_extent.geojson")}
+    channels_fn = join(TESTDATADIR, "local_data","1D_rivers.geojson")
+    crosssections_fn = join(TESTDATADIR, "local_data","1D_rivers_pointcrosssections.geojson")
+    model.setup_channels(
+        region=region, channels_fn=channels_fn,
+        crosssections_fn=crosssections_fn,
+        crosssections_type='point'
+    )
 
-    # setup bridges
+    # setup bridges (total of 2 bridges)
     bridges_fn = join(TESTDATADIR, "local_data","bridges.geojson")
-    model.setup_bridges(bridge_filter=bridges_fn)
-
+    model.setup_bridges(bridges_fn=bridges_fn)
+    assert len(model.geoms['bridges']) == 2 
 
 def test_setup_culverts(tmpdir):
     # Instantiate a dummy model
@@ -97,8 +107,9 @@ def test_setup_culverts(tmpdir):
     model.set_root(tmpdir, mode="w")
 
     # setup culverts
-    culverts_fn = join(TESTDATADIR, "local_data","bridges.geojson")
-    model.setup_culverts(cuverts_fn=culverts_fn)
+    culverts_fn = join(TESTDATADIR, "local_data","culverts.geojson")
+    model.setup_culverts(culverts_fn=culverts_fn)
+
 
 def test_write_structures(tmpdir):
     """
