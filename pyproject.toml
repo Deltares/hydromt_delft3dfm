@@ -9,6 +9,7 @@ authors = [
 	{ name = "Xiaohan Li", email = "xiaohan.li@deltares.nl" },
 	{ name = "Hélène Boisgontier", email = "helene.boisgontier@deltares.nl" },
 	{ name = "Jelmer Veenstra", email = "jelmer.veenstra@deltares.nl" },
+ 	{ name = "Sebastian Hartgring", email = "sebastian.hartgring@deltares.nl" },
 ]
 dependencies = [
 	"hydromt>=0.10.0, <1", # TODO: move to hydromt>=1: https://github.com/Deltares/hydromt_delft3dfm/issues/137
