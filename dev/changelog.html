@@ -452,13 +452,15 @@ This makes the code more robust and future-proof.</p>
 <h3>Added<a class="headerlink" href="#added" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Setup 1D laterals at branches from points and polygons. (PR #81)</p></li>
-<li><p>Adding tests for Mesh workflows. (PR #133)</p></li>
+<li><p>Added tests for Mesh workflows. (PR #133)</p></li>
+<li><p>Added tests for xyz cross-section workflows (PR #153).</p></li>
 </ul>
 </section>
 <section id="changed">
 <h3>Changed<a class="headerlink" href="#changed" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Change default spacing in setup_channels from <code class="docutils literal notranslate"><span class="pre">None</span></code> to <code class="docutils literal notranslate"><span class="pre">np.inf</span></code>. (PR #133)</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">maxdist</span></code> variable to setup_rivers and setup_channels. (PR #153)</p></li>
 </ul>
 </section>
 <section id="fixed">
@@ -467,6 +469,7 @@ This makes the code more robust and future-proof.</p>
 <li><p>Bugfixing of reading of frictions (global), crosssections and boundaries when update. (PR #81)</p></li>
 <li><p>Fixing bug related to changes to pandas TimeDelta formatting, see also <a class="reference external" href="https://pandas.pydata.org/docs/whatsnew/v2.2.0.html#other-deprecations">https://pandas.pydata.org/docs/whatsnew/v2.2.0.html#other-deprecations</a>. (PR #129)</p></li>
 <li><p>Fixing setup_links1d2d for 2d to 1d direction. (PR #133)</p></li>
+<li><p>Several bugfixes related to processing of cross-sections (PR #153)</p></li>
 <li><p>Support for geopandas v1 (PR #158)</p></li>
 </ul>
 </section>

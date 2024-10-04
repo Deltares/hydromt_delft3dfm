@@ -644,6 +644,7 @@
         <span class="n">crosssections_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">spacing</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
         <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">maxdist</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">allow_intersection_snapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare the 1D channels and adds to branches 1D network.</span>
@@ -701,6 +702,10 @@
 <span class="sd">        snap_offset: float, optional</span>
 <span class="sd">            Snapping tolerance to automatically connecting branches.</span>
 <span class="sd">            By default 0.0, no snapping is applied.</span>
+<span class="sd">        maxdist: float, optional</span>
+<span class="sd">            Maximum distance allowed for crosssections to be applied on branches.</span>
+<span class="sd">            Only used for `crosssections_type` = point.</span>
+<span class="sd">            By default 1.0.</span>
 <span class="sd">        allow_intersection_snapping: bool, optional</span>
 <span class="sd">            Switch to choose whether snapping of multiple branch ends are allowed when</span>
 <span class="sd">            ``snap_offset`` is used.</span>
@@ -771,6 +776,7 @@
             <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
             <span class="n">crosssections_fn</span><span class="o">=</span><span class="n">crosssections_fn</span><span class="p">,</span>
             <span class="n">crosssections_type</span><span class="o">=</span><span class="n">crosssections_type</span><span class="p">,</span>
+            <span class="n">maxdist</span><span class="o">=</span><span class="n">maxdist</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># add crosssections to exisiting ones and update geoms</span>
@@ -1101,6 +1107,7 @@
         <span class="n">crosssections_fn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">crosssections_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">maxdist</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">allow_intersection_snapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare the 1D rivers and adds to 1D branches.</span>
@@ -1176,6 +1183,10 @@
 <span class="sd">        snap_offset: float, optional</span>
 <span class="sd">            Snapping tolerance to automatically connecting branches.</span>
 <span class="sd">            By default 0.0, no snapping is applied.</span>
+<span class="sd">        maxdist: float, optional</span>
+<span class="sd">            Maximum distance allowed for crosssections to be applied on branches.</span>
+<span class="sd">            Only used for `crosssections_type` = point.</span>
+<span class="sd">            By default 1.0.</span>
 <span class="sd">        allow_intersection_snapping: bool, optional</span>
 <span class="sd">            Switch to choose whether snapping of multiple branch ends are allowed when</span>
 <span class="sd">            ``snap_offset`` is used.</span>
@@ -1244,6 +1255,7 @@
                 <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
                 <span class="n">crosssections_fn</span><span class="o">=</span><span class="n">crs_fn</span><span class="p">,</span>
                 <span class="n">crosssections_type</span><span class="o">=</span><span class="n">crs_type</span><span class="p">,</span>
+                <span class="n">maxdist</span><span class="o">=</span><span class="n">maxdist</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">crosssections</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">add_crosssections</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">geoms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;crosssections&quot;</span><span class="p">),</span> <span class="n">crosssections</span>
@@ -1576,6 +1588,7 @@
         <span class="n">crosssections_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">crosssections_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;branch&quot;</span><span class="p">,</span>
         <span class="n">midpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">maxdist</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare 1D crosssections from branches, points and xyz.</span>
 
@@ -1621,13 +1634,13 @@
 <span class="sd">            * Optional variables:</span>
 <span class="sd">            If ``crosssections_type`` = &quot;point&quot;</span>
 
-<span class="sd">            * Required variables: crsid, shape, shift</span>
+<span class="sd">            * Required variables: crsid, shape, shift, closed</span>
 <span class="sd">            * Optional variables:</span>
-<span class="sd">                if shape = &#39;rectangle&#39;: &#39;width&#39;, &#39;height&#39;, &#39;closed&#39;</span>
-<span class="sd">                if shape = &#39;trapezoid&#39;: &#39;width&#39;, &#39;t_width&#39;, &#39;height&#39;, &#39;closed&#39;</span>
-<span class="sd">                if shape = &#39;yz&#39;: &#39;yzcount&#39;,&#39;ycoordinates&#39;,&#39;zcoordinates&#39;,&#39;closed&#39;</span>
+<span class="sd">                if shape = &#39;rectangle&#39;: &#39;width&#39;, &#39;height&#39;</span>
+<span class="sd">                if shape = &#39;trapezoid&#39;: &#39;width&#39;, &#39;t_width&#39;, &#39;height&#39;</span>
+<span class="sd">                if shape = &#39;yz&#39;: &#39;yzcount&#39;,&#39;ycoordinates&#39;,&#39;zcoordinates&#39;</span>
 <span class="sd">                if shape = &#39;zw&#39;: &#39;numlevels&#39;, &#39;levels&#39;, &#39;flowwidths&#39;,&#39;totalwidths&#39;,</span>
-<span class="sd">                &#39;closed&#39;.</span>
+<span class="sd">                    &#39;fricitonid&#39;, &#39;frictiontype&#39;, &#39;frictionvalue&#39;</span>
 <span class="sd">                if shape = &#39;zwRiver&#39;: Not Supported</span>
 <span class="sd">                Note that list input must be strings seperated by a whitespace &#39;&#39;.</span>
 <span class="sd">            By default None, crosssections will be set from branches</span>
@@ -1635,6 +1648,10 @@
 <span class="sd">            Type of crosssections read from crosssections_fn. One of</span>
 <span class="sd">            [&#39;branch&#39;, &#39;xyz&#39;, &#39;point&#39;].</span>
 <span class="sd">            By default `branch`.</span>
+<span class="sd">        maxdist: float, optional</span>
+<span class="sd">            Maximum distance allowed for crosssections to be applied on branches.</span>
+<span class="sd">            Only used for `crosssections_type` = point.</span>
+<span class="sd">            By default 1.0.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1727,9 +1744,8 @@
             <span class="c1"># set crsloc and crsdef attributes to crosssections</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Preparing 1D point crossections from </span><span class="si">{</span><span class="n">crosssections_fn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">gdf_cs</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">set_point_crosssections</span><span class="p">(</span>
-                <span class="n">branches</span><span class="p">,</span> <span class="n">gdf_cs</span><span class="p">,</span> <span class="n">maxdist</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_network_snap_offset</span>
+                <span class="n">branches</span><span class="p">,</span> <span class="n">gdf_cs</span><span class="p">,</span> <span class="n">maxdist</span><span class="o">=</span><span class="n">maxdist</span>
             <span class="p">)</span>
-
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Method </span><span class="si">{</span><span class="n">crosssections_type</span><span class="si">}</span><span class="s2"> is not implemented.&quot;</span>

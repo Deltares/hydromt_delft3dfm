@@ -855,8 +855,19 @@
     <span class="n">crosssections</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;z&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">z</span>
     <span class="n">crosssections</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;order&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;order&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">)</span>
 
+    <span class="c1"># count number of points per cross-section id</span>
+    <span class="n">crosssections</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">xyzcounts</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;crsid&quot;</span><span class="p">)[</span><span class="s2">&quot;crsid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="s2">&quot;size&quot;</span><span class="p">)</span>
+    <span class="n">_invalid_ids</span> <span class="o">=</span> <span class="n">crosssections</span><span class="p">[</span><span class="n">xyzcounts</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_invalid_ids</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="n">crosssections</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">_invalid_ids</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Crosssection with id: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">_invalid_ids</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;is dropped: invalid crosssections with less than 3 survey points. &quot;</span>
+        <span class="p">)</span>
+
     <span class="c1"># convert xyz crosssection into yz profile</span>
-    <span class="n">crosssections</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">xyzp2xyzl</span><span class="p">,</span> <span class="p">([</span><span class="s2">&quot;order&quot;</span><span class="p">]))</span>
+    <span class="n">crosssections</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;crsid&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">xyzp2xyzl</span><span class="p">,</span> <span class="p">([</span><span class="s2">&quot;order&quot;</span><span class="p">]))</span>
     <span class="n">crosssections</span><span class="o">.</span><span class="n">crs</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">crs</span>
 
     <span class="c1"># snap to branch</span>
@@ -1027,12 +1038,18 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;No crossections are set up.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
 
-    <span class="c1"># get branch friction</span>
-    <span class="n">crosssections</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
-        <span class="n">branches</span><span class="p">[[</span><span class="s2">&quot;frictionid&quot;</span><span class="p">,</span> <span class="s2">&quot;frictiontype&quot;</span><span class="p">,</span> <span class="s2">&quot;frictionvalue&quot;</span><span class="p">]],</span>
+    <span class="c1"># get branch friction (regard crosssections&#39;)</span>
+    <span class="n">_friction_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;frictionid&quot;</span><span class="p">,</span> <span class="s2">&quot;frictiontype&quot;</span><span class="p">,</span> <span class="s2">&quot;frictionvalue&quot;</span><span class="p">]</span>
+    <span class="n">crosssections</span> <span class="o">=</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
+        <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">_friction_cols</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">columns</span><span class="p">],</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+        <span class="n">branches</span><span class="p">[</span><span class="n">_friction_cols</span><span class="p">],</span>
         <span class="n">left_on</span><span class="o">=</span><span class="s2">&quot;branch_id&quot;</span><span class="p">,</span>
         <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
+
+    <span class="c1"># get &quot;closed&quot; in the correct format</span>
+    <span class="n">crosssections</span><span class="p">[</span><span class="s2">&quot;closed&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;no&quot;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># NOTE: below is removed because in case of multiple structures</span>
     <span class="c1"># at the same location,</span>
@@ -1175,7 +1192,8 @@
     <span class="n">crosssections_</span><span class="p">[</span><span class="s2">&quot;crsdef_thalweg&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
 
     <span class="c1"># support both string and boolean for closed column</span>
-    <span class="n">crosssections_</span><span class="p">[</span><span class="s2">&quot;crsdef_closed&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="s2">&quot;yes&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;crsdef_closed&quot;</span> <span class="ow">in</span> <span class="n">crosssections_</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">crosssections_</span><span class="p">[</span><span class="s2">&quot;crsdef_closed&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="s2">&quot;yes&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">crosssections_</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">crosssections_</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">branches</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
 
@@ -1282,14 +1300,21 @@
     <span class="n">crsdefs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">crslocs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">crosssections</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
-        <span class="n">levels</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;0 </span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">height</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">flowwidths</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">width</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">t_width</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="c1"># add closed crosssection definition</span>
+        <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">closed</span> <span class="o">==</span> <span class="s2">&quot;yes&quot;</span><span class="p">:</span>
+            <span class="n">levels</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;0 </span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">height</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">height</span><span class="o">+</span><span class="mf">0.01</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">flowwidths</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">width</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">t_width</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2"> 0&quot;</span>
+            <span class="n">numlevels</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">levels</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;0 </span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">height</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">flowwidths</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">width</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">t_width</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">numlevels</span> <span class="o">=</span> <span class="mi">3</span>
         <span class="n">crsdefs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="s2">&quot;crsdef_id&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">definitionid</span><span class="p">,</span>
                 <span class="s2">&quot;crsdef_type&quot;</span><span class="p">:</span> <span class="s2">&quot;zw&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;crsdef_branchid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">branch_id</span><span class="p">,</span>
-                <span class="s2">&quot;crsdef_numlevels&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_numlevels&quot;</span><span class="p">:</span> <span class="n">numlevels</span><span class="p">,</span>
                 <span class="s2">&quot;crsdef_levels&quot;</span><span class="p">:</span> <span class="n">levels</span><span class="p">,</span>
                 <span class="s2">&quot;crsdef_flowwidths&quot;</span><span class="p">:</span> <span class="n">flowwidths</span><span class="p">,</span>
                 <span class="s2">&quot;crsdef_totalwidths&quot;</span><span class="p">:</span> <span class="n">flowwidths</span><span class="p">,</span>
@@ -1377,7 +1402,8 @@
                 <span class="s2">&quot;crsdef_yzcount&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">yzcount</span><span class="p">,</span>
                 <span class="s2">&quot;crsdef_ycoordinates&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">ycoordinates</span><span class="p">,</span>
                 <span class="s2">&quot;crsdef_zcoordinates&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">zcoordinates</span><span class="p">,</span>
-                <span class="s2">&quot;crsdef_frictionid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">frictionid</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_frictionpositions&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;0 </span><span class="si">{</span><span class="w"> </span><span class="n">c</span><span class="o">.</span><span class="n">ycoordinates</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;crsdef_frictionids&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">frictionid</span><span class="p">,</span>
                 <span class="s2">&quot;frictiontype&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">frictiontype</span><span class="p">,</span>
                 <span class="s2">&quot;frictionvalue&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">frictionvalue</span><span class="p">,</span>
             <span class="p">}</span>
@@ -1406,20 +1432,20 @@
     <span class="k">return</span> <span class="n">crosssections_</span>
 
 
-<span class="k">def</span> <span class="nf">xyzp2xyzl</span><span class="p">(</span><span class="n">xyz</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">sort_by</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">]):</span>
+<span class="k">def</span> <span class="nf">xyzp2xyzl</span><span class="p">(</span><span class="n">xyz</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">sort_by</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert xyz points to xyz lines.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    xyz: pd.DataFrame</span>
-<span class="sd">        The xyz points.</span>
+<span class="sd">        A DataFrame with the xyz-points stored in columns [&#39;x&#39;, &#39;y&#39;, &#39;z&#39;].</span>
 <span class="sd">    sort_by: list, optional</span>
 <span class="sd">        List of attributes to sort by. Defaults to [&quot;x&quot;, &quot;y&quot;].</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    gpd.GeoSeries</span>
-<span class="sd">        The xyz lines.</span>
+<span class="sd">    gpd.GeoDataframe</span>
+<span class="sd">        A GeoDataframe with the xy-profile as a LineString and a column for z.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">sort_by</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sort_by</span><span class="p">]</span>
 
