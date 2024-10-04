@@ -1306,23 +1306,6 @@ class DFlowFMModel(MeshModel):
             gdf_cs = workflows.set_point_crosssections(
                 branches, gdf_cs, maxdist=maxdist
             )
-        elif crosssections_type == "special":  # read from the output
-            # required columns
-
-            # Read the crosssection data
-            gdf_cs = self.data_catalog.get_geodataframe(
-                crosssections_fn,
-                geom=region,
-                buffer=100,
-                predicate="contains",
-            )
-            # assign id
-            id_col = "crsid"
-            gdf_cs.index = gdf_cs[id_col]
-            gdf_cs.index.name = id_col
-
-            # reproject to model crs
-            gdf_cs.to_crs(self.crs)
         else:
             raise NotImplementedError(
                 f"Method {crosssections_type} is not implemented."
