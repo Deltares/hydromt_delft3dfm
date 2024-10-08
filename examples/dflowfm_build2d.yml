@@ -1,0 +1,22 @@
+global:
+  crs: 3857
+
+setup_mesh2d:
+  region: 
+    bbox: [12.4331, 46.4661, 12.5212, 46.5369]
+  res: 500
+
+setup_maps_from_rasterdataset:
+  raster_fn: merit_hydro
+  variables: ["elevtn"]
+  fill_method: nearest
+  interpolation_method: nearestNb
+
+setup_maps_from_raster_reclass:
+  raster_fn: vito_2015
+  reclass_table_fn: vito_mapping
+  reclass_variables: ['roughness_manning', 'infiltcap']
+  interpolation_method: triangulation
+
+setup_rainfall_from_constant:
+  constant_value: 150

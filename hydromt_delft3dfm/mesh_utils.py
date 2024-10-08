@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+"""Utilities mesh functions for Delft3D-FM model."""
 
 import logging
 from typing import Tuple
@@ -8,6 +8,10 @@ import xarray as xr
 import xugrid as xu
 from hydrolib.core.dflowfm import Network
 from pyproj import CRS
+from shapely.geometry import LineString
+
+# TODO: maybe move this function here instead of under workflows?
+from hydromt_delft3dfm.workflows.mesh import _set_link1d2d
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +23,7 @@ __all__ = [
     "mesh_from_hydrolib_network",
     "mesh1d_nodes_geodataframe",
     "network1d_nodes_geodataframe",
+    "network1d_geoms_geodataframe",
 ]
 
 
@@ -26,7 +31,7 @@ def hydrolib_network_from_mesh(
     mesh: xu.UgridDataset,
 ) -> Network:
     """
-    Converts from xugrid mesh to hydrolib-core network object.
+    Convert from xugrid mesh to hydrolib-core network object.
 
     Parameters
     ----------
@@ -49,9 +54,8 @@ def hydrolib_network_from_mesh(
 
     # add mesh2d
     if "mesh2d" in grids:
-        dfm_network._mesh2d._process(
-            grids["mesh2d"].mesh
-        )  # FIXME: test what if the mesh had bedlevel variable
+        dfm_network._mesh2d.meshkernel.mesh2d_set(grids["mesh2d"].mesh)
+        # FIXME: test what if the mesh had bedlevel variable
 
     # add mesh1d (including mesh1d and networkd1d)
     if "mesh1d" in grids:
@@ -65,15 +69,13 @@ def hydrolib_network_from_mesh(
                 setattr(dfm_network._mesh1d, var, val.values)
         # process
         dfm_network._mesh1d._process_network1d()
-        dfm_network._mesh1d._set_mesh1d()
+        dfm_network._mesh1d._set_mesh1d()  # TODO: avoid this private function
+        # dfm_network._mesh1d.meshkernel.mesh1d_set(grids["mesh1d"].mesh)
 
-    # add 1d2dlinks
-    _link1d2d_attrs = dfm_network._link1d2d.__dict__.keys()
     if "link1d2d" in mesh:
-        for var, val in mesh.variables.items():
-            if var in _link1d2d_attrs:
-                # use hydrolib-core conventions as it does harmonization when reading.
-                setattr(dfm_network._link1d2d, var, val.values)
+        # add 1d2dlinks to network
+        link1d2d_arr = mesh["link1d2d"].to_numpy()
+        _set_link1d2d(dfm_network, link1d2d_arr)
 
     return dfm_network
 
@@ -83,7 +85,7 @@ def mesh1d_network1d_from_hydrolib_network(
     crs: CRS,
 ) -> Tuple[xu.UgridDataset, xu.UgridDataset]:
     """
-    Creates xugrid mesh1d and network1d UgridDataset from hydrolib-core network object.
+    Create xugrid mesh1d and network1d UgridDataset from hydrolib-core network object.
 
     Parameters
     ----------
@@ -130,10 +132,11 @@ def mesh1d_network1d_from_hydrolib_network(
         uds_mesh1d = xu.UgridDataset(ds, grids=grid_mesh1d)
 
         # derive network1d
-        # The 1D network topology serves as the coordinate space in which a 1D mesh discretization
-        # will later be defined. The network is largely based on the UGRID conventions for its topology
-        # (i.e., nodes and edges) and additionally uses an optional edge_geometry to define the
-        # precise network branch geometries (more about this in the next Section).
+        # The 1D network topology serves as the coordinate space in which a 1D mesh
+        # discretization will later be defined. The network is largely based on the
+        # UGRID conventions for its topology (i.e., nodes and edges) and additionally
+        # uses an optional edge_geometry to define the precise network branch geometries
+        # (more about this in the next Section).
 
         grid_network1d = xu.Ugrid1d(
             node_x=mesh1d.network1d_node_x,
@@ -184,7 +187,8 @@ def mesh1d_network1d_from_hydrolib_network(
             network_edge_dim,
             mesh1d.network1d_branch_order,
         )
-        # might be supported in the future https://github.com/Deltares/HYDROLIB-core/issues/561
+        # might be supported in the future
+        # https://github.com/Deltares/HYDROLIB-core/issues/561
         # ds["network1d_branch_type"] = (
         #     edge_dim,
         #     mesh1d.network1d_branch_type,
@@ -238,7 +242,7 @@ def mesh2d_from_hydrolib_network(
     crs: CRS,
 ) -> xu.UgridDataset:
     """
-    Creates xugrid mesh2d UgridDataset from hydrolib-core network object.
+    Create xugrid mesh2d UgridDataset from hydrolib-core network object.
 
     Parameters
     ----------
@@ -252,19 +256,16 @@ def mesh2d_from_hydrolib_network(
     uds_mesh2d : xu.UgridDataset
         Mesh2d UgridDataset.
     """
-    mesh2d = network._mesh2d
+    mk_mesh2d = network._mesh2d.meshkernel.mesh2d_get()
 
     # meshkernel to xugrid Ugrid2D
-    uds_mesh2d = xu.Ugrid2d(
-        node_x=mesh2d.mesh2d_node_x,
-        node_y=mesh2d.mesh2d_node_y,
-        fill_value=-1,
-        face_node_connectivity=mesh2d.mesh2d_face_nodes,
-        edge_node_connectivity=mesh2d.mesh2d_edge_nodes,
+    uds_mesh2d = xu.Ugrid2d.from_meshkernel(
+        mk_mesh2d,
         name="mesh2d",
         projected=crs.is_projected,
         crs=crs,
     )
+
     # Convert to UgridDataset
     uds_mesh2d = xu.UgridDataset(uds_mesh2d.to_dataset())
     uds_mesh2d = uds_mesh2d.ugrid.assign_face_coords()
@@ -279,7 +280,7 @@ def mesh_from_hydrolib_network(
     crs: CRS,
 ) -> xu.UgridDataset:
     """
-    Creates xugrid mesh from hydrolib-core network object.
+    Create xugrid mesh from hydrolib-core network object.
 
     Parameters
     ----------
@@ -307,7 +308,6 @@ def mesh_from_hydrolib_network(
 
     # Mesh2d
     if not network._mesh2d.is_empty():
-        # network._mesh2d._set_mesh2d()
         uds_mesh2d = mesh2d_from_hydrolib_network(network, crs)
 
         if mesh is None:
@@ -343,7 +343,7 @@ def mesh1d_nodes_geodataframe(
     branches: gpd.GeoDataFrame,
 ) -> gpd.GeoDataFrame:
     """
-    Returns the nodes of mesh 1D as geodataframe.
+    Return the nodes of mesh 1D as geodataframe.
 
     Parameters
     ----------
@@ -408,3 +408,38 @@ def network1d_nodes_geodataframe(
     )
 
     return network1d_nodes
+
+
+def network1d_geoms_geodataframe(
+    uds_network1d: xu.UgridDataset,
+) -> gpd.GeoDataFrame:
+    """
+    Get network1d as gdp from network1d geoms.
+
+    Parameters
+    ----------
+    uds_network1d : xu.UgridDataset
+        Network1d UgridDataset including network1d data_vars.
+
+    Returns
+    -------
+    network1d : gpd.GeoDataFrame
+        Network1d GeoDataFrame.
+    """
+    network1d_geoms = []
+    start_index = 0
+    for n in uds_network1d["network1d_part_node_count"].values:
+        x = uds_network1d["network1d_geom_x"][start_index : start_index + n]
+        y = uds_network1d["network1d_geom_y"][start_index : start_index + n]
+        start_index += n
+        points = list(zip(x, y))
+        line = LineString(points)
+        network1d_geoms.append(line)
+    network1d_geoms = gpd.GeoDataFrame(
+        geometry=network1d_geoms,
+        crs=uds_network1d.ugrid.grid.crs,
+    )
+    network1d_geoms["branchid"] = uds_network1d["network1d_branch_id"]
+    network1d_geoms["branchorder"] = uds_network1d["network1d_branch_order"]
+
+    return network1d_geoms

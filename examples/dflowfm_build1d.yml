@@ -1,0 +1,46 @@
+global:
+  crs: 3857
+  network_snap_offset: 25
+  openwater_computation_node_distance: 40
+
+setup_rivers_from_dem:
+  region: 
+    bbox: [12.4331, 46.4661, 12.5212, 46.5369]
+  hydrography_fn: merit_hydro
+  river_geom_fn: hydro_rivers_lin
+  rivers_defaults_fn: rivers_defaults
+  rivdph_method: gvf
+  rivwth_method: geom
+  river_upa: 25.0
+  friction_type: "Manning"
+  friction_value: 0.023
+  rivbankq: 25
+
+setup_pipes:
+  region: 
+    bbox: [12.4331, 46.4661, 12.5212, 46.5369]
+  pipes_fn: grip_roads
+  pipes_defaults_fn: pipes_defaults
+  pipe_filter: pipe
+  spacing: 50
+  friction_type: WhiteColeBrook
+  friction_value: 0.003
+  crosssections_shape: circle
+  crosssections_value: 0.5
+  dem_fn: merit_hydro # [copdem30, merit]
+  pipes_depth: 2.0
+  snap_offset: 0.5
+  pipes_invlev: 3.0
+
+setup_manholes:
+  manholes_fn:
+  manhole_defaults_fn: manholes_defaults
+  dem_fn: merit_hydro
+  bedlevel_shift: 0.5
+
+setup_1dboundary:
+  boundary_value: -2.0
+  branch_type: river
+  boundary_type: waterlevel
+  boundary_unit: m
+  boundary_locs: both

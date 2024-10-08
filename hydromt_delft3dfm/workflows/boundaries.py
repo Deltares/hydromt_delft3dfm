@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+"""Workflows to prepare boundaries for Delft3D-FM model."""
 
 import logging
 from pathlib import Path
@@ -8,28 +8,37 @@ import hydromt.io
 import numpy as np
 import pandas as pd
 import xarray as xr
-from shapely.geometry import Point
 
 from hydromt_delft3dfm import graph_utils
 
 logger = logging.getLogger(__name__)
 
-
 __all__ = [
     "get_boundaries_with_nodeid",
-    "generate_boundaries_from_branches",
     "select_boundary_type",
     "validate_boundaries",
     "compute_boundary_values",
     "compute_2dboundary_values",
     "compute_meteo_forcings",
+    "compute_forcing_values_points",
+    "compute_forcing_values_polygon",
+    "get_geometry_coords_for_polygons",
 ]
+
+_TIMESTR = {
+    "D": "days",
+    "h": "hours",
+    "min": "minutes",
+    "s": "seconds",
+    "H": "hours",  # support for pandas<2.2.0
+    "S": "seconds",  # support for pandas<2.2.0
+}
 
 
 def get_boundaries_with_nodeid(
     branches: gpd.GeoDataFrame, network1d_nodes: gpd.GeoDataFrame
 ) -> gpd.GeoDataFrame:
-    """Get boundary locations from the network branches and associate them with node IDs.
+    """Get boundary locations from branches and associate with node IDs.
 
     Parameters
     ----------
@@ -40,78 +49,13 @@ def get_boundaries_with_nodeid(
     -------
     A GeoDataFrame with boundary locations and their associated node IDs.
     """
-
     # generate all possible and allowed boundary locations
-    _boundaries = generate_boundaries_from_branches(branches, where="both")
+    _boundaries = graph_utils.get_endnodes_from_lines(branches, where="both")
 
     boundaries = hydromt.gis_utils.nearest_merge(
         _boundaries, network1d_nodes, max_dist=0.1, overwrite=False
     )
     return boundaries
-
-
-def generate_boundaries_from_branches(
-    branches: gpd.GeoDataFrame, where: str = "both"
-) -> gpd.GeoDataFrame:
-    """Get the possible boundary locations from the branches with id.
-
-    Parameters
-    ----------
-    where : {'both', 'upstream', 'downstream'}
-        Where at the branches should the boundaries be derived.
-        An upstream end node is defined as a node which has 0 incoming branches and 1 outgoing branch.
-        A downstream end node is defined as a node which has 1 incoming branch and 0 outgoing branches.
-
-    Returns
-    -------
-    gpd.GeoDataFrame
-        A data frame containing all the upstream and downstream end nodes of the branches
-    """
-    # convert branches to graph
-    G = graph_utils.gpd_to_digraph(branches)
-
-    # get boundary locations at where
-    if where == "downstream":
-        endnodes = {
-            dn: {**d, **{"where": "downstream"}}
-            for up, dn, d in G.edges(data=True)
-            if G.out_degree[dn] == 0 and G.degree[dn] == 1
-        }
-    elif where == "upstream":
-        endnodes = {
-            up: {**d, **{"where": "upstream"}}
-            for up, dn, d in G.edges(data=True)
-            if G.in_degree[up] == 0 and G.degree[up] == 1
-        }
-    elif where == "both":
-        endnodes = {
-            dn: {**d, **{"where": "downstream"}}
-            for up, dn, d in G.edges(data=True)
-            if G.out_degree[dn] == 0 and G.degree[dn] == 1
-        }
-        endnodes.update(
-            {
-                up: {**d, **{"where": "upstream"}}
-                for up, dn, d in G.edges(data=True)
-                if G.in_degree[up] == 0 and G.degree[up] == 1
-            }
-        )
-    else:
-        pass
-
-    if len(endnodes) == 0:
-        logger.error(f"cannot generate boundaries for given condition {where}")
-
-    endnodes_pd = (
-        pd.DataFrame().from_dict(endnodes, orient="index").drop(columns=["geometry"])
-    )
-    endnodes_gpd = gpd.GeoDataFrame(
-        data=endnodes_pd,
-        geometry=[Point(endnode) for endnode in endnodes],
-        crs=branches.crs,
-    )
-    endnodes_gpd.reset_index(inplace=True)
-    return endnodes_gpd
 
 
 def select_boundary_type(
@@ -140,7 +84,8 @@ def select_boundary_type(
     Returns
     -------
     pd.DataFrame
-        A data frame containing the boundary location per branch type and boundary type.
+        A data frame containing the boundary location per branch type
+        and boundary type.
     """
     boundaries_branch_type = boundaries.loc[boundaries["branchtype"] == branch_type, :]
     if branch_type == "river":
@@ -152,7 +97,8 @@ def select_boundary_type(
         elif boundary_type == "discharge":
             if boundary_locs != "upstream":
                 logger.warning(
-                    f"Applying boundary type {boundary_type} selected for {branch_type} boundaries might cause instabilities."
+                    f"Applying boundary type {boundary_type} selected"
+                    f"for {branch_type} boundaries might cause instabilities."
                 )
             if boundary_locs != "both":
                 boundaries_branch_type = boundaries_branch_type.loc[
@@ -160,7 +106,8 @@ def select_boundary_type(
                 ]
         else:
             logger.error(
-                f"Wrong boundary type {boundary_type} selected for {branch_type} boundaries."
+                f"Wrong boundary type {boundary_type} selected"
+                f"for {branch_type} boundaries."
             )
     # TODO: extend
     # for now only downstream boundaries not connected to openwater
@@ -172,7 +119,8 @@ def select_boundary_type(
             ]
         else:
             logger.error(
-                f"Wrong boundary type {boundary_type} selected for {branch_type} boundaries."
+                f"Wrong boundary type {boundary_type} selected"
+                f"for {branch_type} boundaries."
             )
 
     return boundaries_branch_type
@@ -180,6 +128,7 @@ def select_boundary_type(
 
 def validate_boundaries(boundaries: gpd.GeoDataFrame, branch_type: str = "river"):
     """Validate boundaries per branch type.
+
     Will log a warning if the validation fails.
 
     Parameters
@@ -195,7 +144,8 @@ def validate_boundaries(boundaries: gpd.GeoDataFrame, branch_type: str = "river"
             # TODO extended
             if bnd["where"] == "downstream" and bnd["boundary_type"] == "discharge":
                 logger.warning(
-                    f'Boundary type violates modeller suggestions: using downstream discharge boundary at branch {bnd["branchid"]}'
+                    "Boundary type violates modeller suggestions: using"
+                    f"downstream discharge boundary at branch {bnd['branchid']}"
                 )
 
     if branch_type == "pipe":  # TODO add other close system branch_type
@@ -203,7 +153,8 @@ def validate_boundaries(boundaries: gpd.GeoDataFrame, branch_type: str = "river"
             # TODO extended
             if bnd["where"] == "upstream":
                 logger.warning(
-                    f'Boundary type violates modeller suggestions: using upstream boundary at branch {bnd["branchid"]}'
+                    "Boundary type violates modeller suggestions:"
+                    f"using upstream boundary at branch {bnd['branchid']}"
                 )
 
 
@@ -226,12 +177,13 @@ def compute_boundary_values(
 
         * Required variables: ['nodeid']
     da_bnd : xr.DataArray, optional
-        xr.DataArray containing the boundary timeseries values. If None, uses a constant values for all boundaries.
+        xr.DataArray containing the boundary timeseries values.
+        If None, uses a constant values for all boundaries.
 
         * Required variables if netcdf: [``boundary_type``]
     boundary_value : float, optional
-        Constant value to use for all boundaries if ``da_bnd`` is None and to
-        fill in missing data. By default -2.5 m.
+        Constant value to use for all boundaries if ``da_bnd`` is
+        None and to fill in missing data. By default -2.5 m.
     boundary_type : {'waterlevel', 'discharge'}
         Type of boundary to use. By default "waterlevel".
     boundary_unit : {'m', 'm3/s'}
@@ -242,8 +194,9 @@ def compute_boundary_values(
             Allowed unit is [m3/s]
         By default m.
     snap_offset : float, optional
-        Snapping tolerance to automatically applying boundaries at the correct network nodes.
-        By default 0.1, a small snapping is applied to avoid precision errors.
+        Snapping tolerance to automatically applying boundaries
+        at the correct network nodes. By default 0.1,
+        a small snapping is applied to avoid precision errors.
     logger
         Logger to log messages.
     """
@@ -253,35 +206,19 @@ def compute_boundary_values(
 
         # snap user boundary to potential boundary locations to get nodeid
         gdf_bnd = da_bnd.vector.to_gdf()
+        gdf_bnd.crs = boundaries.crs
+        # TODO remove after hydromt release>0.9.0
         gdf_bnd = hydromt.gis_utils.nearest_merge(
             gdf_bnd,
             boundaries,
             max_dist=snap_offset,
             overwrite=True,
         )
+        gdf_bnd = gdf_bnd[~gdf_bnd["nodeid"].isna()]
+        da_bnd = da_bnd.sel(index=gdf_bnd.index)
 
-        # get boundary data freq in seconds
-        _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
-        dt = pd.to_timedelta((da_bnd.time[1].values - da_bnd.time[0].values))
-        freq = dt.resolution_string
-        multiplier = 1
-        if freq == "D":
-            logger.warning(
-                "time unit days is not supported by the current GUI version: 2022.04"
-            )  # converting to hours as temporary solution # FIXME: day is converted to hours temporarily
-            multiplier = 24
-        if len(
-            pd.date_range(da_bnd.time[0].values, da_bnd.time[-1].values, freq=dt)
-        ) != len(da_bnd.time):
-            logger.error("does not support non-equidistant time-series.")
-        freq_name = _TIMESTR[freq]
-        freq_step = getattr(dt.components, freq_name)
-        bd_times = np.array([(i * freq_step) for i in range(len(da_bnd.time))])
-        if multiplier == 24:
-            bd_times = np.array(
-                [(i * freq_step * multiplier) for i in range(len(da_bnd.time))]
-            )
-            freq_name = "hours"
+        # get forcing data time indes
+        bd_times, freq_name = _standardize_forcing_timeindexes(da_bnd)
 
         # instantiate xr.DataArray for bnd data
         da_out = xr.DataArray(
@@ -298,7 +235,7 @@ def compute_boundary_values(
                 timeInterpolation="Linear",
                 quantity=f"{boundary_type}bnd",
                 units=f"{boundary_unit}",
-                time_unit=f"{freq_name} since {pd.to_datetime(da_bnd.time[0].values)}",  # support only yyyy-mm-dd HH:MM:SS
+                time_unit=f"{freq_name} since {pd.to_datetime(da_bnd.time[0].values)}",
             ),
         )
 
@@ -312,7 +249,8 @@ def compute_boundary_values(
         da_out.name = f"{boundary_type}bnd"
     else:
         logger.info(
-            f"Using constant value {boundary_value} {boundary_unit} for all {boundary_type} boundaries."
+            f"Using constant value {boundary_value} {boundary_unit}"
+            f"for all {boundary_type} boundaries."
         )
         # instantiate xr.DataArray for bnd data with boundary_value directly
         da_out = xr.DataArray(
@@ -345,19 +283,23 @@ def compute_2dboundary_values(
     logger=logger,
 ):
     """
-    Compute 2d boundary timeseries. Line geometry will be converted into supporting points.
-    Note that All quantities are specified per support point, except for discharges which are specified per polyline.
+    Compute 2d boundary timeseries.
+
+    Line geometry will be converted into supporting points.
+    Note that All quantities are specified per support point,
+    except for discharges which are specified per polyline.
 
     Parameters
     ----------
     boundaries : gpd.GeoDataFrame, optional
-        line geometry type of locations of the 2D boundaries to which to add data.
-        Must be combined with ``df_bnd``.
+        line geometry type of locations of the 2D boundaries to
+        which to add data. Must be combined with ``df_bnd``.
 
         * Required variables: ["boundary_id"]
     df_bnd : pd.DataFrame, optional
         pd.DataFrame containing the boundary timeseries values.
-        Must be combined with ``boundaries``. Columns must match the "boundary_id" in ``boundaries``.
+        Must be combined with ``boundaries``. Columns must match the
+        "boundary_id" in ``boundaries``.
 
         * Required variables: ["time"]
     boundary_value : float, optional
@@ -385,14 +327,15 @@ def compute_2dboundary_values(
     else:
         # prepare boundary data
         # get data freq in seconds
-        _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
         dt = df_bnd.time[1] - df_bnd.time[0]
         freq = dt.resolution_string
         multiplier = 1
         if freq == "D":
             logger.warning(
                 "time unit days is not supported by the current GUI version: 2022.04"
-            )  # converting to hours as temporary solution # FIXME: day is supported in version 2023.02, general question: where to indicate gui version?
+            )  # converting to hours as temporary solution
+            # FIXME: day is supported in version 2023.02,
+            # general question: where to indicate gui version?
             multiplier = 24
         if len(
             pd.date_range(df_bnd.iloc[0, :].time, df_bnd.iloc[-1, :].time, freq=dt)
@@ -457,9 +400,14 @@ def compute_2dboundary_values(
 
 
 def gpd_to_pli(gdf: gpd.GeoDataFrame, output_dir: Path):
-    """Function to convert geopandas GeoDataFrame (gdf) into pli files at 'output_dir' directory.
-    the geodataframe must has index as stations and geometry of the stations.
+    """Convert geopandas GeoDataFrame (gdf) into pli files.
+
+    Pli files at 'output_dir' directory.
+
+    the geodataframe must has index as stations and geometry
+    of the stations.
     each row of the geodataframe will be converted into a single pli file.
+
     the file name and the station name will be the index of that row.
     """
     for _, g in gdf.iterrows():
@@ -480,11 +428,17 @@ def df_to_bc(
     unit="m3/s",
     freq="H",
 ):
-    """Function to convert pandas timeseires 'df' into bc file at 'output_dir'/'output_filename'.bc
+    """Convert pandas timeseires 'df' into bc file.
+
+    bc file from 'output_dir'/'output_filename'.bc
+
     the time series must has time as index, columns names as stations.
-    the time series will be first converted into a equidistance timeseries with frequency specified in 'freq'. support [D, H,M,S]
+    the time series will be first converted into a equidistance timeseries
+    with frequency specified in 'freq'. support [D, H,M,S]
     each columns-wise array will be converted into one bc timeseries.
-    The time series has the quantity and unit as specified in 'quantity' nad 'unit'.
+
+    The time series has the quantity and unit as specified
+    in 'quantity' and 'unit'.
     """
     time_unit = {"D": "days", "H": "hours", "M": "minutes", "S": "seconds"}
 
@@ -525,15 +479,17 @@ def compute_meteo_forcings(
     Parameters
     ----------
     df_meteo : pd.DataFrame, optional
-        pd.DataFrame containing the meteo timeseries values. If None, uses ``fill_value``.
+        pd.DataFrame containing the meteo timeseries values.
+        If None, uses ``fill_value``.
 
         * Required variables: ["precip"]
     meteo_value : float, optional
         Constant value to use for global meteo if ``df_meteo`` is None and to
         fill in missing data in ``df_meteo``. By default 0.0 mm/day.
     is_rate : bool, optional
-        Specify if the type of meteo data is direct "rainfall" (False) or "rainfall_rate" (True).
-        By default True for "rainfall_rate". Note that Delft3DFM 1D2D Suite 2022.04 supports only "rainfall_rate".
+        Specify if the type of meteo data is direct "rainfall" (False)
+        or "rainfall_rate" (True). By default True for "rainfall_rate".
+        Note that Delft3DFM 1D2D Suite 2022.04 supports only "rainfall_rate".
         If rate, unit is expected to be in mm/day and else mm.
     meteo_location : tuple
         Global location for meteo timeseries
@@ -559,14 +515,14 @@ def compute_meteo_forcings(
 
     logger.info("Preparing global (spatially uniform) timeseries.")
     # get data freq in seconds
-    _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
     dt = df_meteo.time[1] - df_meteo.time[0]
     freq = dt.resolution_string
     multiplier = 1
     if freq == "D":
         logger.warning(
             "time unit days is not supported by the current GUI version: 2022.04"
-        )  # converting to hours as temporary solution # FIXME: day is converted to hours temporarily
+        )  # converting to hours as temporary solution
+        # FIXME: day is converted to hours temporarily
         multiplier = 24
     if len(
         pd.date_range(df_meteo.iloc[0, :].time, df_meteo.iloc[-1, :].time, freq=dt)
@@ -605,3 +561,292 @@ def compute_meteo_forcings(
     da_out.dropna(dim="time")
 
     return da_out
+
+
+def _standardize_forcing_timeindexes(da):
+    """Standardize timeindexes frequency based on forcing DataArray."""
+    dt = pd.to_timedelta((da.time[1].values - da.time[0].values))
+    freq = dt.resolution_string
+    multiplier = 1
+    if freq == "D":
+        logger.warning(
+            "time unit days is not supported by the current GUI version: 2022.04"
+        )  # TODO: remove temporay pin on GUI version
+        multiplier = 24
+    if len(pd.date_range(da.time[0].values, da.time[-1].values, freq=dt)) != len(
+        da.time
+    ):
+        logger.error("does not support non-equidistant time-series.")
+    freq_name = _TIMESTR[freq]
+    freq_step = getattr(dt.components, freq_name)
+    bd_times = np.array([float(i * freq_step) for i in range(len(da.time))])
+    if multiplier == 24:
+        bd_times = np.array([(i * freq_step * multiplier) for i in range(len(da.time))])
+        freq_name = "hours"
+    return bd_times, freq_name
+
+
+def compute_forcing_values_points(
+    gdf: gpd.GeoDataFrame,
+    da: xr.DataArray = None,
+    forcing_value: float = 0.0,
+    forcing_type: str = "lateral_discharge",
+    forcing_unit: str = "m3/s",
+    logger=logger,
+):
+    """
+    Compute 1d forcing values.
+
+    Used for 1D lateral point locations.
+
+    Parameters
+    ----------
+    gdf : gpd.GeoDataFrame
+        GeoDataFrame of points to add 1D forcing data.
+
+        * Required variables: ['geometry']
+    da : xr.DataArray, optional
+        xr.DataArray containing the forcing timeseries values.
+        If None, uses a constant ``forcing_value`` for all forcings.
+
+        * Required variables: ['forcing_type']
+
+    forcing_value : float, optional
+        Constant value to use for all forcings if ``da`` is None and to
+        fill in missing data.
+        By default 0.0 ``forcing_unit``
+    forcing_type : {'lateral_discharge'}
+        Type of forcing to use.
+        For now only support 'lateral_discharge'.
+        By default 'lateral_discharge'
+    forcing_unit : {'m3/s'}
+        Unit corresponding to ``forcing_type``.
+        By default 'm3/s'
+    logger
+        Logger to log messages.
+    """
+    # TODO: harmonize for other point forcing #21
+    # first process data based on either timeseries or constant
+    # then update data based on either nodes or branches
+    # Timeseries forcing values
+
+    # default dims, coords and attris for point geometry type
+    _dims_defaults = ["index"]
+    _coords_defaults = dict(
+        index=gdf.index,
+        x=("index", gdf.geometry.x.values),
+        y=("index", gdf.geometry.y.values),
+        branchid=("index", gdf.branchid.values),
+        chainage=("index", gdf.chainage.values),
+    )
+    _attrs_defaults = dict(
+        offset=0.0,
+        factor=1.0,
+        quantity=f"{forcing_type}",
+        units=f"{forcing_unit}",
+    )
+
+    if da is not None:
+        logger.info(f"Preparing 1D forcing type {forcing_type} from timeseries.")
+
+        # get forcing data freq in seconds
+        bd_times, freq_name = _standardize_forcing_timeindexes(da)
+
+        # instantiate xr.DataArray for forcing data
+
+        # update dims, coords and attrs
+        _dims_defaults.append("time")
+        _coords_defaults.update(dict(time=bd_times))
+        _attrs_defaults.update(
+            dict(
+                function="TimeSeries",
+                timeInterpolation="Linear",
+                time_unit=f"{freq_name} since {pd.to_datetime(da.time[0].values)}",
+            )
+        )
+
+        # NOTE only support points on branches
+        da_out = xr.DataArray(
+            data=da.data,
+            dims=_dims_defaults,
+            coords=_coords_defaults,
+            attrs=_attrs_defaults,
+        )
+
+        # fill in na using default
+        da_out = da_out.fillna(forcing_value)
+
+        # drop na in time
+        da_out.dropna(dim="time")
+
+        # add name
+        da_out.name = f"{forcing_type}"
+    else:
+        logger.info(f"Use constant {forcing_value} {forcing_unit} for {forcing_type}.")
+
+        # instantiate xr.DataArray for bnd data with forcing_type directly
+        # update dims, coords and attrs
+        _attrs_defaults.update(dict(function="constant"))
+
+        da_out = xr.DataArray(
+            data=np.full((len(gdf.index)), forcing_value, dtype=np.float32),
+            dims=_dims_defaults,
+            coords=_coords_defaults,
+            attrs=_attrs_defaults,
+        )
+        da_out.name = f"{forcing_type}"
+    return da_out
+
+
+def get_geometry_coords_for_polygons(gdf):
+    """
+    Get xarray DataArray coordinates that describes polygon geometries.
+
+    Inlcude numcoordinates, xcoordinates and ycoordinates.
+    """
+    if gdf.geometry.type.iloc[0] == "Polygon":
+        # Get the maximum number of coordinates for any polygon
+        max_coords = gdf["geometry"].apply(lambda x: len(x.exterior.coords[:])).max()
+
+        def get_xcoords(geom):
+            coords = [xy[0] for xy in geom.exterior.coords[:]]
+            return np.pad(
+                coords,
+                (0, max_coords - len(coords)),
+                "constant",
+                constant_values=np.nan,
+            )
+
+        def get_ycoords(geom):
+            coords = [xy[1] for xy in geom.exterior.coords[:]]
+            return np.pad(
+                coords,
+                (0, max_coords - len(coords)),
+                "constant",
+                constant_values=np.nan,
+            )
+
+        # Create the 2D arrays
+        x_2d = np.vstack(gdf["geometry"].apply(get_xcoords))
+        y_2d = np.vstack(gdf["geometry"].apply(get_ycoords))
+
+        return dict(
+            index=gdf.index,
+            numcoordinates=np.arange(max_coords),
+            xcoordinates=(("index", "numcoordinates"), x_2d),
+            ycoordinates=(("index", "numcoordinates"), y_2d),
+        )
+
+
+def compute_forcing_values_polygon(
+    gdf: gpd.GeoDataFrame,
+    da: xr.DataArray = None,
+    forcing_value: float = 0.0,
+    forcing_type: str = "waterlevelbnd",
+    forcing_unit: str = "m",
+    logger=logger,
+):
+    """
+    Compute 1d forcing values.
+
+    Used for 1D lateral polygon locations.
+
+    Parameters
+    ----------
+    gdf : gpd.GeoDataFrame
+        GeoDataFrame of polygons to add 1D forcing data.
+
+        * Required variables: ['geometry']
+    da : xr.DataArray, optional
+        xr.DataArray containing the forcing timeseries values.
+        If None, uses a constant ``forcing_value`` for all forcings.
+
+        * Required variables: ['forcing_type']
+
+    forcing_value : float, optional
+        Constant value to use for all forcings if ``da`` is None and to
+        fill in missing data.
+        By default 0.0 ``forcing_unit``
+    forcing_type : {'lateral_discharge'}
+        Type of forcing to use.
+        For now only support 'lateral_discharge'.
+        By default 'lateral_discharge'
+    forcing_unit : {'m3/s'}
+        Unit corresponding to ``forcing_type``.
+        By default 'm3/s'
+    logger
+        Logger to log messages.
+    """
+    # default dims, coords and attris for polygon geometry type
+    _dims_defaults = ["index", "numcoordinates"]
+    _coords_defaults = get_geometry_coords_for_polygons(gdf)
+    _attrs_defaults = dict(
+        offset=0.0,
+        factor=1.0,
+        quantity=f"{forcing_type}",
+        units=f"{forcing_unit}",
+    )
+
+    # Timeseries forcing values
+    if da is not None:
+        logger.info(f"Preparing 1D forcing type {forcing_type} from timeseries.")
+
+        # get forcing data time indes
+        bd_times, freq_name = _standardize_forcing_timeindexes(da)
+
+        # instantiate xr.DataArray for forcing data
+
+        # Prepare the data
+        data_3d = np.tile(
+            np.expand_dims(da.data, axis=-1),
+            (1, 1, len(_coords_defaults["numcoordinates"])),
+        )
+        # update dims, coords and attrs
+        _dims_defaults.insert(1, "time")
+        _coords_defaults.update(dict(time=bd_times))
+        _attrs_defaults.update(
+            dict(
+                function="TimeSeries",
+                timeInterpolation="Linear",
+                time_unit=f"{freq_name} since {pd.to_datetime(da.time[0].values)}",
+            )
+        )
+        # Create the DataArray
+        da_out = xr.DataArray(
+            data=data_3d,
+            dims=_dims_defaults,
+            coords=_coords_defaults,
+            attrs=_attrs_defaults,
+        )
+        # fill in na using default
+        da_out = da_out.fillna(forcing_value)
+
+        # drop na in time
+        da_out.dropna(dim="time")
+
+        # add name
+        da_out.name = f"{forcing_type}"
+    else:
+        logger.info(f"Use constant {forcing_value} {forcing_unit} for {forcing_type}.")
+
+        # instantiate xr.DataArray for forcing data with forcing_type directly
+        # Prepare the data
+        data_3d = np.full(
+            (len(_coords_defaults["index"]), len(_coords_defaults["numcoordinates"])),
+            forcing_value,
+            dtype=np.float32,
+        )
+
+        # update dims, coords and attrs
+        _attrs_defaults.update(dict(function="constant"))
+
+        # Create the DataArray
+        da_out = xr.DataArray(
+            data=data_3d,
+            dims=_dims_defaults,
+            coords=_coords_defaults,
+            attrs=_attrs_defaults,
+        )
+        da_out.name = f"{forcing_type}"
+
+    return da_out.drop_duplicates(dim=...)

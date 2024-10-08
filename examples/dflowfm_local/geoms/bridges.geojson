@@ -1,8 +1,63 @@
 {
-"type": "FeatureCollection",
-"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::32647" } },
-"features": [
-{ "type": "Feature", "properties": { "allowedflowdir": "positive", "csdefid": "rect_h1.550_w2.000_cno_point", "branchid": "branch_12", "formfactor": null, "inletlosscoeff": 0.2, "pillarwidth": null, "length": 10.0, "frictiontype": "Manning", "friction": 0.023, "chainage": 14.101398079368284, "id": "bridge_1", "outletlosscoeff": 0.2, "shift": 2.34, "type": "bridge" }, "geometry": { "type": "Point", "coordinates": [ 665022.016103448579088, 1525588.835311949253082 ] } },
-{ "type": "Feature", "properties": { "allowedflowdir": "both", "csdefid": "rect_h1.800_w5.000_cyes_point", "branchid": "branch_3", "formfactor": null, "inletlosscoeff": 0.8, "pillarwidth": null, "length": 5.0, "frictiontype": "Manning", "friction": 0.023, "chainage": 485.7938981330206, "id": "bridge_2", "outletlosscoeff": 0.82, "shift": 2.37, "type": "bridge" }, "geometry": { "type": "Point", "coordinates": [ 665599.659389415639453, 1525859.470726222032681 ] } }
-]
+    "type": "FeatureCollection",
+    "crs": {
+        "type": "name",
+        "properties": {
+            "name": "urn:ogc:def:crs:EPSG::32647"
+        }
+    },
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "allowedflowdir": "positive",
+                "csdefid": "rect_h1.550_w2.000_cno_point",
+                "branchid": "branch_12",
+                "formfactor": null,
+                "inletlosscoeff": 0.2,
+                "pillarwidth": null,
+                "length": 10.0,
+                "frictiontype": "Manning",
+                "friction": 0.023,
+                "chainage": 14.101398079368284,
+                "id": "bridge_1",
+                "outletlosscoeff": 0.2,
+                "shift": 2.34,
+                "type": "bridge"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    665022.016103448579088,
+                    1525588.835311949253082
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "allowedflowdir": "both",
+                "csdefid": "rect_h1.800_w5.000_cyes_point",
+                "branchid": "branch_3",
+                "formfactor": null,
+                "inletlosscoeff": 0.8,
+                "pillarwidth": null,
+                "length": 5.0,
+                "frictiontype": "Manning",
+                "friction": 0.023,
+                "chainage": 485.7938981330206,
+                "id": "bridge_2",
+                "outletlosscoeff": 0.82,
+                "shift": 2.37,
+                "type": "bridge"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    665599.659389415639453,
+                    1525859.470726222032681
+                ]
+            }
+        }
+    ]
 }

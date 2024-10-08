@@ -10,76 +10,48 @@ For more information about the prerequisites for an installation of the HydroMT 
 and related dependencies, please visit the documentation of
 `HydroMT core <https://deltares.github.io/hydromt/latest/getting_started/installation.html#installation-guide>`_
 
-Compared to HydroMT, HydroMT-Wflow has additional dependencies, namely:
+Compared to HydroMT, HydroMT-delft3dfm has additional dependencies, namely:
 
-- `toml <https://github.com/uiri/toml>`_
-- `pcraster <https://pcraster.geo.uu.nl>`_ (optional)
-- `gwwapi <https://github.com/global-water-watch/gww-api>`_ (optional)
-- `hydroengine <https://github.com/openearth/hydro-engine>`_ (optional)
-
-If you already have a python & conda installation but do not yet have mamba installed,
-we recommend installing it into your *base* environment using:
-
-.. code-block:: console
-
-  $ conda install mamba -n base -c conda-forge
-
+- `xugrid <https://github.com/Deltares/xugrid>`_
+- `hydrolib-core <https://github.com/Deltares/HYDROLIB-core>`_
+- `meshkernel-py <https://github.com/Deltares/MeshKernelPy>`_
+- `networkx <https://networkx.org/>`_
 
 Installation
 ============
 
-HydroMT-Wflow is available from pypi and conda-forge.
-We recommend installing using mamba from conda-forge in a new environment.
+HydroMT-Delft3DFM is available on pypi.
 
-.. Note::
+Install HydroMT-Delft3DFM in a new environment
+----------------------------------------------
 
-    In the commands below you can exchange `mamba` for `conda`, see
-    `here <https://deltares.github.io/hydromt/latest/getting_started/installation.html#installation-guide>`_
-    for the difference between both.
-
-Install HydroMT-Wflow in a new environment (recommended!)
----------------------------------------------------------
-
-You can install HydroMT-Wflow in a new environment called `hydromt-wflow` together with
-all optional (see above) and a few additional dependencies with:
+You can install HydroMT-Delft3DFM in a new environment (recommended!) called `hydromt-delft3dfm`.
+HydroMT-Delft3DFM is available on pypi but not yet available on conda-forge.
+Therefore, we recommend creating a conda environment and install everything with pip.
 
 .. code-block:: console
 
-  $ mamba env create -f https://raw.githubusercontent.com/Deltares/hydromt_wflow/main/environment.yml
+  $ conda create -n hydromt-delft3dfm python=3.11 -c conda-forge
 
-Then, activate the environment (as stated by mamba/conda) to start making use of HydroMT-Wflow:
+Then, activate the environment:
 
 .. code-block:: console
 
-  conda activate hydromt-wflow
+  $ conda activate hydromt-delft3dfm
+
+Finally, install Hydromt-Delft3DFM from pypi using pip.
+
+.. code-block:: console
+
+  $ pip install hydromt-delft3dfm
 
 .. Tip::
 
     If you already have this environment with this name either remove it with
-    `conda env remove -n hydromt-wflow` **or** set a new name for the environment
+    `conda remove -n hydromt-delft3dfm --all` **or** set a new name for the environment
     by adding `-n <name>` to the line below.
 
-Install HydroMT-Wflow in an existing environment
-------------------------------------------------
-
-To install HydroMT-Wflow in an existing environment execute the command below
-where you replace `<environment_name>` with the name of the existing environment.
-Note that if some dependencies are not installed from conda-forge but from other
-channels the installation may fail.
-
-.. code-block:: console
-
-   $ mamba install -c conda-forge hydromt_wflow -n <environment_name>
-
-.. Note::
-
-    Please take into account that gwwapi or hydroengine packages are not available from conda and therefore have to be installed from pypi separately.
-
-.. code-block:: console
-
-  $ pip install gwwapi
-  $ pip install hydroengine
 
 Developer install
 ==================
-To be able to test and develop the HydroMT-Wflow package see instructions in the :ref:`Developer installation guide <dev_env>`.
+To be able to test and develop the HydroMT-delft3dfm package see instructions in the :ref:`Developer installation guide <dev_env>`.

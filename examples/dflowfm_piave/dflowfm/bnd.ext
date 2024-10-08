@@ -6,21 +6,21 @@ fileType    = extForce
 
 [Boundary]
 quantity     = waterlevelbnd
-nodeId       = 1383191.056228_5854440.811426
-forcingFile  = boundaryconditions1d_waterlevelbnd.bc
+nodeId       = 1384118.718651_5855518.214933
+forcingFile  = boundarycondition1d.bc
 
 [Boundary]
 quantity     = waterlevelbnd
-nodeId       = 1394694.070276_5867648.108302
-forcingFile  = boundaryconditions1d_waterlevelbnd.bc
+nodeId       = 1393117.044157_5866704.071640
+forcingFile  = boundarycondition1d.bc
 
 [Boundary]
 quantity     = waterlevelbnd
-nodeId       = 1386066.809740_5868052.726493
-forcingFile  = boundaryconditions1d_waterlevelbnd.bc
+nodeId       = 1387829.368344_5866704.071640
+forcingFile  = boundarycondition1d.bc
 
 [Boundary]
 quantity     = waterlevelbnd
 nodeId       = 1391540.018037_5858077.577220
-forcingFile  = boundaryconditions1d_waterlevelbnd.bc
+forcingFile  = boundarycondition1d.bc
 

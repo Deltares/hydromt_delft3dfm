@@ -34,6 +34,8 @@ Setup components
    DFlowFMModel.setup_pipes
    DFlowFMModel.setup_manholes
    DFlowFMModel.setup_1dboundary
+   DFlowFMModel.setup_1dlateral_from_points
+   DFlowFMModel.setup_1dlateral_from_polygons
    DFlowFMModel.setup_bridges
    DFlowFMModel.setup_culverts
    DFlowFMModel.setup_mesh2d
@@ -52,8 +54,8 @@ Attributes
    :toctree: _generated
 
    DFlowFMModel.region
-   DFlowFMModel.bounds
    DFlowFMModel.crs
+   DFlowFMModel.bounds
    DFlowFMModel.res
    DFlowFMModel.root
    DFlowFMModel.config
@@ -71,6 +73,10 @@ Attributes
    DFlowFMModel.pipes
    DFlowFMModel.opensystem
    DFlowFMModel.closedsystem
+   DFlowFMModel.mesh_names
+   DFlowFMModel.mesh_grids
+   DFlowFMModel.mesh_datasets
+   DFlowFMModel.mesh_gdf
 
 
 High level methods
@@ -84,8 +90,7 @@ High level methods
    DFlowFMModel.build
    DFlowFMModel.update
    DFlowFMModel.set_root
-   DFlowFMModel._model_has_2d
-   DFlowFMModel._model_has_1d
+   DFlowFMModel.write_data_catalog
 
 General methods
 ---------------
@@ -93,8 +98,6 @@ General methods
 .. autosummary::
    :toctree: _generated
 
-
-   DFlowFMModel.setup_config
    DFlowFMModel.get_config
    DFlowFMModel.set_config
    DFlowFMModel.read_config
@@ -119,14 +122,18 @@ General methods
    DFlowFMModel.set_results
    DFlowFMModel.read_results
 
+   DFlowFMModel.get_mesh
    DFlowFMModel.set_mesh
    DFlowFMModel.set_link1d2d
    DFlowFMModel.read_mesh
    DFlowFMModel.write_mesh
 
+   DFlowFMModel.set_branches
+
    DFlowFMModel.read_dimr
    DFlowFMModel.write_dimr
 
+   DFlowFMModel.init_dfmmodel
 
    DFlowFMModel.get_model_time
 
@@ -136,11 +143,104 @@ General methods
 DFlowFMModel workflows
 ======================
 
+Boundaries
+----------
+
 .. autosummary::
    :toctree: _generated
 
-   workflows.branches
+   workflows.get_boundaries_with_nodeid
+   workflows.select_boundary_type
+   workflows.validate_boundaries
+   workflows.compute_boundary_values
+   workflows.compute_2dboundary_values
+   workflows.compute_meteo_forcings
+   workflows.compute_forcing_values_points
+   workflows.compute_forcing_values_polygon
+   workflows.get_geometry_coords_for_polygons
 
+Branches
+--------
+
+.. autosummary::
+   :toctree: _generated
+
+   workflows.prepare_branches
+   workflows.process_branches
+   workflows.validate_branches
+   workflows.add_branches
+   workflows.find_nearest_branch
+   workflows.update_data_columns_attributes
+   workflows.update_data_columns_attribute_from_query
+   workflows.snap_newbranches_to_branches_at_snappednodes
+   workflows.snap_geom_to_branches_and_drop_nonsnapped
+
+Crosssections
+-------------
+
+.. autosummary::
+   :toctree: _generated
+
+   workflows.prepare_default_friction_and_crosssection
+   workflows.init_crosssections_options
+   workflows.set_branch_crosssections
+   workflows.set_xyz_crosssections
+   workflows.set_point_crosssections
+   workflows.add_crosssections
+
+DEM
+---
+
+.. autosummary::
+   :toctree: _generated
+
+   workflows.invert_levels_from_dem
+   workflows.get_river_bathymetry
+
+Manholes
+--------
+
+.. autosummary::
+   :toctree: _generated
+
+   workflows.generate_manholes_on_branches
+
+Mesh
+----
+
+.. autosummary::
+   :toctree: _generated
+
+   workflows.mesh1d_network1d_from_branches
+   workflows.mesh1d_add_branch
+   workflows.mesh2d_refine
+   workflows.links1d2d_add_links_1d_to_2d
+   workflows.links1d2d_add_links_2d_to_1d_embedded
+   workflows.links1d2d_add_links_2d_to_1d_lateral
+
+Region
+------
+
+.. autosummary::
+   :toctree: _generated
+
+   workflows.parse_region_geometry
+
+Roughness
+---------
+
+.. autosummary::
+   :toctree: _generated
+
+   workflows.generate_roughness
+
+Structures
+----------
+
+.. autosummary::
+   :toctree: _generated
+
+   workflows.prepare_1dstructures
 
 .. _methods:
 
@@ -154,6 +254,23 @@ Input/Output methods
    :toctree: _generated
 
    utils.read_branches_gui
+   utils.write_branches_gui
+   utils.read_crosssections
+   utils.write_crosssections
+   utils.read_friction
+   utils.write_friction
+   utils.read_structures
+   utils.write_structures
+   utils.read_manholes
+   utils.write_manholes
+   utils.read_1dboundary
+   utils.write_1dboundary
+   utils.read_1dlateral
+   utils.write_1dlateral
+   utils.read_2dboundary
+   utils.write_2dboundary
+   utils.read_meteo
+   utils.write_meteo
 
 Mesh conversion methods
 -----------------------
@@ -167,3 +284,24 @@ Mesh conversion methods
    mesh_utils.mesh_from_hydrolib_network
    mesh_utils.mesh1d_nodes_geodataframe
    mesh_utils.network1d_nodes_geodataframe
+
+Graph methods
+-------------
+
+.. autosummary::
+   :toctree: _generated
+
+   graph_utils.gpd_to_digraph
+   graph_utils.get_endnodes_from_lines
+
+GIS methods
+-----------
+
+.. autosummary::
+   :toctree: _generated
+
+   gis_utils.split_lines
+   gis_utils.cut_pieces
+   gis_utils.check_gpd_attributes
+   gis_utils.update_data_columns_attributes_based_on_filter
+   gis_utils.get_gdf_from_branches
