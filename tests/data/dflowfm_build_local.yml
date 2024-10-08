@@ -1,3 +1,8 @@
+global:
+  crs: 32647
+  network_snap_offset: 25
+  openwater_computation_node_distance: 40
+
 setup_rivers:
   region:
     geom: "local_data/1D_extent.geojson"
@@ -57,8 +62,8 @@ setup_mesh2d:
     geom: "local_data/1D_extent.geojson"
   res: 100
 
-#setup_mesh2d_refine:
-# sample_fn: citycenter
+setup_mesh2d_refine:
+  sample_fn: roads
 
 setup_maps_from_rasterdataset:
   raster_fn: dem
