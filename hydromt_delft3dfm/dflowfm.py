@@ -122,6 +122,7 @@ class DFlowFMModel(MeshModel):
         network_snap_offset=25,
         snap_newbranches_to_branches_at_snapnodes=True,
         openwater_computation_node_distance=40,
+        write_mesh_gdf=True,
         logger=logger,
     ):
         """Initialize the DFlowFMModel.
@@ -156,6 +157,8 @@ class DFlowFMModel(MeshModel):
         openwater_computation_node_distance: float, optional
             Global option for generation of the mesh1d network. Distance to generate
             mesh1d nodes for open water system (rivers, channels). By default 40 m.
+        write_mesh_gdf: bool, optional
+            Global option for writing the mesh2d network to geoms. By default True.
         logger
             The logger used to log messages.
         """
@@ -189,6 +192,7 @@ class DFlowFMModel(MeshModel):
         )
         self._openwater_computation_node_distance = openwater_computation_node_distance
         self._res = None
+        self._write_mesh_gdf = write_mesh_gdf
 
         # crs
         self._crs = CRS.from_user_input(crs) if crs else None
@@ -2900,7 +2904,7 @@ class DFlowFMModel(MeshModel):
         if self._maps:
             self.write_maps()
         if self._geoms:
-            self.write_geoms()
+            self.write_geoms(self._write_mesh_gdf)
         if self._mesh is not None or not self.branches.empty:
             self.write_mesh()
         if self._forcing:
