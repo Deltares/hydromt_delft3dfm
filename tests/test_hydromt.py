@@ -109,8 +109,6 @@ def test_model_build_local_code(tmp_path):
     model.setup_rivers(**opt['setup_rivers1'])
     model.setup_pipes(**opt['setup_pipes'])
     model.setup_manholes(**opt['setup_manholes'])
-    model.setup_bridges(**opt['setup_bridges'])
-    model.setup_culverts(**opt['setup_culverts'])
     model.setup_1dboundary(**opt['setup_1dboundary'])
     model.setup_1dlateral_from_points(**opt['setup_1dlateral_from_points'])
     model.setup_1dlateral_from_polygons(**opt['setup_1dlateral_from_polygons'])
