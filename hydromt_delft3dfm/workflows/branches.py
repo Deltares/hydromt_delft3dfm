@@ -1241,7 +1241,7 @@ def snap_geom_to_branches_and_drop_nonsnapped(
     Returns snapped geoms with branchid and chainage.
     Branches must have branchid.
     """
-    find_nearest_branch(
+    geoms = find_nearest_branch(
         branches=branches,
         geometries=geoms,
         maxdist=snap_offset,
