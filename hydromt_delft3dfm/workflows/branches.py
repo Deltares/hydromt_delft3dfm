@@ -1041,9 +1041,9 @@ def find_nearest_branch(
     method: str = "overal",
     maxdist: float = 5.0,
 ) -> gpd.GeoDataFrame:
-    """
-    Determine the nearest branch for each geometry. The method of determination
-    can vary.
+    """Determine the nearest branch for each geometry.
+
+    The method of determination can vary.
 
     Parameters
     ----------
