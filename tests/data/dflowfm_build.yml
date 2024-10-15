@@ -54,8 +54,5 @@ setup_maps_from_raster_reclass:
   interpolation_method: triangulation
   split_dataset: True
 
-setup_rainfall_from_constant:
-  constant_value: 150
-
 setup_link1d2d:
   link_direction: 1d_to_2d

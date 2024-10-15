@@ -57,6 +57,9 @@ setup_mesh2d:
     geom: "local_data/1D_extent.geojson"
   res: 100
 
+#setup_mesh2d_refine:
+# sample_fn: citycenter
+
 setup_maps_from_rasterdataset:
   raster_fn: dem
   variables: ["elevtn"]
