@@ -9,14 +9,13 @@ import pandas as pd
 import pyproj
 import shapely
 from hydromt import gis_utils
+from hydromt.gis_utils import nearest_merge
 from scipy.spatial import distance
-from shapely.geometry import LineString, MultiLineString, Point, MultiPoint
+from shapely.geometry import LineString, MultiLineString, MultiPoint, Point
 
 from hydromt_delft3dfm import graph_utils, mesh_utils
 
-from hydromt.gis_utils import nearest_merge
-
-from .helper import cut_pieces, split_lines
+from ..gis_utils import cut_pieces, split_lines
 
 logger = logging.getLogger(__name__)
 
@@ -1043,18 +1042,21 @@ def find_nearest_branch(
     maxdist: float = 5.0,
 ) -> gpd.GeoDataFrame:
     """
-    Determine the nearest branch for each geometry. The method of determination can vary.
+    Determine the nearest branch for each geometry. The method of determination
+    can vary.
 
     Parameters
     ----------
     branches : gpd.GeoDataFrame
         Geodataframe containing branch geometries.
     geometries : gpd.GeoDataFrame
-        Geodataframe containing geometries for which the nearest branch needs to be found.
+        Geodataframe containing geometries for which the nearest branch needs to
+        be found.
     method : str, optional
         Method to determine the nearest branch. Supports:
         - 'overal': Find the nearest branch based on the geometry's location.
-        - 'intersecting': Convert the geometry to a centroid of its intersection points with branches.
+        - 'intersecting': Convert the geometry to a centroid of its intersection
+        points with branches.
         Default is 'overal'.
     maxdist : float, optional
         Maximum distance threshold for finding the nearest branch. Default is 5.0.
@@ -1125,7 +1127,8 @@ def find_nearest_branch(
     snapped_geometries = [geo.interpolate(o) for geo, o in zip(branchgeo, offset)]
     result.loc[valid_rows, "geometry"] = snapped_geometries
 
-    # For rows where distance is greater than maxdist, set branch_id to empty and branch_offset to NaN
+    # For rows where distance is greater than maxdist, set branch_id
+    # to empty and branch_offset to NaN
     result.loc[~valid_rows, "branch_id"] = ""
     result.loc[~valid_rows, "branch_offset"] = np.nan
     result.loc[~valid_rows, "branch_distance"] = np.nan
@@ -1199,9 +1202,8 @@ def snap_newbranches_to_branches_at_snappednodes(
         ].branch_chainage.to_list()
         snapped_line = MultiLineString(cut_pieces(branch.geometry, distances))
         branches_snapped.at[branch_name, "geometry"] = snapped_line
-        branches_snapped.at[branch_name, "branchorder"] = (
-            branch_order  # allow interpolation on the snapped branch
-        )
+        # allow interpolation on the snapped branch
+        branches_snapped.at[branch_name, "branchorder"] = branch_order
 
     # explode multilinestring after snapping
     branches_snapped = branches_snapped.explode(index_parts=False)
