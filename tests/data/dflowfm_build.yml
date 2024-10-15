@@ -1,8 +1,15 @@
+#global:
+#  crs: 3857
+#  network_snap_offset: 25
+#  openwater_computation_node_distance: 40
+# commented, because not supported with the current test method
+
 setup_rivers_from_dem:
   region: 
     bbox: [12.4331, 46.4661, 12.5212, 46.5369]
   hydrography_fn: merit_hydro
   river_geom_fn: hydro_rivers_lin
+  rivers_defaults_fn: rivers_defaults
   rivdph_method: gvf
   rivwth_method: geom
   river_upa: 25.0
@@ -14,6 +21,7 @@ setup_pipes:
   region: 
     bbox: [12.4331, 46.4661, 12.5212, 46.5369]
   pipes_fn: grip_roads
+  pipes_defaults_fn: pipes_defaults
   pipe_filter: pipe
   spacing: 50
   friction_type: WhiteColeBrook
@@ -26,7 +34,10 @@ setup_pipes:
   pipes_invlev: 3. 
 
 setup_manholes:
+  manholes_fn:
+  manhole_defaults_fn: manholes_defaults
   dem_fn: merit_hydro
+  bedlevel_shift: 0.5
 
 setup_1dboundary:
   boundary_value: -2.0
@@ -45,14 +56,16 @@ setup_maps_from_rasterdataset:
   variables: ["elevtn"]
   fill_method: nearest
   interpolation_method: nearestNb
-  split_dataset: True
 
 setup_maps_from_raster_reclass:
   raster_fn: vito_2015
   reclass_table_fn: vito_mapping
   reclass_variables: ['roughness_manning', 'infiltcap']
   interpolation_method: triangulation
-  split_dataset: True
+
+#setup_rainfall_from_constant:
+#  constant_value: 150
+# this should probably be uncommented: https://github.com/Deltares/hydromt_delft3dfm/issues/177
 
 setup_link1d2d:
   link_direction: 1d_to_2d
