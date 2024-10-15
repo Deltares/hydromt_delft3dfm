@@ -421,8 +421,19 @@ def set_xyz_crosssections(
     crosssections.loc[:, "z"] = crosssections.z
     crosssections.loc[:, "order"] = crosssections.loc[:, "order"].astype("int")
 
+    # count number of points per cross-section id
+    crosssections = crosssections.reset_index(drop=True)
+    xyzcounts = crosssections.copy().groupby("crsid")["crsid"].transform("size")
+    _invalid_ids = crosssections[xyzcounts < 3].index
+    if not _invalid_ids.empty:
+        crosssections = crosssections.drop(_invalid_ids)
+        logger.warning(
+            f"Crosssection with id: {list(_invalid_ids)}"
+            "is dropped: invalid crosssections with less than 3 survey points. "
+        )
+
     # convert xyz crosssection into yz profile
-    crosssections = crosssections.groupby(level=0).apply(xyzp2xyzl, (["order"]))
+    crosssections = crosssections.groupby("crsid").apply(xyzp2xyzl, (["order"]))
     crosssections.crs = branches.crs
 
     # snap to branch
@@ -590,12 +601,18 @@ def set_point_crosssections(
         logger.error("No crossections are set up.")
         return pd.DataFrame()
 
-    # get branch friction
-    crosssections = crosssections.merge(
-        branches[["frictionid", "frictiontype", "frictionvalue"]],
+    # get branch friction (regard crosssections')
+    _friction_cols = ["frictionid", "frictiontype", "frictionvalue"]
+    crosssections = crosssections.drop(
+        columns=[c for c in _friction_cols if c in crosssections.columns],
+    ).merge(
+        branches[_friction_cols],
         left_on="branch_id",
         right_index=True,
     )
+
+    # get "closed" in the correct format
+    crosssections["closed"].replace({1: "yes", 0: "no"}, inplace=True)
 
     # NOTE: below is removed because in case of multiple structures
     # at the same location,
@@ -738,7 +755,8 @@ def set_point_crosssections(
     crosssections_["crsdef_thalweg"] = 0.0
 
     # support both string and boolean for closed column
-    crosssections_["crsdef_closed"].replace({"yes": 1, "no": 0}, inplace=True)
+    if "crsdef_closed" in crosssections_.columns:
+        crosssections_["crsdef_closed"].replace({"yes": 1, "no": 0}, inplace=True)
 
     crosssections_ = gpd.GeoDataFrame(crosssections_, crs=branches.crs)
 
@@ -844,14 +862,21 @@ def _set_trapezoid_crs(crosssections: gpd.GeoDataFrame):
     crsdefs = []
     crslocs = []
     for c in crosssections.itertuples():
-        levels = f"0 {c.height:.6f}"
-        flowwidths = f"{c.width:.6f} {c.t_width:.6f}"
+        # add closed crosssection definition
+        if c.closed == "yes":
+            levels = f"0 {c.height:.6f} {c.height+0.01:.6f}"
+            flowwidths = f"{c.width:.6f} {c.t_width:.6f} 0"
+            numlevels = 3
+        else:
+            levels = f"0 {c.height:.6f}"
+            flowwidths = f"{c.width:.6f} {c.t_width:.6f}"
+            numlevels = 3
         crsdefs.append(
             {
                 "crsdef_id": c.definitionid,
                 "crsdef_type": "zw",
                 "crsdef_branchid": c.branch_id,
-                "crsdef_numlevels": 2,
+                "crsdef_numlevels": numlevels,
                 "crsdef_levels": levels,
                 "crsdef_flowwidths": flowwidths,
                 "crsdef_totalwidths": flowwidths,
@@ -939,7 +964,8 @@ def _set_yz_crs(crosssections: gpd.GeoDataFrame):
                 "crsdef_yzcount": c.yzcount,
                 "crsdef_ycoordinates": c.ycoordinates,
                 "crsdef_zcoordinates": c.zcoordinates,
-                "crsdef_frictionid": c.frictionid,
+                "crsdef_frictionpositions": f"0 { c.ycoordinates.split(' ')[-1]}",
+                "crsdef_frictionids": c.frictionid,
                 "frictiontype": c.frictiontype,
                 "frictionvalue": c.frictionvalue,
             }
@@ -968,20 +994,20 @@ def _set_yz_crs(crosssections: gpd.GeoDataFrame):
     return crosssections_
 
 
-def xyzp2xyzl(xyz: pd.DataFrame, sort_by: list = ["x", "y"]):
+def xyzp2xyzl(xyz: pd.DataFrame, sort_by: list = ["x", "y"]) -> gpd.GeoDataFrame:
     """Convert xyz points to xyz lines.
 
     Parameters
     ----------
     xyz: pd.DataFrame
-        The xyz points.
+        A DataFrame with the xyz-points stored in columns ['x', 'y', 'z'].
     sort_by: list, optional
         List of attributes to sort by. Defaults to ["x", "y"].
 
     Returns
     -------
-    gpd.GeoSeries
-        The xyz lines.
+    gpd.GeoDataframe
+        A GeoDataframe with the xy-profile as a LineString and a column for z.
     """
     sort_by = [s.lower() for s in sort_by]
 
