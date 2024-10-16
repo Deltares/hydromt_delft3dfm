@@ -477,25 +477,20 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     """
     # Add compound structures
     cmp_structures = gdf.groupby(["chainage", "branchid"])["id"].apply(list)
-    gdf_cmp = pd.DataFrame()
+    list_df = []
     for cmp_count, cmp_st in enumerate(cmp_structures, start=1):
-        gdf_cmp = pd.concat(
-            [
-                gdf_cmp,
-                pd.DataFrame(
-                    index=[len(gdf_cmp) + 1],
-                    data={
-                        "id": [f"CompoundStructure_{cmp_count}"],
-                        "name": [f"CompoundStructure_{cmp_count}"],
-                        "type": ["compound"],
-                        "numStructures": [len(cmp_st)],
-                        "structureIds": [";".join(cmp_st)],
-                    },
-                ),
-            ],
-            axis=0,
-        )
-
+        data = {
+            "id": [f"CompoundStructure_{cmp_count}"],
+            "name": [f"CompoundStructure_{cmp_count}"],
+            "type": ["compound"],
+            "numStructures": [len(cmp_st)],
+            "structureIds": [";".join(cmp_st)],
+        }
+        list_df.append(pd.DataFrame(data))
+    if len(list_df) == 0:
+        gdf_cmp = gdf_cmp = pd.DataFrame()
+    else:
+        gdf_cmp = pd.concat(list_df, axis=0)
     # replace nan with None
     gdf = gdf.replace(np.nan, None)
 
