@@ -3078,6 +3078,9 @@ class DFlowFMModel(MeshModel):
         mdu = FMModel(**cf_dict)
         # add filepath
         mdu.filepath = mdu_fn
+        # temporarily remove sediment section to avoid error in Delft3D FM 1D2D 2024.03
+        # https://issuetracker.deltares.nl/browse/FM1D2D-3047
+        del mdu.sediment
         # write
         mdu.save(recurse=False)
         # Go back to working dir
