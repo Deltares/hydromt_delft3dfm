@@ -34,7 +34,7 @@ setup_pipes:
 
 setup_manholes:
   manholes_fn:
-  manhole_defaults_fn: manholes_defaults
+  manholes_defaults_fn: manholes_defaults
   dem_fn: merit_hydro
   bedlevel_shift: 0.5
 
