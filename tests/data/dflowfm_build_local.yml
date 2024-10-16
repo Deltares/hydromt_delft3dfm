@@ -3,6 +3,7 @@
 #  network_snap_offset: 25
 #  openwater_computation_node_distance: 40
 # commented, because not supported with the current test method
+# https://github.com/Deltares/hydromt_delft3dfm/issues/181
 
 setup_rivers:
   region:
