@@ -28,7 +28,7 @@ _models = {
 }
 
 
-@pytest.mark.parametrize("modelname", list(_models.keys()))
+@pytest.mark.parametrize("modelname", ["piave", "local"])
 def test_model_class(modelname):
     # read model in examples folder
     root = join(EXAMPLEDIR, f"dflowfm_{modelname}")
