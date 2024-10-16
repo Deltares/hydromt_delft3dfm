@@ -14,27 +14,20 @@ EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 
 _models = {
     "piave": {
-        "example": "dflowfm_piave",
         "ini": "dflowfm_build.yml",
         "data": "artifact_data",
-        "snap_offset": 25,
-        "crs": 3857,  # global section needs to be passed to build as arguments
     },
     "local": {
-        "example": "dflowfm_local",
         "ini": "dflowfm_build_local.yml",
         "data": join(TESTDATADIR, "test_data.yaml"),
-        "snap_offset": 25,
-        "crs": 32647,  # global section needs to be passed to build as arguments
     },
 }
 
 
-@pytest.mark.parametrize("model", list(_models.keys()))
-def test_model_class(model):
-    _model = _models[model]
+@pytest.mark.parametrize("modelname", list(_models.keys()))
+def test_model_class(modelname):
     # read model in examples folder
-    root = join(EXAMPLEDIR, _model["example"])
+    root = join(EXAMPLEDIR, f"dflowfm_{modelname}")
     mod = DFlowFMModel(root=root, mode="r")
     mod.read()
     # run test_model_api() method
@@ -43,26 +36,33 @@ def test_model_class(model):
 
 
 @pytest.mark.timeout(300)  # max 5 min
-@pytest.mark.parametrize("model", list(_models.keys()))
-def test_model_build(tmpdir, model):
-    _model = _models[model]
+@pytest.mark.parametrize("modelname", list(_models.keys()))
+def test_model_build(tmpdir, modelname):
+    model_dict = _models[modelname]
+
+    # Build method options
+    config = join(TESTDATADIR, model_dict["ini"])
+    opt = parse_config(config)
+    # pop global section and get model init arguments
+    global_sect = opt.pop('global')
+    crs = global_sect['crs']
+    network_snap_offset = global_sect['network_snap_offset']
+    openwater_computation_node_distance = global_sect['openwater_computation_node_distance']
+
     # test build method
     # compare results with model from examples folder
-    root = str(tmpdir.join(model))
+    root = join(tmpdir, f"dflowfm_{modelname}")
     logger = setuplog(__name__, join(root, "hydromt.log"), log_level=10)
     mod1 = DFlowFMModel(
         root=root,
         mode="w",
-        data_libs=[_model["data"]],
-        network_snap_offset=_model["snap_offset"],
-        crs=_model["crs"],
-        openwater_computation_node_distance=40,
+        data_libs=[model_dict["data"]],
+        network_snap_offset=network_snap_offset,
+        crs=crs,
+        openwater_computation_node_distance=openwater_computation_node_distance,
         logger=logger,
     )
-    # Build method options
-    config = join(TESTDATADIR, _model["ini"])
-    opt = parse_config(config)
-    # Build model
+    # Build model (now excludes global section because of pop)
     mod1.build(opt=opt)
     # Check if model is api compliant
     non_compliant_list = mod1._test_model_api()
@@ -72,7 +72,7 @@ def test_model_build(tmpdir, model):
     # (need to read it again for proper geoms check)
     mod1 = DFlowFMModel(root=root, mode="r", logger=logger)
     mod1.read()
-    root = join(EXAMPLEDIR, _model["example"])
+    root = join(EXAMPLEDIR, f"dflowfm_{modelname}")
     mod0 = DFlowFMModel(root=root, mode="r")
     mod0.read()
     # check if equal
@@ -91,20 +91,27 @@ def test_model_build_local_code(tmp_path):
     This test can be removed once the entire hydromt_delft3dfm is properly
     covered by unittests.
     """
+    model_dict = _models["local"]
+    # Build method options
+    config = join(TESTDATADIR, model_dict["ini"])
+    opt = parse_config(config)
+    # pop global section and get model init arguments
+    global_sect = opt.pop('global')
+    crs = global_sect['crs']
+    network_snap_offset = global_sect['network_snap_offset']
+    openwater_computation_node_distance = global_sect['openwater_computation_node_distance']
+    # initialize model
     logger = setuplog(__name__, join(tmp_path, "hydromt.log"), log_level=10)
-    _model = _models["local"]
     model = DFlowFMModel(
         root=tmp_path,
         mode="w",
-        data_libs=[_model["data"]],
-        network_snap_offset=_model["snap_offset"],
-        crs=_model["crs"],
-        openwater_computation_node_distance=40,
+        data_libs=[model_dict["data"]],
+        network_snap_offset=network_snap_offset,
+        crs=crs,
+        openwater_computation_node_distance=openwater_computation_node_distance,
         logger=logger
     )
-
-    config = join(TESTDATADIR, _model["ini"])
-    opt = parse_config(config)
+    # build model via steps corresponding to yml order
     model.setup_rivers(**opt['setup_rivers'])
     model.setup_rivers(**opt['setup_rivers1'])
     model.setup_pipes(**opt['setup_pipes'])
@@ -128,20 +135,27 @@ def test_model_build_piave_code(tmp_path):
     This test can be removed once the entire hydromt_delft3dfm is properly
     covered by unittests.
     """
+    model_dict = _models["piave"]
+    # Build method options
+    config = join(TESTDATADIR, model_dict["ini"])
+    opt = parse_config(config)
+    # pop global section and get model init arguments
+    global_sect = opt.pop('global')
+    crs = global_sect['crs']
+    network_snap_offset = global_sect['network_snap_offset']
+    openwater_computation_node_distance = global_sect['openwater_computation_node_distance']
+    # initialize model
     logger = setuplog(__name__, join(tmp_path, "hydromt.log"), log_level=10)
-    _model = _models["piave"]
     model = DFlowFMModel(
         root=tmp_path,
         mode="w",
-        data_libs=[_model["data"]],
-        network_snap_offset=_model["snap_offset"],
-        crs=_model["crs"],
-        openwater_computation_node_distance=40,
+        data_libs=[model_dict["data"]],
+        network_snap_offset=network_snap_offset,
+        crs=crs,
+        openwater_computation_node_distance=openwater_computation_node_distance,
         logger=logger
     )
-
-    config = join(TESTDATADIR, _model["ini"])
-    opt = parse_config(config)
+    # build model via steps corresponding to yml order
     model.setup_rivers_from_dem(**opt['setup_rivers_from_dem'])
     model.setup_pipes(**opt['setup_pipes'])
     model.setup_manholes(**opt['setup_manholes'])
