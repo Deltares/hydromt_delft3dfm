@@ -1,6 +1,6 @@
 ---
 # note that these are the developer dependencies
-name: hydromt-delft3dfm-urbansewer
+name: hydromt-delft3dfm
 
 channels:
   - conda-forge
