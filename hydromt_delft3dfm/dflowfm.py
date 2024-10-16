@@ -217,8 +217,9 @@ class DFlowFMModel(MeshModel):
         friction_value: float = 0.023,
         crosssections_fn: str = None,
         crosssections_type: str = None,
-        spacing: int = None,
+        spacing: float = np.inf,
         snap_offset: float = 0.0,
+        maxdist: float = 1.0,
         allow_intersection_snapping: bool = True,
     ):
         """Prepare the 1D channels and adds to branches 1D network.
@@ -270,11 +271,16 @@ class DFlowFMModel(MeshModel):
             * Required variables: [crsid, order, z]
             By default None, crosssections will be set from branches
         crosssections_type : str, optional
-            Type of crosssections read from crosssections_fn. One of ["xyzpoints"].
+            Type of crosssections read from crosssections_fn.
+            One of ["xyzpoints", "point"].
             By default None.
         snap_offset: float, optional
             Snapping tolerance to automatically connecting branches.
             By default 0.0, no snapping is applied.
+        maxdist: float, optional
+            Maximum distance allowed for crosssections to be applied on branches.
+            Only used for `crosssections_type` = point.
+            By default 1.0.
         allow_intersection_snapping: bool, optional
             Switch to choose whether snapping of multiple branch ends are allowed when
             ``snap_offset`` is used.
@@ -339,12 +345,13 @@ class DFlowFMModel(MeshModel):
         if crosssections_type is None:
             crosssections_type = "branch"
             # TODO: maybe assign a specific one for river, like branch_river
-        assert {crosssections_type}.issubset({"xyzpoints", "branch"})
+        assert {crosssections_type}.issubset({"xyzpoints", "branch", "point"})
         crosssections = self._setup_crosssections(
             branches=channels,
             region=region,
             crosssections_fn=crosssections_fn,
             crosssections_type=crosssections_type,
+            maxdist=maxdist,
         )
 
         # add crosssections to exisiting ones and update geoms
@@ -669,6 +676,7 @@ class DFlowFMModel(MeshModel):
         crosssections_fn: Union[int, list] = None,
         crosssections_type: Union[int, list] = None,
         snap_offset: float = 0.0,
+        maxdist: float = 1.0,
         allow_intersection_snapping: bool = True,
     ):
         """Prepare the 1D rivers and adds to 1D branches.
@@ -744,6 +752,10 @@ class DFlowFMModel(MeshModel):
         snap_offset: float, optional
             Snapping tolerance to automatically connecting branches.
             By default 0.0, no snapping is applied.
+        maxdist: float, optional
+            Maximum distance allowed for crosssections to be applied on branches.
+            Only used for `crosssections_type` = point.
+            By default 1.0.
         allow_intersection_snapping: bool, optional
             Switch to choose whether snapping of multiple branch ends are allowed when
             ``snap_offset`` is used.
@@ -813,6 +825,7 @@ class DFlowFMModel(MeshModel):
                 region=region,
                 crosssections_fn=crs_fn,
                 crosssections_type=crs_type,
+                maxdist=maxdist,
             )
             crosssections = workflows.add_crosssections(
                 self.geoms.get("crosssections"), crosssections
@@ -1256,6 +1269,9 @@ class DFlowFMModel(MeshModel):
             logger=self.logger,
         )
         # filter extra time for geting clipped pipes within the region (better match)
+        # remove the index name to avoid "ValueError: cannot insert branchid,
+        # already exists" in geopandas>=1
+        pipes.index.name = None
         pipes = gpd.sjoin(pipes, region, predicate="within")
 
         # setup crosssections
@@ -1360,6 +1376,7 @@ class DFlowFMModel(MeshModel):
         crosssections_fn: str = None,
         crosssections_type: str = "branch",
         midpoint=True,
+        maxdist=1.0,
     ) -> gpd.GeoDataFrame:
         """Prepare 1D crosssections from branches, points and xyz.
 
@@ -1405,7 +1422,7 @@ class DFlowFMModel(MeshModel):
             * Optional variables:
             If ``crosssections_type`` = "point"
 
-            * Required variables: crsid, shape, shift
+            * Required variables: crsid, shape, shift, closed
             * Optional variables:
                 if shape = 'rectangle': 'width', 'height', 'closed',
                 if shape = 'trapezoid': 'width', 't_width', 'height', 'closed',
@@ -1421,6 +1438,10 @@ class DFlowFMModel(MeshModel):
             Type of crosssections read from crosssections_fn. One of
             ['branch', 'xyz', 'point'].
             By default `branch`.
+        maxdist: float, optional
+            Maximum distance allowed for crosssections to be applied on branches.
+            Only used for `crosssections_type` = point.
+            By default 1.0.
 
         Returns
         -------
@@ -1513,7 +1534,7 @@ class DFlowFMModel(MeshModel):
             # set crsloc and crsdef attributes to crosssections
             self.logger.info(f"Preparing 1D point crossections from {crosssections_fn}")
             gdf_cs = workflows.set_point_crosssections(
-                branches, gdf_cs, maxdist=self._network_snap_offset
+                branches, gdf_cs, maxdist=maxdist
             )
 
         elif crosssections_type == "special":  # read from the output
@@ -3232,13 +3253,10 @@ class DFlowFMModel(MeshModel):
                         self._MAPS[rm_dict[name]].update(inidict)
                         # Update default interpolation method
                         if inidict.interpolationmethod == "averaging":
-                            self._MAPS[rm_dict[name]][
-                                "interpolation"
-                            ] = inidict.averagingtype
+                            interpmethod = inidict.averagingtype
                         else:
-                            self._MAPS[rm_dict[name]][
-                                "interpolation"
-                            ] = inidict.interpolationmethod
+                            interpmethod = inidict.interpolationmethod
+                        self._MAPS[rm_dict[name]]["interpolation"] = interpmethod
                         # Rename to hydromt name
                         name = rm_dict[name]
                     # Add to maps
@@ -3302,7 +3320,7 @@ class DFlowFMModel(MeshModel):
                     # update config if friction
                     if "frictype" in self._MAPS[name]:
                         self.set_config(
-                            "physics.UniFrictType", self._MAPS[name]["frictype"]
+                            "physics.uniffricttype", self._MAPS[name]["frictype"]
                         )
                     # update config if infiltration
                     if name == "infiltcap":
@@ -3315,7 +3333,7 @@ class DFlowFMModel(MeshModel):
                         # update config if frcition
                         if "frictype" in self._MAPS[name]:
                             self.set_config(
-                                "physics.UniFrictType", self._MAPS[name]["frictype"]
+                                "physics.uniffricttype", self._MAPS[name]["frictype"]
                             )
                         # update config if infiltration
                         if name == "infiltcap":
@@ -3589,7 +3607,7 @@ class DFlowFMModel(MeshModel):
     def write_mesh(self, write_gui=True):
         """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc>."""
         self._assert_write_mode()
-        savedir = dirname(join(self.root, self._config_fn))
+        savedir = join(self.root, "dflowfm")
         mesh_filename = "fm_net.nc"
 
         # write mesh
@@ -3957,13 +3975,11 @@ class DFlowFMModel(MeshModel):
             self._mesh = self._mesh.drop_vars(
                 [
                     "link1d2d",
-                    "link1d2d_ids",
-                    "link1d2d_long_names",
+                    "link1d2d_id",
+                    "link1d2d_long_name",
                     "link1d2d_contact_type",
                 ]
             )
-            # Remove unused dims nLink1D2D_edge and Two
-            self._mesh = self._mesh.drop_dims(["nLink1D2D_edge", "Two"])
 
         # Add link1d2d to mesh
         self._mesh = self._mesh.merge(link1d2d)

@@ -53,7 +53,7 @@ happy to discuss how it can be implemented for your model.
     :target: https://github.com/Deltares/hydromt_delft3dfm/actions/workflows/ci.yml
 
 .. |codecov| image:: https://codecov.io/gh/Deltares/hydromt_delft3dfm/branch/main/graph/badge.svg?token=ss3EgmwHhH
-    :target: https://codecov.io/gh/Deltares/hydromt_delft3dfm
+    :target: https://codecov.io/gh/Deltares/hydromt_delft3dfm?displayType=list
 
 .. |black|  image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :alt: Formatter

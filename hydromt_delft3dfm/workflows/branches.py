@@ -1190,9 +1190,11 @@ def snap_newbranches_to_branches_at_snappednodes(
         new_branch = new_branches.loc[snapnode.branchid]
         snapped_line = LineString(
             [
-                snapnode.geometry_right
-                if Point(xy).equals(snapnode.geometry_left)
-                else Point(xy)
+                (
+                    snapnode.geometry_right
+                    if Point(xy).equals(snapnode.geometry_left)
+                    else Point(xy)
+                )
                 for xy in new_branch.geometry.coords[:]
             ]
         )

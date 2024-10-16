@@ -7,7 +7,7 @@ setup_rivers_from_dem:
   region: 
     bbox: [12.4331, 46.4661, 12.5212, 46.5369]
   hydrography_fn: merit_hydro
-  river_geom_fn: rivers_lin2019_v1
+  river_geom_fn: hydro_rivers_lin
   rivers_defaults_fn: rivers_defaults
   rivdph_method: gvf
   rivwth_method: geom
