@@ -660,7 +660,7 @@ def set_point_crosssections(
                 lambda x: "rect_h{:,.3f}_w{:,.3f}_c{:s}_{:s}".format(
                     x["height"],
                     x["width"],
-                    str(int(x["closed"])),
+                    x["closed"],
                     "point",
                 ),
                 axis=1,
@@ -688,7 +688,7 @@ def set_point_crosssections(
                     x["height"],
                     x["width"],
                     x["t_width"],
-                    str(int(x["closed"])),
+                    x["closed"],
                     "point",
                 ),
                 axis=1,

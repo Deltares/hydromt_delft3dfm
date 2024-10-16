@@ -22,12 +22,8 @@ _models = {
         "data": join(TESTDATADIR, "test_data.yaml"),
     },
     "urbansewernetwork": {
-        "example": "dflowfm_urbansewernetwork",
-        "ini": "dflowfm_build_urbansewernetwork.yml",
-        "model": DFlowFMModel,
+        "ini": "dflowfm_build_urbansewernetwork_modelbuilding.yml",
         "data": join(TESTDATADIR, "test_data.yaml"),
-        "snap_offset": 25,
-        "crs": 32647,
     },
 }
 

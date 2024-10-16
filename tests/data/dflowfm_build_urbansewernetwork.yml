@@ -1,10 +1,12 @@
 global:
   crs: 32647
-  
+  network_snap_offset: 25
+  openwater_computation_node_distance: 40
+  snap_newbranches_to_branches_at_snapnodes: False
+
 setup_urban_sewer_network_from_osm:
   region:
-    geom: 
-      "urbansewer_data/region.geojson"
+    geom: "urbansewer_data/region.geojson"
   dem_fn: dem
   landuse_fn: vito
   landuse_reclass_fn: vito_mapping
