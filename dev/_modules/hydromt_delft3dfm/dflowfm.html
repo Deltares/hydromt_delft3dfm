@@ -3441,6 +3441,9 @@
         <span class="n">mdu</span> <span class="o">=</span> <span class="n">FMModel</span><span class="p">(</span><span class="o">**</span><span class="n">cf_dict</span><span class="p">)</span>
         <span class="c1"># add filepath</span>
         <span class="n">mdu</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">mdu_fn</span>
+        <span class="c1"># temporarily remove sediment section to avoid error in Delft3D FM 1D2D 2024.03</span>
+        <span class="c1"># https://issuetracker.deltares.nl/browse/FM1D2D-3047</span>
+        <span class="k">del</span> <span class="n">mdu</span><span class="o">.</span><span class="n">sediment</span>
         <span class="c1"># write</span>
         <span class="n">mdu</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">recurse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="c1"># Go back to working dir</span>
