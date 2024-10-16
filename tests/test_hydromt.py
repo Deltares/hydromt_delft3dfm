@@ -48,7 +48,7 @@ def test_model_build(tmpdir, model):
     _model = _models[model]
     # test build method
     # compare results with model from examples folder
-    root = str(tmpdir.join(model))
+    root = join(tmpdir, model)
     logger = setuplog(__name__, join(root, "hydromt.log"), log_level=10)
     mod1 = DFlowFMModel(
         root=root,
