@@ -24,10 +24,10 @@ _models = {
 }
 
 
-@pytest.mark.parametrize("modelkey", list(_models.keys()))
-def test_model_class(modelkey):
+@pytest.mark.parametrize("modelname", list(_models.keys()))
+def test_model_class(modelname):
     # read model in examples folder
-    root = join(EXAMPLEDIR, f"dflowfm_{modelkey}")
+    root = join(EXAMPLEDIR, f"dflowfm_{modelname}")
     mod = DFlowFMModel(root=root, mode="r")
     mod.read()
     # run test_model_api() method
@@ -36,9 +36,9 @@ def test_model_class(modelkey):
 
 
 @pytest.mark.timeout(300)  # max 5 min
-@pytest.mark.parametrize("modelkey", list(_models.keys()))
-def test_model_build(tmpdir, modelkey):
-    model_dict = _models[modelkey]
+@pytest.mark.parametrize("modelname", list(_models.keys()))
+def test_model_build(tmpdir, modelname):
+    model_dict = _models[modelname]
 
     # Build method options
     config = join(TESTDATADIR, model_dict["ini"])
@@ -51,7 +51,7 @@ def test_model_build(tmpdir, modelkey):
 
     # test build method
     # compare results with model from examples folder
-    root = join(tmpdir, f"dflowfm_{modelkey}")
+    root = join(tmpdir, f"dflowfm_{modelname}")
     logger = setuplog(__name__, join(root, "hydromt.log"), log_level=10)
     mod1 = DFlowFMModel(
         root=root,
@@ -72,7 +72,7 @@ def test_model_build(tmpdir, modelkey):
     # (need to read it again for proper geoms check)
     mod1 = DFlowFMModel(root=root, mode="r", logger=logger)
     mod1.read()
-    root = join(EXAMPLEDIR, f"dflowfm_{modelkey}")
+    root = join(EXAMPLEDIR, f"dflowfm_{modelname}")
     mod0 = DFlowFMModel(root=root, mode="r")
     mod0.read()
     # check if equal
