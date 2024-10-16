@@ -62,6 +62,12 @@ def test_model_build(tmpdir, model):
     # Build method options
     config = join(TESTDATADIR, _model["ini"])
     opt = parse_config(config)
+    # pop global section and assert values with init
+    global_sect = opt.pop('global')
+    assert mod1._crs == global_sect['crs']
+    assert mod1._network_snap_offset == global_sect['network_snap_offset']
+    assert (mod1._openwater_computation_node_distance == 
+            global_sect['openwater_computation_node_distance'])
     # Build model
     mod1.build(opt=opt)
     # Check if model is api compliant
