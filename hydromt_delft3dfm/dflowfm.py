@@ -3187,7 +3187,7 @@ class DFlowFMModel(MeshModel):
         if len(self._maps) == 0:
             self.logger.debug("No maps data found, skip writing.")
             return
-        self._assert_write_mode
+        self._assert_write_mode()
         # Global parameters
         mapsroot = join(self.root, "maps")
         inilist = []
@@ -3321,7 +3321,7 @@ class DFlowFMModel(MeshModel):
 
     def write_geoms(self, write_mesh_gdf=True) -> None:
         """Write model geometries to a GeoJSON file at <root>/<geoms>."""
-        self._assert_write_mode
+        self._assert_write_mode()
 
         # Optional: also write mesh_gdf object
         if write_mesh_gdf:
@@ -3467,7 +3467,7 @@ class DFlowFMModel(MeshModel):
         if len(self._forcing) == 0:
             self.logger.debug("No forcing data found, skip writing.")
         else:
-            self._assert_write_mode
+            self._assert_write_mode()
             self.logger.info("Writting forcing files.")
             savedir = dirname(join(self.root, self._config_fn))
             # create new external forcing file
@@ -3627,7 +3627,7 @@ class DFlowFMModel(MeshModel):
             self.logger.info(f"Reading mdu file at {mdu_fn}")
             self._dfmmodel = FMModel(filepath=mdu_fn)
         else:  # use hydrolib template
-            self._assert_write_mode
+            self._assert_write_mode()
             self.logger.info("Initialising empty mdu file")
             self._dfmmodel = FMModel()
             self._dfmmodel.filepath = mdu_fn
@@ -3649,7 +3649,7 @@ class DFlowFMModel(MeshModel):
             dimr = DIMR(filepath=Path(dimr_fn))
         # else initialise
         else:
-            self._assert_write_mode
+            self._assert_write_mode()
             self.logger.info("Initialising empty dimr file")
             dimr = DIMR()
         self._dimr = dimr
