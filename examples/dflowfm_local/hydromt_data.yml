@@ -105,25 +105,16 @@
     AREA: area
     STR_AREA: streetArea
   crs: 32647
-2D_boundary:
-  data_type: GeoDataFrame
-  path: c:\Developments\hydromt_delft3dfm\tests\data\local_data\2d_boundary.geojson
+2D_boundaries_lines_timeseries:
+  data_type: GeoDataset
+  path: c:\Developments\hydromt_delft3dfm\tests\data\local_data\2d_boundaries.geojson
   driver: vector
-  meta:
-    notes: created by buffer the extent by aqrt(2) * res. Must contain boundary_id
-      if timeseries is specified
-  crs: 32647
-2D_boundary_timeseries:
-  data_type: DataFrame
-  path: c:\Developments\hydromt_delft3dfm\tests\data\local_data\2dboundaries_series.csv
-  driver: csv
   driver_kwargs:
-    index_col: time
-    parse_dates: true
-    dayfirst: true
-  meta:
-    notes: time series data for the 2D boundary, must contain time as index and boundary_id
-      as columns
+    fn_data: c:\Developments\hydromt_delft3dfm\tests\data\local_data\2dboundaries_series.csv
+    assert_gtype: LineString
+  rename:
+    2D_boundaries_lines_timeseries: waterlevel
+  crs: 32647
 dem:
   data_type: RasterDataset
   path: c:\Developments\hydromt_delft3dfm\tests\data\local_data\dem.tif
