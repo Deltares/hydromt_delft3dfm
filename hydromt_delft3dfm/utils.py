@@ -24,9 +24,9 @@ from hydrolib.core.dflowfm import (
     StructureModel,
 )
 from shapely.geometry import Point, Polygon
+
 from . import gis_utils
 from .workflows import boundaries
-
 
 __all__ = [
     "read_branches_gui",

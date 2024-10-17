@@ -3476,8 +3476,7 @@ class DFlowFMModel(MeshModel):
     def write_mesh(self, write_gui=True):
         """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc> in model ready format."""
         self._assert_write_mode()
-        savedir = dirname(join(self.root, self._config_fn))  # from this branch
-        savedir = join(self.root, "dflowfm")  # from main
+        savedir = dirname(join(self.root, self._config_fn))
         mesh_filename = "fm_net.nc"
 
         # write mesh
