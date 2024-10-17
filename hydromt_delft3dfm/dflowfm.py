@@ -2665,7 +2665,7 @@ class DFlowFMModel(MeshModel):
         gdf_bnd, da_bnd = self._read_forcing_geodataset(
             boundaries_geodataset_fn,
             boundary_type,
-            buffer=self.res * tolerance,
+            region_buffer=self.res * tolerance,
         )
         if len(gdf_bnd) == 0:
             return None

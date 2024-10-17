@@ -402,7 +402,7 @@ def compute_2dboundary_values(
 
 
 def _standardize_forcing_timeindexes(da):
-    """Standardize timeindexes frequency based on forcing DataArray"""
+    """Standardize timeindexes frequency based on forcing DataArray."""
     _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
     dt = pd.to_timedelta((da.time[1].values - da.time[0].values))
     freq = dt.resolution_string
@@ -410,7 +410,9 @@ def _standardize_forcing_timeindexes(da):
     if freq == "D":
         logger.warning(
             "time unit days is not supported by the current GUI version: 2022.04"
-        )  # converting to hours as temporary solution # FIXME: day is converted to hours temporarily
+        )
+        # converting to hours as temporary solution
+        # FIXME: day is converted to hours temporarily
         multiplier = 24
     if len(pd.date_range(da.time[0].values, da.time[-1].values, freq=dt)) != len(
         da.time
@@ -426,8 +428,10 @@ def _standardize_forcing_timeindexes(da):
 
 
 def get_geometry_coords_for_linestrings(gdf):
-    """Gets xarray DataArray coordinates that describes linestring geometries.
-    Inlcudes numcoordinates, xcoordinates and ycoordinates"""
+    """Get xarray DataArray coordinates that describes linestring geometries.
+
+    Inlcudes numcoordinates, xcoordinates and ycoordinates.
+    """
     if gdf.geometry.type.iloc[0] == "LineString":
         # Get the maximum number of coordinates for any polygon
         max_coords = gdf["geometry"].apply(lambda x: len(x.coords[:])).max()
@@ -463,8 +467,9 @@ def get_geometry_coords_for_linestrings(gdf):
 
 
 def _expand_2d_to_3d(data_2d, third_dim_length, fill_value=np.nan):
-    """
-    Expand a 2D numpy array to a 3D array, filling the new dimension with a specified value.
+    """Expand a 2D numpy array to a 3D array.
+
+    Filling the new dimension with a specified value.
 
     Parameters
     ----------
@@ -476,12 +481,12 @@ def _expand_2d_to_3d(data_2d, third_dim_length, fill_value=np.nan):
     -------
     numpy.ndarray: The expanded 3D array.
     """
-
     # Create the 3D array filled with the desired fill value
     shape_3d = (data_2d.shape[0], data_2d.shape[1], third_dim_length)
     data_3d = np.full(shape_3d, fill_value)
 
-    # Fill the 3D array's first slice along the third dimension with the original 2D data
+    # Fill the 3D array's first slice along the third dimension
+    # with the original 2D data
     data_3d[:, :, 0] = data_2d
 
     return data_3d
@@ -527,7 +532,6 @@ def compute_forcing_values_lines(
     logger
         Logger to log messages.
     """
-
     # first process data based on either timeseries or constant
     # then update data based on either nodes or branches
     # Timeseries forcing values
@@ -547,6 +551,8 @@ def compute_forcing_values_lines(
         # get data in correct dimentions
         data_3d = _expand_2d_to_3d(da.data, len(coords_dict["numcoordinates"]))
 
+        # support only yyyy-mm-dd HH:MM:SS
+        reftime = pd.to_datetime(da.time[0].values)
         # instantiate xr.DataArray for forcing data
         # NOTE only support points on branches
         da_out = xr.DataArray(
@@ -564,7 +570,7 @@ def compute_forcing_values_lines(
                 timeInterpolation="Linear",
                 quantity=f"{forcing_type}",
                 units=f"{forcing_unit}",
-                time_unit=f"{freq_name} since {pd.to_datetime(da.time[0].values)}",  # support only yyyy-mm-dd HH:MM:SS
+                time_unit=f"{freq_name} since {reftime}",
             ),
         )
 
@@ -575,7 +581,8 @@ def compute_forcing_values_lines(
         da_out.name = f"{forcing_type}"
     else:
         logger.info(
-            f"Using constant value {forcing_value} {forcing_unit} for all {forcing_type} forcings."
+            f"Using constant value {forcing_value} {forcing_unit}"
+            f"for all {forcing_type} forcings."
         )
         # instantiate xr.DataArray for forcing data with forcing_type directly
         coords_dict = get_geometry_coords_for_linestrings(gdf)
