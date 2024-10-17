@@ -1667,29 +1667,6 @@ class DFlowFMModel(MeshModel):
             da = None
         return gdf, da
 
-    def _snap_geom_to_branches_and_drop_nonsnapped(
-        self, branches: gpd.GeoDataFrame, geoms: gpd.GeoDataFrame, snap_offset=0.0
-    ):
-        """Snaps geoms to branches and drop the ones that are not snapped.
-        Returns snapped geoms with branchid and chainage.
-        branches must have branchid.
-        """
-        workflows.find_nearest_branch(
-            branches=branches,
-            geometries=geoms,
-            maxdist=snap_offset,
-        )
-        geoms = geoms.rename(
-            columns={"branch_id": "branchid", "branch_offset": "chainage"}
-        )
-
-        # drop ones non snapped
-        _drop_geoms = geoms["chainage"].isna()
-        if any(_drop_geoms):
-            self.logger.debug(f"Unable to snap to branches: {geoms[_drop_geoms].index}")
-
-        return geoms[~_drop_geoms]
-
     def _read_forcing_geodataset(
         self,
         forcing_geodataset_fn: Union[str, Path],
@@ -1742,6 +1719,29 @@ class DFlowFMModel(MeshModel):
             gdf = None
             da = None
         return gdf, da
+
+    def _snap_geom_to_branches_and_drop_nonsnapped(
+        self, branches: gpd.GeoDataFrame, geoms: gpd.GeoDataFrame, snap_offset=0.0
+    ):
+        """Snaps geoms to branches and drop the ones that are not snapped.
+        Returns snapped geoms with branchid and chainage.
+        branches must have branchid.
+        """
+        workflows.find_nearest_branch(
+            branches=branches,
+            geometries=geoms,
+            maxdist=snap_offset,
+        )
+        geoms = geoms.rename(
+            columns={"branch_id": "branchid", "branch_offset": "chainage"}
+        )
+
+        # drop ones non snapped
+        _drop_geoms = geoms["chainage"].isna()
+        if any(_drop_geoms):
+            self.logger.debug(f"Unable to snap to branches: {geoms[_drop_geoms].index}")
+
+        return geoms[~_drop_geoms]
 
     def setup_1dlateral_from_points(
         self,
