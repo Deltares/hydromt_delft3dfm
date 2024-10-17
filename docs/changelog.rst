@@ -29,16 +29,16 @@ Added
 
 Changed
 -------
-- Upgraded hydromt dependency to version 0.9.0. (PR#100)
+- Upgraded hydromt dependency to version 0.9.0. (PR#100) 
 - Updated documentation. (PR #97)
 
 v0.1.1 (13 October 2023)
 ========================
-Dependencies upgrade.
+Dependencies upgrade. 
 
 Changed
 -------
-- Upgraded meshkernel dependency to version 2.1.0. (PR#94)
+- Upgraded meshkernel dependency to version 2.1.0. (PR#94) 
 
 v0.1.0 (22 September 2023)
 ==========================
