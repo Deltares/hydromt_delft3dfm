@@ -1,7 +1,6 @@
 """Implement Delft3D-FM hydromt plugin model class."""
 
 import itertools
-import logging
 import os
 from datetime import datetime, timedelta
 from os.path import basename, dirname, isfile, join
@@ -16,18 +15,17 @@ import xarray as xr
 import xugrid as xu
 from hydrolib.core.dflowfm import FMModel, IniFieldModel
 from hydrolib.core.dimr import DIMR, FMComponent, Start
-from hydromt.models import MeshModel
-from hydromt.workflows import create_mesh2d
+from hydromt.model import Model
+from hydromt.model.processes.mesh import create_mesh2d_from_region
 from pyproj import CRS
-from shapely.geometry import box
 
 from . import DATADIR, gis_utils, mesh_utils, utils, workflows
 
 __all__ = ["DFlowFMModel"]
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 
-class DFlowFMModel(MeshModel):
+class DFlowFMModel(Model):
     """API for Delft3D-FM models in HydroMT."""
 
     _NAME = "dflowfm"
@@ -110,6 +108,7 @@ class DFlowFMModel(MeshModel):
     _FOLDERS = ["dflowfm", "geoms", "maps"]
     _CLI_ARGS = {"region": "setup_region"}
     _CATALOGS = join(_DATADIR, "parameters_data.yml")
+    __hydromt_eps__ = []
 
     def __init__(
         self,
@@ -122,7 +121,7 @@ class DFlowFMModel(MeshModel):
         network_snap_offset=25,
         snap_newbranches_to_branches_at_snapnodes=True,
         openwater_computation_node_distance=40,
-        logger=logger,
+        # logger=logger,
     ):
         """Initialize the DFlowFMModel.
 
@@ -162,12 +161,18 @@ class DFlowFMModel(MeshModel):
         if not isinstance(root, (str, Path)):
             raise ValueError("The 'root' parameter should be a of str or Path.")
 
+        components = {
+            "mesh": {"type": "MeshComponent"},
+            "geoms": {"type": "GeomsComponent"},
+        }
         super().__init__(
             root=root,
+            components=components,
             mode=mode,
-            config_fn=config_fn,
+            # config_fn=config_fn,
             data_libs=data_libs,
-            logger=logger,
+            # logger=logger,
+            region_component="mesh",
         )
 
         # model specific
@@ -180,7 +185,7 @@ class DFlowFMModel(MeshModel):
         )  # FIXME Xiaohan config needs to be derived from dimr_fn if dimr_fn exsit
         self.data_catalog.from_yml(self._CATALOGS)
 
-        self.config
+        # self.config
 
         # Global options for generation of the mesh1d network
         self._network_snap_offset = network_snap_offset
@@ -2120,7 +2125,7 @@ class DFlowFMModel(MeshModel):
 
         """  # noqa: E501
         # Create the 2dmesh
-        mesh2d = create_mesh2d(
+        mesh2d = create_mesh2d_from_region(
             region=region,
             res=res,
             crs=self.crs,
@@ -2171,7 +2176,7 @@ class DFlowFMModel(MeshModel):
 
         """
         if "mesh2d" not in self.mesh_names:
-            logger.error(
+            self.logger.error(
                 "2d mesh is not available, use setup_mesh2d before refinement."
             )
             return
@@ -3424,29 +3429,37 @@ class DFlowFMModel(MeshModel):
         """Return model mesh bounds."""
         return self.region.total_bounds
 
-    @property
-    def region(self) -> gpd.GeoDataFrame:
-        """Return geometry of region of the model area of interest."""
-        # First tries in geoms
-        if "region" in self.geoms:
-            region = self.geoms["region"]
-        # Else derives from mesh or branches
-        else:
-            if self.mesh is not None:
-                bounds = self.mesh.ugrid.total_bounds
-                crs = self.crs
-            elif not self.branches.empty:
-                bounds = self.branches.total_bounds
-                crs = self.branches.crs
-            else:
-                # Finally raise error assuming model is empty
-                raise ValueError(
-                    "Could not derive region from geoms, or mesh. Model may be empty."
-                )
-            region = gpd.GeoDataFrame(geometry=[box(*bounds)], crs=crs)
-            self.set_geoms(region, "region")
+    # @property
+    # def region(self) -> gpd.GeoDataFrame:
+    #     """Return geometry of region of the model area of interest."""
+    #     # First tries in geoms
+    #     # TODO: TypeError: argument of type 'GeomsComponent' is not iterable
+    #     # self has geoms component if we add GeomsComponent do DflowFMModel
+    #     # self.geoms has region attribute (not always), but it is sometimes None
+    #     # if present and not None, it behaves different than legacy region
+    #     # so it seems quite complex to update this part of the code
+    #     # self.region does also exist, but `TypeError: argument of
+    #     # type 'GeomsComponent' is not iterable` and `RecursionError: maximum
+    #     # recursion depth exceeded`, probably because we redefine region here
+    #     if "region" in self.geoms:
+    #         region = self.geoms["region"]
+    #     # Else derives from mesh or branches
+    #     else:
+    #         if self.mesh is not None:
+    #             bounds = self.mesh.ugrid.total_bounds
+    #             crs = self.crs
+    #         elif not self.branches.empty:
+    #             bounds = self.branches.total_bounds
+    #             crs = self.branches.crs
+    #         else:
+    #             # Finally raise error assuming model is empty
+    #             raise ValueError(
+    #                 "Could not derive region from geoms, or mesh. Model may be empty."
+    #             )
+    #         region = gpd.GeoDataFrame(geometry=[box(*bounds)], crs=crs)
+    #         self.set_geoms(region, "region")
 
-        return region
+    #     return region
 
     @property
     def dfmmodel(self):
@@ -3758,7 +3771,7 @@ class DFlowFMModel(MeshModel):
     def _check_crs(self):
         """Check if model crs is defined."""
         if self.crs is None:
-            if self._read:
+            if self.read:
                 self.logger.warning(
                     "Could not derive CRS from reading the mesh file."
                     "Please define the CRS in the [global] init attributes before"
