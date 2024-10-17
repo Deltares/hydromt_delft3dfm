@@ -55,9 +55,9 @@ layerType                  = 1                                                  
 numTopSig                  = 0                                                              # Number of sigma-layers on top of z-layers.
 numTopSigUniform           = 1                                                              # Spatially constant number of sigma layers above z-layers in a z-sigma model (1: yes, 0: no, spatially varying)
 sigmaGrowthFactor          = 1.0                                                            # layer thickness growth factor from bed up.
-dzTop                      =                                                                # Z-layer thickness of layers above level Dztopuniabovez
-floorLevTopLay             =                                                                # Floor level of top layer
-dzTopUniAboveZ             =                                                                # Above this level layers will have uniform dzTop, below we use sigmaGrowthFactor
+dzTop                      = -999                                                           # Z-layer thickness of layers above level Dztopuniabovez
+floorLevTopLay             = -999                                                           # Floor level of top layer
+dzTopUniAboveZ             = -999                                                           # Above this level layers will have uniform dzTop, below we use sigmaGrowthFactor
 keepZLayeringAtBed         = 2                                                              # 0:possibly very thin layer at bed, 1:bedlayerthickness == zlayerthickness, 2=equal thickness first two layers
 dxDoubleAt1DEndNodes       = 1                                                              # Whether a 1D grid cell at the end of a network has to be extended with 0.5Δx.
 changeVelocityAtStructures = 0                                                              # Ignore structure dimensions for the velocity at hydraulic structures, when calculating the surrounding cell centered flow velocities.
@@ -81,6 +81,7 @@ icgSolver                = 4      # Solver type, 4 = sobekGS + Saad-ILUD (defaul
 maxDegree                = 6      # Maximum degree in Gauss elimination.
 fixedWeirScheme          = 9      # 6 = semi-subgrid scheme, 8 = Tabellenboek, 9 = Villemonte (default).
 fixedWeirContraction     = 1.0    # flow width = flow width*fixedWeirContraction.
+fixedWeirTopFrictCoef    = -999   # Uniform friction coefficient of the groyne part of fixed weirs [the unit depends on frictiontype].
 izBndPos                 = 0      # Position of z boundary, 0=mirroring of closest cell (as in Delft3D-FLOW), 1=on net boundary.
 tlfSmo                   = 0.0    # Fourier smoothing time on water level boundaries [s].
 keepSTBndOnOutflow       = 0      # Keep salinity and temperature signals on boundary also at outflow, 1=yes, 0=no. Default=0: copy inside value on outflow.
@@ -158,7 +159,7 @@ SedFile         =  # Sediment characteristics file (*.sed)
 iCdTyp               = 2               # Wind drag coefficient type (1: Const, 2: Smith&Banke (2 pts), 3: S&B (3 pts), 4: Charnock 1955, 5: Hwang 2005, 6: Wuest 2005, 7: Hersbach 2010 (2 pts), 8: 4+viscous).
 CdBreakpoints        = 0.00063 0.00723 # Wind drag breakpoints, e.g. 0.00063 0.00723.
 windSpeedBreakpoints = 0.0 100.0       # Wind speed breakpoints [m/s], e.g. 0.0 100.0.
-rhoAir               = 1.205           # Air density [kg/m3].
+rhoAir               = 1.2             # Air density [kg/m3].
 relativeWind         = 0.0             # Wind speed [kg/m3] relative to top-layer water speed*relativewind (0d0=no relative wind, 1d0=using full top layer speed).
 windPartialDry       = 1               # Reduce windstress on water if link partially dry, only for bedlevtyp=3, 0=no, 1=yes (default).
 pavBnd               = 0.0             # Average air pressure on open boundaries [N/m2], only applied if value > 0.
@@ -198,8 +199,8 @@ interceptionModel = 0 # Interception model (0: none, 1: on, via layer thickness)
 
 [Trachytopes]
 trtRou = N    # Flag for trachytopes (Y=on, N=off).
-trtDef =      # File (*.ttd) including trachytope definitions.
-trtL   =      # File (*.arl) including distribution of trachytope definitions.
+trtDef = .    # File (*.ttd) including trachytope definitions.
+trtL   = .    # File (*.arl) including distribution of trachytope definitions.
 dtTrt  = 60.0 # Interval for updating of bottom roughness due to trachytopes in seconds [s].
 trtMxR =      # Maximum recursion level for composite trachytope definitions
 
@@ -215,8 +216,8 @@ wrishp_dryArea                    = 0      # Writing dry areas to shape file (0=
 wrishp_enc                        = 0      # Writing enclosures to shape file (0=no, 1=yes).
 wrishp_src                        = 0      # Writing sources and sinks to shape file (0=no, 1=yes).
 wrishp_pump                       = 0      # Writing pumps to shape file (0=no, 1=yes).
-outputDir                         =        # Output directory of map-, his-, rst-, dat- and timingsfiles, default: DFM_OUTPUT_<modelname>. Set to . for no dir/current dir.
-waqOutputDir                      =        # Output directory of Water Quality files.
+outputDir                         = .      # Output directory of map-, his-, rst-, dat- and timingsfiles, default: DFM_OUTPUT_<modelname>. Set to . for no dir/current dir.
+waqOutputDir                      = .      # Output directory of Water Quality files.
 flowGeomFile                      =        # *_flowgeom.nc Flow geometry file in netCDF format.
 obsFile                           =        # Space separated list of files, containing information about observation points.
 crsFile                           =        # Space separated list of files, containing information about observation cross sections.
@@ -321,7 +322,6 @@ Hinterceptionlayer       =
 UnifInfiltrationCapacity = 0.0  # Uniform maximum infiltration capacity [m/s].
 Conductivity             = 0.0  # Non-dimensionless K conductivity   saturated (m/s), Q = K*A*i (m3/s)
 h_aquiferuni             = 20.0 # bgrw = bl - h_aquiferuni (m), if negative, bgrw = bgrwuni.
-bgrwuni                  =      # uniform level of impervious layer, only used if h_aquiferuni is negative.
+bgrwuni                  = -999     # uniform level of impervious layer, only used if h_aquiferuni is negative.
 h_unsatini               = 0.2  # initial level groundwater is bedlevel - h_unsatini (m), if negative, sgrw = sgrwini.
-sgrwini                  =      # Initial groundwater level, if h_unsatini < 0.
-
+sgrwini                  = -999 # Initial groundwater level, if h_unsatini < 0.

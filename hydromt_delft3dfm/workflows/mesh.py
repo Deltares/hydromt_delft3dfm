@@ -9,7 +9,8 @@ import numpy as np
 import xarray as xr
 import xugrid as xu
 from hydrolib.core.dflowfm import Branch, Network
-from meshkernel import GeometryList
+from hydrolib.core.dflowfm.net.models import split_by
+from meshkernel import Contacts, GeometryList
 from shapely.geometry import (
     LineString,
     MultiLineString,
@@ -89,9 +90,6 @@ def mesh1d_network1d_from_branches(
         branch_names=closedsystem.branchid.to_list(),
         branch_orders=closedsystem.branchorder.to_list(),
     )
-
-    # derive mesh1d
-    dfm_network._mesh1d._set_mesh1d()
 
     # Mesh1d to mesh1d and network1d xugrid
     uds_mesh1d, uds_network1d = mutils.mesh1d_network1d_from_hydrolib_network(
@@ -324,12 +322,12 @@ def round_geometry(geometry, rounding_precision: int = 6):
     return loads(dumps(geometry, rounding_precision=rounding_precision))
 
 
-# below function is a copy of functions from hydrolib, to avoid installation error.
-
-
+# The function below is an altered version of the from_polygon method from hydrolib
+# hydrolib > dhydamo > geometry > models.py > GeometryList > from_polygon
+# hydrolib uses class methods to access inner_outer_separator; here an object is used
 def polygon_to_geometrylist(polygon):
     # Create a list of coordinate lists
-    cls = GeometryList
+    geometrylist = GeometryList()
     # Add exterior
     x_ext, y_ext = np.array(polygon.exterior.coords[:]).T
     x_crds = [x_ext]
@@ -337,12 +335,32 @@ def polygon_to_geometrylist(polygon):
     # Add interiors, seperated by inner_outer_separator
     for interior in polygon.interiors:
         x_int, y_int = np.array(interior.coords[:]).T
-        x_crds.append([cls.inner_outer_separator])
+        x_crds.append([geometrylist.inner_outer_separator])
         x_crds.append(x_int)
-        y_crds.append([cls.inner_outer_separator])
+        y_crds.append([geometrylist.inner_outer_separator])
         y_crds.append(y_int)
-    gl = cls(x_coordinates=np.concatenate(x_crds), y_coordinates=np.concatenate(y_crds))
+    gl = GeometryList(
+        x_coordinates=np.concatenate(x_crds), y_coordinates=np.concatenate(y_crds)
+    )
     return gl
+
+
+# The function below is an altered version of the from_polygon method from hydrolib
+# hydrolib > dhydamo > geometry > models.py > GeometryList > _to_polygon, to_geometry
+def polygon_to_geometry(geometrylist):
+    geometries = [
+        geo
+        for geo in split_by(geometrylist, geometrylist.geometry_separator)
+        if geo.x_coordinates.size > 0
+    ]
+    polygons = []
+    for geometry in geometries:
+        parts = [
+            np.stack([p.x_coordinates, p.y_coordinates], axis=1)
+            for p in split_by(geometry, geometrylist.inner_outer_separator)
+        ]
+        polygons.append(Polygon(shell=parts[0], holes=parts[1:]))
+    return MultiPolygon(polygons)
 
 
 def links1d2d_add_links_1d_to_2d(
@@ -378,9 +396,6 @@ def links1d2d_add_links_1d_to_2d(
     """
     # Initialise hydrolib network object
     network = mutils.hydrolib_network_from_mesh(mesh)
-    # Load 1d and 2d in meshkernel
-    network._mesh1d._set_mesh1d()
-    network._mesh2d._set_mesh2d()
 
     if within is None:
         # If not provided, create a box from the maximum bounds
@@ -412,8 +427,6 @@ def links1d2d_add_links_1d_to_2d(
     network._link1d2d.meshkernel.contacts_compute_single(
         node_mask=node_mask, polygons=geometrylist, projection_factor=1.0
     )
-    network._link1d2d._process()
-
     # Filter the links that are longer than the max distance
     id1d = network._link1d2d.link1d2d[npresent:, 0]
     id2d = network._link1d2d.link1d2d[npresent:, 1]
@@ -437,14 +450,18 @@ def links1d2d_add_links_1d_to_2d(
     return link1d2d
 
 
+def _set_link1d2d(network, link1d2d_arr):
+    # set contacts on meshkernel, use .copy() to avoid strided arrays
+    mesh1d_indices = link1d2d_arr[:, 0].copy()
+    mesh2d_indices = link1d2d_arr[:, 1].copy()
+    contacts = Contacts(mesh1d_indices=mesh1d_indices, mesh2d_indices=mesh2d_indices)
+    network._link1d2d.meshkernel.contacts_set(contacts)
+
+
 def _filter_links_on_idx(network: Network, keep: np.ndarray) -> None:
     # Select the remaining links
-    network._link1d2d.link1d2d = network._link1d2d.link1d2d[keep]
-    network._link1d2d.link1d2d_contact_type = network._link1d2d.link1d2d_contact_type[
-        keep
-    ]
-    network._link1d2d.link1d2d_id = network._link1d2d.link1d2d_id[keep]
-    network._link1d2d.link1d2d_long_name = network._link1d2d.link1d2d_long_name[keep]
+    link1d2d_arr = network._link1d2d.link1d2d[keep]
+    _set_link1d2d(network, link1d2d_arr)
 
 
 def links1d2d_add_links_2d_to_1d_embedded(
@@ -478,9 +495,6 @@ def links1d2d_add_links_2d_to_1d_embedded(
     """
     # Initialise hydrolib network object
     network = mutils.hydrolib_network_from_mesh(mesh)
-    # Load 1d and 2d in meshkernel
-    network._mesh1d._set_mesh1d()
-    network._mesh2d._set_mesh2d()
 
     # Get the max edge distance
     nodes2d = np.stack(
@@ -516,7 +530,7 @@ def links1d2d_add_links_2d_to_1d_embedded(
     mpgl = GeometryList(*faces2d.T.copy())
     idx = np.zeros(len(faces2d), dtype=bool)
     if isinstance(area, MultiPolygon):
-        area = [a for a in area]
+        area = list(area.geoms)
     else:
         area = [area]
     for subarea in area:
@@ -542,9 +556,8 @@ def links1d2d_add_links_2d_to_1d_embedded(
 
     # Generate links
     network._link1d2d.meshkernel.contacts_compute_with_points(
-        node_mask=node_mask, points=multipoint
+        node_mask=node_mask, polygons=multipoint
     )
-    network._link1d2d._process()
 
     # extract links from network object
     link1d2d = mutils.links1d2d_from_hydrolib_network(network)
@@ -595,12 +608,9 @@ def links1d2d_add_links_2d_to_1d_lateral(
     """
     # Initialise hydrolib network object
     network = mutils.hydrolib_network_from_mesh(mesh)
-    # Load 1d and 2d in meshkernel
-    network._mesh1d._set_mesh1d()
-    network._mesh2d._set_mesh2d()
-
+    print(within)
     geometrylist = network.meshkernel.mesh2d_get_mesh_boundaries_as_polygons()
-    mpboundaries = GeometryList(**geometrylist.__dict__).to_geometry()
+    mpboundaries = polygon_to_geometry(geometrylist)
     if within is not None:
         # If a 'within' polygon was provided, get the intersection with
         # the meshboundaries and convert it to a geometrylist
@@ -621,15 +631,14 @@ def links1d2d_add_links_2d_to_1d_lateral(
     network._link1d2d._link_from_2d_to_1d_lateral(
         node_mask, polygon=geometrylist, search_radius=max_length
     )
-
     # If the provided distance factor was None,
     # no further selection is needed, all links are kept.
-    if dist_factor is None:
-        return
+    if dist_factor is None or dist_factor == "None":
+        link1d2d = mutils.links1d2d_from_hydrolib_network(network)
+        return link1d2d
 
     # Create multilinestring
     multilinestring = MultiLineString([poly.exterior for poly in mpboundaries.geoms])
-
     # Find the links that intersect the boundary close to the origin
     id1d = network._link1d2d.link1d2d[npresent:, 0]
     id2d = network._link1d2d.link1d2d[npresent:, 1]
@@ -685,12 +694,7 @@ def links1d2d_add_links_2d_to_1d_lateral(
             keep.append(i)
 
     # Select the remaining links
-    network._link1d2d.link1d2d = network._link1d2d.link1d2d[keep]
-    network._link1d2d.link1d2d_contact_type = network._link1d2d.link1d2d_contact_type[
-        keep
-    ]
-    network._link1d2d.link1d2d_id = network._link1d2d.link1d2d_id[keep]
-    network._link1d2d.link1d2d_long_name = network._link1d2d.link1d2d_long_name[keep]
+    _filter_links_on_idx(network, keep)
 
     # extract links from network object
     link1d2d = mutils.links1d2d_from_hydrolib_network(network)

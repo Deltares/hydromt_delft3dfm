@@ -111,7 +111,8 @@ todo_include_todos = False
 # a list of builtin themes.
 #
 html_theme = "pydata_sphinx_theme"
-html_logo = "_static/hydromt-logo.jpg"
+html_logo = "_static/hydromt-icon.svg"
+html_favicon = "_static/hydromt-icon.svg"
 autodoc_member_order = "bysource"  # overwrite default alphabetical sort
 autoclass_content = "both"
 

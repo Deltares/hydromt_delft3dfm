@@ -11,7 +11,7 @@ The main interactions are available from the HydroMT Command Line Interface and 
 HydroMT in order to build or update Delft3D FM models.
 
 When building or updating a model from command line a model setup
-:ref:`configuration <model_config>` (.yml/.ini file) with model methods and options and, optionally,
+:ref:`configuration <model_config>` (.yml file) with model methods and options and, optionally,
 a `data sources <https://deltares.github.io/hydromt/latest/user_guide/data_prepare_cat.html>`_ (.yml) file should be prepared.
 
 .. _model_methods:

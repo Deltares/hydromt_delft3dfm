@@ -1,4 +1,5 @@
-from enum import Enum
+"""Utilities read/write functions for Delft3D-FM model."""
+
 from os.path import join
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
@@ -16,8 +17,8 @@ from hydrolib.core.dflowfm import (
     FMModel,
     ForcingModel,
     FrictionModel,
-    Meteo,
     Lateral,
+    Meteo,
     PolyFile,
     StorageNodeModel,
     StructureModel,
@@ -72,7 +73,8 @@ def read_branches_gui(
     )
 
     if not filepath.is_file():
-        # Create df with all attributes from nothing; all branches are considered as river
+        # Create df with all attributes from nothing;
+        # all branches are considered as river
         df_gui = pd.DataFrame()
         df_gui["branchid"] = [b.branchid for b in gdf.itertuples()]
         df_gui["branchtype"] = "river"
@@ -101,7 +103,7 @@ def read_branches_gui(
 
     # Merge the two df based on branchid
     df_gui = df_gui.drop_duplicates(subset="branchid")
-    gdf_out = gdf.merge(df_gui, on="branchid", how="left")
+    gdf_out = gdf.merge(df_gui, on="branchid", how="left", validate=None)
 
     return gdf_out
 
@@ -127,8 +129,10 @@ def write_branches_gui(
     branchgui_fn: str
         relative filepath to branches_gui file.
 
-    #TODO: branches.gui is written with a [general] section which is not recongnised by GUI. Improvement of the GUI is needed.
-    #TODO: branches.gui has a column is custumised length written as bool, which is not recongnised by GUI. improvement of the hydrolib-core writer is needed.
+    #TODO: branches.gui is written with a [general] section which is not recongnised by
+    GUI. Improvement of the GUI is needed.
+    #TODO: branches.gui has a column is custumised length written as bool, which is not
+    recongnised by GUI. improvement of the hydrolib-core writer is needed.
     """
     if not all([col in gdf.columns for col in ["manhole_up", "manhole_dn"]]):
         gdf[["manhole_up", "manhole_dn"]] = ""
@@ -157,6 +161,7 @@ def read_crosssections(
 ) -> tuple((gpd.GeoDataFrame, gpd.GeoDataFrame)):
     """
     Read crosssections from hydrolib-core crsloc and crsdef objects and add to branches.
+
     Also returns crosssections geodataframe.
 
     Parameters
@@ -173,7 +178,7 @@ def read_crosssections(
     """
 
     def _list2Str(lst):
-        if type(lst) is list:
+        if isinstance(lst, list):
             # apply conversion to list columns
             if isinstance(lst[0], float):
                 return " ".join(["{}".format(i) for i in lst])
@@ -222,9 +227,6 @@ def read_crosssections(
     df_crsloc = pd.DataFrame.from_dict(crsloc_dict, orient="index")
     df_crsloc = df_crsloc.drop("comments", axis=1)
     df_crsloc["crs_id"] = df_crsloc["definitionid"]  # column to merge
-    # convert locationtype from enum to str (due to hydrolib-core bug)
-    if isinstance(df_crsloc["locationtype"][0], Enum):
-        df_crsloc["locationtype"] = df_crsloc["locationtype"].apply(lambda x: x.value)
     # get crsloc geometry
     if df_crsloc.dropna(axis=1).columns.isin(["x", "y"]).all():
         df_crsloc["geometry"] = [
@@ -246,9 +248,9 @@ def read_crosssections(
     )
 
     # Combine def attributes with locs for crossection geom
-    gdf_crs = _gdf_crsloc.merge(
-        _gdf_crsdef, on="crs_id", how="outer"
-    )  # use outer because some crsdefs are from structures, therefore no crslocs associated
+    gdf_crs = _gdf_crsloc.merge(_gdf_crsdef, on="crs_id", how="outer")
+    # use outer because some crsdefs are from structures,
+    # therefore no crslocs associated
     gdf_crs = gpd.GeoDataFrame(gdf_crs, crs=gdf.crs)
 
     return gdf_crs
@@ -298,12 +300,6 @@ def write_crosssections(gdf: gpd.GeoDataFrame, savedir: str) -> Tuple[str, str]:
         subset="id"
     )  # structures have crsdefs but no crslocs
 
-    # add x,y column --> hydrolib value_error: branchid and chainage or x and y should be provided
-    # x,y would make reading back much faster than re-computing from branchid and chainage....
-    # xs, ys = np.vectorize(lambda p: (p.xy[0][0], p.xy[1][0]))(gdf["geometry"])
-    # gpd_crsloc["x"] = xs
-    # gpd_crsloc["y"] = ys
-
     crsloc = CrossLocModel(crosssection=gpd_crsloc.to_dict("records"))
 
     crsloc_fn = crsloc._filename() + ".ini"
@@ -317,8 +313,9 @@ def write_crosssections(gdf: gpd.GeoDataFrame, savedir: str) -> Tuple[str, str]:
 
 def read_friction(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
     """
-    read friction files and add properties to branches geodataframe.
-    assumes cross-sections have been read before to contain per branch frictionid.
+    Read friction files and add properties to branches geodataframe.
+
+    Assumes cross-sections have been read before to contain per branch frictionid.
 
     Parameters
     ----------
@@ -418,8 +415,11 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
 
 def read_structures(branches: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
     """
-    Read structures into hydrolib-core structures objects
+    Read structures into hydrolib-core structures objects.
+
     Returns structures geodataframe.
+
+    Will drop compound structures.
 
     Parameters
     ----------
@@ -448,6 +448,8 @@ def read_structures(branches: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDat
             ["comments"],
             axis=1,
         )
+        # Drop compound structures (only write but do not read it back)
+        df_structures = df_structures[df_structures["type"] != "compound"]
 
         # Add geometry
         gdf_structures = gis_utils.get_gdf_from_branches(branches, df_structures)
@@ -459,6 +461,8 @@ def read_structures(branches: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDat
 def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     """
     write structures into hydrolib-core structures objects.
+
+    Will add compound structures.
 
     Parameters
     ----------
@@ -472,6 +476,30 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     structures_fn: str
         relative path to structures file.
     """
+    # Add compound structures
+    cmp_structures = gdf.groupby(["chainage", "branchid"])["id"].apply(list)
+    for cmp_count, cmp_st in enumerate(cmp_structures, start=1):
+        gdf = pd.concat(
+            [
+                gdf,
+                pd.DataFrame(
+                    index=[max(gdf.index) + 1],
+                    data={
+                        "id": [f"CompoundStructure_{cmp_count}"],
+                        "name": [f"CompoundStructure_{cmp_count}"],
+                        "type": ["compound"],
+                        "numStructures": [len(cmp_st)],
+                        "structureIds": [";".join(cmp_st)],
+                    },
+                ),
+            ],
+            axis=0,
+        )
+
+    # replace nan with None
+    gdf = gdf.replace(np.nan, None)
+
+    # Write structures
     structures = StructureModel(structure=gdf.to_dict("records"))
 
     structures_fn = structures._filename() + ".ini"
@@ -486,6 +514,7 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
 def read_manholes(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
     """
     Read manholes from hydrolib-core storagenodes and network 1d nodes for locations.
+
     Returns manholes geodataframe.
 
     Parameters
@@ -506,7 +535,9 @@ def read_manholes(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
     for b in manholes.storagenode:
         manholes_dict[b.id] = b.__dict__
     df_manholes = pd.DataFrame.from_dict(manholes_dict, orient="index")
-    # replace 0e to 0d # TODO: fix this when hydrolib-core fix issue https://github.com/Deltares/HYDROLIB-core/issues/559
+    # replace 0e to 0d
+    # # TODO: fix this when hydrolib-core fix issue
+    # https://github.com/Deltares/HYDROLIB-core/issues/559
     df_manholes["id"] = df_manholes["id"].apply(
         lambda x: "0D" + x[2:] if isinstance(x, str) and x.startswith("0e") else x
     )
@@ -563,11 +594,87 @@ def write_manholes(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     return storage_fn
 
 
+def _read_forcing_dataframe(
+    df_forcing: pd.DataFrame,
+    index_values: Union[np.ndarray, str],
+    quantity: str,
+) -> Tuple[np.ndarray, List, Dict, Dict]:
+    """
+    Read forcing dataframe and parse to xarray properties.
+
+    Parameters
+    ----------
+    df_forcing: pd.DataFrame
+        Dataframe with forcing data.
+    index_values: np.ndarray or str
+        Index values of the forcing data.
+    quantity: str
+        Name of quantity (eg 'waterlevel').
+
+    Returns
+    -------
+    data: np.ndarray
+        Data of the forcing.
+    dims: list
+        Dimensions of the forcing.
+    coords: dict
+        Coordinates of the forcing.
+    bc: dict
+        Attributes of the forcing.
+    """
+    # Initialise dataarray attributes bc
+    bc = {"quantity": quantity}
+
+    # Get data from forcing df
+    # Check if all constant
+    if np.all(df_forcing.function == "constant"):
+        # Prepare data
+        data = np.array([v[0][0] for v in df_forcing.datablock])
+        data = data + df_forcing.offset.values * df_forcing.factor.values
+        # Prepare dataarray properties
+        dims = ["index"]
+        coords = dict(index=index_values)
+        bc["function"] = "constant"
+        bc["units"] = df_forcing.quantityunitpair.iloc[0][0].unit
+        # bc["factor"] = 1
+        # bc["offset"] = 0
+    # Check if all timeseries
+    elif np.all(df_forcing.function == "timeseries"):
+        # Prepare data
+        data = list()
+        for i in np.arange(len(df_forcing.datablock)):
+            v = df_forcing.datablock.iloc[i]
+            offset = df_forcing.offset.iloc[i]
+            factor = df_forcing.factor.iloc[i]
+            databl = [n[1] * factor + offset for n in v]
+            data.append(databl)
+        data = np.array(data)
+        # Assume unique times
+        times = np.array([n[0] for n in df_forcing.datablock.iloc[0]])
+        # Prepare dataarray properties
+        dims = ["index", "time"]
+        coords = dict(index=index_values, time=times)
+        bc["function"] = "timeseries"
+        bc["timeinterpolation"] = df_forcing.timeinterpolation.iloc[0]
+        bc["units"] = df_forcing.quantityunitpair.iloc[0][1].unit
+        bc["time_unit"] = df_forcing.quantityunitpair.iloc[0][0].unit
+        bc["factor"] = 1
+        bc["offset"] = 0
+    # Else not implemented yet
+    else:
+        raise NotImplementedError(
+            "ForcingFile with several function for a single variable not implemented."
+            f"Skipping reading forcing for variable {quantity}."
+        )
+    return data, dims, coords, bc
+
+
 def read_1dboundary(
     df: pd.DataFrame, quantity: str, nodes: gpd.GeoDataFrame
 ) -> xr.DataArray:
     """
-    Read for a specific quantity the corresponding external and forcing files and parse to xarray
+    Read for a specific quantity the external and forcing files and parse to xarray.
+
     # TODO: support external forcing for 2D.
 
     Parameters
@@ -584,8 +691,6 @@ def read_1dboundary(
     da_out: xr.DataArray
         External and focing values combined into a DataArray for variable quantity.
     """
-    # Initialise dataarray attributes
-    bc = {"quantity": quantity}
     nodeids = df.nodeid.values
     nodeids = nodeids[nodeids != "nan"]
     # Assume one forcing file (hydromt writer) and read
@@ -594,52 +699,15 @@ def read_1dboundary(
     # Filter for the current nodes, remove nans
     df_forcing = df_forcing[np.isin(df_forcing.name, nodeids)]
 
-    # Get data
-    # Check if all constant
-    if np.all(df_forcing.function == "constant"):
-        # Prepare data
-        data = np.array([v[0][0] for v in df_forcing.datablock])
-        data = data + df_forcing.offset.values * df_forcing.factor.values
-        # Prepare dataarray properties
-        dims = ["index"]
-        coords = dict(index=nodeids)
-        bc["function"] = "constant"
-        bc["units"] = df_forcing.quantityunitpair.iloc[0][0].unit
-        bc["factor"] = 1
-        bc["offset"] = 0
-    # Check if all timeseries
-    elif np.all(df_forcing.function == "timeseries"):
-        # Prepare data
-        data = list()
-        for i in np.arange(len(df_forcing.datablock)):
-            v = df_forcing.datablock.iloc[i]
-            offset = df_forcing.offset.iloc[i]
-            factor = df_forcing.factor.iloc[i]
-            databl = [n[1] * factor + offset for n in v]
-            data.append(databl)
-        data = np.array(data)
-        # Assume unique times
-        times = np.array([n[0] for n in df_forcing.datablock.iloc[0]])
-        # Prepare dataarray properties
-        dims = ["index", "time"]
-        coords = dict(index=nodeids, time=times)
-        bc["function"] = "timeseries"
-        bc["units"] = df_forcing.quantityunitpair.iloc[0][1].unit
-        bc["time_unit"] = df_forcing.quantityunitpair.iloc[0][0].unit
-        bc["factor"] = 1
-        bc["offset"] = 0
-    # Else not implemented yet
-    else:
-        raise NotImplementedError(
-            f"ForcingFile with several function for a single variable not implemented yet. Skipping reading forcing for variable {quantity}."
-        )
+    data, dims, coords, bc = _read_forcing_dataframe(
+        df_forcing,
+        index_values=nodeids,
+        quantity=quantity,
+    )
 
     # Get nodeid coordinates
     node_geoms = nodes.set_index("nodeid").reindex(nodeids)
     # # get rid of missing geometries
-    # index_name = node_geoms.index.name
-    # node_geoms = pd.DataFrame([row for n, row in node_geoms.iterrows() if row["geometry"] is not None])
-    # node_geoms.index.name = index_name
     xs, ys = np.vectorize(
         lambda p: (np.nan, np.nan) if p is None else (p.xy[0][0], p.xy[1][0])
     )(node_geoms["geometry"])
@@ -659,8 +727,8 @@ def read_1dboundary(
 
 
 def write_1dboundary(forcing: Dict, savedir: str = None, ext_fn: str = None) -> Tuple:
-    """ "
-    write 1dboundary ext and boundary files from forcing dict.
+    """
+    Write 1dboundary ext and boundary files from forcing dict.
 
     Parameters
     ----------
@@ -765,7 +833,9 @@ def read_1dlateral(
     branches: gpd.GeoDataFrame = None,
 ) -> xr.DataArray:
     """
-    Read for a specific quantity the corresponding external and forcing files and parse to xarray
+    Read a 1D lateral from external and forcing files.
+
+    Parsed to xarray.
 
     Parameters
     ----------
@@ -784,53 +854,15 @@ def read_1dlateral(
     da_out: xr.DataArray
         External and focing values combined into a DataArray for variable quantity.
     """
-    # Initialise dataarray attributes
-    bc = {"quantity": quantity}
-
     # Assume one discharge (lateral specific) file (hydromt writer) and read
     forcing = df.discharge.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
 
-    # Get data
-    # Check if all constant
-    if np.all(df_forcing.function == "constant"):
-        # Prepare data
-        data = np.array([v[0][0] for v in df_forcing.datablock])
-        data = data + df_forcing.offset.values * df_forcing.factor.values
-        # Prepare dataarray properties
-        dims = ["index"]
-        coords = dict(index=df_forcing.name)
-        bc["function"] = "constant"
-        bc["units"] = df_forcing.quantityunitpair.iloc[0][0].unit
-        bc["factor"] = 1
-        bc["offset"] = 0
-    # Check if all timeseries
-    elif np.all(df_forcing.function == "timeseries"):
-        # Prepare data
-        data = list()
-        for i in np.arange(len(df_forcing.datablock)):
-            v = df_forcing.datablock.iloc[i]
-            offset = df_forcing.offset.iloc[i]
-            factor = df_forcing.factor.iloc[i]
-            databl = [n[1] * factor + offset for n in v]
-            data.append(databl)
-        data = np.array(data)
-        # Assume unique times
-        times = np.array([n[0] for n in df_forcing.datablock.iloc[0]])
-        # Prepare dataarray properties
-        dims = ["index", "time"]
-        coords = dict(index=df_forcing.name, time=times)
-        bc["function"] = "timeseries"
-        bc["timeinterpolation"] = df_forcing.timeinterpolation.iloc[0]
-        bc["units"] = df_forcing.quantityunitpair.iloc[0][1].unit
-        bc["time_unit"] = df_forcing.quantityunitpair.iloc[0][0].unit
-        bc["factor"] = 1
-        bc["offset"] = 0
-    # Else not implemented yet
-    else:
-        raise NotImplementedError(
-            f"ForcingFile with several function for a single variable not implemented yet. Skipping reading forcing for variable {quantity}."
-        )
+    data, dims, coords, bc = _read_forcing_dataframe(
+        df_forcing,
+        index_values=df_forcing.name,
+        quantity=quantity,
+    )
 
     # Get lateral locations and update dimentions and coordinates
     if any(df.numcoordinates.values):
@@ -893,8 +925,8 @@ def read_1dlateral(
 def write_1dlateral(
     forcing: Dict, savedir: str = None, ext_fn: str = None
 ) -> Union[None, Tuple]:
-    """ "
-    write 1dlateral ext and bc files from forcing dict.
+    """
+    Write 1dlateral ext and bc files from forcing dict.
 
     Parameters
     ----------
@@ -925,7 +957,6 @@ def write_1dlateral(
                 ext = dict()
                 ext["id"] = latid
                 ext["name"] = latid
-                ext["quantity"] = "discharge"
                 ext["locationType"] = "1d"
                 if "nodeid" in da.coords:
                     # TODO laterals on nodes #78
@@ -1017,11 +1048,30 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
     Returns
     -------
     da_out: xr.DataArray
-        External and forcing values combined into a DataArray with name starts with "boundary2d".
+        External and forcing values combined into a DataArray with name starts with
+        "boundary2d".
     """
     quantity = df.quantity.iloc[0]
 
     # Initialise dataarray attributes
+
+    # location file
+    # assume one location file has only one location (hydromt writer) and read
+    locationfile = PolyFile(workdir.joinpath(df.locationfile.filepath))
+    boundary_name = locationfile.objects[0].metadata.name
+    boundary_points = pd.DataFrame([f.__dict__ for f in locationfile.objects[0].points])
+
+    # Assume one forcing file (hydromt writer) and read
+    forcing = df.forcingfile
+    df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
+
+    data, dims, coords, bc = _read_forcing_dataframe(
+        df_forcing,
+        index_values=df_forcing.name.values,
+        quantity=df.quantity,
+    )
+
+    bc["locationfile"] = df.locationfile.filepath.name
 
     # Assume one forcing file (hydromt writer) and read
     forcing = df.forcingfile.iloc[0]
@@ -1169,7 +1219,8 @@ def _create_pliobj_from_xy(xs: list, ys: list, name: str):
 
 def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     """
-    write 2 boundary forcings from forcing dict.
+    Write 2 boundary forcings from forcing dict.
+
     Note! forcing file (.bc) and forcing locations (.pli) are written in this function.
     Use external forcing (.ext) file will be extended.
 
@@ -1297,7 +1348,7 @@ def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[di
 
 def read_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
     """
-    Read for a specific quantity the corresponding external and forcing files and parse to xarray.
+    Read for a specific quantity the external and forcing files and parse to xarray.
 
     Parameters
     ----------
@@ -1311,56 +1362,17 @@ def read_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
     da_out: xr.DataArray
         External and focing values combined into a DataArray for variable quantity.
     """
-    # Initialise dataarray attributes
-    bc = {"quantity": quantity}
-
     # Assume one forcing file (hydromt writer) and read
     forcing = df.forcingfile.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
     # Filter for the current nodes
     df_forcing = df_forcing[np.isin(df_forcing.name, "global")]
 
-    # Get data
-    # Check if all constant
-    if np.all(df_forcing.function == "constant"):
-        # Prepare data
-        data = np.array([v[0][0] for v in df_forcing.datablock])
-        data = data + df_forcing.offset.values * df_forcing.factor.values
-        # Prepare dataarray properties
-        dims = ["index"]
-        coords = dict(index="global")
-        bc["function"] = "constant"
-        bc["units"] = df_forcing.quantityunitpair.iloc[0][0].unit
-        bc["factor"] = 1
-        bc["offset"] = 0
-    # Check if all timeseries
-    elif np.all(df_forcing.function == "timeseries"):
-        # Prepare data
-        data = list()
-        for i in np.arange(len(df_forcing.datablock)):
-            v = df_forcing.datablock.iloc[i]
-            offset = df_forcing.offset.iloc[i]
-            factor = df_forcing.factor.iloc[i]
-            databl = [n[1] * factor + offset for n in v]
-            data.append(databl)
-        data = np.array(data)
-        # Assume unique times
-        times = np.array([n[0] for n in df_forcing.datablock.iloc[0]])
-        # Prepare dataarray properties
-        dims = ["index", "time"]
-        coords = dict(index=["global"], time=times)
-        bc["function"] = "timeseries"
-        bc["timeinterpolation"] = df_forcing.timeinterpolation.iloc[0]
-        bc["units"] = df_forcing.quantityunitpair.iloc[0][1].unit
-        bc["time_unit"] = df_forcing.quantityunitpair.iloc[0][0].unit
-        bc["factor"] = df_forcing.factor.iloc[0]
-        bc["offset"] = df_forcing.offset.iloc[0]
-    # Else not implemented yet
-    else:
-        raise NotImplementedError(
-            f"ForcingFile with several function for a single variable not implemented yet. Skipping reading forcing for variable {quantity}."
-        )
-
+    data, dims, coords, bc = _read_forcing_dataframe(
+        df_forcing,
+        index_values="global",
+        quantity=quantity,
+    )
     # Do not apply to "global" meteo
     # coords["x"]
     # coords["y"]
@@ -1379,7 +1391,8 @@ def read_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
 
 def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     """
-    write 2d meteo forcing from forcing dict.
+    Write 2d meteo forcing from forcing dict.
+
     Note! only forcing file (.bc) is written in this function.
     Use utils.write_ext() for writing external forcing (.ext) file.
 
@@ -1408,9 +1421,8 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
             # Meteo
             ext = dict()
             ext["quantity"] = bc["quantity"]
-            ext[
-                "forcingFileType"
-            ] = "bcAscii"  # FIXME: hardcoded, decide whether use bcAscii or netcdf in setup
+            ext["forcingFileType"] = "bcAscii"
+            # FIXME: hardcoded, decide whether use bcAscii or netcdf in setup
             # Forcing
             bc["name"] = i
             if bc["function"] == "constant":
@@ -1468,7 +1480,8 @@ def write_ext(
     ext_fn: str, optional
         filename to the external forcing file.
     block_name: str, optional
-        name of the block in the external forcing file. Includes "boundary", "lateral" and "meteo".
+        name of the block in the external forcing file. Includes "boundary", "lateral"
+        and "meteo".
     mode: str, optional
         "overwrite" or "append".
         By default, append.
