@@ -11,7 +11,6 @@ Unreleased
 
 Added
 -----
-- Setup 1D laterals at branches from points and polygons. (PR #81)
 
 Changed
 -------
@@ -19,7 +18,6 @@ Changed
 
 Fixed
 -----
-- Bugfixing of reading of frictions (global), crosssections and boundaries when update. (PR #81)
 
 v0.1.2 (20 October 2023)
 ========================
@@ -31,16 +29,16 @@ Added
 
 Changed
 -------
-- Upgraded hydromt dependency to version 0.9.0. (PR#100) 
+- Upgraded hydromt dependency to version 0.9.0. (PR#100)
 - Updated documentation. (PR #97)
 
 v0.1.1 (13 October 2023)
 ========================
-Dependencies upgrade. 
+Dependencies upgrade.
 
 Changed
 -------
-- Upgraded meshkernel dependency to version 2.1.0. (PR#94) 
+- Upgraded meshkernel dependency to version 2.1.0. (PR#94)
 
 v0.1.0 (22 September 2023)
 ==========================
