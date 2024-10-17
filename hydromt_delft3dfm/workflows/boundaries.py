@@ -898,7 +898,7 @@ def get_geometry_coords_for_polygons(gdf):
             )
 
     else:
-        NotImplementedError(
+        raise NotImplementedError(
             f"{first_type} is not implemented for get_geometry_coords_for_polygons()."
         )
 
