@@ -448,7 +448,7 @@
 <section id="unreleased">
 <h2>Unreleased<a class="headerlink" href="#unreleased" title="Link to this heading">#</a></h2>
 <p>This version includes many code updates to accomodate for newer versions of dependencies.
-This makes the code more robust and future-proof.</p>
+The only upper bound left is hydromt&lt;1.</p>
 <section id="added">
 <h3>Added<a class="headerlink" href="#added" title="Link to this heading">#</a></h3>
 <ul class="simple">
@@ -468,10 +468,15 @@ This makes the code more robust and future-proof.</p>
 <h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Bugfixing of reading of frictions (global), crosssections and boundaries when update. (PR #81)</p></li>
-<li><p>Fixing bug related to changes to pandas TimeDelta formatting, see also <a class="reference external" href="https://pandas.pydata.org/docs/whatsnew/v2.2.0.html#other-deprecations">https://pandas.pydata.org/docs/whatsnew/v2.2.0.html#other-deprecations</a>. (PR #129)</p></li>
+<li><p>Support for xugrid&gt;=0.9.0, meshkernel&gt;=4.3.0, hydromt&gt;=0.10,&lt;1, pandas&gt;=2. (PR #129)</p></li>
 <li><p>Fixing setup_links1d2d for 2d to 1d direction. (PR #133)</p></li>
+<li><p>Support for hydrolib-core&gt;=0.8.0. (PR #139)</p></li>
+<li><p>Add support for Python 3.12. (PR #149)</p></li>
+<li><p>Fix writing of structures with newer (geo)pandas versions. (PR #151)</p></li>
 <li><p>Several bugfixes related to processing of cross-sections (PR #153)</p></li>
 <li><p>Support for geopandas v1 (PR #158)</p></li>
+<li><p>Support for latest version hydromt artifact data. (PR #160)</p></li>
+<li><p>Avoid sediment section in mdu so generated models can run in Delft3D FM Suite 2024.03 1D2D. (PR #184)</p></li>
 </ul>
 </section>
 </section>
