@@ -439,7 +439,7 @@ def set_xyz_crosssections(
     # snap to branch
     # setup branch_id - snap bridges to branch (inplace of bridges,
     # will add branch_id and branch_offset columns)
-    find_nearest_branch(
+    crosssections = find_nearest_branch(
         branches=branches, geometries=crosssections, method="intersecting"
     )
     logger.warning(
@@ -502,7 +502,7 @@ def set_xyz_crosssections(
                 crosssections.branch_id.to_list(), "frictionvalue"
             ],
             "crsdef_frictionpositions": [
-                f"0 {l}" for l in crosssections.geometry.length.to_list()
+                f"0 {l[-1]}" for l in crosssections.l.to_list()
             ],
         }
     )
@@ -582,7 +582,7 @@ def set_point_crosssections(
     # snap to branch
     # setup branch_id - snap bridges to branch
     # (inplace of bridges, will add branch_id and branch_offset columns)
-    find_nearest_branch(
+    crosssections = find_nearest_branch(
         branches=branches, geometries=crosssections, method="overal", maxdist=maxdist
     )
 

@@ -105,7 +105,9 @@ def prepare_1dstructures(
     # 4. snap structures to branches
     # setup branch_id - snap structures to branch (inplace of structures,
     # will add branch_id and branch_offset columns)
-    find_nearest_branch(branches=branches, geometries=gdf_st, maxdist=snap_offset)
+    gdf_st = find_nearest_branch(
+        branches=branches, geometries=gdf_st, maxdist=snap_offset
+    )
     # setup failed - drop based on branch_offset that are not snapped to branch
     _old_ids = gdf_st.index.to_list()
     gdf_st.dropna(axis=0, inplace=True, subset=["branch_offset"])
