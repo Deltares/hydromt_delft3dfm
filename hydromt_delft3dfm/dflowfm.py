@@ -3123,7 +3123,7 @@ class DFlowFMModel(MeshModel):
 
     def read_maps(self) -> Dict[str, Union[xr.Dataset, xr.DataArray]]:
         """Read maps from initialfield and parse to dict of xr.DataArray."""
-        self._assert_read_mode
+        self._assert_read_mode()
         # Read initial fields
         inifield_model = self.dfmmodel.geometry.inifieldfile
         # seperate 1d and 2d
@@ -3287,7 +3287,7 @@ class DFlowFMModel(MeshModel):
         in read_mesh. There the geoms geojson copies are re-set based on dflowfm files
         content.
         """
-        self._assert_read_mode
+        self._assert_read_mode()
         super().read_geoms(fn="geoms/region.geojson")
 
         if self.dfmmodel.geometry.crosslocfile is not None:
@@ -3402,7 +3402,7 @@ class DFlowFMModel(MeshModel):
         self,
     ) -> None:  # FIXME reading of forcing should include boundary, lateral and meteo
         """Read forcing at <root/?/> and parse to dict of xr.DataArray."""
-        self._assert_read_mode
+        self._assert_read_mode()
         # Read external forcing
         ext_model = self.dfmmodel.external_forcing.extforcefilenew
         if ext_model is not None:
@@ -3482,7 +3482,7 @@ class DFlowFMModel(MeshModel):
 
     def read_mesh(self):
         """Read network file with Hydrolib-core and extract mesh/branches info."""
-        self._assert_read_mode
+        self._assert_read_mode()
 
         # Read mesh
         # hydrolib-core convention
