@@ -401,32 +401,6 @@ def compute_2dboundary_values(
     return da_out_dict
 
 
-def _standardize_forcing_timeindexes(da):
-    """Standardize timeindexes frequency based on forcing DataArray."""
-    _TIMESTR = {"D": "days", "H": "hours", "T": "minutes", "S": "seconds"}
-    dt = pd.to_timedelta((da.time[1].values - da.time[0].values))
-    freq = dt.resolution_string
-    multiplier = 1
-    if freq == "D":
-        logger.warning(
-            "time unit days is not supported by the current GUI version: 2022.04"
-        )
-        # converting to hours as temporary solution
-        # FIXME: day is converted to hours temporarily
-        multiplier = 24
-    if len(pd.date_range(da.time[0].values, da.time[-1].values, freq=dt)) != len(
-        da.time
-    ):
-        logger.error("does not support non-equidistant time-series.")
-    freq_name = _TIMESTR[freq]
-    freq_step = getattr(dt.components, freq_name)
-    bd_times = np.array([float(i * freq_step) for i in range(len(da.time))])
-    if multiplier == 24:
-        bd_times = np.array([(i * freq_step * multiplier) for i in range(len(da.time))])
-        freq_name = "hours"
-    return bd_times, freq_name
-
-
 def get_geometry_coords_for_linestrings(gdf):
     """Get xarray DataArray coordinates that describes linestring geometries.
 
