@@ -1470,6 +1470,7 @@ class DFlowFMModel(MeshModel):
         buffer: float = 1000.0,
     ):
         """Read forcing geodataset."""
+
         refdate, tstart, tstop = self.get_model_time()  # time slice
 
         if (
