@@ -16,16 +16,16 @@ from hydrolib.core.dflowfm import (
     FMModel,
     ForcingModel,
     FrictionModel,
-    Lateral,
     Meteo,
+    Lateral,
     PolyFile,
     StorageNodeModel,
     StructureModel,
 )
 from shapely.geometry import Point, Polygon
-
 from . import gis_utils
 from .workflows import boundaries
+
 
 __all__ = [
     "read_branches_gui",
@@ -765,7 +765,7 @@ def read_1dlateral(
     branches: gpd.GeoDataFrame = None,
 ) -> xr.DataArray:
     """
-    Read a 2d boundary forcing location and values, and parse to xarray.
+    Read for a specific quantity the corresponding external and forcing files and parse to xarray
 
     Parameters
     ----------
@@ -1019,6 +1019,9 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
     da_out: xr.DataArray
         External and forcing values combined into a DataArray with name starts with "boundary2d".
     """
+    quantity = df.quantity.iloc[0]
+
+    # Initialise dataarray attributes
 
     # Assume one forcing file (hydromt writer) and read
     forcing = df.forcingfile.iloc[0]
@@ -1152,7 +1155,8 @@ def _write_ncdicts(ncdicts: Dict[str, xr.DataArray], savedir: str):
 
 
 def _create_pliobj_from_xy(xs: list, ys: list, name: str):
-    """Creates hydrolib-core pli objecti from list of x and y coordinates."""
+    """Creates hydrolib-core pli objecti from list of x and y coordinates"""
+
     xs = [x for x in xs if not np.isnan(x)]
     ys = [y for y in ys if not np.isnan(y)]
     _points = [{"x": x, "y": y, "data": []} for x, y in zip(xs, ys)]
@@ -1180,6 +1184,7 @@ def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[di
         Path of the external forcing file (.ext) in which this function will append to.
 
     """
+
     _bcfilename = "boundary2d.bc"
 
     # filter for 2d boundary
@@ -1223,7 +1228,7 @@ def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[di
             # check if only one support point
             if da_i_tsvalid.sizes["numcoordinates"] > 1:
                 raise NotImplementedError(
-                    "Timeseries at multiple support points are not yet implemented."
+                    f"Timeseries at multiple support points are not yet implemented."
                 )
             else:
                 # flaten data for bc file
