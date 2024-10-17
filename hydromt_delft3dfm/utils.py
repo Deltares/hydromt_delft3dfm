@@ -16,16 +16,16 @@ from hydrolib.core.dflowfm import (
     FMModel,
     ForcingModel,
     FrictionModel,
-    Meteo,
     Lateral,
+    Meteo,
     PolyFile,
     StorageNodeModel,
     StructureModel,
 )
 from shapely.geometry import Point, Polygon
+
 from . import gis_utils
 from .workflows import boundaries
-
 
 __all__ = [
     "read_branches_gui",
@@ -765,7 +765,7 @@ def read_1dlateral(
     branches: gpd.GeoDataFrame = None,
 ) -> xr.DataArray:
     """
-    Read for a specific quantity the corresponding external and forcing files and parse to xarray
+    Read for a specific quantity the corresponding external and forcing files and parse to xarray.
 
     Parameters
     ----------
@@ -1002,64 +1002,6 @@ def write_1dlateral(
     return forcing_fn, ext_fn
 
 
-def _forcingmodel_to_dataarray(forcing: ForcingModel):
-    """read forcingfile timeseries into dataarray"""
-    df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
-
-    # Get data
-    # Check if all constant, Assume only timeseries exist (hydromt writer) and read
-    bc = {}
-    if np.all(df_forcing.function == "constant"):
-        # Prepare data
-        data = np.array([v[0][0] for v in df_forcing.datablock])
-        data = data + df_forcing.offset.values * df_forcing.factor.values
-        # Prepare dataarray properties
-        dims = ["index"]
-        coords = dict(index=list(df_forcing.index))
-        bc["function"] = "constant"
-        bc["units"] = df_forcing.quantityunitpair.iloc[0][0].unit
-        bc["quantity"] = df_forcing.quantityunitpair.iloc[0][1].quantity
-        bc["factor"] = 1
-        bc["offset"] = 0
-    # Check if all timeseries
-    elif np.all(df_forcing.function == "timeseries"):
-        # Prepare data
-        data = list()
-        for i in np.arange(len(df_forcing.datablock)):
-            v = df_forcing.datablock.iloc[i]
-            offset = df_forcing.offset.iloc[i]
-            factor = df_forcing.factor.iloc[i]
-            databl = [n[1] * factor + offset for n in v]
-            data.append(databl)
-        data = np.array(data)
-        # Assume unique times
-        times = np.array([n[0] for n in df_forcing.datablock.iloc[0]])
-        # Prepare dataarray properties
-        dims = ["index", "time"]
-        coords = dict(index=list(df_forcing.index), time=times)
-        bc["function"] = "timeseries"
-        bc["timeinterpolation"] = df_forcing.timeinterpolation.iloc[0]
-        bc["units"] = df_forcing.quantityunitpair.iloc[0][1].unit
-        bc["time_unit"] = df_forcing.quantityunitpair.iloc[0][0].unit
-        bc["quantity"] = df_forcing.quantityunitpair.iloc[0][1].quantity
-        bc["factor"] = 1
-        bc["offset"] = 0
-    # Else not implemented yet
-    else:
-        raise NotImplementedError(
-            "ForcingFile with several function for a single variable not implemented yet. Skipping reading forcing."
-        )
-
-    # Prep DataArray and add to forcing
-    da_out = xr.DataArray(
-        data=data,
-        dims=dims,
-        coords=coords,
-        attrs=bc,
-    )
-    return da_out
-
-
 def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArray:
     """
     Read a 2d boundary forcing location and values, and parse to xarray.
@@ -1213,8 +1155,7 @@ def _write_ncdicts(ncdicts: Dict[str, xr.DataArray], savedir: str):
 
 
 def _create_pliobj_from_xy(xs: list, ys: list, name: str):
-    """Creates hydrolib-core pli objecti from list of x and y coordinates"""
-
+    """Creates hydrolib-core pli objecti from list of x and y coordinates."""
     xs = [x for x in xs if not np.isnan(x)]
     ys = [y for y in ys if not np.isnan(y)]
     _points = [{"x": x, "y": y, "data": []} for x, y in zip(xs, ys)]
@@ -1242,7 +1183,6 @@ def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[di
         Path of the external forcing file (.ext) in which this function will append to.
 
     """
-
     _bcfilename = "boundary2d.bc"
 
     # filter for 2d boundary
@@ -1286,7 +1226,7 @@ def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[di
             # check if only one support point
             if da_i_tsvalid.sizes["numcoordinates"] > 1:
                 raise NotImplementedError(
-                    f"Timeseries at multiple support points are not yet implemented."
+                    "Timeseries at multiple support points are not yet implemented."
                 )
             else:
                 # flaten data for bc file
