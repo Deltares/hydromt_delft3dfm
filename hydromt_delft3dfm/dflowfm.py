@@ -3713,7 +3713,7 @@ class DFlowFMModel(MeshModel):
 
     def set_link1d2d(
         self,
-        link1d2d: xr.Dataset(),
+        link1d2d: xr.Dataset,
     ):
         """
         Add or replace the link1d2d in the model mesh.
