@@ -18,7 +18,7 @@ Settings to build or update a Delft3DFM model are managed in a configuration fil
 every option from each :ref:`model method <model_methods>` can be changed by the user
 in its corresponding section.
 
-Note that the order in which the components are listed in the yml/ini file is important:
+Note that the order in which the components are listed in the yml file is important:
 
 
 - When setting up a 1D model, one of the `setup_rivers`, `setup_channels` and `setup_pipes` should always be run first to determine the model topology.
