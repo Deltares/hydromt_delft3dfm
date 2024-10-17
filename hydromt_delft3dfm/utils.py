@@ -1002,6 +1002,72 @@ def write_1dlateral(
     return forcing_fn, ext_fn
 
 
+def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArray:
+    """
+    Read a 2d boundary forcing location and values, and parse to xarray.
+
+    Parameters
+    ----------
+    df: pd.DataFrame
+        External Model DataFrame filtered for 2d boundary.
+    workdir: Path
+        working directory, i.e. where the files are stored.
+        Required for reading disk only file model. #FIXME: there might be better options
+
+    Returns
+    -------
+    da_out: xr.DataArray
+        External and forcing values combined into a DataArray with name starts with "boundary2d".
+    """
+    quantity = df.quantity.iloc[0]
+
+    # Initialise dataarray attributes
+
+    # Assume one forcing file (hydromt writer) and read
+    forcing = df.forcingfile.iloc[0]
+    _da_forcing = _forcingmodel_to_dataarray(forcing)
+
+    # Add location
+    # one location file has only one location
+    _df = df.copy()
+    for i, df_i in df.iterrows():
+        locationfile = PolyFile(workdir.joinpath(df_i.locationfile.filepath))
+        x = [f.__dict__["x"] for f in locationfile.objects[0].points]
+        y = [f.__dict__["y"] for f in locationfile.objects[0].points]
+        from shapely import LineString
+
+        line = LineString(list(zip(x, y)))
+        _df.loc[i, "geometry"] = line
+
+    # Update dataarray
+    # prior
+    data = _da_forcing.data
+    dims = list(_da_forcing.dims)
+    coords = {k: v.values for k, v in _da_forcing.coords.items()}
+    bc = _da_forcing.attrs.copy()
+    # post
+    coords_dict = boundaries.get_geometry_coords_for_linestrings(gpd.GeoDataFrame(_df))
+    dims.append("numcoordinates")
+    coords["numcoordinates"] = coords_dict["numcoordinates"]
+    coords["x"] = coords_dict["xcoordinates"]
+    coords["y"] = coords_dict["ycoordinates"]
+    data = np.tile(
+        np.expand_dims(data, axis=-1),
+        (1, 1, len(coords_dict["numcoordinates"])),
+    )
+
+    # Prep DataArray and add to forcing
+    da_out = xr.DataArray(
+        data=data,
+        dims=dims,
+        coords=coords,
+        attrs=bc,
+    )
+    da_out.name = f"{quantity}"
+
+    return da_out
+
+
 def _write_ncdicts(ncdicts: Dict[str, xr.DataArray], savedir: str):
     """
     Save forcing dictionaries of xr.DataArray to netCDF conventions.
