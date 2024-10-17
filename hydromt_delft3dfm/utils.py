@@ -1060,7 +1060,6 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
         coords=coords,
         attrs=bc,
     )
-    quantity = df.quantity.iloc[0]
     da_out.name = f"{quantity}"
 
     return da_out
