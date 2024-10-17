@@ -765,7 +765,7 @@ def read_1dlateral(
     branches: gpd.GeoDataFrame = None,
 ) -> xr.DataArray:
     """
-    Read for a specific quantity the corresponding external and forcing files and parse to xarray.
+    Read a 2d boundary forcing location and values, and parse to xarray.
 
     Parameters
     ----------
@@ -1019,9 +1019,6 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
     da_out: xr.DataArray
         External and forcing values combined into a DataArray with name starts with "boundary2d".
     """
-    quantity = df.quantity.iloc[0]
-
-    # Initialise dataarray attributes
 
     # Assume one forcing file (hydromt writer) and read
     forcing = df.forcingfile.iloc[0]
@@ -1063,6 +1060,7 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
         coords=coords,
         attrs=bc,
     )
+    quantity = df.quantity.iloc[0]
     da_out.name = f"{quantity}"
 
     return da_out
