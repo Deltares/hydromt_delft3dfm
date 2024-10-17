@@ -1614,63 +1614,6 @@ class DFlowFMModel(MeshModel):
         self,
         forcing_geodataset_fn: Union[str, Path],
         forcing_name: str = "discharge",
-        buffer: float = 1000.0,
-    ):
-        """Read forcing geodataset."""
-
-        refdate, tstart, tstop = self.get_model_time()  # time slice
-
-        if (
-            forcing_geodataset_fn is not None
-            and self.data_catalog[forcing_geodataset_fn].data_type == "GeoDataset"
-        ):
-            da = self.data_catalog.get_geodataset(
-                forcing_geodataset_fn,
-                geom=self.region.buffer(
-                    buffer
-                ),  # only select data within region of interest (large region for forcing)
-                variables=[forcing_name],
-                time_tuple=(
-                    tstart,
-                    tstop
-                    + timedelta(
-                        seconds=1
-                    ),  # extend with 1 seconds to include the last timestep
-                ),
-            ).rename(forcing_name)
-            # error if time mismatch
-            if np.logical_and(
-                pd.to_datetime(da.time.values[0]) == pd.to_datetime(tstart),
-                pd.to_datetime(da.time.values[-1]) == pd.to_datetime(tstop),
-            ):
-                pass
-            else:
-                self.logger.error(
-                    "forcing has different start and end time. Please check the forcing file. support yyyy-mm-dd HH:MM:SS. "
-                )
-            # reproject if needed and convert to location
-            if da.vector.crs != self.crs:
-                da = da.vector.to_crs(self.crs)
-            # get geom
-            gdf = da.vector.to_gdf(reducer=np.mean)
-        elif (
-            forcing_geodataset_fn is not None
-            and self.data_catalog[forcing_geodataset_fn].data_type == "GeoDataFrame"
-        ):
-            gdf = self.data_catalog.get_geodataframe(
-                forcing_geodataset_fn,
-                geom=self.region.buffer(self._network_snap_offset),
-            )
-            da = None
-        else:
-            gdf = None
-            da = None
-        return gdf, da
-
-    def _read_forcing_geodataset(
-        self,
-        forcing_geodataset_fn: Union[str, Path],
-        forcing_name: str = "discharge",
         region_buffer=0.0,
     ):
         """Read forcing geodataset."""
@@ -1684,8 +1627,14 @@ class DFlowFMModel(MeshModel):
                 forcing_geodataset_fn,
                 geom=self.region.buffer(region_buffer),  # buffer region
                 variables=[forcing_name],
-                time_tuple=(tstart, tstop),
-            )
+                time_tuple=(
+                    tstart,
+                    tstop
+                    + timedelta(
+                        seconds=1
+                    ),  # extend with 1 seconds to include the last timestep
+                ),
+            ).rename(forcing_name)
             # error if time mismatch
             if np.logical_and(
                 pd.to_datetime(da.time.values[0]) == pd.to_datetime(tstart),
