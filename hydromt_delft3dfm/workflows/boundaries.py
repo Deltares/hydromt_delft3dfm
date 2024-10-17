@@ -23,7 +23,6 @@ __all__ = [
     "compute_forcing_values_points",
     "compute_forcing_values_polygon",
     "compute_forcing_values_lines",
-    "get_geometry_coords_for_linestrings",
     "get_geometry_coords_for_polygons",
 ]
 
@@ -401,45 +400,6 @@ def compute_2dboundary_values(
     return da_out_dict
 
 
-def get_geometry_coords_for_linestrings(gdf):
-    """Get xarray DataArray coordinates that describes linestring geometries.
-
-    Inlcudes numcoordinates, xcoordinates and ycoordinates.
-    """
-    if gdf.geometry.type.iloc[0] == "LineString":
-        # Get the maximum number of coordinates for any polygon
-        max_coords = gdf["geometry"].apply(lambda x: len(x.coords[:])).max()
-
-        def get_xcoords(geom):
-            coords = [xy[0] for xy in geom.coords[:]]
-            return np.pad(
-                coords,
-                (0, max_coords - len(coords)),
-                "constant",
-                constant_values=np.nan,
-            )
-
-        def get_ycoords(geom):
-            coords = [xy[1] for xy in geom.coords[:]]
-            return np.pad(
-                coords,
-                (0, max_coords - len(coords)),
-                "constant",
-                constant_values=np.nan,
-            )
-
-        # Create the 2D arrays
-        x_2d = np.vstack(gdf["geometry"].apply(get_xcoords))
-        y_2d = np.vstack(gdf["geometry"].apply(get_ycoords))
-
-        return dict(
-            index=gdf.index,
-            numcoordinates=np.arange(max_coords),
-            xcoordinates=(("index", "numcoordinates"), x_2d),
-            ycoordinates=(("index", "numcoordinates"), y_2d),
-        )
-
-
 def _expand_2d_to_3d(data_2d, third_dim_length, fill_value=np.nan):
     """Expand a 2D numpy array to a 3D array.
 
@@ -520,7 +480,7 @@ def compute_forcing_values_lines(
         bd_times, freq_name = _standardize_forcing_timeindexes(da)
 
         # get coordinates in correct dimentions
-        coords_dict = get_geometry_coords_for_linestrings(gdf)
+        coords_dict = get_geometry_coords_for_polygons(gdf)
 
         # get data in correct dimentions
         data_3d = _expand_2d_to_3d(da.data, len(coords_dict["numcoordinates"]))
@@ -559,7 +519,7 @@ def compute_forcing_values_lines(
             f"for all {forcing_type} forcings."
         )
         # instantiate xr.DataArray for forcing data with forcing_type directly
-        coords_dict = get_geometry_coords_for_linestrings(gdf)
+        coords_dict = get_geometry_coords_for_polygons(gdf)
         data_3d = np.full(
             (len(coords_dict["index"]), len(coords_dict["numcoordinates"])),
             forcing_value,
@@ -888,11 +848,12 @@ def compute_forcing_values_points(
 
 def get_geometry_coords_for_polygons(gdf):
     """
-    Get xarray DataArray coordinates that describes polygon geometries.
+    Get xarray DataArray coordinates that describes polygon/linestring geometries.
 
     Inlcude numcoordinates, xcoordinates and ycoordinates.
     """
-    if gdf.geometry.type.iloc[0] == "Polygon":
+    first_type = gdf.geometry.type.iloc[0]
+    if first_type == "Polygon":
         # Get the maximum number of coordinates for any polygon
         max_coords = gdf["geometry"].apply(lambda x: len(x.exterior.coords[:])).max()
 
@@ -914,16 +875,43 @@ def get_geometry_coords_for_polygons(gdf):
                 constant_values=np.nan,
             )
 
-        # Create the 2D arrays
-        x_2d = np.vstack(gdf["geometry"].apply(get_xcoords))
-        y_2d = np.vstack(gdf["geometry"].apply(get_ycoords))
+    elif first_type == "LineString":
+        # Get the maximum number of coordinates for any polygon
+        max_coords = gdf["geometry"].apply(lambda x: len(x.coords[:])).max()
 
-        return dict(
-            index=gdf.index,
-            numcoordinates=np.arange(max_coords),
-            xcoordinates=(("index", "numcoordinates"), x_2d),
-            ycoordinates=(("index", "numcoordinates"), y_2d),
+        def get_xcoords(geom):
+            coords = [xy[0] for xy in geom.coords[:]]
+            return np.pad(
+                coords,
+                (0, max_coords - len(coords)),
+                "constant",
+                constant_values=np.nan,
+            )
+
+        def get_ycoords(geom):
+            coords = [xy[1] for xy in geom.coords[:]]
+            return np.pad(
+                coords,
+                (0, max_coords - len(coords)),
+                "constant",
+                constant_values=np.nan,
+            )
+
+    else:
+        NotImplementedError(
+            f"{first_type} is not implemented for get_geometry_coords_for_polygons()."
         )
+
+    # Create the 2D arrays
+    x_2d = np.vstack(gdf["geometry"].apply(get_xcoords))
+    y_2d = np.vstack(gdf["geometry"].apply(get_ycoords))
+
+    return dict(
+        index=gdf.index,
+        numcoordinates=np.arange(max_coords),
+        xcoordinates=(("index", "numcoordinates"), x_2d),
+        ycoordinates=(("index", "numcoordinates"), y_2d),
+    )
 
 
 def compute_forcing_values_polygon(
