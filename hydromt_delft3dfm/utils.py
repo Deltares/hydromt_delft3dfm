@@ -156,9 +156,7 @@ def write_branches_gui(
     return branchgui_fn
 
 
-def read_crosssections(
-    gdf: gpd.GeoDataFrame, fm_model: FMModel
-) -> tuple((gpd.GeoDataFrame, gpd.GeoDataFrame)):
+def read_crosssections(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
     """
     Read crosssections from hydrolib-core crsloc and crsdef objects and add to branches.
 
@@ -1034,7 +1032,7 @@ def write_1dlateral(
 
 
 def _forcingmodel_to_dataarray(forcing: ForcingModel):
-    """read forcingfile timeseries into dataarray"""
+    """Read forcingfile timeseries into dataarray."""
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
 
     # Get data
@@ -1078,7 +1076,8 @@ def _forcingmodel_to_dataarray(forcing: ForcingModel):
     # Else not implemented yet
     else:
         raise NotImplementedError(
-            "ForcingFile with several function for a single variable not implemented yet. Skipping reading forcing."
+            "ForcingFile with several function for a single variable "
+            "not implemented yet. Skipping reading forcing."
         )
 
     # Prep DataArray and add to forcing
@@ -1116,8 +1115,8 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
     # location file
     # assume one location file has only one location (hydromt writer) and read
     locationfile = PolyFile(workdir.joinpath(df.locationfile.filepath))
-    boundary_name = locationfile.objects[0].metadata.name
-    boundary_points = pd.DataFrame([f.__dict__ for f in locationfile.objects[0].points])
+    locationfile.objects[0].metadata.name
+    pd.DataFrame([f.__dict__ for f in locationfile.objects[0].points])
 
     # Assume one forcing file (hydromt writer) and read
     forcing = df.forcingfile
@@ -1263,8 +1262,7 @@ def _write_ncdicts(ncdicts: Dict[str, xr.DataArray], savedir: str):
 
 
 def _create_pliobj_from_xy(xs: list, ys: list, name: str):
-    """Creates hydrolib-core pli objecti from list of x and y coordinates"""
-
+    """Create hydrolib-core pli objecti from list of x and y coordinates."""
     xs = [x for x in xs if not np.isnan(x)]
     ys = [y for y in ys if not np.isnan(y)]
     _points = [{"x": x, "y": y, "data": []} for x, y in zip(xs, ys)]
@@ -1293,7 +1291,6 @@ def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[di
         Path of the external forcing file (.ext) in which this function will append to.
 
     """
-
     _bcfilename = "boundary2d.bc"
 
     # filter for 2d boundary
@@ -1337,7 +1334,7 @@ def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[di
             # check if only one support point
             if da_i_tsvalid.sizes["numcoordinates"] > 1:
                 raise NotImplementedError(
-                    f"Timeseries at multiple support points are not yet implemented."
+                    "Timeseries at multiple support points are not yet implemented."
                 )
             else:
                 # flaten data for bc file

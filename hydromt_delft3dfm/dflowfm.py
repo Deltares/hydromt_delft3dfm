@@ -1673,6 +1673,7 @@ class DFlowFMModel(MeshModel):
         self, branches: gpd.GeoDataFrame, geoms: gpd.GeoDataFrame, snap_offset=0.0
     ):
         """Snaps geoms to branches and drop the ones that are not snapped.
+
         Returns snapped geoms with branchid and chainage.
         branches must have branchid.
         """
@@ -2615,19 +2616,21 @@ class DFlowFMModel(MeshModel):
         boundary_type: str = "waterlevel",
         tolerance: float = 3.0,
     ):
-        """
-        Prepares the 2D boundaries from geodataset of line geometries.
-        E.g. `boundary_value` m3/s `boundary_type` boundary for all lines in `boundaries_geodataset_fn`.
+        """Prepare the 2D boundaries from geodataset of line geometries.
 
-        Use ``boundaries_geodataset_fn`` to set the boundary timeseries from a geodataset
-        of line geometries.
-        Support also geodataframe of line geometries in combination of ``boundary_value`` and ``boundary_type``.
+        E.g. `boundary_value` m3/s `boundary_type` boundary for all lines in
+        `boundaries_geodataset_fn`.
+
+        Use ``boundaries_geodataset_fn`` to set the boundary timeseries from a
+        geodataset of line geometries.
+        Support also geodataframe of line geometries in combination of
+        ``boundary_value`` and ``boundary_type``.
 
         Only lines that are within a max distance defined in ``tolerance`` are used.
 
         The timeseries are clipped to the model time based on the model config
-        tstart and tstop entries.
-        If the timeseries has missing values, the constant ``boundary_value`` will be used.
+        tstart and tstop entries. If the timeseries has missing values, the constant
+        ``boundary_value`` will be used.
 
         Adds/Updates model layers:
             * **boundary2d_{boundary_name}** forcing: 2D boundaries DataArray
@@ -2637,7 +2640,8 @@ class DFlowFMModel(MeshModel):
         boundaries_geodataset_fn : str, Path
             Path or data source name for geospatial point location file.
             * Required variables if geodataset is provided [``boundary_type``]
-            NOTE: Use universal datetime format e.g. yyyy-mm-dd to avoid ambiguity when using a csv timeseries.
+            NOTE: Use universal datetime format e.g. yyyy-mm-dd to avoid ambiguity when
+            using a csv timeseries.
         boundary_value : float, optional
             Constant value to use for all boundaries, and to
             fill in missing data. By default 0.0 m.
@@ -3474,7 +3478,7 @@ class DFlowFMModel(MeshModel):
             self.set_branches(branches)
 
     def write_mesh(self, write_gui=True):
-        """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc> in model ready format."""
+        """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc>."""
         self._assert_write_mode()
         savedir = dirname(join(self.root, self._config_fn))
         mesh_filename = "fm_net.nc"
@@ -3825,7 +3829,7 @@ class DFlowFMModel(MeshModel):
 
     def set_link1d2d(
         self,
-        link1d2d: xr.Dataset(),
+        link1d2d: xr.Dataset,
     ):
         """
         Add or replace the link1d2d in the model mesh.
