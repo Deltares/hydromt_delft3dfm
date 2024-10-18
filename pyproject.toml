@@ -25,6 +25,8 @@ dependencies = [
     "scipy",
     "pyflwdir>=0.5.4",
     "networkx",
+	"momepy", # graph utils
+	"osmnx", # osm graph
 ]
 requires-python = ">=3.9"
 readme = "README.rst"
