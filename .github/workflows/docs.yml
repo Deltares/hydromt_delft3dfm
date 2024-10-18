@@ -28,6 +28,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e .[docs]
+          python -m pip install flit
           hydromt --models
 
       - name: Install hydromt-delft3dfm
