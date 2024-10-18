@@ -1009,7 +1009,7 @@ class DFlowFMModel(MeshModel):
             "width",  # rectangle
             "height",  # rectangle
             "invlev_up",
-            "inlev_dn",
+            "invlev_dn",
         ]
 
         # Read data and filter within region
@@ -1319,7 +1319,7 @@ class DFlowFMModel(MeshModel):
     def setup_manholes(
         self,
         manholes_fn: str = None,
-        manhole_defaults_fn: str = "manholes_defaults",
+        manholes_defaults_fn: str = "manholes_defaults",
         bedlevel_shift: float = -0.5,
         dem_fn: str = None,
         snap_offset: float = 1e-3,
@@ -1330,7 +1330,7 @@ class DFlowFMModel(MeshModel):
         Can only be used after all branches are setup.
 
         The manholes are generated based on a set of standards specified in
-        ``manhole_defaults_fn`` (default)  and can be overwritten with manholes
+        ``manholes_defaults_fn`` (default)  and can be overwritten with manholes
         read from ``manholes_fn``.
 
         Use ``manholes_fn`` to set the manholes from a dataset of point locations.
@@ -1339,7 +1339,7 @@ class DFlowFMModel(MeshModel):
 
         Manhole attributes ["area", "streetstoragearea", "storagetype", "streetlevel"]
         are either taken from ``manholes_fn`` or filled in using defaults in
-        ``manhole_defaults_fn``.
+        ``manholes_defaults_fn``.
         Manhole attribute ["bedlevel"] is always generated from invert levels of the
         pipe/tunnel network plus a shift defined in ``bedlevel_shift``. This is needed
         for numerical stability.
@@ -1414,7 +1414,7 @@ class DFlowFMModel(MeshModel):
         self.set_branches(branches)
 
         # add manhole attributes from defaults
-        defaults = self.data_catalog.get_dataframe(manhole_defaults_fn)
+        defaults = self.data_catalog.get_dataframe(manholes_defaults_fn)
 
         # add defaults
         manholes = workflows.update_data_columns_attributes(manholes, defaults)
@@ -3840,7 +3840,7 @@ class DFlowFMModel(MeshModel):
 
     def set_link1d2d(
         self,
-        link1d2d: xr.Dataset(),
+        link1d2d: xr.Dataset,
     ):
         """
         Add or replace the link1d2d in the model mesh.

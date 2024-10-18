@@ -14,24 +14,10 @@ the code folder (where the envs folder and pyproject.toml are located):
     $ git clone https://github.com/Deltares/hydromt_delft3dfm.git
     $ cd hydromt_delft3dfm
 
-Then, make and activate a new hydromt-delft3dfm conda environment based on the envs/hydromt-delft3dfm.yml
-file contained in the repository:
+Then, create and activate a new conda environment and install hydromt_delft3dfm as developer:
 
 .. code-block:: console
 
-    $ conda env create -f envs/hydromt-delft3dfm.yml
+    $ conda create -n hydromt-delft3dfm python=3.11 -c conda-forge
     $ conda activate hydromt-delft3dfm
-
-If you wish to make changes in HydroMT-Delft3DFM, you should make an editable install of the plugin.
-This can be done with:
-
-.. code-block:: console
-
     $ pip install -e .
-
-If you encounter issues with the installation of some packages, you might consider cleaning conda to remove unused packages and caches.
-This can be done through the following command from your base environment:
-
-.. code-block:: console
-
-    $ conda clean -a
