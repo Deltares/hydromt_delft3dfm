@@ -1,7 +1,8 @@
 ---
 name: Build Docs
 
-# We also build for PR's since this also tests whether all notebooks run properly
+# We don't want pushes (or PRs) to gh-pages to kick anything off
+# However, we do build for PR's since this also tests whether all notebooks run properly
 on:
   push:
     branches: [main]
