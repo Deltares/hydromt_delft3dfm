@@ -51,6 +51,9 @@ dev = [
     "ruff",        # linting
     "pre-commit",  # linting
     "pip>=23.1.2", # needed for recursive dependencies
+    "flit>3.4",    # build
+    "twine",       # build
+    "wheel",       # build
 ]
 test = [
     "pytest>=2.7.3",
