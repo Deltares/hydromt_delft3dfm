@@ -8,8 +8,7 @@ import numpy as np
 import pandas as pd
 import pyproj
 import shapely
-from hydromt import gis_utils
-from hydromt.gis_utils import nearest_merge
+from hydromt.gis._vector_utils import _nearest_merge
 from scipy.spatial import distance
 from shapely.geometry import LineString, MultiLineString, MultiPoint, Point
 
@@ -213,7 +212,7 @@ def _get_possible_unsnappednodes(newbranches):
 def _snap_unsnappednodes_to_nodes(
     unsnapped_nodes: gpd.GeoDataFrame, nodes: gpd.GeoDataFrame, snap_offset: float
 ) -> gpd.GeoDataFrame:
-    snapped_nodes = gis_utils.nearest_merge(
+    snapped_nodes = _nearest_merge(
         unsnapped_nodes, nodes, max_dist=snap_offset, overwrite=False
     )
     snapped_nodes = snapped_nodes[snapped_nodes.index_right != -1]  # drop not snapped
@@ -1102,8 +1101,10 @@ def find_nearest_branch(
         errors="ignore",
     )
 
-    # Use nearest_merge to get the nearest branches
-    result = nearest_merge(geometries, branches, max_dist=maxdist, columns=["geometry"])
+    # Use _nearest_merge to get the nearest branches
+    result = _nearest_merge(
+        geometries, branches, max_dist=maxdist, columns=["geometry"]
+    )
     result.rename(
         columns={"index_right": "branch_id", "distance_right": "branch_distance"},
         inplace=True,
