@@ -9,7 +9,7 @@ The format is based on `Keep a Changelog`_, and this project adheres to
 Unreleased
 ==========
 This version includes many code updates to accomodate for newer versions of dependencies.
-This makes the code more robust and future-proof.
+The only upper bound left is hydromt<1.
 
 Added
 -----
@@ -21,14 +21,21 @@ Changed
 -------
 - Change default spacing in setup_channels from ``None`` to ``np.inf``. (PR #133)
 - Added ``maxdist`` variable to setup_rivers and setup_channels. (PR #153)
+- Renamed ``manhole_defaults_fn`` to ``manholes_defaults_fn`` in ``setup_manholes`` for consistency. (PR #187)
 
 Fixed
 -----
 - Bugfixing of reading of frictions (global), crosssections and boundaries when update. (PR #81)
-- Fixing bug related to changes to pandas TimeDelta formatting, see also https://pandas.pydata.org/docs/whatsnew/v2.2.0.html#other-deprecations. (PR #129)
+- Support for xugrid>=0.9.0, meshkernel>=4.3.0, hydromt>=0.10,<1, pandas>=2. (PR #129)
 - Fixing setup_links1d2d for 2d to 1d direction. (PR #133)
+- Support for hydrolib-core>=0.8.0. (PR #139)
+- Add support for Python 3.12. (PR #149)
+- Fix writing of structures with newer (geo)pandas versions. (PR #151)
 - Several bugfixes related to processing of cross-sections (PR #153)
 - Support for geopandas v1 (PR #158)
+- Support for latest version hydromt artifact data. (PR #160)
+- Avoid sediment section in mdu so generated models can run in Delft3D FM Suite 2024.03 1D2D. (PR #184)
+- fixed typo so ``setup_pipes()`` now allows field ``invlev_dn``. (PR #193)
 
 v0.2.0 (20 November 2023)
 =========================

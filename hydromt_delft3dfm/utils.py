@@ -156,9 +156,7 @@ def write_branches_gui(
     return branchgui_fn
 
 
-def read_crosssections(
-    gdf: gpd.GeoDataFrame, fm_model: FMModel
-) -> tuple((gpd.GeoDataFrame, gpd.GeoDataFrame)):
+def read_crosssections(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
     """
     Read crosssections from hydrolib-core crsloc and crsdef objects and add to branches.
 
