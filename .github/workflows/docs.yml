@@ -32,6 +32,7 @@ jobs:
       - name: Install hydromt-delft3dfm
         run: |
           conda install flit
+          conda install pandoc # does not work via pip
           flit install
 
       - name: list env contents
