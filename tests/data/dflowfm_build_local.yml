@@ -12,6 +12,7 @@ setup_rivers:
   friction_value: 0.023
   crosssections_fn: ["1D_rivers_pointcrosssections", "1D_rivers_xyzcrosssections"]
   crosssections_type: ["point", "xyz"]
+  maxdist: 10
 
 setup_rivers1: 
   region:
