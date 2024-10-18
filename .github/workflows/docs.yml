@@ -28,11 +28,10 @@ jobs:
           python-version: "3.11"
           channels: conda-forge
           channel-priority: strict
-          environment-file: envs/hydromt-delft3dfm.yml
-          activate-environment: hydromt-delft3dfm
 
       - name: Install hydromt-delft3dfm
         run: |
+          conda install flit
           flit install
 
       - name: list env contents
