@@ -1,0 +1,1373 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>hydromt_delft3dfm.workflows.boundaries &#8212; HydroMT Delft3D FM  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/theme-deltares.css?v=17060807" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/hydromt_delft3dfm/workflows/boundaries';</script>
+    <link rel="icon" href="../../../_static/hydromt-icon.svg"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../../_static/hydromt-icon.svg" class="logo__image only-light" alt=""/>
+    <script>document.write(`<img src="../../../_static/hydromt-icon.svg" class="logo__image only-dark" alt=""/>`);</script>
+  
+  
+    <p class="title logo__title">HydroMT Delft3D FM</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../getting_started/intro.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user_guide/intro.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../dev_guide/intro.html">
+    Developments
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
+    HydroMT core
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../getting_started/intro.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user_guide/intro.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../dev_guide/intro.html">
+    Developments
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
+    HydroMT core
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">hydromt_delf...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for hydromt_delft3dfm.workflows.boundaries</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Workflows to prepare boundaries for Delft3D-FM model.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">import</span> <span class="nn">hydromt.io</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+
+<span class="kn">from</span> <span class="nn">hydromt_delft3dfm</span> <span class="kn">import</span> <span class="n">graph_utils</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;get_boundaries_with_nodeid&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;select_boundary_type&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;validate_boundaries&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;compute_boundary_values&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;compute_2dboundary_values&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;compute_meteo_forcings&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;compute_forcing_values_points&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;compute_forcing_values_polygon&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_geometry_coords_for_polygons&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">_TIMESTR</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="s2">&quot;days&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="s2">&quot;hours&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="s2">&quot;minutes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;H&quot;</span><span class="p">:</span> <span class="s2">&quot;hours&quot;</span><span class="p">,</span>  <span class="c1"># support for pandas&lt;2.2.0</span>
+    <span class="s2">&quot;S&quot;</span><span class="p">:</span> <span class="s2">&quot;seconds&quot;</span><span class="p">,</span>  <span class="c1"># support for pandas&lt;2.2.0</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="get_boundaries_with_nodeid">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.get_boundaries_with_nodeid.html#hydromt_delft3dfm.workflows.get_boundaries_with_nodeid">[docs]</a>
+<span class="k">def</span> <span class="nf">get_boundaries_with_nodeid</span><span class="p">(</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">network1d_nodes</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get boundary locations from branches and associate with node IDs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    branches: A GeoDataFrame containing the branches of the network.</span>
+<span class="sd">    network1d_nodes: A GeoDataFrame containing the network1d nodes with node IDs.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A GeoDataFrame with boundary locations and their associated node IDs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># generate all possible and allowed boundary locations</span>
+    <span class="n">_boundaries</span> <span class="o">=</span> <span class="n">graph_utils</span><span class="o">.</span><span class="n">get_endnodes_from_lines</span><span class="p">(</span><span class="n">branches</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
+
+    <span class="n">boundaries</span> <span class="o">=</span> <span class="n">hydromt</span><span class="o">.</span><span class="n">gis_utils</span><span class="o">.</span><span class="n">nearest_merge</span><span class="p">(</span>
+        <span class="n">_boundaries</span><span class="p">,</span> <span class="n">network1d_nodes</span><span class="p">,</span> <span class="n">max_dist</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">boundaries</span></div>
+
+
+
+<div class="viewcode-block" id="select_boundary_type">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.select_boundary_type.html#hydromt_delft3dfm.workflows.select_boundary_type">[docs]</a>
+<span class="k">def</span> <span class="nf">select_boundary_type</span><span class="p">(</span>
+    <span class="n">boundaries</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">branch_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">boundary_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">boundary_locs</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Select boundary location per branch type and boundary type.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    boundaries : gpd.GeoDataFrame</span>
+<span class="sd">        The boundaries.</span>
+<span class="sd">    branch_type : {&#39;river&#39;, &#39;pipe&#39;}</span>
+<span class="sd">        The branch type.</span>
+<span class="sd">    boundary_type : {&#39;waterlevel&#39;, &#39;discharge&#39;}</span>
+<span class="sd">        For rivers &#39;waterlevel&#39; and &#39;discharge&#39; are supported.</span>
+<span class="sd">        For pipes &#39;waterlevel&#39; is supported.</span>
+<span class="sd">    boundary_locs : {&#39;both&#39;, &#39;upstream&#39;, &#39;downstream&#39;}</span>
+<span class="sd">        The boundary location to use.</span>
+<span class="sd">    logger</span>
+<span class="sd">        The logger to log messages with.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame</span>
+<span class="sd">        A data frame containing the boundary location per branch type</span>
+<span class="sd">        and boundary type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">boundaries_branch_type</span> <span class="o">=</span> <span class="n">boundaries</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">boundaries</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">branch_type</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="k">if</span> <span class="n">branch_type</span> <span class="o">==</span> <span class="s2">&quot;river&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">boundary_type</span> <span class="o">==</span> <span class="s2">&quot;waterlevel&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">boundary_locs</span> <span class="o">!=</span> <span class="s2">&quot;both&quot;</span><span class="p">:</span>
+                <span class="n">boundaries_branch_type</span> <span class="o">=</span> <span class="n">boundaries_branch_type</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                    <span class="n">boundaries_branch_type</span><span class="p">[</span><span class="s2">&quot;where&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">boundary_locs</span><span class="p">,</span> <span class="p">:</span>
+                <span class="p">]</span>
+        <span class="k">elif</span> <span class="n">boundary_type</span> <span class="o">==</span> <span class="s2">&quot;discharge&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">boundary_locs</span> <span class="o">!=</span> <span class="s2">&quot;upstream&quot;</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Applying boundary type </span><span class="si">{</span><span class="n">boundary_type</span><span class="si">}</span><span class="s2"> selected&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;for </span><span class="si">{</span><span class="n">branch_type</span><span class="si">}</span><span class="s2"> boundaries might cause instabilities.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">boundary_locs</span> <span class="o">!=</span> <span class="s2">&quot;both&quot;</span><span class="p">:</span>
+                <span class="n">boundaries_branch_type</span> <span class="o">=</span> <span class="n">boundaries_branch_type</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                    <span class="n">boundaries_branch_type</span><span class="p">[</span><span class="s2">&quot;where&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">boundary_locs</span><span class="p">,</span> <span class="p">:</span>
+                <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Wrong boundary type </span><span class="si">{</span><span class="n">boundary_type</span><span class="si">}</span><span class="s2"> selected&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;for </span><span class="si">{</span><span class="n">branch_type</span><span class="si">}</span><span class="s2"> boundaries.&quot;</span>
+            <span class="p">)</span>
+    <span class="c1"># TODO: extend</span>
+    <span class="c1"># for now only downstream boundaries not connected to openwater</span>
+    <span class="c1"># later add connected to weir (upstream or downstream or intermediate)</span>
+    <span class="k">elif</span> <span class="n">branch_type</span> <span class="o">==</span> <span class="s2">&quot;pipe&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">boundary_type</span> <span class="o">==</span> <span class="s2">&quot;waterlevel&quot;</span><span class="p">:</span>
+            <span class="n">boundaries_branch_type</span> <span class="o">=</span> <span class="n">boundaries_branch_type</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">boundaries_branch_type</span><span class="p">[</span><span class="s2">&quot;where&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;downstream&quot;</span><span class="p">,</span> <span class="p">:</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Wrong boundary type </span><span class="si">{</span><span class="n">boundary_type</span><span class="si">}</span><span class="s2"> selected&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;for </span><span class="si">{</span><span class="n">branch_type</span><span class="si">}</span><span class="s2"> boundaries.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">boundaries_branch_type</span></div>
+
+
+
+<div class="viewcode-block" id="validate_boundaries">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.validate_boundaries.html#hydromt_delft3dfm.workflows.validate_boundaries">[docs]</a>
+<span class="k">def</span> <span class="nf">validate_boundaries</span><span class="p">(</span><span class="n">boundaries</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">branch_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;river&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate boundaries per branch type.</span>
+
+<span class="sd">    Will log a warning if the validation fails.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    boundaries : gpd.GeoDataFrame</span>
+<span class="sd">        The boundaries.</span>
+<span class="sd">    branch_type : {&#39;river&#39;, &#39;pipe&#39;}</span>
+<span class="sd">        The branch type.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">branch_type</span> <span class="o">==</span> <span class="s2">&quot;river&quot;</span><span class="p">:</span>  <span class="c1"># TODO add other open system branch_type</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">bnd</span> <span class="ow">in</span> <span class="n">boundaries</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="c1"># TODO extended</span>
+            <span class="k">if</span> <span class="n">bnd</span><span class="p">[</span><span class="s2">&quot;where&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;downstream&quot;</span> <span class="ow">and</span> <span class="n">bnd</span><span class="p">[</span><span class="s2">&quot;boundary_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;discharge&quot;</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Boundary type violates modeller suggestions: using&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;downstream discharge boundary at branch </span><span class="si">{</span><span class="n">bnd</span><span class="p">[</span><span class="s1">&#39;branchid&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">branch_type</span> <span class="o">==</span> <span class="s2">&quot;pipe&quot;</span><span class="p">:</span>  <span class="c1"># TODO add other close system branch_type</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">bnd</span> <span class="ow">in</span> <span class="n">boundaries</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="c1"># TODO extended</span>
+            <span class="k">if</span> <span class="n">bnd</span><span class="p">[</span><span class="s2">&quot;where&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;upstream&quot;</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Boundary type violates modeller suggestions:&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;using upstream boundary at branch </span><span class="si">{</span><span class="n">bnd</span><span class="p">[</span><span class="s1">&#39;branchid&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="compute_boundary_values">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.compute_boundary_values.html#hydromt_delft3dfm.workflows.compute_boundary_values">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_boundary_values</span><span class="p">(</span>
+    <span class="n">boundaries</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">da_bnd</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">boundary_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">,</span>
+    <span class="n">boundary_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;waterlevel&quot;</span><span class="p">,</span>
+    <span class="n">boundary_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span>
+    <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute 1d boundary values.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    boundaries : gpd.GeoDataFrame</span>
+<span class="sd">        Point locations of the 1D boundaries to which to add data.</span>
+
+<span class="sd">        * Required variables: [&#39;nodeid&#39;]</span>
+<span class="sd">    da_bnd : xr.DataArray, optional</span>
+<span class="sd">        xr.DataArray containing the boundary timeseries values.</span>
+<span class="sd">        If None, uses a constant values for all boundaries.</span>
+
+<span class="sd">        * Required variables if netcdf: [``boundary_type``]</span>
+<span class="sd">    boundary_value : float, optional</span>
+<span class="sd">        Constant value to use for all boundaries if ``da_bnd`` is</span>
+<span class="sd">        None and to fill in missing data. By default -2.5 m.</span>
+<span class="sd">    boundary_type : {&#39;waterlevel&#39;, &#39;discharge&#39;}</span>
+<span class="sd">        Type of boundary to use. By default &quot;waterlevel&quot;.</span>
+<span class="sd">    boundary_unit : {&#39;m&#39;, &#39;m3/s&#39;}</span>
+<span class="sd">        Unit corresponding to [boundary_type].</span>
+<span class="sd">        If ``boundary_type`` = &quot;waterlevel&quot;</span>
+<span class="sd">            Allowed unit is [m]</span>
+<span class="sd">        if &#39;&#39;boundary_type`` = &quot;discharge&quot;:</span>
+<span class="sd">            Allowed unit is [m3/s]</span>
+<span class="sd">        By default m.</span>
+<span class="sd">    snap_offset : float, optional</span>
+<span class="sd">        Snapping tolerance to automatically applying boundaries</span>
+<span class="sd">        at the correct network nodes. By default 0.1,</span>
+<span class="sd">        a small snapping is applied to avoid precision errors.</span>
+<span class="sd">    logger</span>
+<span class="sd">        Logger to log messages.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Timeseries boundary values</span>
+    <span class="k">if</span> <span class="n">da_bnd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Preparing 1D </span><span class="si">{</span><span class="n">boundary_type</span><span class="si">}</span><span class="s2"> boundaries from timeseries.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># snap user boundary to potential boundary locations to get nodeid</span>
+        <span class="n">gdf_bnd</span> <span class="o">=</span> <span class="n">da_bnd</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">to_gdf</span><span class="p">()</span>
+        <span class="n">gdf_bnd</span><span class="o">.</span><span class="n">crs</span> <span class="o">=</span> <span class="n">boundaries</span><span class="o">.</span><span class="n">crs</span>
+        <span class="c1"># TODO remove after hydromt release&gt;0.9.0</span>
+        <span class="n">gdf_bnd</span> <span class="o">=</span> <span class="n">hydromt</span><span class="o">.</span><span class="n">gis_utils</span><span class="o">.</span><span class="n">nearest_merge</span><span class="p">(</span>
+            <span class="n">gdf_bnd</span><span class="p">,</span>
+            <span class="n">boundaries</span><span class="p">,</span>
+            <span class="n">max_dist</span><span class="o">=</span><span class="n">snap_offset</span><span class="p">,</span>
+            <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">gdf_bnd</span> <span class="o">=</span> <span class="n">gdf_bnd</span><span class="p">[</span><span class="o">~</span><span class="n">gdf_bnd</span><span class="p">[</span><span class="s2">&quot;nodeid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()]</span>
+        <span class="n">da_bnd</span> <span class="o">=</span> <span class="n">da_bnd</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">gdf_bnd</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+        <span class="c1"># get forcing data time indes</span>
+        <span class="n">bd_times</span><span class="p">,</span> <span class="n">freq_name</span> <span class="o">=</span> <span class="n">_standardize_forcing_timeindexes</span><span class="p">(</span><span class="n">da_bnd</span><span class="p">)</span>
+
+        <span class="c1"># instantiate xr.DataArray for bnd data</span>
+        <span class="n">da_out</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">da_bnd</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">],</span>
+            <span class="n">coords</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">index</span><span class="o">=</span><span class="n">gdf_bnd</span><span class="p">[</span><span class="s2">&quot;nodeid&quot;</span><span class="p">],</span>
+                <span class="n">time</span><span class="o">=</span><span class="n">bd_times</span><span class="p">,</span>
+                <span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">gdf_bnd</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+                <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">gdf_bnd</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">attrs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">function</span><span class="o">=</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">,</span>
+                <span class="n">timeInterpolation</span><span class="o">=</span><span class="s2">&quot;Linear&quot;</span><span class="p">,</span>
+                <span class="n">quantity</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">boundary_type</span><span class="si">}</span><span class="s2">bnd&quot;</span><span class="p">,</span>
+                <span class="n">units</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">boundary_unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">time_unit</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">freq_name</span><span class="si">}</span><span class="s2"> since </span><span class="si">{</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">da_bnd</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="c1"># fill in na using default</span>
+        <span class="n">da_out</span> <span class="o">=</span> <span class="n">da_out</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">boundary_value</span><span class="p">)</span>
+
+        <span class="c1"># drop na in time</span>
+        <span class="n">da_out</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+
+        <span class="c1"># add name</span>
+        <span class="n">da_out</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">boundary_type</span><span class="si">}</span><span class="s2">bnd&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Using constant value </span><span class="si">{</span><span class="n">boundary_value</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">boundary_unit</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;for all </span><span class="si">{</span><span class="n">boundary_type</span><span class="si">}</span><span class="s2"> boundaries.&quot;</span>
+        <span class="p">)</span>
+        <span class="c1"># instantiate xr.DataArray for bnd data with boundary_value directly</span>
+        <span class="n">da_out</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="o">.</span><span class="n">index</span><span class="p">)),</span> <span class="n">boundary_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
+            <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">],</span>
+            <span class="n">coords</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">index</span><span class="o">=</span><span class="n">boundaries</span><span class="p">[</span><span class="s2">&quot;nodeid&quot;</span><span class="p">],</span>
+                <span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">boundaries</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+                <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">boundaries</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">attrs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">function</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span>
+                <span class="n">offset</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                <span class="n">factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">quantity</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">boundary_type</span><span class="si">}</span><span class="s2">bnd&quot;</span><span class="p">,</span>
+                <span class="n">units</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">boundary_unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">da_out</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">boundary_type</span><span class="si">}</span><span class="s2">bnd&quot;</span>
+
+    <span class="k">return</span> <span class="n">da_out</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">dim</span><span class="o">=...</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="compute_2dboundary_values">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.compute_2dboundary_values.html#hydromt_delft3dfm.workflows.compute_2dboundary_values">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_2dboundary_values</span><span class="p">(</span>
+    <span class="n">boundaries</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">df_bnd</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">boundary_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">boundary_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;waterlevel&quot;</span><span class="p">,</span>
+    <span class="n">boundary_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span>
+    <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute 2d boundary timeseries.</span>
+
+<span class="sd">    Line geometry will be converted into supporting points.</span>
+<span class="sd">    Note that All quantities are specified per support point,</span>
+<span class="sd">    except for discharges which are specified per polyline.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    boundaries : gpd.GeoDataFrame, optional</span>
+<span class="sd">        line geometry type of locations of the 2D boundaries to</span>
+<span class="sd">        which to add data. Must be combined with ``df_bnd``.</span>
+
+<span class="sd">        * Required variables: [&quot;boundary_id&quot;]</span>
+<span class="sd">    df_bnd : pd.DataFrame, optional</span>
+<span class="sd">        pd.DataFrame containing the boundary timeseries values.</span>
+<span class="sd">        Must be combined with ``boundaries``. Columns must match the</span>
+<span class="sd">        &quot;boundary_id&quot; in ``boundaries``.</span>
+
+<span class="sd">        * Required variables: [&quot;time&quot;]</span>
+<span class="sd">    boundary_value : float, optional</span>
+<span class="sd">        Constant value to fill in missing data. By default 0 m.</span>
+<span class="sd">    boundary_type : {&#39;waterlevel&#39;, &#39;discharge&#39;}</span>
+<span class="sd">        Type of boundary to use. By default &quot;waterlevel&quot;.</span>
+<span class="sd">    boundary_unit : {&#39;m&#39;, &#39;m3/s&#39;}</span>
+<span class="sd">        Unit corresponding to [boundary_type].</span>
+<span class="sd">        If ``boundary_type`` = &quot;waterlevel&quot;</span>
+<span class="sd">            Allowed unit is [m]</span>
+<span class="sd">        if &#39;&#39;boundary_type`` = &quot;discharge&quot;:</span>
+<span class="sd">            Allowed unit is [m3/s]</span>
+<span class="sd">        By default m.</span>
+<span class="sd">    logger :</span>
+<span class="sd">        Logger to log messages.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError:</span>
+<span class="sd">        if no boundary to compute.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Timeseries boundary values</span>
+    <span class="k">if</span> <span class="n">boundaries</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No boundary to compute.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># prepare boundary data</span>
+        <span class="c1"># get data freq in seconds</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">df_bnd</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">df_bnd</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">freq</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">resolution_string</span>
+        <span class="n">multiplier</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">freq</span> <span class="o">==</span> <span class="s2">&quot;D&quot;</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;time unit days is not supported by the current GUI version: 2022.04&quot;</span>
+            <span class="p">)</span>  <span class="c1"># converting to hours as temporary solution</span>
+            <span class="c1"># FIXME: day is supported in version 2023.02,</span>
+            <span class="c1"># general question: where to indicate gui version?</span>
+            <span class="n">multiplier</span> <span class="o">=</span> <span class="mi">24</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">df_bnd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">df_bnd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+        <span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_bnd</span><span class="o">.</span><span class="n">time</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;does not support non-equidistant time-series.&quot;</span><span class="p">)</span>
+        <span class="n">freq_name</span> <span class="o">=</span> <span class="n">_TIMESTR</span><span class="p">[</span><span class="n">freq</span><span class="p">]</span>
+        <span class="n">freq_step</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">components</span><span class="p">,</span> <span class="n">freq_name</span><span class="p">)</span>
+        <span class="n">bnd_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">i</span> <span class="o">*</span> <span class="n">freq_step</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_bnd</span><span class="o">.</span><span class="n">time</span><span class="p">))])</span>
+        <span class="k">if</span> <span class="n">multiplier</span> <span class="o">==</span> <span class="mi">24</span><span class="p">:</span>
+            <span class="n">bnd_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="p">[(</span><span class="n">i</span> <span class="o">*</span> <span class="n">freq_step</span> <span class="o">*</span> <span class="n">multiplier</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_bnd</span><span class="o">.</span><span class="n">time</span><span class="p">))]</span>
+            <span class="p">)</span>
+            <span class="n">freq_name</span> <span class="o">=</span> <span class="s2">&quot;hours&quot;</span>
+
+        <span class="c1"># for each boundary apply boundary data</span>
+        <span class="n">da_out_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">_index</span><span class="p">,</span> <span class="n">_bnd</span> <span class="ow">in</span> <span class="n">boundaries</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="n">bnd_id</span> <span class="o">=</span> <span class="n">_bnd</span><span class="p">[</span><span class="s2">&quot;boundary_id&quot;</span><span class="p">]</span>
+
+            <span class="c1"># convert line to points</span>
+            <span class="n">support_points</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">_bnd</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">coords</span><span class="p">[:]]),</span>
+                <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">support_points</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">support_points</span><span class="o">.</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">support_points</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">support_points</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+            <span class="n">support_points</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">support_points</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+            <span class="n">support_points</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">support_points</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bnd_id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+            <span class="p">)</span>
+
+            <span class="c1"># instantiate xr.DataArray for bnd data with boundary_value directly</span>
+            <span class="n">da_out</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
+                    <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">support_points</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="n">bnd_times</span><span class="p">)),</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">df_bnd</span><span class="p">[</span><span class="n">bnd_id</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">support_points</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]),</span> <span class="mi">1</span><span class="p">)),</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">],</span>
+                <span class="n">coords</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">index</span><span class="o">=</span><span class="n">support_points</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                    <span class="n">time</span><span class="o">=</span><span class="n">bnd_times</span><span class="p">,</span>
+                    <span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">support_points</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+                    <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">support_points</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+                <span class="p">),</span>
+                <span class="n">attrs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">locationfile</span><span class="o">=</span><span class="n">bnd_id</span> <span class="o">+</span> <span class="s2">&quot;.pli&quot;</span><span class="p">,</span>
+                    <span class="n">function</span><span class="o">=</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">,</span>
+                    <span class="n">timeInterpolation</span><span class="o">=</span><span class="s2">&quot;Linear&quot;</span><span class="p">,</span>
+                    <span class="n">quantity</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">boundary_type</span><span class="si">}</span><span class="s2">bnd&quot;</span><span class="p">,</span>
+                    <span class="n">units</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">boundary_unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">time_unit</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">freq_name</span><span class="si">}</span><span class="s2"> since </span><span class="si">{</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df_bnd</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="c1"># support only yyyy-mm-dd HH:MM:SS</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+            <span class="c1"># fill in na using default</span>
+            <span class="n">da_out</span> <span class="o">=</span> <span class="n">da_out</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">boundary_value</span><span class="p">)</span>
+            <span class="n">da_out</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bnd_id</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">da_out_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bnd_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">da_out</span><span class="p">})</span>
+
+    <span class="k">return</span> <span class="n">da_out_dict</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">gpd_to_pli</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert geopandas GeoDataFrame (gdf) into pli files.</span>
+
+<span class="sd">    Pli files at &#39;output_dir&#39; directory.</span>
+
+<span class="sd">    the geodataframe must has index as stations and geometry</span>
+<span class="sd">    of the stations.</span>
+<span class="sd">    each row of the geodataframe will be converted into a single pli file.</span>
+
+<span class="sd">    the file name and the station name will be the index of that row.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">gdf</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="n">pli_name</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">index</span>
+        <span class="n">pli_coords</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">coords</span><span class="p">[:]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pli_name</span><span class="si">}</span><span class="s2">.pli&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pli_name</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">pli_coords</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="mi">2</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pli_coords</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">pi</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">df_to_bc</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="p">,</span>
+    <span class="n">output_filename</span><span class="o">=</span><span class="s2">&quot;boundary&quot;</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="o">=</span><span class="s2">&quot;discharge&quot;</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m3/s&quot;</span><span class="p">,</span>
+    <span class="n">freq</span><span class="o">=</span><span class="s2">&quot;H&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert pandas timeseires &#39;df&#39; into bc file.</span>
+
+<span class="sd">    bc file from &#39;output_dir&#39;/&#39;output_filename&#39;.bc</span>
+
+<span class="sd">    the time series must has time as index, columns names as stations.</span>
+<span class="sd">    the time series will be first converted into a equidistance timeseries</span>
+<span class="sd">    with frequency specified in &#39;freq&#39;. support [D, H,M,S]</span>
+<span class="sd">    each columns-wise array will be converted into one bc timeseries.</span>
+
+<span class="sd">    The time series has the quantity and unit as specified</span>
+<span class="sd">    in &#39;quantity&#39; and &#39;unit&#39;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">time_unit</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="s2">&quot;days&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">:</span> <span class="s2">&quot;hours&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">:</span> <span class="s2">&quot;minutes&quot;</span><span class="p">,</span> <span class="s2">&quot;S&quot;</span><span class="p">:</span> <span class="s2">&quot;seconds&quot;</span><span class="p">}</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span><span class="o">.</span><span class="n">ffill</span><span class="p">()</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span>
+    <span class="n">stations</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_filename</span><span class="si">}</span><span class="s2">.bc&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;[General]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">fileVersion = 1.01</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">fileType = boundConds</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">stations</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;[forcing]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Name = </span><span class="si">{</span><span class="n">d</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">function = timeSeries</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">timeInterpolation = linear</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">quantity = </span><span class="si">{</span><span class="n">quantity</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">unit = </span><span class="si">{</span><span class="n">unit</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">quantity = time</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">unit = </span><span class="si">{</span><span class="n">time_unit</span><span class="p">[</span><span class="n">freq</span><span class="p">]</span><span class="si">}</span><span class="s2"> since </span><span class="si">{</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">date</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">0 0</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">di</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">values</span><span class="p">):</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">di</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="compute_meteo_forcings">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.compute_meteo_forcings.html#hydromt_delft3dfm.workflows.compute_meteo_forcings">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_meteo_forcings</span><span class="p">(</span>
+    <span class="n">df_meteo</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fill_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">is_rate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">meteo_location</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute meteo forcings.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df_meteo : pd.DataFrame, optional</span>
+<span class="sd">        pd.DataFrame containing the meteo timeseries values.</span>
+<span class="sd">        If None, uses ``fill_value``.</span>
+
+<span class="sd">        * Required variables: [&quot;precip&quot;]</span>
+<span class="sd">    meteo_value : float, optional</span>
+<span class="sd">        Constant value to use for global meteo if ``df_meteo`` is None and to</span>
+<span class="sd">        fill in missing data in ``df_meteo``. By default 0.0 mm/day.</span>
+<span class="sd">    is_rate : bool, optional</span>
+<span class="sd">        Specify if the type of meteo data is direct &quot;rainfall&quot; (False)</span>
+<span class="sd">        or &quot;rainfall_rate&quot; (True). By default True for &quot;rainfall_rate&quot;.</span>
+<span class="sd">        Note that Delft3DFM 1D2D Suite 2022.04 supports only &quot;rainfall_rate&quot;.</span>
+<span class="sd">        If rate, unit is expected to be in mm/day and else mm.</span>
+<span class="sd">    meteo_location : tuple</span>
+<span class="sd">        Global location for meteo timeseries</span>
+<span class="sd">    logger</span>
+<span class="sd">        Logger to log messages.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    da_meteo : xr.DataArray</span>
+<span class="sd">        xr.DataArray containing the meteo timeseries values. If None, uses ``df_meteo``.</span>
+
+<span class="sd">        * Required variables if netcdf: [``precip``]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Set units and type</span>
+    <span class="k">if</span> <span class="n">is_rate</span><span class="p">:</span>
+        <span class="n">meteo_type</span> <span class="o">=</span> <span class="s2">&quot;rainfall_rate&quot;</span>
+        <span class="n">meteo_unit</span> <span class="o">=</span> <span class="s2">&quot;mm/day&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">meteo_type</span> <span class="o">=</span> <span class="s2">&quot;rainfall&quot;</span>
+        <span class="n">meteo_unit</span> <span class="o">=</span> <span class="s2">&quot;mm&quot;</span>
+
+    <span class="c1"># Timeseries boundary values</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preparing global (spatially uniform) timeseries.&quot;</span><span class="p">)</span>
+    <span class="c1"># get data freq in seconds</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">df_meteo</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">df_meteo</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">freq</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">resolution_string</span>
+    <span class="n">multiplier</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">freq</span> <span class="o">==</span> <span class="s2">&quot;D&quot;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;time unit days is not supported by the current GUI version: 2022.04&quot;</span>
+        <span class="p">)</span>  <span class="c1"># converting to hours as temporary solution</span>
+        <span class="c1"># FIXME: day is converted to hours temporarily</span>
+        <span class="n">multiplier</span> <span class="o">=</span> <span class="mi">24</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">df_meteo</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">df_meteo</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_meteo</span><span class="o">.</span><span class="n">time</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;does not support non-equidistant time-series.&quot;</span><span class="p">)</span>
+    <span class="n">freq_name</span> <span class="o">=</span> <span class="n">_TIMESTR</span><span class="p">[</span><span class="n">freq</span><span class="p">]</span>
+    <span class="n">freq_step</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">components</span><span class="p">,</span> <span class="n">freq_name</span><span class="p">)</span>
+    <span class="n">meteo_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">i</span> <span class="o">*</span> <span class="n">freq_step</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_meteo</span><span class="o">.</span><span class="n">time</span><span class="p">))])</span>
+    <span class="k">if</span> <span class="n">multiplier</span> <span class="o">==</span> <span class="mi">24</span><span class="p">:</span>
+        <span class="n">meteo_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[(</span><span class="n">i</span> <span class="o">*</span> <span class="n">freq_step</span> <span class="o">*</span> <span class="n">multiplier</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_meteo</span><span class="o">.</span><span class="n">time</span><span class="p">))]</span>
+        <span class="p">)</span>
+        <span class="n">freq_name</span> <span class="o">=</span> <span class="s2">&quot;hours&quot;</span>
+    <span class="c1"># instantiate xr.DataArray for global time series</span>
+    <span class="n">da_out</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_meteo</span><span class="p">)),</span> <span class="n">df_meteo</span><span class="p">[</span><span class="s2">&quot;precip&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
+        <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">],</span>
+        <span class="n">coords</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;global&quot;</span><span class="p">],</span>
+            <span class="n">time</span><span class="o">=</span><span class="n">meteo_times</span><span class="p">,</span>
+            <span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">meteo_location</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+            <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">meteo_location</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+        <span class="p">),</span>
+        <span class="n">attrs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">function</span><span class="o">=</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">,</span>
+            <span class="n">timeInterpolation</span><span class="o">=</span><span class="s2">&quot;Linear&quot;</span><span class="p">,</span>
+            <span class="n">quantity</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">meteo_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">meteo_unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">time_unit</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">freq_name</span><span class="si">}</span><span class="s2"> since </span><span class="si">{</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df_meteo</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="c1"># support only yyyy-mm-dd HH:MM:SS</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="c1"># fill in na using default</span>
+    <span class="n">da_out</span> <span class="o">=</span> <span class="n">da_out</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">fill_value</span><span class="p">)</span>
+    <span class="n">da_out</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">meteo_type</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">da_out</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">da_out</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_standardize_forcing_timeindexes</span><span class="p">(</span><span class="n">da</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Standardize timeindexes frequency based on forcing DataArray.&quot;&quot;&quot;</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_timedelta</span><span class="p">((</span><span class="n">da</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">da</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+    <span class="n">freq</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">resolution_string</span>
+    <span class="n">multiplier</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">freq</span> <span class="o">==</span> <span class="s2">&quot;D&quot;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;time unit days is not supported by the current GUI version: 2022.04&quot;</span>
+        <span class="p">)</span>  <span class="c1"># TODO: remove temporay pin on GUI version</span>
+        <span class="n">multiplier</span> <span class="o">=</span> <span class="mi">24</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">da</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">dt</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span>
+        <span class="n">da</span><span class="o">.</span><span class="n">time</span>
+    <span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;does not support non-equidistant time-series.&quot;</span><span class="p">)</span>
+    <span class="n">freq_name</span> <span class="o">=</span> <span class="n">_TIMESTR</span><span class="p">[</span><span class="n">freq</span><span class="p">]</span>
+    <span class="n">freq_step</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">components</span><span class="p">,</span> <span class="n">freq_name</span><span class="p">)</span>
+    <span class="n">bd_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">freq_step</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">time</span><span class="p">))])</span>
+    <span class="k">if</span> <span class="n">multiplier</span> <span class="o">==</span> <span class="mi">24</span><span class="p">:</span>
+        <span class="n">bd_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">i</span> <span class="o">*</span> <span class="n">freq_step</span> <span class="o">*</span> <span class="n">multiplier</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">time</span><span class="p">))])</span>
+        <span class="n">freq_name</span> <span class="o">=</span> <span class="s2">&quot;hours&quot;</span>
+    <span class="k">return</span> <span class="n">bd_times</span><span class="p">,</span> <span class="n">freq_name</span>
+
+
+<div class="viewcode-block" id="compute_forcing_values_points">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.compute_forcing_values_points.html#hydromt_delft3dfm.workflows.compute_forcing_values_points">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_forcing_values_points</span><span class="p">(</span>
+    <span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">da</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">forcing_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">forcing_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lateral_discharge&quot;</span><span class="p">,</span>
+    <span class="n">forcing_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;m3/s&quot;</span><span class="p">,</span>
+    <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute 1d forcing values.</span>
+
+<span class="sd">    Used for 1D lateral point locations.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gdf : gpd.GeoDataFrame</span>
+<span class="sd">        GeoDataFrame of points to add 1D forcing data.</span>
+
+<span class="sd">        * Required variables: [&#39;geometry&#39;]</span>
+<span class="sd">    da : xr.DataArray, optional</span>
+<span class="sd">        xr.DataArray containing the forcing timeseries values.</span>
+<span class="sd">        If None, uses a constant ``forcing_value`` for all forcings.</span>
+
+<span class="sd">        * Required variables: [&#39;forcing_type&#39;]</span>
+
+<span class="sd">    forcing_value : float, optional</span>
+<span class="sd">        Constant value to use for all forcings if ``da`` is None and to</span>
+<span class="sd">        fill in missing data.</span>
+<span class="sd">        By default 0.0 ``forcing_unit``</span>
+<span class="sd">    forcing_type : {&#39;lateral_discharge&#39;}</span>
+<span class="sd">        Type of forcing to use.</span>
+<span class="sd">        For now only support &#39;lateral_discharge&#39;.</span>
+<span class="sd">        By default &#39;lateral_discharge&#39;</span>
+<span class="sd">    forcing_unit : {&#39;m3/s&#39;}</span>
+<span class="sd">        Unit corresponding to ``forcing_type``.</span>
+<span class="sd">        By default &#39;m3/s&#39;</span>
+<span class="sd">    logger</span>
+<span class="sd">        Logger to log messages.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO: harmonize for other point forcing #21</span>
+    <span class="c1"># first process data based on either timeseries or constant</span>
+    <span class="c1"># then update data based on either nodes or branches</span>
+    <span class="c1"># Timeseries forcing values</span>
+
+    <span class="c1"># default dims, coords and attris for point geometry type</span>
+    <span class="n">_dims_defaults</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]</span>
+    <span class="n">_coords_defaults</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">index</span><span class="o">=</span><span class="n">gdf</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">gdf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+        <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">gdf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+        <span class="n">branchid</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">gdf</span><span class="o">.</span><span class="n">branchid</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+        <span class="n">chainage</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">gdf</span><span class="o">.</span><span class="n">chainage</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">_attrs_defaults</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">offset</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">quantity</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">forcing_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">forcing_unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">da</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Preparing 1D forcing type </span><span class="si">{</span><span class="n">forcing_type</span><span class="si">}</span><span class="s2"> from timeseries.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># get forcing data freq in seconds</span>
+        <span class="n">bd_times</span><span class="p">,</span> <span class="n">freq_name</span> <span class="o">=</span> <span class="n">_standardize_forcing_timeindexes</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
+
+        <span class="c1"># instantiate xr.DataArray for forcing data</span>
+
+        <span class="c1"># update dims, coords and attrs</span>
+        <span class="n">_dims_defaults</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+        <span class="n">_coords_defaults</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">bd_times</span><span class="p">))</span>
+        <span class="n">_attrs_defaults</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">function</span><span class="o">=</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">,</span>
+                <span class="n">timeInterpolation</span><span class="o">=</span><span class="s2">&quot;Linear&quot;</span><span class="p">,</span>
+                <span class="n">time_unit</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">freq_name</span><span class="si">}</span><span class="s2"> since </span><span class="si">{</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># NOTE only support points on branches</span>
+        <span class="n">da_out</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">da</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">dims</span><span class="o">=</span><span class="n">_dims_defaults</span><span class="p">,</span>
+            <span class="n">coords</span><span class="o">=</span><span class="n">_coords_defaults</span><span class="p">,</span>
+            <span class="n">attrs</span><span class="o">=</span><span class="n">_attrs_defaults</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># fill in na using default</span>
+        <span class="n">da_out</span> <span class="o">=</span> <span class="n">da_out</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">forcing_value</span><span class="p">)</span>
+
+        <span class="c1"># drop na in time</span>
+        <span class="n">da_out</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+
+        <span class="c1"># add name</span>
+        <span class="n">da_out</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">forcing_type</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Use constant </span><span class="si">{</span><span class="n">forcing_value</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">forcing_unit</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">forcing_type</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># instantiate xr.DataArray for bnd data with forcing_type directly</span>
+        <span class="c1"># update dims, coords and attrs</span>
+        <span class="n">_attrs_defaults</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">function</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">))</span>
+
+        <span class="n">da_out</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">gdf</span><span class="o">.</span><span class="n">index</span><span class="p">)),</span> <span class="n">forcing_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
+            <span class="n">dims</span><span class="o">=</span><span class="n">_dims_defaults</span><span class="p">,</span>
+            <span class="n">coords</span><span class="o">=</span><span class="n">_coords_defaults</span><span class="p">,</span>
+            <span class="n">attrs</span><span class="o">=</span><span class="n">_attrs_defaults</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">da_out</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">forcing_type</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="n">da_out</span></div>
+
+
+
+<div class="viewcode-block" id="get_geometry_coords_for_polygons">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.get_geometry_coords_for_polygons.html#hydromt_delft3dfm.workflows.get_geometry_coords_for_polygons">[docs]</a>
+<span class="k">def</span> <span class="nf">get_geometry_coords_for_polygons</span><span class="p">(</span><span class="n">gdf</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get xarray DataArray coordinates that describes polygon geometries.</span>
+
+<span class="sd">    Inlcude numcoordinates, xcoordinates and ycoordinates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">gdf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Polygon&quot;</span><span class="p">:</span>
+        <span class="c1"># Get the maximum number of coordinates for any polygon</span>
+        <span class="n">max_coords</span> <span class="o">=</span> <span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">exterior</span><span class="o">.</span><span class="n">coords</span><span class="p">[:]))</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">get_xcoords</span><span class="p">(</span><span class="n">geom</span><span class="p">):</span>
+            <span class="n">coords</span> <span class="o">=</span> <span class="p">[</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">xy</span> <span class="ow">in</span> <span class="n">geom</span><span class="o">.</span><span class="n">exterior</span><span class="o">.</span><span class="n">coords</span><span class="p">[:]]</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span>
+                <span class="n">coords</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_coords</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="p">)),</span>
+                <span class="s2">&quot;constant&quot;</span><span class="p">,</span>
+                <span class="n">constant_values</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">get_ycoords</span><span class="p">(</span><span class="n">geom</span><span class="p">):</span>
+            <span class="n">coords</span> <span class="o">=</span> <span class="p">[</span><span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">xy</span> <span class="ow">in</span> <span class="n">geom</span><span class="o">.</span><span class="n">exterior</span><span class="o">.</span><span class="n">coords</span><span class="p">[:]]</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span>
+                <span class="n">coords</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_coords</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="p">)),</span>
+                <span class="s2">&quot;constant&quot;</span><span class="p">,</span>
+                <span class="n">constant_values</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Create the 2D arrays</span>
+        <span class="n">x_2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">get_xcoords</span><span class="p">))</span>
+        <span class="n">y_2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">get_ycoords</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">index</span><span class="o">=</span><span class="n">gdf</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+            <span class="n">numcoordinates</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">max_coords</span><span class="p">),</span>
+            <span class="n">xcoordinates</span><span class="o">=</span><span class="p">((</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;numcoordinates&quot;</span><span class="p">),</span> <span class="n">x_2d</span><span class="p">),</span>
+            <span class="n">ycoordinates</span><span class="o">=</span><span class="p">((</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;numcoordinates&quot;</span><span class="p">),</span> <span class="n">y_2d</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="compute_forcing_values_polygon">
+<a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.compute_forcing_values_polygon.html#hydromt_delft3dfm.workflows.compute_forcing_values_polygon">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_forcing_values_polygon</span><span class="p">(</span>
+    <span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">da</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">forcing_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">forcing_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;waterlevelbnd&quot;</span><span class="p">,</span>
+    <span class="n">forcing_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span>
+    <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute 1d forcing values.</span>
+
+<span class="sd">    Used for 1D lateral polygon locations.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gdf : gpd.GeoDataFrame</span>
+<span class="sd">        GeoDataFrame of polygons to add 1D forcing data.</span>
+
+<span class="sd">        * Required variables: [&#39;geometry&#39;]</span>
+<span class="sd">    da : xr.DataArray, optional</span>
+<span class="sd">        xr.DataArray containing the forcing timeseries values.</span>
+<span class="sd">        If None, uses a constant ``forcing_value`` for all forcings.</span>
+
+<span class="sd">        * Required variables: [&#39;forcing_type&#39;]</span>
+
+<span class="sd">    forcing_value : float, optional</span>
+<span class="sd">        Constant value to use for all forcings if ``da`` is None and to</span>
+<span class="sd">        fill in missing data.</span>
+<span class="sd">        By default 0.0 ``forcing_unit``</span>
+<span class="sd">    forcing_type : {&#39;lateral_discharge&#39;}</span>
+<span class="sd">        Type of forcing to use.</span>
+<span class="sd">        For now only support &#39;lateral_discharge&#39;.</span>
+<span class="sd">        By default &#39;lateral_discharge&#39;</span>
+<span class="sd">    forcing_unit : {&#39;m3/s&#39;}</span>
+<span class="sd">        Unit corresponding to ``forcing_type``.</span>
+<span class="sd">        By default &#39;m3/s&#39;</span>
+<span class="sd">    logger</span>
+<span class="sd">        Logger to log messages.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># default dims, coords and attris for polygon geometry type</span>
+    <span class="n">_dims_defaults</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;numcoordinates&quot;</span><span class="p">]</span>
+    <span class="n">_coords_defaults</span> <span class="o">=</span> <span class="n">get_geometry_coords_for_polygons</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span>
+    <span class="n">_attrs_defaults</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">offset</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">quantity</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">forcing_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">forcing_unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Timeseries forcing values</span>
+    <span class="k">if</span> <span class="n">da</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Preparing 1D forcing type </span><span class="si">{</span><span class="n">forcing_type</span><span class="si">}</span><span class="s2"> from timeseries.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># get forcing data time indes</span>
+        <span class="n">bd_times</span><span class="p">,</span> <span class="n">freq_name</span> <span class="o">=</span> <span class="n">_standardize_forcing_timeindexes</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
+
+        <span class="c1"># instantiate xr.DataArray for forcing data</span>
+
+        <span class="c1"># Prepare the data</span>
+        <span class="n">data_3d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">_coords_defaults</span><span class="p">[</span><span class="s2">&quot;numcoordinates&quot;</span><span class="p">])),</span>
+        <span class="p">)</span>
+        <span class="c1"># update dims, coords and attrs</span>
+        <span class="n">_dims_defaults</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">)</span>
+        <span class="n">_coords_defaults</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">bd_times</span><span class="p">))</span>
+        <span class="n">_attrs_defaults</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">function</span><span class="o">=</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">,</span>
+                <span class="n">timeInterpolation</span><span class="o">=</span><span class="s2">&quot;Linear&quot;</span><span class="p">,</span>
+                <span class="n">time_unit</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">freq_name</span><span class="si">}</span><span class="s2"> since </span><span class="si">{</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="c1"># Create the DataArray</span>
+        <span class="n">da_out</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data_3d</span><span class="p">,</span>
+            <span class="n">dims</span><span class="o">=</span><span class="n">_dims_defaults</span><span class="p">,</span>
+            <span class="n">coords</span><span class="o">=</span><span class="n">_coords_defaults</span><span class="p">,</span>
+            <span class="n">attrs</span><span class="o">=</span><span class="n">_attrs_defaults</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># fill in na using default</span>
+        <span class="n">da_out</span> <span class="o">=</span> <span class="n">da_out</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">forcing_value</span><span class="p">)</span>
+
+        <span class="c1"># drop na in time</span>
+        <span class="n">da_out</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+
+        <span class="c1"># add name</span>
+        <span class="n">da_out</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">forcing_type</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Use constant </span><span class="si">{</span><span class="n">forcing_value</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">forcing_unit</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">forcing_type</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># instantiate xr.DataArray for forcing data with forcing_type directly</span>
+        <span class="c1"># Prepare the data</span>
+        <span class="n">data_3d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
+            <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_coords_defaults</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="n">_coords_defaults</span><span class="p">[</span><span class="s2">&quot;numcoordinates&quot;</span><span class="p">])),</span>
+            <span class="n">forcing_value</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># update dims, coords and attrs</span>
+        <span class="n">_attrs_defaults</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">function</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">))</span>
+
+        <span class="c1"># Create the DataArray</span>
+        <span class="n">da_out</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data_3d</span><span class="p">,</span>
+            <span class="n">dims</span><span class="o">=</span><span class="n">_dims_defaults</span><span class="p">,</span>
+            <span class="n">coords</span><span class="o">=</span><span class="n">_coords_defaults</span><span class="p">,</span>
+            <span class="n">attrs</span><span class="o">=</span><span class="n">_attrs_defaults</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">da_out</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">forcing_type</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">return</span> <span class="n">da_out</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">dim</span><span class="o">=...</span><span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright Deltares.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
