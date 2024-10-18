@@ -1,7 +1,8 @@
 ---
 name: Build Docs
 
-# We don't want pushes (or PRs) to gh-pages to kick anything off
+# Also build for PR's since this also tests whether all notebooks run properly
+# However, do not upload to gh-pages if built from PR
 on:
   push:
     branches: [main]
@@ -11,28 +12,34 @@ on:
 jobs:
   # Build docs on Linux
   Docs:
-    name: linux docs
+    name: build docs
     runs-on: ubuntu-latest
     env:
       DOC_VERSION: dev
     defaults:
       run:
         shell: bash -l {0}
+
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup environment
         uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: "3.9"
+          python-version: "3.11"
           channels: conda-forge
           channel-priority: strict
-          environment-file: envs/hydromt-delft3dfm.yml
-          activate-environment: hydromt-delft3dfm
 
       - name: Install hydromt-delft3dfm
-        run: flit install
+        run: |
+          conda install flit
+          conda install pandoc # does not work via pip
+          flit install
+
+      - name: list env contents
+        run: |
+          pip list
+          hydromt --models
 
       - name: Build docs
         run: |

@@ -1009,7 +1009,7 @@ class DFlowFMModel(MeshModel):
             "width",  # rectangle
             "height",  # rectangle
             "invlev_up",
-            "inlev_dn",
+            "invlev_dn",
         ]
 
         # Read data and filter within region
