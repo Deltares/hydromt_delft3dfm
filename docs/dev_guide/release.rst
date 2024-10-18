@@ -20,7 +20,6 @@ Release steps:
 
 Post release:
 
-* Small pull request
 * Update the version to 0.1.1 (bump patch)
 * Initialise changelog unrelease/added/fixed/changed
 * Push and merge to main
