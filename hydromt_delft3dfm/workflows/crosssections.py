@@ -442,7 +442,7 @@ def set_xyz_crosssections(
     crosssections = find_nearest_branch(
         branches=branches, geometries=crosssections, method="intersecting"
     )
-    logger.warning(
+    logger.info(
         "Snapping to branches using intersection: Please double check"
         "if the crossection is closely located to a bifurcation."
     )
