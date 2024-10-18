@@ -51,7 +51,7 @@ jobs:
       run:
         shell: bash -l {0}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v3
         with:
           name: releases
@@ -62,19 +62,22 @@ jobs:
           ls -ltrh dist
 
       - name: Setup environment
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: "3.9"
-          mamba-version: "*"
-          channels: conda-forge,defaults
-          channel-priority: true
-          environment-file: envs/hydromt-delft3dfm.yml
-          activate-environment: hydromt-delft3dfm
+          python-version: "3.11"
+          channels: conda-forge
+          channel-priority: strict
+
+      - name: Install hydromt-delft3dfm dependencies
+        run: |
+          conda install flit
+          flit install --only-deps
 
       - name: Conda info
         run: |
           conda info
           conda list
+          pip list
 
       - name: Verify the built dist/wheel is valid
         run: |
