@@ -614,183 +614,183 @@ setup_1dboundary:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2024-10-18 12:33:03,245 - build - log - DEBUG - Writing log messages to new file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_1d/hydromt.log.
-2024-10-18 12:33:03,245 - build - log - INFO - HydroMT version: 0.10.0
-2024-10-18 12:33:03,245 - build - main - INFO - Building instance of dflowfm model at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_1d.
-2024-10-18 12:33:03,245 - build - main - INFO - User settings:
-2024-10-18 12:33:04,061 - build - data_catalog - INFO - Reading data catalog artifact_data latest
-2024-10-18 12:33:04,061 - build - data_catalog - INFO - Parsing data catalog from /home/runner/.hydromt_data/artifact_data/v0.0.9/data_catalog.yml
-2024-10-18 12:33:04,651 - build - model_api - INFO - Initializing dflowfm model from hydromt_delft3dfm (v0.2.1.dev0).
-2024-10-18 12:33:04,651 - build - data_catalog - INFO - Parsing data catalog from /usr/share/miniconda/envs/test/lib/python3.11/site-packages/hydromt_delft3dfm/data/parameters_data.yml
-2024-10-18 12:33:04,655 - build - dflowfm - INFO - Initialising empty mdu file
-2024-10-18 12:33:04,660 - build - dflowfm - INFO - project crs: 3857
-2024-10-18 12:33:04,660 - build - model_api - INFO - setup_rivers_from_dem.region: {&#39;bbox&#39;: [12.4331, 46.4661, 12.5212, 46.5369]}
-2024-10-18 12:33:04,660 - build - model_api - INFO - setup_rivers_from_dem.hydrography_fn: merit_hydro
-2024-10-18 12:33:04,661 - build - model_api - INFO - setup_rivers_from_dem.river_geom_fn: hydro_rivers_lin
-2024-10-18 12:33:04,661 - build - model_api - INFO - setup_rivers_from_dem.rivers_defaults_fn: rivers_defaults
-2024-10-18 12:33:04,661 - build - model_api - INFO - setup_rivers_from_dem.rivdph_method: gvf
-2024-10-18 12:33:04,661 - build - model_api - INFO - setup_rivers_from_dem.rivwth_method: geom
-2024-10-18 12:33:04,661 - build - model_api - INFO - setup_rivers_from_dem.river_upa: 25.0
-2024-10-18 12:33:04,661 - build - model_api - INFO - setup_rivers_from_dem.river_len: 1000
-2024-10-18 12:33:04,661 - build - model_api - INFO - setup_rivers_from_dem.min_rivwth: 50.0
-2024-10-18 12:33:04,661 - build - model_api - INFO - setup_rivers_from_dem.min_rivdph: 1.0
-2024-10-18 12:33:04,661 - build - model_api - INFO - setup_rivers_from_dem.rivbank: True
-2024-10-18 12:33:04,661 - build - model_api - INFO - setup_rivers_from_dem.rivbankq: 25
-2024-10-18 12:33:04,661 - build - model_api - INFO - setup_rivers_from_dem.segment_length: 3000.0
-2024-10-18 12:33:04,661 - build - model_api - INFO - setup_rivers_from_dem.smooth_length: 10000.0
-2024-10-18 12:33:04,661 - build - model_api - INFO - setup_rivers_from_dem.friction_type: Manning
-2024-10-18 12:33:04,661 - build - model_api - INFO - setup_rivers_from_dem.friction_value: 0.023
-2024-10-18 12:33:04,661 - build - model_api - INFO - setup_rivers_from_dem.constrain_rivbed: True
-2024-10-18 12:33:04,661 - build - model_api - INFO - setup_rivers_from_dem.constrain_estuary: True
-2024-10-18 12:33:04,661 - build - dflowfm - INFO - Preparing river shape from hydrography data.
-2024-10-18 12:33:04,666 - build - rasterdataset - INFO - Reading merit_hydro raster data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/merit_hydro/{variable}.tif
-2024-10-18 12:33:04,758 - build - rasterdataset - DEBUG - Clip to [12.433, 46.466, 12.521, 46.537] (epsg:4326))
-2024-10-18 12:33:04,761 - build - geodataframe - INFO - Reading hydro_rivers_lin vector data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/rivers_lin2019_v1.gpkg
-2024-10-18 12:33:04,769 - build - geodataframe - DEBUG - Clip intersects [1384045.361, 5855358.290, 1393854.608, 5866810.259] (EPSG:3857)
-2024-10-18 12:33:14,315 - build - dem - INFO - Deriving bankfull river surface elevation from its banks.
-2024-10-18 12:33:23,505 - build - dem - INFO - Smoothing river width (n=2).
-2024-10-18 12:33:25,530 - build - dataframe - INFO - Reading rivers_defaults csv data from /usr/share/miniconda/envs/test/lib/python3.11/site-packages/hydromt_delft3dfm/data/branches/rivers_defaults.csv
-2024-10-18 12:33:25,541 - build - branches - INFO - Processing branches
-2024-10-18 12:33:25,541 - build - branches - DEBUG - Cleaning up branches
-2024-10-18 12:33:25,545 - build - branches - DEBUG - Exploding branches.
-2024-10-18 12:33:25,546 - build - branches - DEBUG - Removing 0 branches which have duplicated geometry.
-2024-10-18 12:33:25,547 - build - branches - DEBUG - Removing 1 branches that are shorter than 0.1 meter.
-2024-10-18 12:33:25,549 - build - branches - DEBUG - Renaming 0 id_col duplicates. Convention:BRANCH_1, BRANCH_1 --&gt; BRANCH_1, BRANCH_1-2.
-2024-10-18 12:33:25,554 - build - branches - DEBUG - Reducing precision of the GeoDataFrame.Rounding precision (e-6) .
-2024-10-18 12:33:25,555 - build - branches - DEBUG - Performing snapping at all branch ends, excluding intersections(To avoid messy results, please use a lower snap_offset)..
-2024-10-18 12:33:25,555 - build - branches - DEBUG - Splitting branches based on spacing
-2024-10-18 12:33:25,556 - build - branches - DEBUG - clipping branches into 5 segments
-2024-10-18 12:33:25,557 - build - branches - DEBUG - Generating branchnodes
-2024-10-18 12:33:25,561 - build - branches - INFO - Validating branches
-2024-10-18 12:33:25,562 - build - crosssections - INFO - Adding/Filling branches attributes values
-2024-10-18 12:33:25,564 - build - dflowfm - INFO - Preparing crossections from branch.
-2024-10-18 12:33:25,572 - build - dflowfm - DEBUG - Adding crosssections vector to geoms.
-2024-10-18 12:33:25,572 - build - dflowfm - DEBUG - Adding rivers and river_nodes vector to geoms.
-2024-10-18 12:33:25,575 - build - model_api - WARNING - Replacing geom: rivers
-2024-10-18 12:33:25,576 - build - dflowfm - DEBUG - Adding branches vector to geoms.
-2024-10-18 12:33:25,576 - build - dflowfm - DEBUG - Updating branches in network.
-2024-10-18 12:33:25,636 - build - model_api - INFO - setup_pipes.region: {&#39;bbox&#39;: [12.4331, 46.4661, 12.5212, 46.5369]}
-2024-10-18 12:33:25,637 - build - model_api - INFO - setup_pipes.pipes_fn: grip_roads
-2024-10-18 12:33:25,637 - build - model_api - INFO - setup_pipes.pipes_defaults_fn: pipes_defaults
-2024-10-18 12:33:25,637 - build - model_api - INFO - setup_pipes.pipe_filter: pipe
-2024-10-18 12:33:25,637 - build - model_api - INFO - setup_pipes.spacing: 50
-2024-10-18 12:33:25,637 - build - model_api - INFO - setup_pipes.friction_type: WhiteColeBrook
-2024-10-18 12:33:25,637 - build - model_api - INFO - setup_pipes.friction_value: 0.003
-2024-10-18 12:33:25,637 - build - model_api - INFO - setup_pipes.crosssections_shape: circle
-2024-10-18 12:33:25,637 - build - model_api - INFO - setup_pipes.crosssections_value: 0.5
-2024-10-18 12:33:25,637 - build - model_api - INFO - setup_pipes.dem_fn: merit_hydro
-2024-10-18 12:33:25,637 - build - model_api - INFO - setup_pipes.pipes_depth: 2.0
-2024-10-18 12:33:25,637 - build - model_api - INFO - setup_pipes.pipes_invlev: 3.0
-2024-10-18 12:33:25,637 - build - model_api - INFO - setup_pipes.snap_offset: 0.5
-2024-10-18 12:33:25,637 - build - model_api - INFO - setup_pipes.allow_intersection_snapping: True
-2024-10-18 12:33:25,637 - build - dflowfm - INFO - Preparing 1D pipes.
-2024-10-18 12:33:25,639 - build - geodataframe - INFO - Reading grip_roads vector data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/grip_roads.gpkg
-2024-10-18 12:33:25,647 - build - geodataframe - DEBUG - Clip intersects [1384046.361, 5855359.290, 1393853.608, 5866809.259] (EPSG:3857)
-2024-10-18 12:33:25,648 - build - dataframe - INFO - Reading pipes_defaults csv data from /usr/share/miniconda/envs/test/lib/python3.11/site-packages/hydromt_delft3dfm/data/branches/pipes_defaults.csv
-2024-10-18 12:33:25,654 - build - branches - INFO - Processing branches
-2024-10-18 12:33:25,655 - build - branches - DEBUG - Cleaning up branches
-2024-10-18 12:33:25,661 - build - branches - DEBUG - Exploding branches.
-2024-10-18 12:33:25,663 - build - branches - DEBUG - Removing 0 branches which have duplicated geometry.
-2024-10-18 12:33:25,663 - build - branches - DEBUG - Removing 0 branches that are shorter than 0.1 meter.
-2024-10-18 12:33:25,674 - build - branches - DEBUG - Renaming 0 id_col duplicates. Convention:BRANCH_1, BRANCH_1 --&gt; BRANCH_1, BRANCH_1-2.
-2024-10-18 12:33:25,703 - build - branches - DEBUG - Reducing precision of the GeoDataFrame.Rounding precision (e-6) .
-2024-10-18 12:33:25,708 - build - branches - DEBUG - Performing snapping at all branch ends, including intersections(To avoid messy results, please use a lower snap_offset).
-2024-10-18 12:33:25,709 - build - branches - DEBUG - Splitting branches based on spacing
-2024-10-18 12:33:27,664 - build - branches - DEBUG - clipping branches into 2826 segments
-2024-10-18 12:33:27,665 - build - branches - DEBUG - Generating branchnodes
-2024-10-18 12:33:28,055 - build - branches - INFO - Validating branches
-2024-10-18 12:33:28,057 - build - crosssections - INFO - Adding/Filling branches attributes values
-2024-10-18 12:33:28,067 - build - dflowfm - INFO - grip_roads does not have columns [invlev_up, invlev_dn].Invert levels will be generated from dem_fn ordefault value 3.0
-2024-10-18 12:33:28,067 - build - rasterdataset - INFO - Reading merit_hydro raster data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/merit_hydro/{variable}.tif
-2024-10-18 12:33:28,077 - build - rasterdataset - DEBUG - Clip to [12.433, 46.466, 12.521, 46.537] (epsg:4326))
-2024-10-18 12:33:28,451 - build - dflowfm - INFO - Preparing crossections from branch.
-2024-10-18 12:33:28,518 - build - dflowfm - DEBUG - Adding crosssections vector to geoms.
-2024-10-18 12:33:28,536 - build - model_api - WARNING - Replacing geom: crosssections
-2024-10-18 12:33:28,536 - build - dflowfm - DEBUG - Adding pipes and pipe_nodes vector to geoms.
-2024-10-18 12:33:28,952 - build - model_api - WARNING - Replacing geom: rivers
-2024-10-18 12:33:28,954 - build - model_api - WARNING - Replacing geom: pipes
-2024-10-18 12:33:28,954 - build - dflowfm - DEBUG - Adding branches vector to geoms.
-2024-10-18 12:33:28,954 - build - model_api - WARNING - Replacing geom: branches
-2024-10-18 12:33:28,954 - build - dflowfm - DEBUG - Updating branches in network.
-2024-10-18 12:33:29,822 - build - model_mesh - WARNING - Overwriting grid network1d and the corresponding data variables in mesh.
-2024-10-18 12:33:29,865 - build - model_mesh - WARNING - Overwriting grid mesh1d and the corresponding data variables in mesh.
-2024-10-18 12:33:30,057 - build - model_api - WARNING - Replacing geom: boundaries
-2024-10-18 12:33:30,058 - build - model_api - INFO - setup_manholes.manholes_fn: None
-2024-10-18 12:33:30,058 - build - model_api - INFO - setup_manholes.manholes_defaults_fn: manholes_defaults
-2024-10-18 12:33:30,058 - build - model_api - INFO - setup_manholes.bedlevel_shift: 0.5
-2024-10-18 12:33:30,058 - build - model_api - INFO - setup_manholes.dem_fn: merit_hydro
-2024-10-18 12:33:30,058 - build - model_api - INFO - setup_manholes.snap_offset: 0.001
-2024-10-18 12:33:30,058 - build - dflowfm - INFO - generating manholes locations and bedlevels.
-2024-10-18 12:33:30,058 - build - manholes - INFO - Generating manholes on pipes and/or tunnels
-2024-10-18 12:33:30,276 - build - manholes - INFO - Shifting manholes bedlevels based on bedlevel_shift = 0.5
-2024-10-18 12:33:30,439 - build - model_api - WARNING - Replacing geom: rivers
-2024-10-18 12:33:30,440 - build - model_api - WARNING - Replacing geom: pipes
-2024-10-18 12:33:30,440 - build - dflowfm - DEBUG - Adding branches vector to geoms.
-2024-10-18 12:33:30,440 - build - model_api - WARNING - Replacing geom: branches
-2024-10-18 12:33:30,441 - build - dflowfm - DEBUG - Updating branches in network.
-2024-10-18 12:33:30,441 - build - dataframe - INFO - Reading manholes_defaults csv data from /usr/share/miniconda/envs/test/lib/python3.11/site-packages/hydromt_delft3dfm/data/storages/manholes_defaults.csv
-2024-10-18 12:33:30,451 - build - dflowfm - INFO - overwriting manholes street level from dem.
-2024-10-18 12:33:30,451 - build - rasterdataset - INFO - Reading merit_hydro raster data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/merit_hydro/{variable}.tif
-2024-10-18 12:33:30,462 - build - rasterdataset - DEBUG - Clip to [12.433, 46.466, 12.521, 46.537] (epsg:4326))
-2024-10-18 12:33:30,479 - build - dflowfm - DEBUG - street level mean is 863.6583862304688
-2024-10-18 12:33:30,479 - build - dflowfm - DEBUG - dropping duplicated manholeid
-2024-10-18 12:33:30,519 - build - dflowfm - DEBUG - Adding manholes vector to geoms.
-2024-10-18 12:33:30,519 - build - model_api - INFO - setup_1dboundary.boundaries_geodataset_fn: None
-2024-10-18 12:33:30,519 - build - model_api - INFO - setup_1dboundary.boundaries_timeseries_fn: None
-2024-10-18 12:33:30,519 - build - model_api - INFO - setup_1dboundary.boundary_value: -2.0
-2024-10-18 12:33:30,519 - build - model_api - INFO - setup_1dboundary.branch_type: river
-2024-10-18 12:33:30,519 - build - model_api - INFO - setup_1dboundary.boundary_type: waterlevel
-2024-10-18 12:33:30,519 - build - model_api - INFO - setup_1dboundary.boundary_unit: m
-2024-10-18 12:33:30,519 - build - model_api - INFO - setup_1dboundary.boundary_locs: both
-2024-10-18 12:33:30,519 - build - model_api - INFO - setup_1dboundary.snap_offset: 1.0
-2024-10-18 12:33:30,519 - build - dflowfm - INFO - Preparing 1D waterlevel boundaries for river.
-2024-10-18 12:33:30,520 - build - boundaries - INFO - Using constant value -2.0 mfor all waterlevel boundaries.
-2024-10-18 12:33:30,521 - build - dflowfm - INFO - Writing model data to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_1d
-2024-10-18 12:33:30,526 - build - model_api - DEBUG - Writing file geoms/crosssections.geojson
-2024-10-18 12:33:30,581 - build - model_api - DEBUG - Writing file geoms/rivers.geojson
-2024-10-18 12:33:30,585 - build - model_api - DEBUG - Writing file geoms/rivers_nodes.geojson
-2024-10-18 12:33:30,587 - build - model_api - DEBUG - Writing file geoms/branches.geojson
-2024-10-18 12:33:30,627 - build - model_api - DEBUG - Writing file geoms/boundaries.geojson
-2024-10-18 12:33:30,631 - build - model_api - DEBUG - Writing file geoms/pipes.geojson
-2024-10-18 12:33:30,668 - build - model_api - DEBUG - Writing file geoms/pipe_nodes.geojson
-2024-10-18 12:33:30,708 - build - model_api - DEBUG - Writing file geoms/region.geojson
-2024-10-18 12:33:30,710 - build - model_api - DEBUG - Writing file geoms/manholes.geojson
-2024-10-18 12:33:30,739 - build - model_api - DEBUG - Writing file geoms/network1d.geojson
-2024-10-18 12:33:30,753 - build - model_api - DEBUG - Writing file geoms/mesh1d.geojson
-2024-10-18 12:33:30,775 - build - dflowfm - INFO - Writting cross-sections files crsdef and crsloc
-2024-10-18 12:33:31,106 - build - dflowfm - INFO - Writting friction file(s)
-2024-10-18 12:33:31,110 - build - dflowfm - INFO - Writting manholes file.
-2024-10-18 12:33:31,555 - build - model_api - WARNING - Replacing geom: network1d
-2024-10-18 12:33:31,556 - build - model_api - WARNING - Replacing geom: mesh1d
-2024-10-18 12:33:31,568 - build - model_api - WARNING - Replacing geom: crosssections
-2024-10-18 12:33:31,570 - build - model_api - WARNING - Replacing geom: rivers
-2024-10-18 12:33:31,571 - build - model_api - WARNING - Replacing geom: rivers_nodes
-2024-10-18 12:33:31,579 - build - model_api - WARNING - Replacing geom: branches
-2024-10-18 12:33:31,581 - build - model_api - WARNING - Replacing geom: boundaries
-2024-10-18 12:33:31,589 - build - model_api - WARNING - Replacing geom: pipes
-2024-10-18 12:33:31,596 - build - model_api - WARNING - Replacing geom: pipe_nodes
-2024-10-18 12:33:31,596 - build - model_api - WARNING - Replacing geom: region
-2024-10-18 12:33:31,603 - build - model_api - WARNING - Replacing geom: manholes
-2024-10-18 12:33:31,603 - build - model_api - WARNING - Replacing geom: network1d
-2024-10-18 12:33:31,604 - build - model_api - WARNING - Replacing geom: mesh1d
-2024-10-18 12:33:31,604 - build - model_api - DEBUG - Writing file geoms/crosssections.geojson
-2024-10-18 12:33:31,661 - build - model_api - DEBUG - Writing file geoms/rivers.geojson
-2024-10-18 12:33:31,665 - build - model_api - DEBUG - Writing file geoms/rivers_nodes.geojson
-2024-10-18 12:33:31,667 - build - model_api - DEBUG - Writing file geoms/branches.geojson
-2024-10-18 12:33:31,706 - build - model_api - DEBUG - Writing file geoms/boundaries.geojson
-2024-10-18 12:33:31,709 - build - model_api - DEBUG - Writing file geoms/pipes.geojson
-2024-10-18 12:33:31,747 - build - model_api - DEBUG - Writing file geoms/pipe_nodes.geojson
-2024-10-18 12:33:31,786 - build - model_api - DEBUG - Writing file geoms/region.geojson
-2024-10-18 12:33:31,788 - build - model_api - DEBUG - Writing file geoms/manholes.geojson
-2024-10-18 12:33:31,819 - build - model_api - DEBUG - Writing file geoms/network1d.geojson
-2024-10-18 12:33:31,833 - build - model_api - DEBUG - Writing file geoms/mesh1d.geojson
-2024-10-18 12:33:32,045 - build - dflowfm - INFO - Writting branches.gui file
-2024-10-18 12:33:32,193 - build - dflowfm - INFO - Writting forcing files.
-2024-10-18 12:33:33,002 - build - dflowfm - INFO - Initialising empty dimr file
+2024-10-18 12:43:55,447 - build - log - DEBUG - Writing log messages to new file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_1d/hydromt.log.
+2024-10-18 12:43:55,447 - build - log - INFO - HydroMT version: 0.10.0
+2024-10-18 12:43:55,447 - build - main - INFO - Building instance of dflowfm model at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_1d.
+2024-10-18 12:43:55,447 - build - main - INFO - User settings:
+2024-10-18 12:43:56,354 - build - data_catalog - INFO - Reading data catalog artifact_data latest
+2024-10-18 12:43:56,354 - build - data_catalog - INFO - Parsing data catalog from /home/runner/.hydromt_data/artifact_data/v0.0.9/data_catalog.yml
+2024-10-18 12:43:56,941 - build - model_api - INFO - Initializing dflowfm model from hydromt_delft3dfm (v0.2.1.dev0).
+2024-10-18 12:43:56,941 - build - data_catalog - INFO - Parsing data catalog from /usr/share/miniconda/envs/test/lib/python3.11/site-packages/hydromt_delft3dfm/data/parameters_data.yml
+2024-10-18 12:43:56,945 - build - dflowfm - INFO - Initialising empty mdu file
+2024-10-18 12:43:56,950 - build - dflowfm - INFO - project crs: 3857
+2024-10-18 12:43:56,950 - build - model_api - INFO - setup_rivers_from_dem.region: {&#39;bbox&#39;: [12.4331, 46.4661, 12.5212, 46.5369]}
+2024-10-18 12:43:56,950 - build - model_api - INFO - setup_rivers_from_dem.hydrography_fn: merit_hydro
+2024-10-18 12:43:56,950 - build - model_api - INFO - setup_rivers_from_dem.river_geom_fn: hydro_rivers_lin
+2024-10-18 12:43:56,950 - build - model_api - INFO - setup_rivers_from_dem.rivers_defaults_fn: rivers_defaults
+2024-10-18 12:43:56,950 - build - model_api - INFO - setup_rivers_from_dem.rivdph_method: gvf
+2024-10-18 12:43:56,950 - build - model_api - INFO - setup_rivers_from_dem.rivwth_method: geom
+2024-10-18 12:43:56,950 - build - model_api - INFO - setup_rivers_from_dem.river_upa: 25.0
+2024-10-18 12:43:56,950 - build - model_api - INFO - setup_rivers_from_dem.river_len: 1000
+2024-10-18 12:43:56,950 - build - model_api - INFO - setup_rivers_from_dem.min_rivwth: 50.0
+2024-10-18 12:43:56,950 - build - model_api - INFO - setup_rivers_from_dem.min_rivdph: 1.0
+2024-10-18 12:43:56,951 - build - model_api - INFO - setup_rivers_from_dem.rivbank: True
+2024-10-18 12:43:56,951 - build - model_api - INFO - setup_rivers_from_dem.rivbankq: 25
+2024-10-18 12:43:56,951 - build - model_api - INFO - setup_rivers_from_dem.segment_length: 3000.0
+2024-10-18 12:43:56,951 - build - model_api - INFO - setup_rivers_from_dem.smooth_length: 10000.0
+2024-10-18 12:43:56,951 - build - model_api - INFO - setup_rivers_from_dem.friction_type: Manning
+2024-10-18 12:43:56,951 - build - model_api - INFO - setup_rivers_from_dem.friction_value: 0.023
+2024-10-18 12:43:56,951 - build - model_api - INFO - setup_rivers_from_dem.constrain_rivbed: True
+2024-10-18 12:43:56,951 - build - model_api - INFO - setup_rivers_from_dem.constrain_estuary: True
+2024-10-18 12:43:56,951 - build - dflowfm - INFO - Preparing river shape from hydrography data.
+2024-10-18 12:43:56,956 - build - rasterdataset - INFO - Reading merit_hydro raster data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/merit_hydro/{variable}.tif
+2024-10-18 12:43:57,044 - build - rasterdataset - DEBUG - Clip to [12.433, 46.466, 12.521, 46.537] (epsg:4326))
+2024-10-18 12:43:57,046 - build - geodataframe - INFO - Reading hydro_rivers_lin vector data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/rivers_lin2019_v1.gpkg
+2024-10-18 12:43:57,054 - build - geodataframe - DEBUG - Clip intersects [1384045.361, 5855358.290, 1393854.608, 5866810.259] (EPSG:3857)
+2024-10-18 12:44:06,065 - build - dem - INFO - Deriving bankfull river surface elevation from its banks.
+2024-10-18 12:44:14,693 - build - dem - INFO - Smoothing river width (n=2).
+2024-10-18 12:44:16,596 - build - dataframe - INFO - Reading rivers_defaults csv data from /usr/share/miniconda/envs/test/lib/python3.11/site-packages/hydromt_delft3dfm/data/branches/rivers_defaults.csv
+2024-10-18 12:44:16,607 - build - branches - INFO - Processing branches
+2024-10-18 12:44:16,607 - build - branches - DEBUG - Cleaning up branches
+2024-10-18 12:44:16,610 - build - branches - DEBUG - Exploding branches.
+2024-10-18 12:44:16,611 - build - branches - DEBUG - Removing 0 branches which have duplicated geometry.
+2024-10-18 12:44:16,612 - build - branches - DEBUG - Removing 1 branches that are shorter than 0.1 meter.
+2024-10-18 12:44:16,614 - build - branches - DEBUG - Renaming 0 id_col duplicates. Convention:BRANCH_1, BRANCH_1 --&gt; BRANCH_1, BRANCH_1-2.
+2024-10-18 12:44:16,618 - build - branches - DEBUG - Reducing precision of the GeoDataFrame.Rounding precision (e-6) .
+2024-10-18 12:44:16,619 - build - branches - DEBUG - Performing snapping at all branch ends, excluding intersections(To avoid messy results, please use a lower snap_offset)..
+2024-10-18 12:44:16,620 - build - branches - DEBUG - Splitting branches based on spacing
+2024-10-18 12:44:16,621 - build - branches - DEBUG - clipping branches into 5 segments
+2024-10-18 12:44:16,621 - build - branches - DEBUG - Generating branchnodes
+2024-10-18 12:44:16,625 - build - branches - INFO - Validating branches
+2024-10-18 12:44:16,626 - build - crosssections - INFO - Adding/Filling branches attributes values
+2024-10-18 12:44:16,628 - build - dflowfm - INFO - Preparing crossections from branch.
+2024-10-18 12:44:16,636 - build - dflowfm - DEBUG - Adding crosssections vector to geoms.
+2024-10-18 12:44:16,636 - build - dflowfm - DEBUG - Adding rivers and river_nodes vector to geoms.
+2024-10-18 12:44:16,639 - build - model_api - WARNING - Replacing geom: rivers
+2024-10-18 12:44:16,640 - build - dflowfm - DEBUG - Adding branches vector to geoms.
+2024-10-18 12:44:16,640 - build - dflowfm - DEBUG - Updating branches in network.
+2024-10-18 12:44:16,699 - build - model_api - INFO - setup_pipes.region: {&#39;bbox&#39;: [12.4331, 46.4661, 12.5212, 46.5369]}
+2024-10-18 12:44:16,699 - build - model_api - INFO - setup_pipes.pipes_fn: grip_roads
+2024-10-18 12:44:16,699 - build - model_api - INFO - setup_pipes.pipes_defaults_fn: pipes_defaults
+2024-10-18 12:44:16,699 - build - model_api - INFO - setup_pipes.pipe_filter: pipe
+2024-10-18 12:44:16,699 - build - model_api - INFO - setup_pipes.spacing: 50
+2024-10-18 12:44:16,699 - build - model_api - INFO - setup_pipes.friction_type: WhiteColeBrook
+2024-10-18 12:44:16,700 - build - model_api - INFO - setup_pipes.friction_value: 0.003
+2024-10-18 12:44:16,700 - build - model_api - INFO - setup_pipes.crosssections_shape: circle
+2024-10-18 12:44:16,700 - build - model_api - INFO - setup_pipes.crosssections_value: 0.5
+2024-10-18 12:44:16,700 - build - model_api - INFO - setup_pipes.dem_fn: merit_hydro
+2024-10-18 12:44:16,700 - build - model_api - INFO - setup_pipes.pipes_depth: 2.0
+2024-10-18 12:44:16,700 - build - model_api - INFO - setup_pipes.pipes_invlev: 3.0
+2024-10-18 12:44:16,700 - build - model_api - INFO - setup_pipes.snap_offset: 0.5
+2024-10-18 12:44:16,700 - build - model_api - INFO - setup_pipes.allow_intersection_snapping: True
+2024-10-18 12:44:16,700 - build - dflowfm - INFO - Preparing 1D pipes.
+2024-10-18 12:44:16,702 - build - geodataframe - INFO - Reading grip_roads vector data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/grip_roads.gpkg
+2024-10-18 12:44:16,709 - build - geodataframe - DEBUG - Clip intersects [1384046.361, 5855359.290, 1393853.608, 5866809.259] (EPSG:3857)
+2024-10-18 12:44:16,710 - build - dataframe - INFO - Reading pipes_defaults csv data from /usr/share/miniconda/envs/test/lib/python3.11/site-packages/hydromt_delft3dfm/data/branches/pipes_defaults.csv
+2024-10-18 12:44:16,715 - build - branches - INFO - Processing branches
+2024-10-18 12:44:16,716 - build - branches - DEBUG - Cleaning up branches
+2024-10-18 12:44:16,722 - build - branches - DEBUG - Exploding branches.
+2024-10-18 12:44:16,724 - build - branches - DEBUG - Removing 0 branches which have duplicated geometry.
+2024-10-18 12:44:16,724 - build - branches - DEBUG - Removing 0 branches that are shorter than 0.1 meter.
+2024-10-18 12:44:16,735 - build - branches - DEBUG - Renaming 0 id_col duplicates. Convention:BRANCH_1, BRANCH_1 --&gt; BRANCH_1, BRANCH_1-2.
+2024-10-18 12:44:16,762 - build - branches - DEBUG - Reducing precision of the GeoDataFrame.Rounding precision (e-6) .
+2024-10-18 12:44:16,766 - build - branches - DEBUG - Performing snapping at all branch ends, including intersections(To avoid messy results, please use a lower snap_offset).
+2024-10-18 12:44:16,767 - build - branches - DEBUG - Splitting branches based on spacing
+2024-10-18 12:44:18,673 - build - branches - DEBUG - clipping branches into 2826 segments
+2024-10-18 12:44:18,674 - build - branches - DEBUG - Generating branchnodes
+2024-10-18 12:44:19,062 - build - branches - INFO - Validating branches
+2024-10-18 12:44:19,064 - build - crosssections - INFO - Adding/Filling branches attributes values
+2024-10-18 12:44:19,073 - build - dflowfm - INFO - grip_roads does not have columns [invlev_up, invlev_dn].Invert levels will be generated from dem_fn ordefault value 3.0
+2024-10-18 12:44:19,074 - build - rasterdataset - INFO - Reading merit_hydro raster data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/merit_hydro/{variable}.tif
+2024-10-18 12:44:19,084 - build - rasterdataset - DEBUG - Clip to [12.433, 46.466, 12.521, 46.537] (epsg:4326))
+2024-10-18 12:44:19,454 - build - dflowfm - INFO - Preparing crossections from branch.
+2024-10-18 12:44:19,516 - build - dflowfm - DEBUG - Adding crosssections vector to geoms.
+2024-10-18 12:44:19,532 - build - model_api - WARNING - Replacing geom: crosssections
+2024-10-18 12:44:19,533 - build - dflowfm - DEBUG - Adding pipes and pipe_nodes vector to geoms.
+2024-10-18 12:44:19,928 - build - model_api - WARNING - Replacing geom: rivers
+2024-10-18 12:44:19,929 - build - model_api - WARNING - Replacing geom: pipes
+2024-10-18 12:44:19,929 - build - dflowfm - DEBUG - Adding branches vector to geoms.
+2024-10-18 12:44:19,929 - build - model_api - WARNING - Replacing geom: branches
+2024-10-18 12:44:19,930 - build - dflowfm - DEBUG - Updating branches in network.
+2024-10-18 12:44:20,797 - build - model_mesh - WARNING - Overwriting grid network1d and the corresponding data variables in mesh.
+2024-10-18 12:44:20,839 - build - model_mesh - WARNING - Overwriting grid mesh1d and the corresponding data variables in mesh.
+2024-10-18 12:44:21,025 - build - model_api - WARNING - Replacing geom: boundaries
+2024-10-18 12:44:21,026 - build - model_api - INFO - setup_manholes.manholes_fn: None
+2024-10-18 12:44:21,026 - build - model_api - INFO - setup_manholes.manholes_defaults_fn: manholes_defaults
+2024-10-18 12:44:21,026 - build - model_api - INFO - setup_manholes.bedlevel_shift: 0.5
+2024-10-18 12:44:21,026 - build - model_api - INFO - setup_manholes.dem_fn: merit_hydro
+2024-10-18 12:44:21,026 - build - model_api - INFO - setup_manholes.snap_offset: 0.001
+2024-10-18 12:44:21,026 - build - dflowfm - INFO - generating manholes locations and bedlevels.
+2024-10-18 12:44:21,026 - build - manholes - INFO - Generating manholes on pipes and/or tunnels
+2024-10-18 12:44:21,235 - build - manholes - INFO - Shifting manholes bedlevels based on bedlevel_shift = 0.5
+2024-10-18 12:44:21,392 - build - model_api - WARNING - Replacing geom: rivers
+2024-10-18 12:44:21,393 - build - model_api - WARNING - Replacing geom: pipes
+2024-10-18 12:44:21,394 - build - dflowfm - DEBUG - Adding branches vector to geoms.
+2024-10-18 12:44:21,394 - build - model_api - WARNING - Replacing geom: branches
+2024-10-18 12:44:21,394 - build - dflowfm - DEBUG - Updating branches in network.
+2024-10-18 12:44:21,394 - build - dataframe - INFO - Reading manholes_defaults csv data from /usr/share/miniconda/envs/test/lib/python3.11/site-packages/hydromt_delft3dfm/data/storages/manholes_defaults.csv
+2024-10-18 12:44:21,403 - build - dflowfm - INFO - overwriting manholes street level from dem.
+2024-10-18 12:44:21,403 - build - rasterdataset - INFO - Reading merit_hydro raster data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/merit_hydro/{variable}.tif
+2024-10-18 12:44:21,413 - build - rasterdataset - DEBUG - Clip to [12.433, 46.466, 12.521, 46.537] (epsg:4326))
+2024-10-18 12:44:21,429 - build - dflowfm - DEBUG - street level mean is 863.6583862304688
+2024-10-18 12:44:21,429 - build - dflowfm - DEBUG - dropping duplicated manholeid
+2024-10-18 12:44:21,467 - build - dflowfm - DEBUG - Adding manholes vector to geoms.
+2024-10-18 12:44:21,467 - build - model_api - INFO - setup_1dboundary.boundaries_geodataset_fn: None
+2024-10-18 12:44:21,467 - build - model_api - INFO - setup_1dboundary.boundaries_timeseries_fn: None
+2024-10-18 12:44:21,467 - build - model_api - INFO - setup_1dboundary.boundary_value: -2.0
+2024-10-18 12:44:21,467 - build - model_api - INFO - setup_1dboundary.branch_type: river
+2024-10-18 12:44:21,467 - build - model_api - INFO - setup_1dboundary.boundary_type: waterlevel
+2024-10-18 12:44:21,467 - build - model_api - INFO - setup_1dboundary.boundary_unit: m
+2024-10-18 12:44:21,467 - build - model_api - INFO - setup_1dboundary.boundary_locs: both
+2024-10-18 12:44:21,467 - build - model_api - INFO - setup_1dboundary.snap_offset: 1.0
+2024-10-18 12:44:21,467 - build - dflowfm - INFO - Preparing 1D waterlevel boundaries for river.
+2024-10-18 12:44:21,468 - build - boundaries - INFO - Using constant value -2.0 mfor all waterlevel boundaries.
+2024-10-18 12:44:21,469 - build - dflowfm - INFO - Writing model data to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_1d
+2024-10-18 12:44:21,474 - build - model_api - DEBUG - Writing file geoms/crosssections.geojson
+2024-10-18 12:44:21,526 - build - model_api - DEBUG - Writing file geoms/rivers.geojson
+2024-10-18 12:44:21,529 - build - model_api - DEBUG - Writing file geoms/rivers_nodes.geojson
+2024-10-18 12:44:21,532 - build - model_api - DEBUG - Writing file geoms/branches.geojson
+2024-10-18 12:44:21,569 - build - model_api - DEBUG - Writing file geoms/boundaries.geojson
+2024-10-18 12:44:21,572 - build - model_api - DEBUG - Writing file geoms/pipes.geojson
+2024-10-18 12:44:21,609 - build - model_api - DEBUG - Writing file geoms/pipe_nodes.geojson
+2024-10-18 12:44:21,647 - build - model_api - DEBUG - Writing file geoms/region.geojson
+2024-10-18 12:44:21,649 - build - model_api - DEBUG - Writing file geoms/manholes.geojson
+2024-10-18 12:44:21,679 - build - model_api - DEBUG - Writing file geoms/network1d.geojson
+2024-10-18 12:44:21,692 - build - model_api - DEBUG - Writing file geoms/mesh1d.geojson
+2024-10-18 12:44:21,714 - build - dflowfm - INFO - Writting cross-sections files crsdef and crsloc
+2024-10-18 12:44:22,032 - build - dflowfm - INFO - Writting friction file(s)
+2024-10-18 12:44:22,036 - build - dflowfm - INFO - Writting manholes file.
+2024-10-18 12:44:22,433 - build - model_api - WARNING - Replacing geom: network1d
+2024-10-18 12:44:22,434 - build - model_api - WARNING - Replacing geom: mesh1d
+2024-10-18 12:44:22,445 - build - model_api - WARNING - Replacing geom: crosssections
+2024-10-18 12:44:22,447 - build - model_api - WARNING - Replacing geom: rivers
+2024-10-18 12:44:22,448 - build - model_api - WARNING - Replacing geom: rivers_nodes
+2024-10-18 12:44:22,456 - build - model_api - WARNING - Replacing geom: branches
+2024-10-18 12:44:22,458 - build - model_api - WARNING - Replacing geom: boundaries
+2024-10-18 12:44:22,465 - build - model_api - WARNING - Replacing geom: pipes
+2024-10-18 12:44:22,472 - build - model_api - WARNING - Replacing geom: pipe_nodes
+2024-10-18 12:44:22,472 - build - model_api - WARNING - Replacing geom: region
+2024-10-18 12:44:22,478 - build - model_api - WARNING - Replacing geom: manholes
+2024-10-18 12:44:22,479 - build - model_api - WARNING - Replacing geom: network1d
+2024-10-18 12:44:22,479 - build - model_api - WARNING - Replacing geom: mesh1d
+2024-10-18 12:44:22,480 - build - model_api - DEBUG - Writing file geoms/crosssections.geojson
+2024-10-18 12:44:22,533 - build - model_api - DEBUG - Writing file geoms/rivers.geojson
+2024-10-18 12:44:22,536 - build - model_api - DEBUG - Writing file geoms/rivers_nodes.geojson
+2024-10-18 12:44:22,538 - build - model_api - DEBUG - Writing file geoms/branches.geojson
+2024-10-18 12:44:22,576 - build - model_api - DEBUG - Writing file geoms/boundaries.geojson
+2024-10-18 12:44:22,579 - build - model_api - DEBUG - Writing file geoms/pipes.geojson
+2024-10-18 12:44:22,616 - build - model_api - DEBUG - Writing file geoms/pipe_nodes.geojson
+2024-10-18 12:44:22,655 - build - model_api - DEBUG - Writing file geoms/region.geojson
+2024-10-18 12:44:22,656 - build - model_api - DEBUG - Writing file geoms/manholes.geojson
+2024-10-18 12:44:22,685 - build - model_api - DEBUG - Writing file geoms/network1d.geojson
+2024-10-18 12:44:22,699 - build - model_api - DEBUG - Writing file geoms/mesh1d.geojson
+2024-10-18 12:44:22,903 - build - dflowfm - INFO - Writting branches.gui file
+2024-10-18 12:44:23,042 - build - dflowfm - INFO - Writting forcing files.
+2024-10-18 12:44:23,840 - build - dflowfm - INFO - Initialising empty dimr file
 INFO:build:Initialising empty dimr file
-2024-10-18 12:33:33,002 - build - dflowfm - INFO - Adding dflowfm component to dimr config
+2024-10-18 12:44:23,840 - build - dflowfm - INFO - Adding dflowfm component to dimr config
 INFO:build:Adding dflowfm component to dimr config
-2024-10-18 12:33:33,003 - build - dflowfm - INFO - Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_1d/dimr_config.xml
+2024-10-18 12:44:23,841 - build - dflowfm - INFO - Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_1d/dimr_config.xml
 INFO:build:Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_1d/dimr_config.xml
 </pre></div></div>
 </div>
