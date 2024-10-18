@@ -3128,7 +3128,8 @@
             <span class="n">_mesh_region</span>
         <span class="p">)</span>  <span class="c1"># region where 2d boundary is allowed</span>
         <span class="n">_boundary_region</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">_boundary_region</span><span class="p">]},</span> <span class="n">crs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">crs</span>
+            <span class="p">{</span><span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">_boundary_region</span><span class="p">]},</span>
+            <span class="n">crs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">refdate</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model_time</span><span class="p">()</span>  <span class="c1"># time slice</span>
@@ -3147,7 +3148,7 @@
                     <span class="s2">&quot;recognisable boundary region (cell size * tolerance to the mesh).&quot;</span>
                 <span class="p">)</span>
             <span class="c1"># preprocess</span>
-            <span class="n">gdf_bnd</span> <span class="o">=</span> <span class="n">gdf_bnd</span><span class="o">.</span><span class="n">explode</span><span class="p">()</span>
+            <span class="n">gdf_bnd</span> <span class="o">=</span> <span class="n">gdf_bnd</span><span class="o">.</span><span class="n">explode</span><span class="p">(</span><span class="n">index_parts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="c1"># set index</span>
             <span class="k">if</span> <span class="s2">&quot;boundary_id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">gdf_bnd</span><span class="p">:</span>
                 <span class="n">gdf_bnd</span><span class="p">[</span><span class="s2">&quot;boundary_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>

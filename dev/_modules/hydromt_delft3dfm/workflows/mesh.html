@@ -653,7 +653,9 @@
             <span class="n">max_refinement_iterations</span><span class="o">=</span><span class="n">steps</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># iterate over gdf_polygons</span>
-        <span class="n">gdf_polygon</span> <span class="o">=</span> <span class="n">gdf_polygon</span><span class="o">.</span><span class="n">explode</span><span class="p">()</span>  <span class="c1"># explode multipolygons to polygons</span>
+        <span class="n">gdf_polygon</span> <span class="o">=</span> <span class="n">gdf_polygon</span><span class="o">.</span><span class="n">explode</span><span class="p">(</span>
+            <span class="n">index_parts</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>  <span class="c1"># explode multipolygons to polygons</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">polygon</span> <span class="ow">in</span> <span class="n">gdf_polygon</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
             <span class="c1"># Create a list of coordinate lists</span>
             <span class="n">polygon</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">geometry</span>  <span class="c1"># .unary_union</span>
