@@ -528,7 +528,9 @@
     <span class="c1"># 4. snap structures to branches</span>
     <span class="c1"># setup branch_id - snap structures to branch (inplace of structures,</span>
     <span class="c1"># will add branch_id and branch_offset columns)</span>
-    <span class="n">find_nearest_branch</span><span class="p">(</span><span class="n">branches</span><span class="o">=</span><span class="n">branches</span><span class="p">,</span> <span class="n">geometries</span><span class="o">=</span><span class="n">gdf_st</span><span class="p">,</span> <span class="n">maxdist</span><span class="o">=</span><span class="n">snap_offset</span><span class="p">)</span>
+    <span class="n">gdf_st</span> <span class="o">=</span> <span class="n">find_nearest_branch</span><span class="p">(</span>
+        <span class="n">branches</span><span class="o">=</span><span class="n">branches</span><span class="p">,</span> <span class="n">geometries</span><span class="o">=</span><span class="n">gdf_st</span><span class="p">,</span> <span class="n">maxdist</span><span class="o">=</span><span class="n">snap_offset</span>
+    <span class="p">)</span>
     <span class="c1"># setup failed - drop based on branch_offset that are not snapped to branch</span>
     <span class="n">_old_ids</span> <span class="o">=</span> <span class="n">gdf_st</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
     <span class="n">gdf_st</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;branch_offset&quot;</span><span class="p">])</span>

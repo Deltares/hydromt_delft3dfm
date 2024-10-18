@@ -430,10 +430,12 @@
 <span class="kn">import</span> <span class="nn">pyproj</span>
 <span class="kn">import</span> <span class="nn">shapely</span>
 <span class="kn">from</span> <span class="nn">hydromt</span> <span class="kn">import</span> <span class="n">gis_utils</span>
+<span class="kn">from</span> <span class="nn">hydromt.gis_utils</span> <span class="kn">import</span> <span class="n">nearest_merge</span>
 <span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">distance</span>
-<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">MultiLineString</span><span class="p">,</span> <span class="n">Point</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">MultiLineString</span><span class="p">,</span> <span class="n">MultiPoint</span><span class="p">,</span> <span class="n">Point</span>
 
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">graph_utils</span><span class="p">,</span> <span class="n">mesh_utils</span>
+<span class="kn">from</span> <span class="nn">hydromt_delft3dfm</span> <span class="kn">import</span> <span class="n">graph_utils</span><span class="p">,</span> <span class="n">mesh_utils</span>
+
 <span class="kn">from</span> <span class="nn">..gis_utils</span> <span class="kn">import</span> <span class="n">cut_pieces</span><span class="p">,</span> <span class="n">split_lines</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -1472,114 +1474,107 @@
     <span class="k">return</span> <span class="n">idx</span>
 
 
-<span class="c1"># TODO copied from dhydamo geometry.py, update when available in main</span>
-<span class="c1"># NOTE add option to write distance to nearest branch</span>
 <div class="viewcode-block" id="find_nearest_branch">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.find_nearest_branch.html#hydromt_delft3dfm.workflows.find_nearest_branch">[docs]</a>
 <span class="k">def</span> <span class="nf">find_nearest_branch</span><span class="p">(</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">geometries</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;overal&quot;</span><span class="p">,</span>
-    <span class="n">maxdist</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Determine nearest branch for each geometry.</span>
+    <span class="n">maxdist</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine the nearest branch for each geometry.</span>
 
-<span class="sd">    The nearest branch can be found by finding t from both ends (ends) or the</span>
-<span class="sd">    nearest branch from the geometry as a whole (overal), the centroid (centroid),</span>
-<span class="sd">    or intersecting (intersect).</span>
+<span class="sd">    The method of determination can vary.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    branches : geopandas.GeoDataFrame</span>
-<span class="sd">        Geodataframe with branches.</span>
-<span class="sd">    geometries : geopandas.GeoDataFrame</span>
-<span class="sd">        Geodataframe with geometries to snap.</span>
-<span class="sd">    method : {&#39;overal&#39;,&#39;intersecting&#39;,&#39;centroid&#39;,&#39;ends&#39;}</span>
-<span class="sd">        Method for determine branch. Defaults to &#39;overal&#39;.</span>
-<span class="sd">    maxdist: int or float</span>
-<span class="sd">        Maximum distance for finding nearest geometry. Defaults to 5.</span>
+<span class="sd">    branches : gpd.GeoDataFrame</span>
+<span class="sd">        Geodataframe containing branch geometries.</span>
+<span class="sd">    geometries : gpd.GeoDataFrame</span>
+<span class="sd">        Geodataframe containing geometries for which the nearest branch needs to</span>
+<span class="sd">        be found.</span>
+<span class="sd">    method : str, optional</span>
+<span class="sd">        Method to determine the nearest branch. Supports:</span>
+<span class="sd">        - &#39;overal&#39;: Find the nearest branch based on the geometry&#39;s location.</span>
+<span class="sd">        - &#39;intersecting&#39;: Convert the geometry to a centroid of its intersection</span>
+<span class="sd">        points with branches.</span>
+<span class="sd">        Default is &#39;overal&#39;.</span>
+<span class="sd">    maxdist : float, optional</span>
+<span class="sd">        Maximum distance threshold for finding the nearest branch. Default is 5.0.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gpd.GeoDataFrame</span>
+<span class="sd">        Geodataframe with additional columns:</span>
+<span class="sd">        - &#39;branch_id&#39;: ID of the nearest branch.</span>
+<span class="sd">        - &#39;branch_distance&#39;: Distance to the nearest branch.</span>
+<span class="sd">        - &#39;branch_offset&#39;: Offset along the branch.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NotImplementedError</span>
+<span class="sd">        If the specified method is not among the allowed methods.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Check if method is in allowed methods</span>
-    <span class="n">allowed_methods</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;intersecting&quot;</span><span class="p">,</span> <span class="s2">&quot;overal&quot;</span><span class="p">,</span> <span class="s2">&quot;centroid&quot;</span><span class="p">,</span> <span class="s2">&quot;ends&quot;</span><span class="p">]</span>
+    <span class="n">allowed_methods</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;intersecting&quot;</span><span class="p">,</span> <span class="s2">&quot;overal&quot;</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_methods</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Method &quot;</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s1">&quot; not implemented.&#39;</span><span class="p">)</span>
 
-    <span class="c1"># Add columns if not present</span>
-    <span class="k">if</span> <span class="s2">&quot;branch_id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">geometries</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-        <span class="n">geometries</span><span class="p">[</span><span class="s2">&quot;branch_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="k">if</span> <span class="s2">&quot;branch_offset&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">geometries</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-        <span class="n">geometries</span><span class="p">[</span><span class="s2">&quot;branch_offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-
+    <span class="c1"># Depending on method, modify geometries</span>
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;intersecting&quot;</span><span class="p">:</span>
-        <span class="c1"># Determine intersection geometries per branch</span>
-        <span class="n">geobounds</span> <span class="o">=</span> <span class="n">geometries</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">T</span>
-        <span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">branches</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
-            <span class="n">selectie</span> <span class="o">=</span> <span class="n">geometries</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-                <span class="n">possibly_intersecting</span><span class="p">(</span><span class="n">geobounds</span><span class="p">,</span> <span class="n">branch</span><span class="o">.</span><span class="n">geometry</span><span class="p">)</span>
-            <span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="n">intersecting</span> <span class="o">=</span> <span class="n">selectie</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">selectie</span><span class="o">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">branch</span><span class="o">.</span><span class="n">geometry</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">]</span>
+        <span class="c1"># Get the intersection points directly</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">geom</span> <span class="ow">in</span> <span class="n">geometries</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="c1"># Find branches that intersect with the current geometry</span>
+            <span class="n">intersected_branches</span> <span class="o">=</span> <span class="n">branches</span><span class="p">[</span><span class="n">branches</span><span class="o">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">geom</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">])]</span>
 
-            <span class="c1"># For each geometrie, determine offset along branch</span>
-            <span class="k">for</span> <span class="n">geometry</span> <span class="ow">in</span> <span class="n">intersecting</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
-                <span class="c1"># Determine distance of profile line along branch</span>
-                <span class="n">geometries</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">geometry</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="s2">&quot;branch_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branch</span><span class="o">.</span><span class="n">Index</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">intersected_branches</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+                <span class="c1"># If there are multiple intersecting points, take the centroid</span>
+                <span class="n">intersection_points</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">geom</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">branch</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">])</span>
+                    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">intersected_branches</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span>
+                <span class="p">]</span>
+                <span class="n">centroid</span> <span class="o">=</span> <span class="n">MultiPoint</span><span class="p">(</span><span class="n">intersection_points</span><span class="p">)</span><span class="o">.</span><span class="n">centroid</span>
+                <span class="n">geometries</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">centroid</span>
 
-                <span class="c1"># Calculate offset</span>
-                <span class="n">branchgeo</span> <span class="o">=</span> <span class="n">branch</span><span class="o">.</span><span class="n">geometry</span>
-                <span class="n">mindist</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">branchgeo</span><span class="o">.</span><span class="n">length</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
-                <span class="n">offset</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span>
-                    <span class="n">branchgeo</span><span class="o">.</span><span class="n">project</span><span class="p">(</span>
-                        <span class="n">branchgeo</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">geometry</span><span class="o">.</span><span class="n">geometry</span><span class="p">)</span><span class="o">.</span><span class="n">centroid</span>
-                    <span class="p">),</span>
-                    <span class="mi">3</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="n">offset</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">mindist</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">branchgeo</span><span class="o">.</span><span class="n">length</span> <span class="o">-</span> <span class="n">mindist</span><span class="p">,</span> <span class="n">offset</span><span class="p">))</span>
-                <span class="n">geometries</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">geometry</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="s2">&quot;branch_offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">offset</span>
+    <span class="c1"># Check for previous data and drop if exist</span>
+    <span class="n">geometries</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
+        <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;branch_id&quot;</span><span class="p">,</span> <span class="s2">&quot;branch_distance&quot;</span><span class="p">,</span> <span class="s2">&quot;branch_offset&quot;</span><span class="p">],</span>
+        <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
 
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">branch_bounds</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">T</span>
-        <span class="c1"># In case of looking for the nearest, it is easier to iteratie over</span>
-        <span class="c1"># the geometries instead of the branches</span>
-        <span class="k">for</span> <span class="n">geometry</span> <span class="ow">in</span> <span class="n">geometries</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
-            <span class="c1"># Find near branches</span>
-            <span class="n">nearidx</span> <span class="o">=</span> <span class="n">possibly_intersecting</span><span class="p">(</span>
-                <span class="n">branch_bounds</span><span class="p">,</span> <span class="n">geometry</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="n">maxdist</span>
-            <span class="p">)</span>
-            <span class="n">selectie</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nearidx</span><span class="p">]</span>
+    <span class="c1"># Use nearest_merge to get the nearest branches</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">nearest_merge</span><span class="p">(</span><span class="n">geometries</span><span class="p">,</span> <span class="n">branches</span><span class="p">,</span> <span class="n">max_dist</span><span class="o">=</span><span class="n">maxdist</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">])</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+        <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;index_right&quot;</span><span class="p">:</span> <span class="s2">&quot;branch_id&quot;</span><span class="p">,</span> <span class="s2">&quot;distance_right&quot;</span><span class="p">:</span> <span class="s2">&quot;branch_distance&quot;</span><span class="p">},</span>
+        <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;overal&quot;</span><span class="p">:</span>
-                <span class="c1"># Determine distances to branches</span>
-                <span class="n">dist</span> <span class="o">=</span> <span class="n">selectie</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">geometry</span><span class="o">.</span><span class="n">geometry</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;centroid&quot;</span><span class="p">:</span>
-                <span class="c1"># Determine distances to branches</span>
-                <span class="n">dist</span> <span class="o">=</span> <span class="n">selectie</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">geometry</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">centroid</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;ends&quot;</span><span class="p">:</span>
-                <span class="c1"># Since a culvert can cross a channel, it is</span>
-                <span class="n">crds</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">coords</span><span class="p">[:]</span>
-                <span class="n">dist</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">selectie</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="o">*</span><span class="n">crds</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-                    <span class="o">+</span> <span class="n">selectie</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="o">*</span><span class="n">crds</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
-                <span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span>
+    <span class="c1"># Select ones that are merged</span>
+    <span class="n">valid_rows</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;branch_distance&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">maxdist</span>
 
-            <span class="c1"># Determine nearest</span>
-            <span class="k">if</span> <span class="n">dist</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">maxdist</span><span class="p">:</span>
-                <span class="n">branchidxmin</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()</span>
-                <span class="n">geometries</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">geometry</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="s2">&quot;branch_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()</span>
-                <span class="n">geometries</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">geometry</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="s2">&quot;branch_distance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geometry</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="n">Point</span><span class="p">):</span>
-                    <span class="n">geo</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">geometry</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">geo</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">centroid</span>
+    <span class="c1"># Interpolate the branch geometries based on index_right</span>
+    <span class="n">branchgeo</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">valid_rows</span><span class="p">,</span> <span class="s2">&quot;branch_id&quot;</span><span class="p">],</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">maxdist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">geo</span><span class="o">.</span><span class="n">length</span> <span class="k">for</span> <span class="n">geo</span> <span class="ow">in</span> <span class="n">branchgeo</span><span class="p">])</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">geo</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">geo</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">valid_rows</span><span class="p">[</span><span class="n">valid_rows</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">branchgeo</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">valid_rows</span><span class="p">,</span> <span class="s2">&quot;branch_offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+        <span class="n">offset</span> <span class="o">&gt;</span> <span class="n">maxdist</span><span class="p">,</span> <span class="n">maxdist</span><span class="p">,</span> <span class="n">offset</span>
+    <span class="p">)</span>
+    <span class="n">snapped_geometries</span> <span class="o">=</span> <span class="p">[</span><span class="n">geo</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="k">for</span> <span class="n">geo</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">branchgeo</span><span class="p">,</span> <span class="n">offset</span><span class="p">)]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">valid_rows</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">snapped_geometries</span>
 
-                <span class="c1"># Calculate offset</span>
-                <span class="n">branchgeo</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">branchidxmin</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]</span>
-                <span class="n">mindist</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">branchgeo</span><span class="o">.</span><span class="n">length</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
-                <span class="n">offset</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
-                    <span class="n">mindist</span><span class="p">,</span>
-                    <span class="nb">min</span><span class="p">(</span><span class="n">branchgeo</span><span class="o">.</span><span class="n">length</span> <span class="o">-</span> <span class="n">mindist</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">branchgeo</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">geo</span><span class="p">),</span> <span class="mi">3</span><span class="p">)),</span>
-                <span class="p">)</span>
-                <span class="n">geometries</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">geometry</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="s2">&quot;branch_offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">offset</span></div>
+    <span class="c1"># For rows where distance is greater than maxdist, set branch_id</span>
+    <span class="c1"># to empty and branch_offset to NaN</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">valid_rows</span><span class="p">,</span> <span class="s2">&quot;branch_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">valid_rows</span><span class="p">,</span> <span class="s2">&quot;branch_offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">valid_rows</span><span class="p">,</span> <span class="s2">&quot;branch_distance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
 
 
 
@@ -1651,9 +1646,8 @@
         <span class="p">]</span><span class="o">.</span><span class="n">branch_chainage</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
         <span class="n">snapped_line</span> <span class="o">=</span> <span class="n">MultiLineString</span><span class="p">(</span><span class="n">cut_pieces</span><span class="p">(</span><span class="n">branch</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="n">distances</span><span class="p">))</span>
         <span class="n">branches_snapped</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">branch_name</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">snapped_line</span>
-        <span class="n">branches_snapped</span><span class="o">.</span><span class="n">at</span><span class="p">[</span>
-            <span class="n">branch_name</span><span class="p">,</span> <span class="s2">&quot;branchorder&quot;</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="n">branch_order</span>  <span class="c1"># allow interpolation on the snapped branch</span>
+        <span class="c1"># allow interpolation on the snapped branch</span>
+        <span class="n">branches_snapped</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">branch_name</span><span class="p">,</span> <span class="s2">&quot;branchorder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">branch_order</span>
 
     <span class="c1"># explode multilinestring after snapping</span>
     <span class="n">branches_snapped</span> <span class="o">=</span> <span class="n">branches_snapped</span><span class="o">.</span><span class="n">explode</span><span class="p">(</span><span class="n">index_parts</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -1694,7 +1688,7 @@
 <span class="sd">    Returns snapped geoms with branchid and chainage.</span>
 <span class="sd">    Branches must have branchid.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">find_nearest_branch</span><span class="p">(</span>
+    <span class="n">geoms</span> <span class="o">=</span> <span class="n">find_nearest_branch</span><span class="p">(</span>
         <span class="n">branches</span><span class="o">=</span><span class="n">branches</span><span class="p">,</span>
         <span class="n">geometries</span><span class="o">=</span><span class="n">geoms</span><span class="p">,</span>
         <span class="n">maxdist</span><span class="o">=</span><span class="n">snap_offset</span><span class="p">,</span>
