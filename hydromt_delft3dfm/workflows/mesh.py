@@ -224,7 +224,9 @@ def mesh2d_refine(
             max_refinement_iterations=steps,
         )
         # iterate over gdf_polygons
-        gdf_polygon = gdf_polygon.explode()  # explode multipolygons to polygons
+        gdf_polygon = gdf_polygon.explode(
+            index_parts=True
+        )  # explode multipolygons to polygons
         for i, polygon in gdf_polygon.iterrows():
             # Create a list of coordinate lists
             polygon = polygon.geometry  # .unary_union
