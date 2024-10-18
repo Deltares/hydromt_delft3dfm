@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this page.
 The format is based on `Keep a Changelog`_, and this project adheres to
 `Semantic Versioning`_.
 
-Unreleased
+v0.3.0 (18 October 2024)
 ==========
 This version includes many code updates to accomodate for newer versions of dependencies.
 The only upper bound left is hydromt<1.
