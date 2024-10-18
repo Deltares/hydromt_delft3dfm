@@ -12,27 +12,33 @@ jobs:
   # Build docs on Linux
   Docs:
     name: build docs
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     env:
       DOC_VERSION: dev
+    defaults:
+      run:
+        shell: bash -l {0}
 
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
 
-        uses: actions/setup-python@v4
+      - name: Setup environment
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: 3.11
+          python-version: "3.11"
+          channels: conda-forge
+          channel-priority: strict
+          environment-file: envs/hydromt-delft3dfm.yml
+          activate-environment: hydromt-delft3dfm
 
-      - name: Install hydromt_delft3dfm and dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e .[docs]
-          hydromt --models
+      - name: Install hydromt-delft3dfm
+        run: flit install
 
       - name: list env contents
         run: |
           pip list
+          hydromt --models
 
       - name: Build docs
         run: |
