@@ -51,9 +51,15 @@ dev = [
     "pre-commit",  # linting
     "pip>=23.1.2", # needed for recursive dependencies
 ]
-test = ["pytest>=2.7.3", "pytest-cov", "black"]
+test = [
+    "pytest>=2.7.3",
+	"pytest-cov",
+    #"pytest-mock", # from yml, required?
+    #"pytest-timeout", # from yml, required?
+    #"responses-timeout", # from yml, required?
+]
 doc = [
-	"nbsphinx",
+	"nbsphinx", # docs notebook examples
 	"sphinx",
 	"sphinx_design",
 	"pydata-sphinx-theme",
@@ -63,6 +69,7 @@ examples = [
   "jupyterlab",      # run examples in jupyter notebook
   "notebook",        # jupyter integration
   "cartopy",		 # plot examples
+  "matplotlib",		 # plot examples
 ]
 
 [project.urls]
