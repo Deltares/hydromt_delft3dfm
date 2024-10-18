@@ -34,8 +34,6 @@ dependencies:
   - xugrid>=0.9.0
   - networkx
   - llvmlite>=0.39.1 # hydrolib-core
-  - osmnx # for urbansewer
-  - momepy # for urbansewer
   - pip:
       - hydrolib-core>=0.8.0
       - meshkernel>=4.3.0
