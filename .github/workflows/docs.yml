@@ -21,7 +21,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python
 
       - name: Setup environment
         uses: conda-incubator/setup-miniconda@v3
