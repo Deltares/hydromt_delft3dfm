@@ -2782,7 +2782,8 @@ class DFlowFMModel(MeshModel):
             _mesh_region
         )  # region where 2d boundary is allowed
         _boundary_region = gpd.GeoDataFrame(
-            {"geometry": [_boundary_region]}, crs=self.crs
+            {"geometry": [_boundary_region]},
+            crs=self.crs,
         )
 
         refdate, tstart, tstop = self.get_model_time()  # time slice
@@ -2801,7 +2802,7 @@ class DFlowFMModel(MeshModel):
                     "recognisable boundary region (cell size * tolerance to the mesh)."
                 )
             # preprocess
-            gdf_bnd = gdf_bnd.explode()
+            gdf_bnd = gdf_bnd.explode(index_parts=True)
             # set index
             if "boundary_id" not in gdf_bnd:
                 gdf_bnd["boundary_id"] = [
