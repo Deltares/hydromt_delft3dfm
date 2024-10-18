@@ -36,6 +36,7 @@ Fixed
 - Support for geopandas v1 (PR #158)
 - Support for latest version hydromt artifact data. (PR #160)
 - Avoid sediment section in mdu so generated models can run in Delft3D FM Suite 2024.03 1D2D. (PR #184)
+- fixed typo so ``setup_pipes()`` now allows field ``invlev_dn``. (PR #193)
 
 v0.2.0 (20 November 2023)
 =========================
