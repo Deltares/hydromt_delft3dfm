@@ -11,8 +11,8 @@ on:
 jobs:
   # Build docs on Linux
   Docs:
-    name: linux docs
-    runs-on: ubuntu-latest
+    name: build docs
+    runs-on: windows-latest
     env:
       DOC_VERSION: dev
 
