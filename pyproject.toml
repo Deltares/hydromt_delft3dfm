@@ -1,46 +1,45 @@
 [build-system]
-requires = ["flit_core >=3.4.0,<4"]
+requires = ["flit_core >=3.4.0"]
 build-backend = "flit_core.buildapi"
 
 [project]
 name = "hydromt_delft3dfm"
 authors = [
-	{ name = "Rinske Hutten", email = "rinske.hutten@deltares.nl" },
-	{ name = "Xiaohan Li", email = "xiaohan.li@deltares.nl" },
-	{ name = "Hélène Boisgontier", email = "helene.boisgontier@deltares.nl" },
-	{ name = "Jelmer Veenstra", email = "jelmer.veenstra@deltares.nl" },
- 	{ name = "Sebastian Hartgring", email = "sebastian.hartgring@deltares.nl" },
+    { name = "Rinske Hutten", email = "rinske.hutten@deltares.nl" },
+    { name = "Xiaohan Li", email = "xiaohan.li@deltares.nl" },
+    { name = "Hélène Boisgontier", email = "helene.boisgontier@deltares.nl" },
+    { name = "Jelmer Veenstra", email = "jelmer.veenstra@deltares.nl" },
+    { name = "Sebastian Hartgring", email = "sebastian.hartgring@deltares.nl" },
 ]
 dependencies = [
-	"hydromt>=0.10.0, <1", # TODO: move to hydromt>=1: https://github.com/Deltares/hydromt_delft3dfm/issues/137
-	"geopandas>=0.10, !=1.0.0", # gpd 1.0.0 has sjoin bug: https://github.com/geopandas/geopandas/issues/352
-	"numpy",
-	"pandas>=2.0.0",
-	"xarray",
-	"hydrolib-core>=0.8.0",
-	"xugrid>=0.9.0",
-	"meshkernel>=4.3.0",
-	"pyproj",
-	"shapely>=2.0.0",
-	"scipy",
-	"universal_pathlib>=0.2", # provides path compatibility between different filesystems
-	"pyflwdir>=0.5.4",
-	"networkx",
+    "hydromt>=0.10.0, <1", # TODO: move to hydromt>=1: https://github.com/Deltares/hydromt_delft3dfm/issues/137
+    "geopandas>=0.10, !=1.0.0", # gpd 1.0.0 has sjoin bug: https://github.com/geopandas/geopandas/issues/352
+    "numpy",
+    "pandas>=2.0.0",
+    "xarray",
+    "hydrolib-core>=0.8.0",
+    "xugrid>=0.9.0",
+    "meshkernel>=4.3.0",
+    "pyproj",
+    "shapely>=2.0.0",
+    "scipy",
+    "pyflwdir>=0.5.4",
+    "networkx",
 ]
 requires-python = ">=3.9"
 readme = "README.rst"
 classifiers = [
-	# https://pypi.python.org/pypi?%3Aaction=list_classifiers
-	"Development Status :: 2 - Pre-Alpha",
-	"Intended Audience :: Developers",
-	"Intended Audience :: Science/Research",
-	"Topic :: Scientific/Engineering :: Hydrology",
-	"License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
-	"Programming Language :: Python :: 3",
-	"Programming Language :: Python :: 3.9",
-	"Programming Language :: Python :: 3.10",
-	"Programming Language :: Python :: 3.11",
-	"Programming Language :: Python :: 3.12",
+    # https://pypi.python.org/pypi?%3Aaction=list_classifiers
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Hydrology",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 dynamic = ['version', 'description']
 
@@ -51,18 +50,22 @@ dev = [
     "pre-commit",  # linting
     "pip>=23.1.2", # needed for recursive dependencies
 ]
-test = ["pytest>=2.7.3", "pytest-cov", "black"]
-doc = [
-	"nbsphinx",
-	"sphinx",
-	"sphinx_design",
-	"pydata-sphinx-theme",
-	"sphinx_autosummary_accessors",
+test = [
+    "pytest>=2.7.3",
+    "pytest-cov",
+]
+docs = [
+    "nbsphinx", # docs notebook examples
+    "sphinx",
+    "sphinx_design",
+    "pydata-sphinx-theme",
+    "sphinx_autosummary_accessors",
 ]
 examples = [
-  "jupyterlab",      # run examples in jupyter notebook
-  "notebook",        # jupyter integration
-  "cartopy",		 # plot examples
+    "jupyterlab",  # run examples in jupyter notebook
+    "notebook",    # jupyter integration
+    "cartopy",     # plot examples
+    "matplotlib",  # plot examples
 ]
 
 [project.urls]
