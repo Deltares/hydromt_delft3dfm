@@ -2980,11 +2980,10 @@ class DFlowFMModel(MeshModel):
             inifield_model_2dparameter = [
                 i for i in inifield_model.parameter if "2d" in i.locationtype
             ]
+            inifield_model_2d = inifield_model_2dinitial + inifield_model_2dparameter
         else:
-            inifield_model_2dinitial = []
-            inifield_model_2dparameter = []
+            inifield_model_2d = []
 
-        inifield_model_2d = inifield_model_2dinitial + inifield_model_2dparameter
         if any(inifield_model_2d):
             # Loop over initial / parameter to read the geotif
             inilist = inifield_model_2d
