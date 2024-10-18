@@ -26,9 +26,6 @@ dependencies = [
 	"universal_pathlib>=0.2", # provides path compatibility between different filesystems
 	"pyflwdir>=0.5.4",
 	"networkx",
-	"momepy", # graph utils
-	"osmnx", # osm graph
-	"matplotlib", # meshkernel?
 ]
 requires-python = ">=3.9"
 readme = "README.rst"
