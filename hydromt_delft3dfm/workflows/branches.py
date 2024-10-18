@@ -9,10 +9,12 @@ import pandas as pd
 import pyproj
 import shapely
 from hydromt import gis_utils
+from hydromt.gis_utils import nearest_merge
 from scipy.spatial import distance
-from shapely.geometry import LineString, MultiLineString, Point
+from shapely.geometry import LineString, MultiLineString, MultiPoint, Point
 
-from .. import graph_utils, mesh_utils
+from hydromt_delft3dfm import graph_utils, mesh_utils
+
 from ..gis_utils import cut_pieces, split_lines
 
 logger = logging.getLogger(__name__)
@@ -1036,112 +1038,105 @@ def possibly_intersecting(
     return idx
 
 
-# TODO copied from dhydamo geometry.py, update when available in main
-# NOTE add option to write distance to nearest branch
 def find_nearest_branch(
     branches: gpd.GeoDataFrame,
     geometries: gpd.GeoDataFrame,
     method: str = "overal",
-    maxdist: int = 5,
-):
-    """
-    Determine nearest branch for each geometry.
+    maxdist: float = 5.0,
+) -> gpd.GeoDataFrame:
+    """Determine the nearest branch for each geometry.
 
-    The nearest branch can be found by finding t from both ends (ends) or the
-    nearest branch from the geometry as a whole (overal), the centroid (centroid),
-    or intersecting (intersect).
+    The method of determination can vary.
 
     Parameters
     ----------
-    branches : geopandas.GeoDataFrame
-        Geodataframe with branches.
-    geometries : geopandas.GeoDataFrame
-        Geodataframe with geometries to snap.
-    method : {'overal','intersecting','centroid','ends'}
-        Method for determine branch. Defaults to 'overal'.
-    maxdist: int or float
-        Maximum distance for finding nearest geometry. Defaults to 5.
+    branches : gpd.GeoDataFrame
+        Geodataframe containing branch geometries.
+    geometries : gpd.GeoDataFrame
+        Geodataframe containing geometries for which the nearest branch needs to
+        be found.
+    method : str, optional
+        Method to determine the nearest branch. Supports:
+        - 'overal': Find the nearest branch based on the geometry's location.
+        - 'intersecting': Convert the geometry to a centroid of its intersection
+        points with branches.
+        Default is 'overal'.
+    maxdist : float, optional
+        Maximum distance threshold for finding the nearest branch. Default is 5.0.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        Geodataframe with additional columns:
+        - 'branch_id': ID of the nearest branch.
+        - 'branch_distance': Distance to the nearest branch.
+        - 'branch_offset': Offset along the branch.
+
+    Raises
+    ------
+    NotImplementedError
+        If the specified method is not among the allowed methods.
     """
     # Check if method is in allowed methods
-    allowed_methods = ["intersecting", "overal", "centroid", "ends"]
+    allowed_methods = ["intersecting", "overal"]
     if method not in allowed_methods:
         raise NotImplementedError(f'Method "{method}" not implemented.')
 
-    # Add columns if not present
-    if "branch_id" not in geometries.columns:
-        geometries["branch_id"] = ""
-    if "branch_offset" not in geometries.columns:
-        geometries["branch_offset"] = np.nan
-
+    # Depending on method, modify geometries
     if method == "intersecting":
-        # Determine intersection geometries per branch
-        geobounds = geometries.bounds.values.T
-        for branch in branches.itertuples():
-            selectie = geometries.loc[
-                possibly_intersecting(geobounds, branch.geometry)
-            ].copy()
-            intersecting = selectie.loc[selectie.intersects(branch.geometry).values]
+        # Get the intersection points directly
+        for index, geom in geometries.iterrows():
+            # Find branches that intersect with the current geometry
+            intersected_branches = branches[branches.intersects(geom["geometry"])]
 
-            # For each geometrie, determine offset along branch
-            for geometry in intersecting.itertuples():
-                # Determine distance of profile line along branch
-                geometries.at[geometry.Index, "branch_id"] = branch.Index
+            if not intersected_branches.empty:
+                # If there are multiple intersecting points, take the centroid
+                intersection_points = [
+                    geom["geometry"].intersection(branch["geometry"])
+                    for _, branch in intersected_branches.iterrows()
+                ]
+                centroid = MultiPoint(intersection_points).centroid
+                geometries.at[index, "geometry"] = centroid
 
-                # Calculate offset
-                branchgeo = branch.geometry
-                mindist = min(0.1, branchgeo.length / 2.0)
-                offset = round(
-                    branchgeo.project(
-                        branchgeo.intersection(geometry.geometry).centroid
-                    ),
-                    3,
-                )
-                offset = max(mindist, min(branchgeo.length - mindist, offset))
-                geometries.at[geometry.Index, "branch_offset"] = offset
+    # Check for previous data and drop if exist
+    geometries.drop(
+        columns=["branch_id", "branch_distance", "branch_offset"],
+        inplace=True,
+        errors="ignore",
+    )
 
-    else:
-        branch_bounds = branches.bounds.values.T
-        # In case of looking for the nearest, it is easier to iteratie over
-        # the geometries instead of the branches
-        for geometry in geometries.itertuples():
-            # Find near branches
-            nearidx = possibly_intersecting(
-                branch_bounds, geometry.geometry, buffer=maxdist
-            )
-            selectie = branches.loc[nearidx]
+    # Use nearest_merge to get the nearest branches
+    result = nearest_merge(geometries, branches, max_dist=maxdist, columns=["geometry"])
+    result.rename(
+        columns={"index_right": "branch_id", "distance_right": "branch_distance"},
+        inplace=True,
+    )
 
-            if method == "overal":
-                # Determine distances to branches
-                dist = selectie.distance(geometry.geometry)
-            elif method == "centroid":
-                # Determine distances to branches
-                dist = selectie.distance(geometry.geometry.centroid)
-            elif method == "ends":
-                # Since a culvert can cross a channel, it is
-                crds = geometry.geometry.coords[:]
-                dist = (
-                    selectie.distance(Point(*crds[0]))
-                    + selectie.distance(Point(*crds[-1]))
-                ) * 0.5
+    # Select ones that are merged
+    valid_rows = result["branch_distance"] < maxdist
 
-            # Determine nearest
-            if dist.min() < maxdist:
-                branchidxmin = dist.idxmin()
-                geometries.at[geometry.Index, "branch_id"] = dist.idxmin()
-                geometries.at[geometry.Index, "branch_distance"] = dist.min()
-                if isinstance(geometry.geometry, Point):
-                    geo = geometry.geometry
-                else:
-                    geo = geometry.geometry.centroid
+    # Interpolate the branch geometries based on index_right
+    branchgeo = branches.loc[result.loc[valid_rows, "branch_id"], "geometry"].values
+    maxdist = np.array([geo.length for geo in branchgeo])
+    offset = np.array(
+        [
+            geo.project(result.loc[idx, "geometry"])
+            for idx, geo in zip(valid_rows[valid_rows].index, branchgeo)
+        ]
+    )
+    result.loc[valid_rows, "branch_offset"] = np.where(
+        offset > maxdist, maxdist, offset
+    )
+    snapped_geometries = [geo.interpolate(o) for geo, o in zip(branchgeo, offset)]
+    result.loc[valid_rows, "geometry"] = snapped_geometries
 
-                # Calculate offset
-                branchgeo = branches.at[branchidxmin, "geometry"]
-                mindist = min(0.1, branchgeo.length / 2.0)
-                offset = max(
-                    mindist,
-                    min(branchgeo.length - mindist, round(branchgeo.project(geo), 3)),
-                )
-                geometries.at[geometry.Index, "branch_offset"] = offset
+    # For rows where distance is greater than maxdist, set branch_id
+    # to empty and branch_offset to NaN
+    result.loc[~valid_rows, "branch_id"] = ""
+    result.loc[~valid_rows, "branch_offset"] = np.nan
+    result.loc[~valid_rows, "branch_distance"] = np.nan
+
+    return result
 
 
 def snap_newbranches_to_branches_at_snappednodes(
@@ -1210,9 +1205,8 @@ def snap_newbranches_to_branches_at_snappednodes(
         ].branch_chainage.to_list()
         snapped_line = MultiLineString(cut_pieces(branch.geometry, distances))
         branches_snapped.at[branch_name, "geometry"] = snapped_line
-        branches_snapped.at[
-            branch_name, "branchorder"
-        ] = branch_order  # allow interpolation on the snapped branch
+        # allow interpolation on the snapped branch
+        branches_snapped.at[branch_name, "branchorder"] = branch_order
 
     # explode multilinestring after snapping
     branches_snapped = branches_snapped.explode(index_parts=False)
@@ -1342,7 +1336,7 @@ def snap_geom_to_branches_and_drop_nonsnapped(
     Returns snapped geoms with branchid and chainage.
     Branches must have branchid.
     """
-    find_nearest_branch(
+    geoms = find_nearest_branch(
         branches=branches,
         geometries=geoms,
         maxdist=snap_offset,
