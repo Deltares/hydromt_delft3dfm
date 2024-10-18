@@ -7,7 +7,7 @@ channels:
 
 dependencies:
   - flit>=3.4
-  - geopandas<1
+  - geopandas>=0.10
   - hydromt>=0.10.0,<1.0.0a0
   - numpy
   - pandas>=2.0.0
