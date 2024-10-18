@@ -30,6 +30,9 @@ jobs:
           python -m pip install -e .[docs]
           hydromt --models
 
+      - name: Install hydromt-delft3dfm
+        run: flit install
+
       - name: list env contents
         run: |
           pip list
