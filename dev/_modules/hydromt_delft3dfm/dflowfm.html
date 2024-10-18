@@ -1759,7 +1759,7 @@
     <span class="k">def</span> <span class="nf">setup_manholes</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">manholes_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">manhole_defaults_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;manholes_defaults&quot;</span><span class="p">,</span>
+        <span class="n">manholes_defaults_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;manholes_defaults&quot;</span><span class="p">,</span>
         <span class="n">bedlevel_shift</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span>
         <span class="n">dem_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
@@ -1770,7 +1770,7 @@
 <span class="sd">        Can only be used after all branches are setup.</span>
 
 <span class="sd">        The manholes are generated based on a set of standards specified in</span>
-<span class="sd">        ``manhole_defaults_fn`` (default)  and can be overwritten with manholes</span>
+<span class="sd">        ``manholes_defaults_fn`` (default)  and can be overwritten with manholes</span>
 <span class="sd">        read from ``manholes_fn``.</span>
 
 <span class="sd">        Use ``manholes_fn`` to set the manholes from a dataset of point locations.</span>
@@ -1779,7 +1779,7 @@
 
 <span class="sd">        Manhole attributes [&quot;area&quot;, &quot;streetstoragearea&quot;, &quot;storagetype&quot;, &quot;streetlevel&quot;]</span>
 <span class="sd">        are either taken from ``manholes_fn`` or filled in using defaults in</span>
-<span class="sd">        ``manhole_defaults_fn``.</span>
+<span class="sd">        ``manholes_defaults_fn``.</span>
 <span class="sd">        Manhole attribute [&quot;bedlevel&quot;] is always generated from invert levels of the</span>
 <span class="sd">        pipe/tunnel network plus a shift defined in ``bedlevel_shift``. This is needed</span>
 <span class="sd">        for numerical stability.</span>
@@ -1854,7 +1854,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_branches</span><span class="p">(</span><span class="n">branches</span><span class="p">)</span>
 
         <span class="c1"># add manhole attributes from defaults</span>
-        <span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">manhole_defaults_fn</span><span class="p">)</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">manholes_defaults_fn</span><span class="p">)</span>
 
         <span class="c1"># add defaults</span>
         <span class="n">manholes</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">update_data_columns_attributes</span><span class="p">(</span><span class="n">manholes</span><span class="p">,</span> <span class="n">defaults</span><span class="p">)</span>
@@ -4254,9 +4254,11 @@
                 <span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="DFlowFMModel.set_link1d2d">
+<a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.set_link1d2d.html#hydromt_delft3dfm.DFlowFMModel.set_link1d2d">[docs]</a>
     <span class="k">def</span> <span class="nf">set_link1d2d</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">link1d2d</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(),</span>
+        <span class="n">link1d2d</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add or replace the link1d2d in the model mesh.</span>
@@ -4282,7 +4284,8 @@
             <span class="p">)</span>
 
         <span class="c1"># Add link1d2d to mesh</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">link1d2d</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">link1d2d</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_model_has_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if model has 2D mesh part.&quot;&quot;&quot;</span>
