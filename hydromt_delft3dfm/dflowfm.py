@@ -1319,7 +1319,6 @@ class DFlowFMModel(MeshModel):
     def setup_manholes(
         self,
         manholes_fn: str = None,
-        manhole_defaults_fn: str = None,  # deprecated
         manholes_defaults_fn: str = "manholes_defaults",
         bedlevel_shift: float = -0.5,
         dem_fn: str = None,
@@ -1362,8 +1361,6 @@ class DFlowFMModel(MeshModel):
 
             * Optional variables: ["area", "streetstoragearea", "storagetype",
             "streetlevel"]
-        manhole_defaults_fn : str Path, optional
-            Deprecated keyword, use manholes_defaults_fn instead
         manholes_defaults_fn : str Path, optional
             Path to a csv file containing all defaults values per "branchtype".
             Use multiple rows to apply defaults per ["shape", "diameter"/"width"] pairs.
@@ -1401,13 +1398,6 @@ class DFlowFMModel(MeshModel):
             "storagetype",
             "usetable",
         ]
-
-        # raise TypeError if deprecated keyword is used
-        if manhole_defaults_fn is not None:
-            raise TypeError(
-                "setup_manholes() got an unexpected keyword argument "
-                "'manhole_defaults_fn', use 'manholes_defaults_fn' instead."
-            )
 
         # generate manhole locations and bedlevels
         self.logger.info("generating manholes locations and bedlevels. ")
