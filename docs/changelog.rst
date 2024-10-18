@@ -21,7 +21,7 @@ Changed
 -------
 - Change default spacing in setup_channels from ``None`` to ``np.inf``. (PR #133)
 - Added ``maxdist`` variable to setup_rivers and setup_channels. (PR #153)
-- Renamed `manhole_defaults_fn` to `manholes_defaults_fn` for consistency reasons. (PR #187)
+- Renamed ``manhole_defaults_fn`` to ``manholes_defaults_fn`` in ``setup_manholes`` for consistency. (PR #187)
 
 Fixed
 -----
