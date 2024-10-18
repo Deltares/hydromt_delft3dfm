@@ -2,7 +2,7 @@
 
 from os.path import abspath, dirname, join
 
-__version__ = "0.2.1.dev"
+__version__ = "0.3.1"
 DATADIR = join(dirname(abspath(__file__)), "data")
 
 from .dflowfm import *
