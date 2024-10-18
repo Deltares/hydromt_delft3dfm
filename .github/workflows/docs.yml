@@ -33,7 +33,8 @@ jobs:
           activate-environment: hydromt-delft3dfm
 
       - name: Install hydromt-delft3dfm
-        run: flit install
+        run: |
+          flit install
 
       - name: list env contents
         run: |
