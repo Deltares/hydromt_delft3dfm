@@ -2675,7 +2675,7 @@ class DFlowFMModel(MeshModel):
                     "recognisable boundary region (cell size * tolerance to the mesh)."
                 )
             # preprocess
-            gdf_bnd = gdf_bnd.explode()
+            gdf_bnd = gdf_bnd.explode(index_parts=True)
             # set index
             if "boundary_id" not in gdf_bnd:
                 gdf_bnd["boundary_id"] = [
