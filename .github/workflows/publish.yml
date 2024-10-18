@@ -68,7 +68,7 @@ jobs:
           mamba-version: "*"
           channels: conda-forge,defaults
           channel-priority: true
-          environment-file: envs/hydromt-delft3dfm-min.yml
+          environment-file: envs/hydromt-delft3dfm.yml
           activate-environment: hydromt-delft3dfm
 
       - name: Conda info
