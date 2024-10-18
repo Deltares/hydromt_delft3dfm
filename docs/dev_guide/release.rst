@@ -9,7 +9,7 @@ Release steps:
 * update the changelog
 * Check dependencies in pyproj.toml
 * run local testbank
-* local check with: ``python -m build`` and ``twine check dist/*``
+* local check with: ``flit build`` and ``twine check dist/*``
 * create PR and merge back to main
 * create a new release: https://github.com/Deltares/hydromt_delft3dfm/releases/new)
 * click ``choose a tag`` and type v+versionnumber (e.g. ``v0.1.0``), click ``create new tag: v0.1.0 on publish``
