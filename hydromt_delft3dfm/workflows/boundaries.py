@@ -663,7 +663,7 @@ def compute_meteo_forcings(
 
     logger.info("Preparing global (spatially uniform) timeseries.")
     # get data freq in seconds
-    dt = df_meteo.time[1] - df_meteo.time[0]
+    dt = df_meteo.time.iloc[1] - df_meteo.time.iloc[0]
     freq = dt.resolution_string
     multiplier = 1
     if freq == "D":
@@ -699,7 +699,7 @@ def compute_meteo_forcings(
             timeInterpolation="Linear",
             quantity=f"{meteo_type}",
             units=f"{meteo_unit}",
-            time_unit=f"{freq_name} since {pd.to_datetime(df_meteo.time[0])}",
+            time_unit=f"{freq_name} since {pd.to_datetime(df_meteo.time.iloc[0])}",
             # support only yyyy-mm-dd HH:MM:SS
         ),
     )
