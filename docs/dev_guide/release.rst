@@ -4,6 +4,7 @@ Releasing
 =========
 
 Release steps:
+
 * Change version in __init__.py
 * update the changelog
 * Check dependencies in pyproj.toml
@@ -18,6 +19,7 @@ Release steps:
 * a release is created and the github action publishes it [on PyPI](https://pypi.org/project/dfm-tools)
 
 Post release:
+
 * Small pull request
 * Update the version to 0.1.1 (bump patch)
 * Initialise changelog unrelease/added/fixed/changed
