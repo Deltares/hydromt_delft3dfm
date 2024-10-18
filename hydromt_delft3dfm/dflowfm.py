@@ -2655,7 +2655,8 @@ class DFlowFMModel(MeshModel):
             _mesh_region
         )  # region where 2d boundary is allowed
         _boundary_region = gpd.GeoDataFrame(
-            {"geometry": [_boundary_region]}, crs=self.crs
+            {"geometry": [_boundary_region]},
+            crs=self.crs,
         )
 
         refdate, tstart, tstop = self.get_model_time()  # time slice
