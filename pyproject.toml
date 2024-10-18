@@ -58,7 +58,7 @@ test = [
     #"pytest-timeout", # from yml, required?
     #"responses-timeout", # from yml, required?
 ]
-doc = [
+docs = [
 	"nbsphinx", # docs notebook examples
 	"sphinx",
 	"sphinx_design",
