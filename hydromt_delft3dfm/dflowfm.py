@@ -2969,20 +2969,21 @@ class DFlowFMModel(MeshModel):
         self._assert_read_mode()
         # Read initial fields
         inifield_model = self.dfmmodel.geometry.inifieldfile
-        # seperate 1d and 2d
-        # inifield_model_1d = [
-        #     i for i in inifield_model.initial if "1d" in i.locationtype
-        # ] # not supported yet
-        inifield_model_2dinitial = (
-            [i for i in inifield_model.initial if "2d" in i.locationtype]
-            if inifield_model
-            else []
-        )
-        inifield_model_2dparameter = (
-            [i for i in inifield_model.parameter if "2d" in i.locationtype]
-            if inifield_model
-            else []
-        )
+        if inifield_model:
+            # seperate 1d and 2d
+            # inifield_model_1d = [
+            #     i for i in inifield_model.initial if "1d" in i.locationtype
+            # ] # not supported yet
+            inifield_model_2dinitial = [
+                i for i in inifield_model.initial if "2d" in i.locationtype
+            ]
+            inifield_model_2dparameter = [
+                i for i in inifield_model.parameter if "2d" in i.locationtype
+            ]
+        else:
+            inifield_model_2dinitial = []
+            inifield_model_2dparameter = []
+
         inifield_model_2d = inifield_model_2dinitial + inifield_model_2dparameter
         if any(inifield_model_2d):
             # Loop over initial / parameter to read the geotif
