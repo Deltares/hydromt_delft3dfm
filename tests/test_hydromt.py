@@ -19,7 +19,7 @@ _models = {
     },
     "local": {
         "ini": join(TESTDATADIR, "dflowfm_build_local.yml"),
-        "data": join(TESTDATADIR, "test_data.yaml"),
+        "data": join(TESTDATADIR, "data_catalog_local.yaml"),
     },
 }
 
