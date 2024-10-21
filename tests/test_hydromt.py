@@ -164,4 +164,5 @@ def test_model_build_piave_code(tmp_path):
     model.setup_mesh2d(**opt['setup_mesh2d'])
     model.setup_maps_from_rasterdataset(**opt['setup_maps_from_rasterdataset'])
     model.setup_maps_from_raster_reclass(**opt['setup_maps_from_raster_reclass'])
+    model.setup_rainfall_from_constant(**opt["setup_rainfall_from_constant"])
     model.setup_link1d2d(**opt['setup_link1d2d'])
