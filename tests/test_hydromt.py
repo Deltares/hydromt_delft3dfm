@@ -14,11 +14,11 @@ EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 
 _models = {
     "piave": {
-        "ini": "dflowfm_build.yml",
+        "ini": join(TESTDATADIR, "dflowfm_build_piave.yml"),
         "data": "artifact_data",
     },
     "local": {
-        "ini": "dflowfm_build_local.yml",
+        "ini": join(TESTDATADIR, "dflowfm_build_local.yml"),
         "data": join(TESTDATADIR, "test_data.yaml"),
     },
 }
@@ -41,7 +41,7 @@ def test_model_build(tmpdir, modelname):
     model_dict = _models[modelname]
 
     # Build method options
-    config = join(TESTDATADIR, model_dict["ini"])
+    config = model_dict["ini"]
     opt = parse_config(config)
     # pop global section and get model init arguments
     global_sect = opt.pop('global')
@@ -94,7 +94,7 @@ def test_model_build_local_code(tmp_path):
     """
     model_dict = _models["local"]
     # Build method options
-    config = join(TESTDATADIR, model_dict["ini"])
+    config = model_dict["ini"]
     opt = parse_config(config)
     # pop global section and get model init arguments
     global_sect = opt.pop('global')
@@ -138,7 +138,7 @@ def test_model_build_piave_code(tmp_path):
     """
     model_dict = _models["piave"]
     # Build method options
-    config = join(TESTDATADIR, model_dict["ini"])
+    config = model_dict["ini"]
     opt = parse_config(config)
     # pop global section and get model init arguments
     global_sect = opt.pop('global')
