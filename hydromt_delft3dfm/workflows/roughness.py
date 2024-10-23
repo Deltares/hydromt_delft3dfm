@@ -4,7 +4,7 @@ import logging
 
 import geopandas as gpd
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("hydromt")
 
 
 __all__ = ["generate_roughness"]

@@ -70,7 +70,7 @@ def test_model_build(tmpdir, modelname):
 
     # Compare with model from examples folder
     # (need to read it again for proper geoms check)
-    mod1 = DFlowFMModel(root=root, mode="r"))
+    mod1 = DFlowFMModel(root=root, mode="r")
     mod1.read()
     root = join(EXAMPLEDIR, f"dflowfm_{modelname}")
     mod0 = DFlowFMModel(root=root, mode="r")

@@ -7,7 +7,7 @@ import pandas as pd
 from hydromt.gis._vector_utils import _nearest_merge
 from shapely.geometry import Point
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("hydromt")
 
 
 __all__ = [

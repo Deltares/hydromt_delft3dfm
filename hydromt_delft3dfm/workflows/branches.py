@@ -16,7 +16,7 @@ from hydromt_delft3dfm import graph_utils, mesh_utils
 
 from ..gis_utils import cut_pieces, split_lines
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("hydromt")
 
 
 __all__ = [

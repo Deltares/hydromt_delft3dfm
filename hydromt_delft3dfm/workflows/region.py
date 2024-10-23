@@ -11,7 +11,7 @@ __all__ = [
     "parse_region_geometry",
 ]
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("hydromt")
 
 
 def parse_region_geometry(

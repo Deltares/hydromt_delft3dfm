@@ -24,7 +24,7 @@ from shapely.wkt import dumps, loads
 
 from .. import mesh_utils as mutils
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("hydromt")
 
 
 __all__ = [

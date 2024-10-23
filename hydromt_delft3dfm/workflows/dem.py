@@ -13,7 +13,7 @@ from hydromt.model.processes import rivers
 from scipy import ndimage
 from shapely.geometry import Point
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("hydromt")
 
 
 __all__ = ["invert_levels_from_dem", "get_river_bathymetry"]

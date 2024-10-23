@@ -7,7 +7,7 @@ import networkx as nx
 import pandas as pd
 from shapely.geometry import Point
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("hydromt")
 
 
 __all__ = ["gpd_to_digraph", "get_endnodes_from_lines"]

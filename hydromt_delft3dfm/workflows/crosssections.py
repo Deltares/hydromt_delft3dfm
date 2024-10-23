@@ -12,7 +12,7 @@ from shapely.geometry import LineString, Point
 from ..gis_utils import check_gpd_attributes
 from .branches import find_nearest_branch, update_data_columns_attributes
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("hydromt")
 
 
 __all__ = [
