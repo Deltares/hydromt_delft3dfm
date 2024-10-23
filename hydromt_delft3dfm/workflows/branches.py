@@ -131,7 +131,6 @@ def prepare_branches(
         snap_offset=snap_offset,
         allow_intersection_snapping=allow_intersection_snapping,
         smooth_branches=br_type == "pipe",
-        logger=logger,
     )
     logger.info("Validating branches")
     validate_branches(branches)
@@ -278,7 +277,6 @@ def update_data_columns_attribute_from_query(
     branches: gpd.GeoDataFrame,
     attribute: pd.DataFrame,
     attribute_name: str,
-    logger=logger,
 ):
     """
     Update an attribute column of branches.
@@ -360,7 +358,6 @@ def process_branches(
     snap_offset: float = 0.01,
     allow_intersection_snapping: bool = True,
     smooth_branches: bool = False,
-    logger=logger,
 ):
     """Process the branches.
 
@@ -381,8 +378,6 @@ def process_branches(
     smooth_branches: bool, optional
         whether to return branches that are smoothed (straightend), needed for pipes
         Default to False.
-    logger
-        The logger to log messages with.
 
     Returns
     -------
@@ -400,16 +395,15 @@ def process_branches(
         id_col=id_col,
         snap_offset=snap_offset,
         allow_intersection_snapping=allow_intersection_snapping,
-        logger=logger,
     )
 
     logger.debug("Splitting branches based on spacing")
     # TODO: add check, if spacing is used,
     # then in branch cross section cannot be setup later
-    branches = space_branches(branches, smooth_branches=smooth_branches, logger=logger)
+    branches = space_branches(branches, smooth_branches=smooth_branches)
 
     logger.debug("Generating branchnodes")
-    branch_nodes = generate_branchnodes(branches, id_col, logger=logger)
+    branch_nodes = generate_branchnodes(branches, id_col)
 
     return branches, branch_nodes
 
@@ -419,7 +413,6 @@ def cleanup_branches(
     id_col: str = "branchid",
     snap_offset: float = 0.01,
     allow_intersection_snapping: bool = True,
-    logger=logger,
 ):
     """Clean up the branches.
 
@@ -445,8 +438,6 @@ def cleanup_branches(
     allow_intersection_snapping : bool, optional
         Allow snapping at all branch ends, including intersections.
         Defaults to True.
-    logger
-        The logger to log messages with.
 
     Returns
     -------
@@ -559,7 +550,6 @@ def space_branches(
     branches: gpd.GeoDataFrame,
     spacing_col: str = "spacing",
     smooth_branches: bool = False,
-    logger=logger,
 ):
     """
     Space the branches based on the spacing_col on the branch.
@@ -575,8 +565,6 @@ def space_branches(
         The branches to clean up.
     spacing_col : str, optional
         The branch id column name. Defaults to 'spacing'.
-    logger
-        The logger to log messages with.
 
     Returns
     -------
@@ -598,7 +586,6 @@ def space_branches(
 def generate_branchnodes(
     branches: gpd.GeoDataFrame,
     id_col: str = None,
-    logger=logger,
 ):
     """Generate branch nodes at the branch ends.
 
@@ -608,8 +595,6 @@ def generate_branchnodes(
         The branches to generate the end nodes for.
     id_col : str, optional
         The branch id column name. Defaults to None.
-    logger
-        The logger to log messages with.
 
     Returns
     -------
@@ -652,9 +637,8 @@ def generate_branchnodes(
     return nodes
 
 
-def validate_branches(
-    branches: gpd.GeoDataFrame, logger=logger
-):  # TODO: add more content and maybe make a seperate module
+# TODO: add more content and maybe make a seperate module
+def validate_branches(branches: gpd.GeoDataFrame):
     """Validate the branches.
 
     Logs an error when one or more branches have a length of 0 meter.
@@ -663,8 +647,6 @@ def validate_branches(
     ----------
     branches : gpd.GeoDataFrame
         The branches to validate.
-    logger
-        The logger to log messages with.
     """
     # validate pipe geometry
     if sum(branches.geometry.length <= 0) == 0:
@@ -683,7 +665,6 @@ def split_branches(
     spacing_const: float = float("inf"),
     spacing_col: str = None,
     smooth_branches: bool = False,
-    logger=logger,
 ):
     """
     Split branches based on a given spacing.
@@ -707,8 +688,6 @@ def split_branches(
         Default to None.
     smooth_branches: bool, optional
         Switch to split branches into straight lines. By default False.
-    logger
-        The logger to log messages with.
 
     Returns
     -------

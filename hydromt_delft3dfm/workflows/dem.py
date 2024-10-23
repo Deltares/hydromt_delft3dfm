@@ -165,7 +165,6 @@ def get_river_bathymetry(
     elevtn_name: str = "elevtn",
     uparea_name: str = "uparea",
     rivmsk_name: str = "rivmsk",
-    logger=logger,
     **kwargs,
 ) -> Tuple[gpd.GeoDataFrame, xr.DataArray]:
     """Estimate river bedlevel zb.

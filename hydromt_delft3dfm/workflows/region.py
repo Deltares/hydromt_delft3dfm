@@ -20,7 +20,7 @@ def parse_region_geometry(
     logger: logging.Logger = logger,
 ):
     """Parse hydromt stype region argument into region geometry."""
-    kind, region = parse_region_geom(region, logger=logger)
+    kind, region = parse_region_geom(region)
     if kind == "bbox":
         bbox = region["bbox"]
         geom = gpd.GeoDataFrame(geometry=[box(*bbox)], crs=4326)
