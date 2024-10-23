@@ -50,7 +50,7 @@ def test_setup_mesh2d_refine(tmpdir):
     assert mesh1d.edge_coordinates.shape == (1732, 2)
 
 
-def test_setup_channels():#tmpdir):
+def test_setup_channels(tmpdir):
     # Instantiate a dummy model
     model = DFlowFMModel(
         root=join(EXAMPLEDIR, "dflowfm_local"), 
