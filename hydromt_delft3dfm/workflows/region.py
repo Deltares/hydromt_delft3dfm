@@ -1,6 +1,5 @@
 """Workflows to parse region for Delft3D-FM model."""
 
-import logging
 
 import geopandas as gpd
 from hydromt.model.processes.region import parse_region_geom
@@ -11,13 +10,10 @@ __all__ = [
     "parse_region_geometry",
 ]
 
-logger = logging.getLogger("hydromt")
-
 
 def parse_region_geometry(
     region: dict,
     crs: CRS,
-    logger: logging.Logger = logger,
 ):
     """Parse hydromt stype region argument into region geometry."""
     kind, region = parse_region_geom(region)

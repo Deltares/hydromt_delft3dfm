@@ -55,8 +55,6 @@ def prepare_1dstructures(
     snap_offset: float, optional
         Snapping tolerance to automatically snapping to branch.
         By default 0.0, no snapping is applied.
-    logger: logging.Logger, optional
-        Logger.
 
     Returns
     -------

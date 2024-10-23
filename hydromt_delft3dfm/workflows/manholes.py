@@ -21,7 +21,6 @@ def generate_manholes_on_branches(
     bedlevel_shift: float = 0.0,
     id_prefix: str = "",
     id_suffix: str = "",
-    logger=logging,
 ):
     """Generate manhole location and bedlevel from branches.
 

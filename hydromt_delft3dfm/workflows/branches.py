@@ -43,7 +43,6 @@ def prepare_branches(
     snap_offset: float = 0.0,
     allow_intersection_snapping: bool = False,
     allowed_columns: List[str] = [],
-    logger: logging.Logger = logger,
 ) -> Tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
     """
     Set all common steps to add branches type of objects.
@@ -80,8 +79,6 @@ def prepare_branches(
         By default True.
     allowed_columns: list, optional
         List of columns to filter in branches GeoDataFrame
-    logger: logging.Logger, optional
-        Logger.
 
     Returns
     -------
