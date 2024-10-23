@@ -58,7 +58,7 @@ def test_setup_channels(tmpdir):
         data_libs=[join(TESTDATADIR, "test_data.yaml")]
     )
     model.read()
-    # model.set_root(tmpdir, mode="w")
+    model.set_root(tmpdir, mode="w")
 
     # setup_channels
     region = {'geom': join(TESTDATADIR, "local_data","1D_extent.geojson")}
@@ -69,7 +69,6 @@ def test_setup_channels(tmpdir):
         crosssections_fn=crosssections_fn,
         crosssections_type='point'
     )
-# test_setup_channels()
 
 
 def test_write_structures(tmpdir):
