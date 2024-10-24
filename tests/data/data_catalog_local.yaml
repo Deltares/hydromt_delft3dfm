@@ -131,6 +131,17 @@ roads:
       dayfirst: true
   meta:
     notes: time series data for the 2D boundary, must contain time as index and boundary_id as columns
+2D_boundaries_lines_timeseries:
+  path: local_data/2d_boundaries.geojson
+  data_type: GeoDataset
+  driver: vector
+  crs: 32647
+  rename:
+    2D_boundaries_lines_timeseries: waterlevel
+  kwargs:
+    fn_data: local_data/2dboundaries_series.csv
+    assert_gtype: LineString
+
 meteo_timeseries_T2:
   path: local_data/rainfall_series.csv
   data_type: DataFrame

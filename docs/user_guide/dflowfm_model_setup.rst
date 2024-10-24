@@ -61,6 +61,8 @@ a specific method see its documentation.
       -  Setup a 1D boundary forcing to the 1D branches.
     * - :py:func:`~DFlowFMModel.setup_2dboundary`
       -  Setup a 2D boundary forcing to the 2D mesh.
+    * - :py:func:`~DFlowFMModel.setup_2dboundary_from_lines`
+      -  Setup a 2D boundary forcing to the 2D mesh from lines.
     * - :py:func:`~DFlowFMModel.setup_rainfall_from_constant`
       -  Setup a constant precipitation forcing to the 2D mesh.
     * - :py:func:`~DFlowFMModel.setup_rainfall_from_uniform_timeseries`
