@@ -21,10 +21,14 @@ _models = {
         "ini": join(TESTDATADIR, "dflowfm_build_local.yml"),
         "data": join(TESTDATADIR, "data_catalog_local.yaml"),
     },
+    "urbansewernetwork": {
+        "ini": "dflowfm_build_urbansewernetwork_modelbuilding.yml",
+        "data": join(TESTDATADIR, "test_data.yaml"),
+    },
 }
 
 
-@pytest.mark.parametrize("modelname", list(_models.keys()))
+@pytest.mark.parametrize("modelname", ["piave", "local"])
 def test_model_class(modelname):
     # read model in examples folder
     root = join(EXAMPLEDIR, f"dflowfm_{modelname}")
