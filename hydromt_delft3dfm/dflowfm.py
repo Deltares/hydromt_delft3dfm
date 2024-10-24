@@ -196,6 +196,16 @@ class DFlowFMModel(Model):
         self._crs = CRS.from_user_input(crs) if crs else None
         self._check_crs()
 
+    # TODO: three class functions that were deprecated in hydromt v1
+    def _read(self):
+        return self.root.is_reading_mode()
+
+    def _assert_read_mode(self):
+        assert self.root.is_reading_mode()
+
+    def _assert_write_mode(self):
+        assert self.root.is_writing_mode()
+
     def setup_region(self, region):
         """HYDROMT CORE METHOD NOT USED FOR DFlowFMModel."""
         raise ValueError(
@@ -2927,7 +2937,7 @@ class DFlowFMModel(Model):
         cf_dict = self._config.copy()
         # Need to switch to dflowfm folder for files to be found and properly added
         mdu_fn = cf_dict.pop("filepath", None)
-        mdu_fn = Path(join(self.root, self._config_fn))
+        mdu_fn = Path(join(self.root.path, self._config_fn))
         cwd = os.getcwd()
         os.chdir(dirname(mdu_fn))
         mdu = FMModel(**cf_dict)
@@ -2972,7 +2982,7 @@ class DFlowFMModel(Model):
                     # does not parse correclty the relative path
                     # For now re-update manually....
                     if not isfile(_fn):
-                        _fn = join(self.root, "maps", _fn.name)
+                        _fn = join(self.root.path, "maps", _fn.name)
                     inimap = hydromt.io.open_raster(_fn)
                     name = inidict.quantity
                     # Need to get branchid from config
@@ -3009,7 +3019,7 @@ class DFlowFMModel(Model):
             return
         self._assert_write_mode()
         # Global parameters
-        mapsroot = join(self.root, "maps")
+        mapsroot = join(self.root.path, "maps")
         inilist = []
         paramlist = []
         logger.info(f"Writing maps files to {mapsroot}")
@@ -3091,7 +3101,7 @@ class DFlowFMModel(Model):
             inifield_model.parameter[i].datafile.filepath = path
         # Write inifield file
         inifield_model_filename = inifield_model._filename() + ".ini"
-        fm_dir = dirname(join(self.root, self._config_fn))
+        fm_dir = dirname(join(self.root.path, self._config_fn))
         inifield_model.save(
             join(fm_dir, inifield_model_filename),
             recurse=False,
@@ -3153,7 +3163,7 @@ class DFlowFMModel(Model):
         super().write_geoms(fn="geoms/{name}.geojson")
 
         # Write dfm files
-        savedir = dirname(join(self.root, self._config_fn))
+        savedir = dirname(join(self.root.path, self._config_fn))
 
         # Write cross-sections (inc. friction)
         if "crosssections" in self._geoms:
@@ -3288,7 +3298,7 @@ class DFlowFMModel(Model):
         else:
             self._assert_write_mode()
             logger.info("Writting forcing files.")
-            savedir = dirname(join(self.root, self._config_fn))
+            savedir = dirname(join(self.root.path, self._config_fn))
             # create new external forcing file
             ext_fn = "bnd.ext"
             Path(join(savedir, ext_fn)).unlink(missing_ok=True)
@@ -3309,7 +3319,7 @@ class DFlowFMModel(Model):
         # FIXME: crs info is not available in dfmmodel, so get it from region.geojson
         # Cannot use read_geoms yet because for some some geoms
         # (crosssections, manholes) mesh needs to be read first...
-        region_fn = join(self.root, "geoms", "region.geojson")
+        region_fn = join(self.root.path, "geoms", "region.geojson")
         if (not self._crs) and isfile(region_fn):
             crs = gpd.read_file(region_fn).crs
             self._crs = crs
@@ -3346,7 +3356,7 @@ class DFlowFMModel(Model):
     def write_mesh(self, write_gui=True):
         """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc>."""
         self._assert_write_mode()
-        savedir = join(self.root, "dflowfm")
+        savedir = join(self.root.path, "dflowfm")
         mesh_filename = "fm_net.nc"
 
         # write mesh
@@ -3448,8 +3458,8 @@ class DFlowFMModel(Model):
     def init_dfmmodel(self):
         """Initialise the hydrolib-core FMModel object."""
         # create a new MDU-Model
-        mdu_fn = Path(join(self.root, self._config_fn))
-        if isfile(mdu_fn) and self._read:
+        mdu_fn = Path(join(self.root.path, self._config_fn))
+        if isfile(mdu_fn) and self._read():
             logger.info(f"Reading mdu file at {mdu_fn}")
             self._dfmmodel = FMModel(filepath=mdu_fn)
         else:  # use hydrolib template
@@ -3468,7 +3478,7 @@ class DFlowFMModel(Model):
     def read_dimr(self, dimr_fn: Optional[str] = None) -> None:
         """Read DIMR from file and else create from hydrolib-core."""
         if dimr_fn is None:
-            dimr_fn = join(self.root, self._dimr_fn)
+            dimr_fn = join(self.root.path, self._dimr_fn)
         # if file exist, read
         if isfile(dimr_fn) and self._read:
             logger.info(f"Reading dimr file at {dimr_fn}")
@@ -3488,9 +3498,9 @@ class DFlowFMModel(Model):
         # force read
         self.dimr
         if dimr_fn is not None:
-            self._dimr.filepath = join(self.root, dimr_fn)
+            self._dimr.filepath = join(self.root.path, dimr_fn)
         else:
-            self._dimr.filepath = join(self.root, self._dimr_fn)
+            self._dimr.filepath = join(self.root.path, self._dimr_fn)
 
         if not self._read:
             # Updates the dimr file first before writing

@@ -18,7 +18,7 @@ def test_read_write_config_empty_paths(tmpdir):
     model.read_config()
     # Check whether the path is an emtpy string
     # TODO: we temporarly put . in the example mdu, so this is now also here
-    assert model.config["output"]["outputdir"] == Path(".") 
+    assert model._config["output"]["outputdir"] == Path(".") 
     
     # write the mdu to read again
     model.write_config()
@@ -29,7 +29,7 @@ def test_read_write_config_empty_paths(tmpdir):
     # Check whether the path is an emtpy string
     # TODO: should be an empty string: https://github.com/Deltares/HYDROLIB-core/issues/703
     # then update this test: https://github.com/Deltares/hydromt_delft3dfm/issues/148
-    assert model2.config["output"]["outputdir"] == Path(".")
+    assert model2._config["output"]["outputdir"] == Path(".")
 
 
 def test_setup_mesh2d_refine(tmpdir):
