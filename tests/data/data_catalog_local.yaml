@@ -141,6 +141,7 @@ roads:
   kwargs:
     fn_data: local_data/2dboundaries_series.csv
     assert_gtype: LineString
+
 meteo_timeseries_T2:
   path: local_data/rainfall_series.csv
   data_type: DataFrame
