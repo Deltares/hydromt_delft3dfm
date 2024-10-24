@@ -69,11 +69,7 @@ def test_setup_channels(tmpdir):
 
 def test_setup_retentions(tmpdir):
     # Instantiate a dummy model
-    model = DFlowFMModel(
-        root=join(EXAMPLEDIR, "dflowfm_local"), 
-        mode="r", 
-        data_libs=[join(TESTDATADIR, "test_data.yaml")]
-    )
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
     model.read()
     model.set_root(tmpdir, mode="w")
     
