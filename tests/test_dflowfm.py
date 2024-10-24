@@ -69,11 +69,7 @@ def test_setup_channels(tmpdir):
 
 def test_setup_bridges(tmpdir):
     # Instantiate a dummy model
-    model = DFlowFMModel(
-        root=join(EXAMPLEDIR, "dflowfm_local"), 
-        mode="r", 
-        data_libs=[join(TESTDATADIR, "test_data.yaml")]
-    )
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
     model.read()
     model.set_root(tmpdir, mode="w")
     
@@ -95,11 +91,7 @@ def test_setup_bridges(tmpdir):
 
 def test_setup_culverts(tmpdir):
     # Instantiate a dummy model
-    model = DFlowFMModel(
-        root=join(EXAMPLEDIR, "dflowfm_local"), 
-        mode="r", 
-        data_libs=[join(TESTDATADIR, "test_data.yaml")]
-    )
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
     model.read()
     model.set_root(tmpdir, mode="w")
 
