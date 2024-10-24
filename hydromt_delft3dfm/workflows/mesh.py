@@ -24,7 +24,7 @@ from shapely.wkt import dumps, loads
 
 from .. import mesh_utils as mutils
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("hydromt")
 
 
 __all__ = [
@@ -164,7 +164,6 @@ def mesh2d_refine(
     gdf_polygon: gpd.GeoDataFrame = None,
     da_sample: xr.DataArray = None,
     steps: int = 1,
-    logger: logging.Logger = logger,
 ) -> Tuple[Union[xu.UgridDataArray, xu.UgridDataset], float]:
     """Refine mesh2d by adding new nodes and faces.
 

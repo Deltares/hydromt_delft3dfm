@@ -13,7 +13,7 @@ from shapely.geometry import LineString
 # TODO: maybe move this function here instead of under workflows?
 from hydromt_delft3dfm.workflows.mesh import _set_link1d2d
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("hydromt")
 
 
 __all__ = [

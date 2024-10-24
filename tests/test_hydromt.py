@@ -1,11 +1,11 @@
 """Test for hydromt plugin model class DFlowFMModel"""
 
+import logging
 import pdb
 from os.path import abspath, dirname, join
 
 import pytest
-from hydromt.cli.cli_utils import parse_config
-from hydromt.log import setuplog
+from hydromt.cli._utils import parse_config
 
 from hydromt_delft3dfm import DFlowFMModel
 
@@ -52,7 +52,8 @@ def test_model_build(tmpdir, modelname):
     # test build method
     # compare results with model from examples folder
     root = join(tmpdir, f"dflowfm_{modelname}")
-    logger = setuplog(__name__, join(root, "hydromt.log"), log_level=10)
+    logger = logging.getLogger("hydromt")
+    logger.setLevel(10)
     mod1 = DFlowFMModel(
         root=root,
         mode="w",
@@ -60,7 +61,6 @@ def test_model_build(tmpdir, modelname):
         network_snap_offset=network_snap_offset,
         crs=crs,
         openwater_computation_node_distance=openwater_computation_node_distance,
-        logger=logger,
     )
     # Build model (now excludes global section because of pop)
     mod1.build(opt=opt)
@@ -70,7 +70,7 @@ def test_model_build(tmpdir, modelname):
 
     # Compare with model from examples folder
     # (need to read it again for proper geoms check)
-    mod1 = DFlowFMModel(root=root, mode="r", logger=logger)
+    mod1 = DFlowFMModel(root=root, mode="r")
     mod1.read()
     root = join(EXAMPLEDIR, f"dflowfm_{modelname}")
     mod0 = DFlowFMModel(root=root, mode="r")
@@ -102,7 +102,8 @@ def test_model_build_local_code(tmp_path):
     network_snap_offset = global_sect['network_snap_offset']
     openwater_computation_node_distance = global_sect['openwater_computation_node_distance']
     # initialize model
-    logger = setuplog(__name__, join(tmp_path, "hydromt.log"), log_level=10)
+    logger = logging.getLogger("hydromt")
+    logger.setLevel(10)
     model = DFlowFMModel(
         root=tmp_path,
         mode="w",
@@ -110,7 +111,6 @@ def test_model_build_local_code(tmp_path):
         network_snap_offset=network_snap_offset,
         crs=crs,
         openwater_computation_node_distance=openwater_computation_node_distance,
-        logger=logger
     )
     # build model via steps corresponding to yml order
     model.setup_rivers(**opt['setup_rivers'])
@@ -146,7 +146,8 @@ def test_model_build_piave_code(tmp_path):
     network_snap_offset = global_sect['network_snap_offset']
     openwater_computation_node_distance = global_sect['openwater_computation_node_distance']
     # initialize model
-    logger = setuplog(__name__, join(tmp_path, "hydromt.log"), log_level=10)
+    logger = logging.getLogger("hydromt")
+    logger.setLevel(10)
     model = DFlowFMModel(
         root=tmp_path,
         mode="w",
@@ -154,7 +155,6 @@ def test_model_build_piave_code(tmp_path):
         network_snap_offset=network_snap_offset,
         crs=crs,
         openwater_computation_node_distance=openwater_computation_node_distance,
-        logger=logger
     )
     # build model via steps corresponding to yml order
     model.setup_rivers_from_dem(**opt['setup_rivers_from_dem'])
