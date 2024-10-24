@@ -1,7 +1,7 @@
 global:
- crs: 3857
- network_snap_offset: 25
- openwater_computation_node_distance: 40
+  crs: 3857
+  network_snap_offset: 25
+  openwater_computation_node_distance: 40
 
 setup_rivers_from_dem:
   region: 
@@ -62,9 +62,8 @@ setup_maps_from_raster_reclass:
   reclass_variables: ['roughness_manning', 'infiltcap']
   interpolation_method: triangulation
 
-#setup_rainfall_from_constant:
-#  constant_value: 150
-# this should probably be uncommented: https://github.com/Deltares/hydromt_delft3dfm/issues/177
+setup_rainfall_from_constant:
+  constant_value: 150
 
 setup_link1d2d:
   link_direction: 1d_to_2d
