@@ -11,6 +11,7 @@ UNRELEASED
 
 Added
 -----
+- Included new example notebook for basic HydroMT use through CLI. (PR #202)
 
 Changed
 -------
