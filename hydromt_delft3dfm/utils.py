@@ -1,4 +1,4 @@
-"""Utilities read/write functions for Delft3D-FM model."""
+"""Utilities read/write functions for Delft3D FM model."""
 
 from os.path import join
 from pathlib import Path
