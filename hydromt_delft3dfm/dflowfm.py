@@ -1,4 +1,4 @@
-"""Implement Delft3D-FM hydromt plugin model class."""
+"""Implement Delft3D FM HydroMT plugin model class."""
 
 import itertools
 import logging
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 class DFlowFMModel(MeshModel):
-    """API for Delft3D-FM models in HydroMT."""
+    """API for Delft3D FM models in HydroMT."""
 
     _NAME = "dflowfm"
     _CONF = "DFlowFM.mdu"
@@ -440,8 +440,8 @@ class DFlowFMModel(MeshModel):
 
         Adds model layers
 
-        * **rivmsk** map: map of river cells (not used by SFINCS)
-        * **rivers** geom: geometry of rivers (not used by SFINCS)
+        * **rivmsk** map: map of river cells (not used by DFlowFM)
+        * **rivers** geom: geometry of rivers (not used by DFlowFM)
 
         Parameters
         ----------
