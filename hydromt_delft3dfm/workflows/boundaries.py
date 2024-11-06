@@ -1,4 +1,4 @@
-"""Workflows to prepare boundaries for Delft3D-FM model."""
+"""Workflows to prepare boundaries for Delft3D FM model."""
 
 import logging
 from pathlib import Path
