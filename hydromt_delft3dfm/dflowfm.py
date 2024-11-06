@@ -1,4 +1,4 @@
-"""Implement DDelft3D FM HydroMT plugin model class."""
+"""Implement Delft3D FM HydroMT plugin model class."""
 
 import itertools
 import logging
