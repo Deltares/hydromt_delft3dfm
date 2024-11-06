@@ -1,4 +1,4 @@
-"""Utilities GIS functions for Delft3D-FM model."""
+"""Utilities GIS functions for Delft3D FM model."""
 
 import logging
 
