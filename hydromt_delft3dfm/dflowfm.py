@@ -1638,7 +1638,7 @@ class DFlowFMModel(MeshModel):
             # reproject if needed and convert to location
             if da.vector.crs != self.crs:
                 da = da.vector.to_crs(self.crs)
-                # TODO update after hydromt release >0.9.0
+                # TODO update after HydroMT release >0.9.0
             # get geom
             gdf = da.vector.to_gdf(reducer=np.mean)
         elif (
@@ -3015,7 +3015,7 @@ class DFlowFMModel(MeshModel):
                         else:
                             interpmethod = inidict.interpolationmethod
                         self._MAPS[rm_dict[name]]["interpolation"] = interpmethod
-                        # Rename to hydromt name
+                        # Rename to HydroMT name
                         name = rm_dict[name]
                     # Add to maps
                     inimap.name = name
@@ -3369,7 +3369,7 @@ class DFlowFMModel(MeshModel):
         mesh_filename = "fm_net.nc"
 
         # write mesh
-        # hydromt convention - FIXME hydrolib does not seem to read the 1D and links
+        # HydroMT convention - FIXME hydrolib does not seem to read the 1D and links
         # part of the mesh
         # super().write_mesh(fn=join(savedir, mesh_filename))
 
@@ -3698,7 +3698,7 @@ class DFlowFMModel(MeshModel):
                 )
 
         # update related geoms if necessary: region - boundaries
-        # the region is done in hydromt core
+        # the region is done in HydroMT Core
         if overwrite_grid or new_grid:
             # 1D boundaries
             if grid_name == "mesh1d":

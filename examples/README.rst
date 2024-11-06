@@ -14,7 +14,7 @@ packages required to run the notebooks.
 
 The next step is to install all the python dependencies required to run the notebooks, including HydroMT and HydroMT-Delft3D FM.
 
-**If you do not have hydromt-delft3dfm yet installed**, first create a new empty environment with the base hydromt installation:
+**If you do not have hydromt-delft3dfm yet installed**, first create a new empty environment with the base HydroMT installation:
 
 .. code-block:: console
 
