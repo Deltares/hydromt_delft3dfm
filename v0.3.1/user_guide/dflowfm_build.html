@@ -51,7 +51,7 @@
     <link rel="icon" href="../_static/hydromt-icon.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Build a Delft3D FM 1D2D model from scratch" href="../_examples/build_1d2dmodel.html" />
+    <link rel="next" title="Model building using HydroMT Delft3D FM" href="../_examples/hydromt_tutorial.html" />
     <link rel="prev" title="Model methods and components" href="dflowfm_model_setup.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -368,11 +368,12 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="dflowfm.html">Working with the Delft3D FM model</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="dflowfm_model_setup.html">Model methods and components</a></li>
 <li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">Building a model</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../_examples/build_1d2dmodel.html">Example: Build Delft3DFM 1D2D model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_examples/hydromt_tutorial.html">Example: Introduction to HydroMT Delft3D FM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_examples/build_1d2dmodel.html">Example: Build Delft3D FM 1D2D model</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="dflowfm_update.html">Updating a model</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../_examples/update_refine_2dgrid.html">Example: Update Delft3DFM model (refine 2dgrid)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_examples/update_refine_2dgrid.html">Example: Update Delft3D FM model (refine 2dgrid)</a></li>
 </ul>
 </details></li>
 </ul>
@@ -444,7 +445,7 @@ data libraries are set, you can build a model by using:</p>
 </div>
 <section id="configuration-file">
 <span id="model-config"></span><h2>Configuration file<a class="headerlink" href="#configuration-file" title="Link to this heading">#</a></h2>
-<p>Settings to build or update a Delft3DFM model are managed in a configuration file. In this file,
+<p>Settings to build or update a Delft3D FM model are managed in a configuration file. In this file,
 every option from each <a class="reference internal" href="dflowfm_model_setup.html#model-methods"><span class="std std-ref">model method</span></a> can be changed by the user
 in its corresponding section.</p>
 <p>Note that the order in which the components are listed in the yml file is important:</p>
@@ -453,7 +454,7 @@ in its corresponding section.</p>
 <li><p>When setting up a 2D model, <cite>setup_mesh2d</cite> should always be run first.</p></li>
 <li><p>When setting up a 1D2D model, both of the above should be run first, before calling <cite>setup_link1d2d</cite>.</p></li>
 </ul>
-<p>Below is an example yml file that can be used to build a complete Delft3DFM model
+<p>Below is an example yml file that can be used to build a complete Delft3D FM model
 <code class="xref download docutils literal notranslate"><span class="pre">.yml</span> <span class="pre">file</span></code>. Each section corresponds
 to a model component with the same name.</p>
 </section>
@@ -499,11 +500,11 @@ with the <strong>data_libs</strong> option in the [global] sections.</p></li>
       </div>
     </a>
     <a class="right-next"
-       href="../_examples/build_1d2dmodel.html"
+       href="../_examples/hydromt_tutorial.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Build a Delft3D FM 1D2D model from scratch</p>
+        <p class="prev-next-title">Model building using HydroMT Delft3D FM</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

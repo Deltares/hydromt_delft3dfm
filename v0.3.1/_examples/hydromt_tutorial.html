@@ -1,0 +1,919 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Model building using HydroMT Delft3D FM &#8212; HydroMT Delft3D FM  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/theme-deltares.css?v=17060807" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_examples/hydromt_tutorial';</script>
+    <link rel="icon" href="../_static/hydromt-icon.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Build a Delft3D FM 1D2D model from scratch" href="build_1d2dmodel.html" />
+    <link rel="prev" title="Building a model" href="../user_guide/dflowfm_build.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.3.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../_static/hydromt-icon.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/hydromt-icon.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">HydroMT Delft3D FM</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/intro.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../user_guide/intro.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../dev_guide/intro.html">
+    Developments
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
+    HydroMT core
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/intro.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../user_guide/intro.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../dev_guide/intro.html">
+    Developments
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://deltares.github.io/hydromt/latest/index.html">
+    HydroMT core
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Deltares/hydromt_delft3dfm" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="for https://oss.deltares.nl/web/delft3dfm" title="Delft3D FM Suite" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/logo_delft3dfm.png" class="icon-link-image" alt="Delft3D FM Suite"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.deltares.nl/en/" title="Deltares" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/deltares-blue.svg" class="icon-link-image" alt="Deltares"/></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../user_guide/dflowfm.html">Working with the Delft3D FM model</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/dflowfm_model_setup.html">Model methods and components</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../user_guide/dflowfm_build.html">Building a model</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">Example: Introduction to HydroMT Delft3D FM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_1d2dmodel.html">Example: Build Delft3D FM 1D2D model</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../user_guide/dflowfm_update.html">Updating a model</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="update_refine_2dgrid.html">Example: Update Delft3D FM model (refine 2dgrid)</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../user_guide/intro.html" class="nav-link">User guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../user_guide/dflowfm.html" class="nav-link">Working with the Delft3D FM model</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../user_guide/dflowfm_build.html" class="nav-link">Building a model</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Model building using HydroMT Delft3D FM</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Model-building-using-HydroMT-Delft3D-FM">
+<h1>Model building using HydroMT Delft3D FM<a class="headerlink" href="#Model-building-using-HydroMT-Delft3D-FM" title="Link to this heading">#</a></h1>
+<p>This notebook demonstrates how to prepare a <strong>Delft3D FM</strong> model from scratch using the command line interace (CLI). We will demonstrate the required steps for model building and show the contents of a <strong>configuration file</strong> and the <strong>data catalog</strong>. After following this notebook, you should be able to follow the example notebooks for building the 1D, 2D and coupled 1D2D models.</p>
+<p>It is necessary to have a Python environment with HydroMT Core and the HydroMT Delft3D FM plugin installed to be able to run the notebook, as well as additional packages such as <strong>jupyterlab</strong> and <strong>notebook</strong> for notebook functionality, and <strong>cartopy</strong> and <strong>matplotlib</strong> for plotting purposes. The installation guide for HydroMT Delft3D FM can be found in the <a class="reference external" href="https://deltares.github.io/hydromt_delft3dfm/latest/getting_started/installation.html">User Guide</a>.</p>
+<blockquote>
+<div><p><strong>NOTE</strong>: All lines in this notebook which start with <code class="docutils literal notranslate"><span class="pre">!</span></code> are executed from the command line. Within the notebook environment the logging messages are shown after completion. You can also copy these lines and paste these in your shell to get more direct feedback.</p>
+</div></blockquote>
+<section id="Accessing-HydroMT-through-CLI">
+<h2>Accessing HydroMT through CLI<a class="headerlink" href="#Accessing-HydroMT-through-CLI" title="Link to this heading">#</a></h2>
+<p>Lets first check if the Delft3D FM model is recognized by HydroMT using the command <code class="docutils literal notranslate"><span class="pre">hydromt</span> <span class="pre">--models</span></code>. This should return <strong>dflowfm</strong>, as well as as well as the generic HydroMT models: <strong>grid_model</strong>, <strong>lumped_model</strong>, <strong>mesh_model</strong>, <strong>network_model</strong>.</p>
+<blockquote>
+<div><p><strong>NOTE</strong>: If you have other HydroMT plugins installed in the same environment (Wflow, SFINCS, FIAT, and more), then these models will also appear after this command.</p>
+</div></blockquote>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>hydromt<span class="w"> </span>--models
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+model plugins:
+ - dflowfm (hydromt_delft3dfm 0.3.1)
+generic models (hydromt 0.10.0):
+ - grid_model
+ - vector_model
+ - mesh_model
+ - network_model
+
+</pre></div></div>
+</div>
+<p>We can use the command <code class="docutils literal notranslate"><span class="pre">hydromt</span> <span class="pre">--help</span></code> to get an overview of all the commands that can be accessed throug the command line interface. HydroMT is typically used to <code class="docutils literal notranslate"><span class="pre">hydromt</span> <span class="pre">build</span></code> a model using a configuration file. It is also possible to <code class="docutils literal notranslate"><span class="pre">hydromt</span> <span class="pre">update</span></code> or <code class="docutils literal notranslate"><span class="pre">hydromt</span> <span class="pre">clip</span></code> existing models. The command <code class="docutils literal notranslate"><span class="pre">hydromt</span> <span class="pre">export</span></code> is not directly related to model building, but used to exoirt data from a data catalog. The command <code class="docutils literal notranslate"><span class="pre">hydromt</span> <span class="pre">check</span></code> is used to validate the configuration file and the
+linked data catalogs and region settings. This can especially be useful to catch mistakes in the model building process without having to pass all the model building steps, which can take a lot of time for large models.</p>
+<p>A more detailed description of these commands can be found in the <a class="reference external" href="https://deltares.github.io/hydromt/latest/api/cli.html">HydroMT API</a>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>hydromt<span class="w"> </span>--help
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Usage: hydromt [OPTIONS] COMMAND [ARGS]...
+
+  Command line interface for hydromt models.
+
+Options:
+  --version  Show the version and exit.
+  --models   Print available model plugins and exit.
+  --help     Show this message and exit.
+
+Commands:
+  build   Build models
+  check   Validate config / data catalog / region
+  clip    Clip models.
+  export  Export data
+  update  Update models
+</pre></div></div>
+</div>
+<blockquote>
+<div><p><strong>NOTE</strong>: When inspecting the documentation of HydroMT Core, make sure that you open the documentation for the corresponding HydroMT version. The HydroMT version of your Python environment is listed as a part of the <code class="docutils literal notranslate"><span class="pre">hydromt</span> <span class="pre">--models</span></code> command, or can be found by simply using <code class="docutils literal notranslate"><span class="pre">hydromt</span> <span class="pre">--version</span></code>.</p>
+</div></blockquote>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>hydromt<span class="w"> </span>--version
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+HydroMT version: 0.10.0
+</pre></div></div>
+</div>
+</section>
+<section id="Requirements-for-building-a-model-in-HydroMT-Delft3D-FM">
+<h2>Requirements for building a model in HydroMT Delft3D FM<a class="headerlink" href="#Requirements-for-building-a-model-in-HydroMT-Delft3D-FM" title="Link to this heading">#</a></h2>
+<p>Using the <strong>HydroMT build</strong> API we can setup a complete model from scratch. Let’s get an overview of all the available options:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>hydromt<span class="w"> </span>build<span class="w"> </span>--help
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Usage: hydromt build [OPTIONS] MODEL MODEL_ROOT
+
+  Build models from scratch.
+
+  Example usage: --------------
+
+  To build a wflow model for a subbasin using a point coordinates snapped to
+  cells with upstream area &gt;= 50 km2 hydromt build wflow /path/to/model_root
+  -i /path/to/wflow_config.yml  -r &#34;{&#39;subbasin&#39;: [-7.24, 62.09], &#39;uparea&#39;:
+  50}&#34; -d deltares_data -d /path/to/data_catalog.yml -v
+
+  To build a sfincs model based on a bbox hydromt build sfincs
+  /path/to/model_root  -i /path/to/sfincs_config.yml  -r &#34;{&#39;bbox&#39;:
+  [4.6891,52.9750,4.9576,53.1994]}&#34;  -d /path/to/data_catalog.yml -v
+
+Options:
+  --opt TEXT               Method specific keyword arguments, see the method
+                           documentation of the specific model for more
+                           information about the arguments.
+  -i, --config PATH        Path to hydroMT configuration file, for the model
+                           specific implementation.
+  -r, --region TEXT        Set the region for which to build the model, e.g.
+                           {&#39;subbasin&#39;: [-7.24, 62.09]}
+  -d, --data TEXT          Path to local yaml data catalog file OR name of
+                           predefined data catalog.
+  --dd, --deltares-data    Flag: Shortcut to add the &#34;deltares_data&#34; catalog
+  --fo, --force-overwrite  Flag: If provided overwrite existing model files
+  --cache                  Flag: If provided cache tiled rasterdatasets
+  -v, --verbose            Increase verbosity.
+  -q, --quiet              Decrease verbosity.
+  --help                   Show this message and exit.
+</pre></div></div>
+</div>
+<p>We can see that there are two required arguments for building a model: <code class="docutils literal notranslate"><span class="pre">MODEL</span></code> describing the type of model to build, and <code class="docutils literal notranslate"><span class="pre">MODEL_ROOT</span></code> which is the root path of the model. Additionally, a HydroMT configuration file can be used using either <code class="docutils literal notranslate"><span class="pre">-i</span></code> or <code class="docutils literal notranslate"><span class="pre">--config</span></code>, a data catalog using either <code class="docutils literal notranslate"><span class="pre">-d</span></code> or <code class="docutils literal notranslate"><span class="pre">--data</span></code> and region settings using <code class="docutils literal notranslate"><span class="pre">-r</span></code> or <code class="docutils literal notranslate"><span class="pre">--region</span></code>. Both the configuration file and the data catalog will be explained in greater detail in this notebook.</p>
+<blockquote>
+<div><p><strong>NOTE</strong>: In the current version of HydroMT Delft3D FM, no region settings are required when building a model.</p>
+</div></blockquote>
+</section>
+<section id="Model-setup-configuration">
+<h2>Model setup configuration<a class="headerlink" href="#Model-setup-configuration" title="Link to this heading">#</a></h2>
+<p>The HydroMT configuration file contains the model setup configuration and determines which methods are used to prepare the different components of a Delft3D FM model and in which order and optionally sets non-default arguments for each method. This configuration is passed to HydroMT using <code class="docutils literal notranslate"><span class="pre">-i</span> <span class="pre">&lt;path_to_configuration_file&gt;</span></code>. We have prepared several example yml-files which are available in the model repository <a class="reference external" href="https://github.com/Deltares/hydromt_delft3dfm/tree/main/examples">examples folder</a>
+and from the <a class="reference external" href="https://deltares.github.io/hydromt_delft3dfm/latest/user_guide/dflowfm_build">docs (building a model)</a>. These example yml-files are also used in this notebook to build the 1D, 2D and coupled 1D2D models.</p>
+<p>Each section, before indent, (e.g. setup_rivers_from_dem) corresponds to a model method. A model method is a step inside the model building process. Each method adds a new component to the model, thus building the model step-by-step. All model methods are explained in the <a class="reference external" href="https://deltares.github.io/hydromt_delft3dfm/latest/user_guide/dflowfm_model_setup.html">docs (model components)</a>. The <code class="docutils literal notranslate"><span class="pre">global</span></code> section contains direct model initialisation properties which are required when the empty
+model is initialized. It typically contains global settings such as the coordinate system of the model.</p>
+<p>We will load the default dflowfm build 1D2D yaml file for inspection:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fn_yml</span> <span class="o">=</span> <span class="s2">&quot;dflowfm_build_piave.yml&quot;</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fn_yml</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">txt</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+global:
+  crs: 3857
+  network_snap_offset: 25
+  openwater_computation_node_distance: 40
+
+setup_rivers_from_dem:
+  region:
+    bbox: [12.4331, 46.4661, 12.5212, 46.5369]
+  hydrography_fn: merit_hydro
+  river_geom_fn: hydro_rivers_lin
+  rivers_defaults_fn: rivers_defaults
+  rivdph_method: gvf
+  rivwth_method: geom
+  river_upa: 25.0
+  friction_type: &#34;Manning&#34;
+  friction_value: 0.023
+  rivbankq: 25
+
+setup_pipes:
+  region:
+    bbox: [12.4331, 46.4661, 12.5212, 46.5369]
+  pipes_fn: grip_roads
+  pipes_defaults_fn: pipes_defaults
+  pipe_filter: pipe
+  spacing: 50
+  friction_type: WhiteColeBrook
+  friction_value: 0.003
+  crosssections_shape: circle
+  crosssections_value: 0.5
+  dem_fn: merit_hydro # [copdem30, merit]
+  pipes_depth: 2.0
+  snap_offset: 0.5
+  pipes_invlev: 3.
+
+setup_manholes:
+  manholes_fn:
+  manholes_defaults_fn: manholes_defaults
+  dem_fn: merit_hydro
+  bedlevel_shift: 0.5
+
+setup_1dboundary:
+  boundary_value: -2.0
+  branch_type: river
+  boundary_type: waterlevel
+  boundary_unit: m
+  boundary_locs: both
+
+setup_mesh2d:
+  region:
+    bbox: [12.4331, 46.4661, 12.5212, 46.5369]
+  res: 500
+
+setup_maps_from_rasterdataset:
+  raster_fn: merit_hydro
+  variables: [&#34;elevtn&#34;]
+  fill_method: nearest
+  interpolation_method: nearestNb
+
+setup_maps_from_raster_reclass:
+  raster_fn: vito_2015
+  reclass_table_fn: vito_mapping
+  reclass_variables: [&#39;roughness_manning&#39;, &#39;infiltcap&#39;]
+  interpolation_method: triangulation
+
+setup_rainfall_from_constant:
+  constant_value: 150
+
+setup_link1d2d:
+  link_direction: 1d_to_2d
+</pre></div></div>
+</div>
+<p>It can be seen that many arguments are required for the methods. Some arguments require data sources, typically indicated using <code class="docutils literal notranslate"><span class="pre">&lt;...&gt;_fn</span></code>. For example, the <code class="docutils literal notranslate"><span class="pre">setup_pipes</span></code> method requires a data source for the geometry of the pipes: <code class="docutils literal notranslate"><span class="pre">pipes_fn</span></code>, and additionally a data source with the default geometry of these pipes: <code class="docutils literal notranslate"><span class="pre">pipes_default_fn</span></code>. These data sources are obtained either directly by providing a path to the corresponding file, or by using an entry from a given <strong>data catalog</strong>. The next
+section explains how to create and use a <strong>data catalog</strong>.</p>
+<blockquote>
+<div><p><strong>NOTE</strong>: In this example, we apply region argument in setup_rivers_from_dem, setup_pipes and setup_mesh2d. They are identical in this example but one can alter them to have different region for rivers, for pipes and for 2dmesh. This allows the user to customize their model as much as possible, as the extent of the 1D river can differ from the extent of the 1D urban network or the 2D inundation grid. The region bbox are in WGS 84 as required, but the user should specify the dflowfm model
+destination CRS in the <code class="docutils literal notranslate"><span class="pre">global</span></code> section in order to allow to use grid definition data (rivers, pipes) from different data sources or CRS.</p>
+</div></blockquote>
+</section>
+<section id="Data-for-model-setup">
+<h2>Data for model setup<a class="headerlink" href="#Data-for-model-setup" title="Link to this heading">#</a></h2>
+<p>Most of the time, the <code class="docutils literal notranslate"><span class="pre">&lt;...&gt;_fn</span></code> arguments correspond to a data source from the <code class="docutils literal notranslate"><span class="pre">DataCatalog</span></code> which is based on a yml-file with references to the data paths/urls and how the data should be read. This file can be provided to hydromt using <code class="docutils literal notranslate"><span class="pre">-d</span> <span class="pre">&lt;path_to_yml_file&gt;</span></code>. The functionality of the data catalog is prescribed by HydroMT Core and therefore, the detailed description on how to create and use a data catalog can be found in the <a class="reference external" href="https://deltares.github.io/hydromt/latest/user_guide/data_prepare_cat.html">HydroMT core
+docs</a>. It is possible to use multiple data catalogs by repeating the <code class="docutils literal notranslate"><span class="pre">-d</span></code> flag.</p>
+<p>A data catalog in HydroMT is a structured way to organize and reference various datasets, making it easier to manage and access data for modelling. Its entries describe where data can be found, which adapter to use to read data with which settings, how to change the data when reading (scaling, off-setting) and metadata.</p>
+<blockquote>
+<div><p><strong>NOTE</strong>: In HydroMT-Delft3D FM, an additional data catalog with all default parameters values is always used <a class="reference external" href="https://github.com/Deltares/hydromt_delft3dfm/tree/main/hydromt_delft3dfm/data/parameters_data.yml">parameters_data.yml</a>. It contains default values for 1D network elements and structures as well as default 2D landuse parameter mapping tables.</p>
+</div></blockquote>
+<p>We use the pre-defined <code class="docutils literal notranslate"><span class="pre">artifact_data</span></code> catalog in this example notebook which contains some example data for the Piave basin. This data will be downloaded to <code class="docutils literal notranslate"><span class="pre">~/.hydromt_data/</span></code>. To give an example of a data catalog, we will use <code class="docutils literal notranslate"><span class="pre">hydromt</span> <span class="pre">export</span></code> to download and export some entries of the <code class="docutils literal notranslate"><span class="pre">artifact_data</span></code> catalog. This will be done for the same region as the example build models, and the target directory will be the <strong>data</strong> folder, which should already exist in the same folder as this
+notebook</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>hydromt<span class="w"> </span><span class="nb">export</span><span class="w"> </span>./data<span class="w"> </span>-s<span class="w"> </span>grip_roads<span class="w"> </span>-s<span class="w"> </span>merit_hydro<span class="w"> </span>-s<span class="w"> </span>vito_2015<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;{&#39;bbox&#39;: [12.4331, 46.4661, 12.5212, 46.5369]}&quot;</span><span class="w"> </span>-d<span class="w"> </span>artifact_data<span class="w"> </span>-vvv
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-11-06 09:54:52,406 - export - log - DEBUG - Writing log messages to new file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/data/hydromt.log.
+2024-11-06 09:54:52,406 - export - log - INFO - HydroMT version: 0.10.0
+2024-11-06 09:54:52,406 - export - main - INFO - Output dir: /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/data
+</pre></div></div>
+</div>
+<p>After downloading the data, we can inspect the corresponding data catalog:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dc_yml</span> <span class="o">=</span> <span class="s2">&quot;./data/data_catalog.yml&quot;</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dc_yml</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">txt</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+meta:
+  root: /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/data
+grip_roads:
+  data_type: GeoDataFrame
+  version: v4
+  path: grip_roads.gpkg
+  driver: vector
+  filesystem: local
+  meta:
+    category: road
+    paper_doi: 10.1088/1748-9326/aabd42
+    paper_ref: Meijer et al, 2018
+    source_license: CC0-1.0
+    source_url: https://www.globio.info/download-grip-dataset
+  crs: 4326
+merit_hydro:
+  data_type: RasterDataset
+  version: &#39;1.0&#39;
+  path: merit_hydro/{variable}.tif
+  driver: raster
+  filesystem: local
+  meta:
+    category: topography
+    paper_doi: 10.1029/2019WR024873
+    paper_ref: Yamazaki et al. (2019)
+    source_license: CC-BY-NC 4.0 or ODbL 1.0
+    source_url: http://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_Hydro
+  crs: 4326
+vito_2015:
+  data_type: RasterDataset
+  version: 2.0.2
+  path: vito_2015.tif
+  driver: raster
+  filesystem: local
+  meta:
+    category: landuse &amp; landcover
+    paper_doi: 10.5281/zenodo.3939038
+    paper_ref: Buchhorn et al (2020)
+    source_url: https://land.copernicus.eu/global/products/lc
+  crs: 4326
+
+</pre></div></div>
+</div>
+</section>
+<section id="Next-steps:-Model-building-notebooks">
+<h2>Next steps: Model building notebooks<a class="headerlink" href="#Next-steps:-Model-building-notebooks" title="Link to this heading">#</a></h2>
+<p>The basic concepts of accessing HydroMT Delft3D FM using CLI have been explained in this notebook, as well as the contents of a <strong>configuration file</strong> and a <strong>data catalog</strong>. You can now continue to the notebooks where Delft3D FM models will be build using an example configuration file and the artifact data. It is advised to first try building the 1D and 2D models (<code class="docutils literal notranslate"><span class="pre">build_1dmodel.ipynb</span></code> and <code class="docutils literal notranslate"><span class="pre">build_2dmodel.ipynb</span></code>) before moving to the coupled 1D2D model (<code class="docutils literal notranslate"><span class="pre">build_1d2dmodel.ipynb</span></code>).</p>
+<p>Additionally, an example notebook is included highlighting the functionality of grid refinement (<code class="docutils literal notranslate"><span class="pre">update_refine_2dgrid.ipynb</span></code>) and how to plot the mesh of a model using Python (<code class="docutils literal notranslate"><span class="pre">plot_dflowfm_mesh.ipynb</span></code>).</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../user_guide/dflowfm_build.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Building a model</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="build_1d2dmodel.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Build a Delft3D FM 1D2D model from scratch</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Accessing-HydroMT-through-CLI">Accessing HydroMT through CLI</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Requirements-for-building-a-model-in-HydroMT-Delft3D-FM">Requirements for building a model in HydroMT Delft3D FM</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Model-setup-configuration">Model setup configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Data-for-model-setup">Data for model setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Next-steps:-Model-building-notebooks">Next steps: Model building notebooks</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/Deltares/hydromt_delft3dfm/edit/main/docs/_examples/hydromt_tutorial.ipynb">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/_examples/hydromt_tutorial.ipynb.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright Deltares.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
