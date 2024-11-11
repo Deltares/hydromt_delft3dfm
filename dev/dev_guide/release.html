@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Installation Guide &#8212; HydroMT Delft3D FM  documentation</title>
+    <title>Releasing &#8212; HydroMT Delft3D FM  documentation</title>
   
   
   
@@ -45,12 +45,11 @@
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'getting_started/installation';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'dev_guide/release';</script>
     <link rel="icon" href="../_static/hydromt-icon.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Examples" href="example_index.html" />
-    <link rel="prev" title="Getting started" href="intro.html" />
+    <link rel="prev" title="Contributors" href="contributors.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.3.1.dev" />
@@ -135,8 +134,8 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="intro.html">
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/intro.html">
     Getting started
   </a>
 </li>
@@ -156,8 +155,8 @@
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../dev_guide/intro.html">
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="intro.html">
     Developments
   </a>
 </li>
@@ -271,8 +270,8 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="intro.html">
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/intro.html">
     Getting started
   </a>
 </li>
@@ -292,8 +291,8 @@
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../dev_guide/intro.html">
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="intro.html">
     Developments
   </a>
 </li>
@@ -363,10 +362,12 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Installation Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="example_index.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://deltares.github.io/hydromt/latest/getting_started/user_stories">User's stories</a></li>
-<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://deltares.github.io/hydromt/latest/dev/contributing">Developer's guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev_install.html">Developer’s environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Releasing</a></li>
 </ul>
 </div>
 </nav></div>
@@ -403,9 +404,9 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="intro.html" class="nav-link">Getting started</a></li>
+    <li class="breadcrumb-item"><a href="intro.html" class="nav-link">Developments</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Installation Guide</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Releasing</span></li>
   </ul>
 </nav>
 </div>
@@ -422,52 +423,29 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="installation-guide">
-<span id="id1"></span><h1>Installation Guide<a class="headerlink" href="#installation-guide" title="Link to this heading">#</a></h1>
-<section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h2>
-<p>For more information about the prerequisites for an installation of the HydroMT package
-and related dependencies, please visit the documentation of
-<a class="reference external" href="https://deltares.github.io/hydromt/latest/getting_started/installation.html#installation-guide">HydroMT core</a></p>
-<p>Compared to HydroMT, HydroMT Delft3D FM has additional dependencies, namely:</p>
+  <section id="releasing">
+<span id="dev-release"></span><h1>Releasing<a class="headerlink" href="#releasing" title="Link to this heading">#</a></h1>
+<p>Release steps:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/Deltares/xugrid">xugrid</a></p></li>
-<li><p><a class="reference external" href="https://github.com/Deltares/HYDROLIB-core">hydrolib-core</a></p></li>
-<li><p><a class="reference external" href="https://github.com/Deltares/MeshKernelPy">meshkernel-py</a></p></li>
-<li><p><a class="reference external" href="https://networkx.org/">networkx</a></p></li>
+<li><p>Change version in __init__.py</p></li>
+<li><p>update the changelog</p></li>
+<li><p>Check dependencies in pyproj.toml</p></li>
+<li><p>run local testbank</p></li>
+<li><p>local check with: <code class="docutils literal notranslate"><span class="pre">flit</span> <span class="pre">build</span></code> and <code class="docutils literal notranslate"><span class="pre">twine</span> <span class="pre">check</span> <span class="pre">dist/*</span></code></p></li>
+<li><p>create PR and merge back to main</p></li>
+<li><p>create a new release: <a class="github reference external" href="https://github.com/Deltares/hydromt_delft3dfm/releases/new">Deltares/hydromt_delft3dfm</a>)</p></li>
+<li><p>click <code class="docutils literal notranslate"><span class="pre">choose</span> <span class="pre">a</span> <span class="pre">tag</span></code> and type v+versionnumber (e.g. <code class="docutils literal notranslate"><span class="pre">v0.1.0</span></code>), click <code class="docutils literal notranslate"><span class="pre">create</span> <span class="pre">new</span> <span class="pre">tag:</span> <span class="pre">v0.1.0</span> <span class="pre">on</span> <span class="pre">publish</span></code></p></li>
+<li><p>set the release title to the tagname (e.g. <code class="docutils literal notranslate"><span class="pre">v0.1.0</span></code>)</p></li>
+<li><p>click <cite>Generate release notes</cite> and replace the <cite>What’s Changed</cite> info by a tagged link to <code class="docutils literal notranslate"><span class="pre">docs/whats-new.md</span></code></p></li>
+<li><p>if all is set, click <code class="docutils literal notranslate"><span class="pre">Publish</span> <span class="pre">release</span></code></p></li>
+<li><p>a release is created and the github action publishes it [on PyPI](<a class="reference external" href="https://pypi.org/project/dfm-tools">https://pypi.org/project/dfm-tools</a>)</p></li>
 </ul>
-</section>
-<section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
-<p>HydroMT Delft3D FM is available on pypi.</p>
-<section id="install-hydromt-delft3d-fm-in-a-new-environment">
-<h3>Install HydroMT Delft3D FM in a new environment<a class="headerlink" href="#install-hydromt-delft3d-fm-in-a-new-environment" title="Link to this heading">#</a></h3>
-<p>You can install HydroMT Delft3D FM in a new environment (recommended!) called <cite>hydromt-delft3dfm</cite>.
-HydroMT Delft3D FM is available on pypi but not yet available on conda-forge.
-Therefore, we recommend creating a conda environment and install everything with pip.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>hydromt-delft3dfm<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11<span class="w"> </span>-c<span class="w"> </span>conda-forge
-</pre></div>
-</div>
-<p>Then, activate the environment:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>activate<span class="w"> </span>hydromt-delft3dfm
-</pre></div>
-</div>
-<p>Finally, install HydroMT Delft3D FM from pypi using pip.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>hydromt-delft3dfm
-</pre></div>
-</div>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>If you already have this environment with this name either remove it with
-<cite>conda remove -n hydromt-delft3dfm –all</cite> <strong>or</strong> set a new name for the environment
-by adding <cite>-n &lt;name&gt;</cite> to the line below.</p>
-</div>
-</section>
-</section>
-<section id="developer-install">
-<h2>Developer install<a class="headerlink" href="#developer-install" title="Link to this heading">#</a></h2>
-<p>To be able to test and develop the HydroMT-delft3dfm package see instructions in the <a class="reference internal" href="../dev_guide/dev_install.html#dev-env"><span class="std std-ref">Developer installation guide</span></a>.</p>
-</section>
+<p>Post release:</p>
+<ul class="simple">
+<li><p>Update the version to 0.1.1 (bump patch)</p></li>
+<li><p>Initialise changelog unrelease/added/fixed/changed</p></li>
+<li><p>Push and merge to main</p></li>
+</ul>
 </section>
 
 
@@ -481,22 +459,13 @@ by adding <cite>-n &lt;name&gt;</cite> to the line below.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="intro.html"
+       href="contributors.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Getting started</p>
+        <p class="prev-next-title">Contributors</p>
       </div>
-    </a>
-    <a class="right-next"
-       href="example_index.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Examples</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -510,27 +479,10 @@ by adding <cite>-n &lt;name&gt;</cite> to the line below.</p>
 
 
   <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-hydromt-delft3d-fm-in-a-new-environment">Install HydroMT Delft3D FM in a new environment</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#developer-install">Developer install</a></li>
-</ul>
-  </nav></div>
-
-  <div class="sidebar-secondary-item">
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/Deltares/hydromt_delft3dfm/edit/main/docs/getting_started/installation.rst">
+    <a href="https://github.com/Deltares/hydromt_delft3dfm/edit/main/docs/dev_guide/release.rst">
       <i class="fa-solid fa-pencil"></i>
       
       
@@ -545,7 +497,7 @@ by adding <cite>-n &lt;name&gt;</cite> to the line below.</p>
   <div class="sidebar-secondary-item">
 
   <div class="tocsection sourcelink">
-    <a href="../_sources/getting_started/installation.rst.txt">
+    <a href="../_sources/dev_guide/release.rst.txt">
       <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
   </div>
