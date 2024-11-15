@@ -12,7 +12,7 @@ from shapely.geometry import LineString, Point
 from ..gis_utils import check_gpd_attributes
 from .branches import find_nearest_branch, update_data_columns_attributes
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("hydromt")
 
 
 __all__ = [
@@ -32,7 +32,6 @@ def prepare_default_friction_and_crosssection(
     friction_value: float = 0.023,
     crosssections_shape: Literal["rectangle", "circle"] = None,
     crosssections_value: Union[List[float], float] = None,
-    logger: logging.Logger = logger,
 ):
     """
     Prepare the default uniform friction and crosssection for branches.
@@ -60,8 +59,6 @@ def prepare_default_friction_and_crosssection(
         used for br_type == "pipe".
         If ``crosssections_shape`` = "rectangle", expects a list with [width, height]
         (e.g. [1.0, 1.0]) [m]. used for br_type == "river" or "channel".
-    logger: Logger, optional
-        Logger.
     Return
     ------
     branches: gpd.GeoDataFrame

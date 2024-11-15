@@ -16,18 +16,17 @@ import xarray as xr
 import xugrid as xu
 from hydrolib.core.dflowfm import FMModel, IniFieldModel
 from hydrolib.core.dimr import DIMR, FMComponent, Start
-from hydromt.models import MeshModel
-from hydromt.workflows import create_mesh2d
+from hydromt.model import Model
+from hydromt.model.processes.mesh import create_mesh2d_from_region
 from pyproj import CRS
-from shapely.geometry import box
 
 from . import DATADIR, gis_utils, mesh_utils, utils, workflows
 
 __all__ = ["DFlowFMModel"]
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("hydromt")
 
 
-class DFlowFMModel(MeshModel):
+class DFlowFMModel(Model):
     """API for Delft3D-FM models in HydroMT."""
 
     _NAME = "dflowfm"
@@ -110,6 +109,7 @@ class DFlowFMModel(MeshModel):
     _FOLDERS = ["dflowfm", "geoms", "maps"]
     _CLI_ARGS = {"region": "setup_region"}
     _CATALOGS = join(_DATADIR, "parameters_data.yml")
+    __hydromt_eps__ = []
 
     def __init__(
         self,
@@ -122,7 +122,6 @@ class DFlowFMModel(MeshModel):
         network_snap_offset=25,
         snap_newbranches_to_branches_at_snapnodes=True,
         openwater_computation_node_distance=40,
-        logger=logger,
     ):
         """Initialize the DFlowFMModel.
 
@@ -156,18 +155,21 @@ class DFlowFMModel(MeshModel):
         openwater_computation_node_distance: float, optional
             Global option for generation of the mesh1d network. Distance to generate
             mesh1d nodes for open water system (rivers, channels). By default 40 m.
-        logger
-            The logger used to log messages.
         """
         if not isinstance(root, (str, Path)):
             raise ValueError("The 'root' parameter should be a of str or Path.")
 
+        components = {
+            "mesh": {"type": "MeshComponent"},
+            "geoms": {"type": "GeomsComponent"},
+        }
         super().__init__(
             root=root,
+            components=components,
             mode=mode,
-            config_fn=config_fn,
+            # config_fn=config_fn,
             data_libs=data_libs,
-            logger=logger,
+            region_component="mesh",
         )
 
         # model specific
@@ -180,7 +182,7 @@ class DFlowFMModel(MeshModel):
         )  # FIXME Xiaohan config needs to be derived from dimr_fn if dimr_fn exsit
         self.data_catalog.from_yml(self._CATALOGS)
 
-        self.config
+        # self.config
 
         # Global options for generation of the mesh1d network
         self._network_snap_offset = network_snap_offset
@@ -193,6 +195,16 @@ class DFlowFMModel(MeshModel):
         # crs
         self._crs = CRS.from_user_input(crs) if crs else None
         self._check_crs()
+
+    # TODO: three class functions that were deprecated in hydromt v1
+    def _read(self):
+        return self.root.is_reading_mode()
+
+    def _assert_read_mode(self):
+        assert self.root.is_reading_mode()
+
+    def _assert_write_mode(self):
+        assert self.root.is_writing_mode()
 
     def setup_region(self, region):
         """HYDROMT CORE METHOD NOT USED FOR DFlowFMModel."""
@@ -288,7 +300,7 @@ class DFlowFMModel(MeshModel):
         --------
         dflowfm._setup_branches
         """
-        self.logger.info("Preparing 1D channels.")
+        logger.info("Preparing 1D channels.")
 
         # filter for allowed columns
         br_type = "channel"
@@ -328,7 +340,6 @@ class DFlowFMModel(MeshModel):
             snap_offset=snap_offset,
             allow_intersection_snapping=allow_intersection_snapping,
             allowed_columns=_allowed_columns,
-            logger=self.logger,
         )
         # Prepare friction and crosssections
         channels = workflows.prepare_default_friction_and_crosssection(
@@ -336,7 +347,6 @@ class DFlowFMModel(MeshModel):
             br_type=br_type,
             friction_type=friction_type,
             friction_value=friction_value,
-            logger=self.logger,
         )
 
         # setup crosssections
@@ -353,14 +363,14 @@ class DFlowFMModel(MeshModel):
         )
 
         # add crosssections to exisiting ones and update geoms
-        self.logger.debug("Adding crosssections vector to geoms.")
+        logger.debug("Adding crosssections vector to geoms.")
         crosssections = workflows.add_crosssections(
             self.geoms.get("crosssections"), crosssections
         )
         self.set_geoms(crosssections, "crosssections")
 
         # setup geoms
-        self.logger.debug("Adding branches and branch_nodes vector to geoms.")
+        logger.debug("Adding branches and branch_nodes vector to geoms.")
         self.set_geoms(channels, "channels")
         self.set_geoms(channel_nodes, "channel_nodes")
 
@@ -512,7 +522,7 @@ class DFlowFMModel(MeshModel):
         ValueError
 
         """
-        self.logger.info("Preparing river shape from hydrography data.")
+        logger.info("Preparing river shape from hydrography data.")
         # parse region argument
         region = workflows.parse_region_geometry(region, self.crs)
 
@@ -572,7 +582,6 @@ class DFlowFMModel(MeshModel):
             smooth_length=smooth_length,
             constrain_estuary=constrain_estuary,
             constrain_rivbed=constrain_rivbed,
-            logger=self.logger,
             **kwargs,
         )
         # Rename river properties column and reproject
@@ -612,7 +621,6 @@ class DFlowFMModel(MeshModel):
             dst_crs=self.crs,
             id_start=len(self.branches) + 1,
             allowed_columns=_allowed_columns,
-            logger=self.logger,
         )
         # Prepare friction
         branches = workflows.prepare_default_friction_and_crosssection(
@@ -620,7 +628,6 @@ class DFlowFMModel(MeshModel):
             br_type=br_type,
             friction_type=friction_type,
             friction_value=friction_value,
-            logger=self.logger,
         )
 
         # setup crosssections
@@ -631,14 +638,14 @@ class DFlowFMModel(MeshModel):
         )
 
         # add crosssections to exisiting ones and update geoms
-        self.logger.debug("Adding crosssections vector to geoms.")
+        logger.debug("Adding crosssections vector to geoms.")
         crosssections = workflows.add_crosssections(
             self.geoms.get("crosssections"), crosssections
         )
         self.set_geoms(crosssections, "crosssections")
 
         # setup geoms #TODO do we still need channels?
-        self.logger.debug("Adding rivers and river_nodes vector to geoms.")
+        logger.debug("Adding rivers and river_nodes vector to geoms.")
         self.set_geoms(rivers, "rivers")
         self.set_geoms(river_nodes, "rivers_nodes")
 
@@ -764,7 +771,7 @@ class DFlowFMModel(MeshModel):
         dflowfm._setup_branches
         dflowfm._setup_crosssections
         """
-        self.logger.info("Preparing 1D rivers.")
+        logger.info("Preparing 1D rivers.")
         # filter for allowed columns
         br_type = "river"
         _allowed_columns = [
@@ -801,7 +808,6 @@ class DFlowFMModel(MeshModel):
             snap_offset=snap_offset,
             allow_intersection_snapping=allow_intersection_snapping,
             allowed_columns=_allowed_columns,
-            logger=self.logger,
         )
         # Prepare friction and crosssections
         rivers = workflows.prepare_default_friction_and_crosssection(
@@ -809,7 +815,6 @@ class DFlowFMModel(MeshModel):
             br_type=br_type,
             friction_type=friction_type,
             friction_value=friction_value,
-            logger=self.logger,
         )
 
         # setup crosssections
@@ -843,7 +848,7 @@ class DFlowFMModel(MeshModel):
             ] = -1
 
         # setup geoms for rivers and river_nodes
-        self.logger.debug("Adding rivers and river_nodes vector to geoms.")
+        logger.debug("Adding rivers and river_nodes vector to geoms.")
         self.set_geoms(rivers, "rivers")
         self.set_geoms(river_nodes, "rivers_nodes")
 
@@ -991,7 +996,7 @@ class DFlowFMModel(MeshModel):
         dflowfm._setup_branches
         dflowfm._setup_crosssections
         """
-        self.logger.info("Preparing 1D pipes.")
+        logger.info("Preparing 1D pipes.")
 
         # filter for allowed columns
         br_type = "pipe"
@@ -1031,7 +1036,6 @@ class DFlowFMModel(MeshModel):
             snap_offset=snap_offset,
             allow_intersection_snapping=allow_intersection_snapping,
             allowed_columns=_allowed_columns,
-            logger=self.logger,
         )
         # Prepare friction and crosssections
         pipes = workflows.prepare_default_friction_and_crosssection(
@@ -1041,7 +1045,6 @@ class DFlowFMModel(MeshModel):
             friction_value=friction_value,
             crosssections_shape=crosssections_shape,
             crosssections_value=crosssections_value,
-            logger=self.logger,
         )
         # filter extra time for geting clipped pipes within the region (better match)
         # remove the index name to avoid "ValueError: cannot insert branchid,
@@ -1056,7 +1059,7 @@ class DFlowFMModel(MeshModel):
             inv = pipes[["invlev_up", "invlev_dn"]]
             if inv.isnull().sum().sum() > 0:  # nodata values in pipes for invert levels
                 fill_invlev = True
-                self.logger.info(
+                logger.info(
                     f"{pipes_fn} data has {inv.isnull().sum().sum()} no data values"
                     "for invert levels. Will be filled using dem_fn or"
                     f"default value {pipes_invlev}"
@@ -1065,7 +1068,7 @@ class DFlowFMModel(MeshModel):
                 fill_invlev = False
         else:
             fill_invlev = True
-            self.logger.info(
+            logger.info(
                 f"{pipes_fn} does not have columns [invlev_up, invlev_dn]."
                 "Invert levels will be generated from dem_fn or"
                 f"default value {pipes_invlev}"
@@ -1087,7 +1090,7 @@ class DFlowFMModel(MeshModel):
                 fill_invlev = False
         # 3. filling use pipes_invlev
         if fill_invlev and pipes_invlev is not None:
-            self.logger.warning(
+            logger.warning(
                 "!Using a constant up and down invert levels for all pipes."
                 "May cause issues when running the delft3dfm model.!"
             )
@@ -1112,14 +1115,14 @@ class DFlowFMModel(MeshModel):
             midpoint=False,
         )
         # add crosssections to exisiting ones and update geoms
-        self.logger.debug("Adding crosssections vector to geoms.")
+        logger.debug("Adding crosssections vector to geoms.")
         crosssections = workflows.add_crosssections(
             self.geoms.get("crosssections"), crosssections
         )
         self.set_geoms(crosssections, "crosssections")
 
         # setup geoms
-        self.logger.debug("Adding pipes and pipe_nodes vector to geoms.")
+        logger.debug("Adding pipes and pipe_nodes vector to geoms.")
         self.set_geoms(pipes, "pipes")
         self.set_geoms(pipe_nodes, "pipe_nodes")  # TODO: for manholes
 
@@ -1231,7 +1234,7 @@ class DFlowFMModel(MeshModel):
             # might require upstream/downstream
             # TODO: check for required columns
             # read crosssection from branches
-            self.logger.info("Preparing crossections from branch.")
+            logger.info("Preparing crossections from branch.")
             gdf_cs = workflows.set_branch_crosssections(branches, midpoint=midpoint)
 
         elif crosssections_type == "xyz":
@@ -1245,7 +1248,7 @@ class DFlowFMModel(MeshModel):
 
             # check if feature valid
             if len(gdf_cs) == 0:
-                self.logger.warning(
+                logger.warning(
                     f"No {crosssections_fn} 1D xyz crosssections found within domain"
                 )
                 return None
@@ -1253,7 +1256,7 @@ class DFlowFMModel(MeshModel):
                 gdf_cs, required_columns=["crsid", "order", "z"]
             )
             if not valid_attributes:
-                self.logger.error(
+                logger.error(
                     "Required attributes [crsid, order, z] in xyz crosssections"
                     "do not exist"
                 )
@@ -1268,7 +1271,7 @@ class DFlowFMModel(MeshModel):
             gdf_cs.to_crs(self.crs)
 
             # set crsloc and crsdef attributes to crosssections
-            self.logger.info(f"Preparing 1D xyz crossections from {crosssections_fn}")
+            logger.info(f"Preparing 1D xyz crossections from {crosssections_fn}")
             gdf_cs = workflows.set_xyz_crosssections(branches, gdf_cs)
 
         elif crosssections_type == "point":
@@ -1282,7 +1285,7 @@ class DFlowFMModel(MeshModel):
 
             # check if feature valid
             if len(gdf_cs) == 0:
-                self.logger.warning(
+                logger.warning(
                     f"No {crosssections_fn} 1D point crosssections found within domain"
                 )
                 return None
@@ -1290,7 +1293,7 @@ class DFlowFMModel(MeshModel):
                 gdf_cs, required_columns=["crsid", "shape", "shift"]
             )
             if not valid_attributes:
-                self.logger.error(
+                logger.error(
                     "Required attributes [crsid, shape, shift] in point crosssections"
                     "do not exist"
                 )
@@ -1305,7 +1308,7 @@ class DFlowFMModel(MeshModel):
             gdf_cs.to_crs(self.crs)
 
             # set crsloc and crsdef attributes to crosssections
-            self.logger.info(f"Preparing 1D point crossections from {crosssections_fn}")
+            logger.info(f"Preparing 1D point crossections from {crosssections_fn}")
             gdf_cs = workflows.set_point_crosssections(
                 branches, gdf_cs, maxdist=maxdist
             )
@@ -1400,14 +1403,13 @@ class DFlowFMModel(MeshModel):
         ]
 
         # generate manhole locations and bedlevels
-        self.logger.info("generating manholes locations and bedlevels. ")
+        logger.info("generating manholes locations and bedlevels. ")
         manholes, branches = workflows.generate_manholes_on_branches(
             self.branches,
             bedlevel_shift=bedlevel_shift,
             use_branch_variables=["diameter", "width"],
             id_prefix="manhole_",
             id_suffix="_generated",
-            logger=self.logger,
         )
         # FIXME Xiaohan: why do we need set_branches here? Because of branches.gui
         # --> add a high level write_gui files same level as write_mesh
@@ -1421,7 +1423,7 @@ class DFlowFMModel(MeshModel):
 
         # read user manhole
         if manholes_fn:
-            self.logger.info(f"reading manholes street level from file {manholes_fn}. ")
+            logger.info(f"reading manholes street level from file {manholes_fn}. ")
             # read
             gdf_manhole = self.data_catalog.get_geodataframe(
                 manholes_fn,
@@ -1434,21 +1436,19 @@ class DFlowFMModel(MeshModel):
                 gdf_manhole = gdf_manhole.to_crs(self.crs)
             # filter for allowed columns
             allowed_columns = set(_allowed_columns).intersection(gdf_manhole.columns)
-            self.logger.debug(
-                f'filtering for allowed columns:{",".join(allowed_columns)}'
-            )
+            logger.debug(f'filtering for allowed columns:{",".join(allowed_columns)}')
             gdf_manhole = gpd.GeoDataFrame(
                 gdf_manhole[list(allowed_columns)], crs=gdf_manhole.crs
             )
             # replace generated manhole using user manholes
-            self.logger.debug("overwriting generated manholes using user manholes.")
+            logger.debug("overwriting generated manholes using user manholes.")
             manholes = hydromt.gis_utils.nearest_merge(
                 manholes, gdf_manhole, max_dist=snap_offset, overwrite=True
             )
 
         # generate manhole streetlevels from dem
         if dem_fn is not None:
-            self.logger.info("overwriting manholes street level from dem. ")
+            logger.info("overwriting manholes street level from dem. ")
             dem = self.data_catalog.get_rasterdataset(
                 dem_fn,
                 geom=self.region,
@@ -1459,13 +1459,11 @@ class DFlowFMModel(MeshModel):
             manholes["_streetlevel_dem"] = dem.raster.sample(manholes).values
             manholes["_streetlevel_dem"].fillna(manholes["streetlevel"], inplace=True)
             manholes["streetlevel"] = manholes["_streetlevel_dem"]
-            self.logger.debug(
-                f'street level mean is {np.mean(manholes["streetlevel"])}'
-            )
+            logger.debug(f'street level mean is {np.mean(manholes["streetlevel"])}')
 
         # internal administration
         # drop duplicated manholeid
-        self.logger.debug("dropping duplicated manholeid")
+        logger.debug("dropping duplicated manholeid")
         manholes.drop_duplicates(subset="manholeid")
         # add nodeid to manholes
         network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
@@ -1483,13 +1481,13 @@ class DFlowFMModel(MeshModel):
 
         # validate
         if manholes[_allowed_columns].isna().any().any():
-            self.logger.error(
+            logger.error(
                 "manholes contain no data."
                 "Use manholes_defaults_fn to apply no data filling."
             )
 
         # setup geoms
-        self.logger.debug("Adding manholes vector to geoms.")
+        logger.debug("Adding manholes vector to geoms.")
         self.set_geoms(manholes, "manholes")
 
     def setup_1dboundary(
@@ -1576,7 +1574,7 @@ class DFlowFMModel(MeshModel):
             network nodes. By default 0.1, a small snapping is applied to avoid
             precision errors.
         """
-        self.logger.info(f"Preparing 1D {boundary_type} boundaries for {branch_type}.")
+        logger.info(f"Preparing 1D {boundary_type} boundaries for {branch_type}.")
 
         # 1. get potential boundary locations based on branch_type and boundary_type
         boundaries_branch_type = workflows.select_boundary_type(
@@ -1597,7 +1595,6 @@ class DFlowFMModel(MeshModel):
             boundary_type=boundary_type,
             boundary_unit=boundary_unit,
             snap_offset=snap_offset,
-            logger=self.logger,
         )
 
         # 4. set boundaries
@@ -1631,7 +1628,7 @@ class DFlowFMModel(MeshModel):
             ):
                 pass
             else:
-                self.logger.error(
+                logger.error(
                     "Forcing has different start and end time."
                     + " Please check the forcing file. Support yyyy-mm-dd HH:MM:SS. "
                 )
@@ -1705,7 +1702,7 @@ class DFlowFMModel(MeshModel):
             If None, all branches are used.
             By defalt None.
         """
-        self.logger.info(f"Preparing 1D laterals for {branch_type}.")
+        logger.info(f"Preparing 1D laterals for {branch_type}.")
         network_by_branchtype = self.staticgeoms[f"{branch_type}s"]
 
         # 1. read lateral geodataset and snap to network
@@ -1730,7 +1727,6 @@ class DFlowFMModel(MeshModel):
             forcing_value=lateral_value,
             forcing_type="lateral_discharge",
             forcing_unit="m3/s",
-            logger=self.logger,
         )
 
         # 3. set laterals
@@ -1771,7 +1767,7 @@ class DFlowFMModel(MeshModel):
             or for filling in missing data.
             By default 0 [m3/s].
         """
-        self.logger.info("Preparing 1D laterals for polygons.")
+        logger.info("Preparing 1D laterals for polygons.")
 
         # 1. read lateral geodataset
         gdf_laterals, da_lat = self._read_forcing_geodataset(
@@ -1788,7 +1784,6 @@ class DFlowFMModel(MeshModel):
             forcing_value=lateral_value,
             forcing_type="lateral_discharge",
             forcing_unit="m3/s",
-            logger=self.logger,
         )
 
         # 3. set laterals
@@ -2120,7 +2115,7 @@ class DFlowFMModel(MeshModel):
 
         """  # noqa: E501
         # Create the 2dmesh
-        mesh2d = create_mesh2d(
+        mesh2d = create_mesh2d_from_region(
             region=region,
             res=res,
             crs=self.crs,
@@ -2177,7 +2172,7 @@ class DFlowFMModel(MeshModel):
             return
 
         if polygon_fn is not None:
-            self.logger.info(f"reading geometry from file {polygon_fn}. ")
+            logger.info(f"reading geometry from file {polygon_fn}. ")
             # read
             gdf = self.data_catalog.get_geodataframe(
                 polygon_fn, geom=self.region, buffer=0, predicate="contains"
@@ -2187,7 +2182,7 @@ class DFlowFMModel(MeshModel):
                 gdf = gdf.to_crs(self.crs)
 
         elif sample_fn is not None:
-            self.logger.info(f"reading samples from file {sample_fn}. ")
+            logger.info(f"reading samples from file {sample_fn}. ")
             # read
             da = self.data_catalog.get_rasterdataset(
                 sample_fn,
@@ -2201,7 +2196,7 @@ class DFlowFMModel(MeshModel):
             )  # float64 is needed by mesh kernel to convert into c double
             # reproject
             if da.raster.crs != self.crs:
-                self.logger.warning(
+                logger.warning(
                     "Sample grid has a different resolution than model."
                     "Reprojecting with nearest but some information might be lost."
                 )
@@ -2214,7 +2209,6 @@ class DFlowFMModel(MeshModel):
             gdf_polygon=gdf if polygon_fn is not None else None,
             da_sample=da if sample_fn is not None else None,
             steps=steps,
-            logger=self.logger,
         )
 
         # set mesh2d
@@ -2285,7 +2279,7 @@ class DFlowFMModel(MeshModel):
         """
         # check existing network
         if "mesh1d" not in self.mesh_names or "mesh2d" not in self.mesh_names:
-            self.logger.error(
+            logger.error(
                 "cannot setup link1d2d: either mesh1d or mesh2d or both do not exist"
             )
             return None
@@ -2298,7 +2292,7 @@ class DFlowFMModel(MeshModel):
         # check input
         if polygon_fn is not None:
             within = self.data_catalog.get_geodataframe(polygon_fn).geometry
-            self.logger.info(f"adding 1d2d links only within polygon {polygon_fn}")
+            logger.info(f"adding 1d2d links only within polygon {polygon_fn}")
         else:
             within = None
 
@@ -2306,16 +2300,16 @@ class DFlowFMModel(MeshModel):
             branchids = self.branches[
                 self.branches.branchtype == branch_type
             ].branchid.to_list()  # use selective branches
-            self.logger.info(f"adding 1d2d links for {branch_type} branches.")
+            logger.info(f"adding 1d2d links for {branch_type} branches.")
         else:
             branchids = None  # use all branches
-            self.logger.warning(
+            logger.warning(
                 "adding 1d2d links for all branches at non boundary locations."
             )
 
         # setup 1d2d links
         if link_direction == "1d_to_2d":
-            self.logger.info("setting up 1d_to_2d links.")
+            logger.info("setting up 1d_to_2d links.")
             # recompute max_length based on the diagonal distance of the max mesh area
             max_length = np.sqrt(self.mesh_grids["mesh2d"].area.max()) * np.sqrt(2)
             link1d2d = workflows.links1d2d_add_links_1d_to_2d(
@@ -2324,13 +2318,13 @@ class DFlowFMModel(MeshModel):
 
         elif link_direction == "2d_to_1d":
             if link_type == "embedded":
-                self.logger.info("setting up 2d_to_1d embedded links.")
+                logger.info("setting up 2d_to_1d embedded links.")
 
                 link1d2d = workflows.links1d2d_add_links_2d_to_1d_embedded(
                     self.mesh, branchids=branchids, within=within
                 )
             elif link_type == "lateral":
-                self.logger.info("setting up 2d_to_1d lateral links.")
+                logger.info("setting up 2d_to_1d lateral links.")
                 link1d2d = workflows.links1d2d_add_links_2d_to_1d_lateral(
                     self.mesh,
                     branchids=branchids,
@@ -2339,14 +2333,14 @@ class DFlowFMModel(MeshModel):
                     dist_factor=dist_factor,
                 )
             else:
-                self.logger.error(f"link_type {link_type} is not recognised.")
+                logger.error(f"link_type {link_type} is not recognised.")
 
         else:
-            self.logger.error(f"link_direction {link_direction} is not recognised.")
+            logger.error(f"link_direction {link_direction} is not recognised.")
 
         # Add link1d2d to xu Ugrid mesh
         if len(link1d2d["link1d2d"]) == 0:
-            self.logger.warning("No 1d2d links were generated.")
+            logger.warning("No 1d2d links were generated.")
         else:
             self.set_link1d2d(link1d2d)
 
@@ -2407,7 +2401,7 @@ class DFlowFMModel(MeshModel):
         """
         # check for name when split_dataset is False
         if split_dataset is False and name is None:
-            self.logger.error("name must be specified when split_dataset = False")
+            logger.error("name must be specified when split_dataset = False")
 
         # Call super method
         variables = super().setup_maps_from_rasterdataset(
@@ -2516,7 +2510,7 @@ class DFlowFMModel(MeshModel):
         """
         # check for name when split_dataset is False
         if split_dataset is False and name is None:
-            self.logger.error("name must be specified when split_dataset = False")
+            logger.error("name must be specified when split_dataset = False")
 
         # Call super method
         reclass_variables = super().setup_maps_from_raster_reclass(
@@ -2640,7 +2634,7 @@ class DFlowFMModel(MeshModel):
             ``boundaries_timeseries_fn``.
 
         """
-        self.logger.info("Preparing 2D boundaries.")
+        logger.info("Preparing 2D boundaries.")
 
         if boundary_type == "waterlevel":
             boundary_unit = "m"
@@ -2670,7 +2664,7 @@ class DFlowFMModel(MeshModel):
                 predicate="contains",
             )
             if len(gdf_bnd) == 0:
-                self.logger.error(
+                logger.error(
                     "Boundaries are not found. Check if the boundary are outside of"
                     "recognisable boundary region (cell size * tolerance to the mesh)."
                 )
@@ -2687,7 +2681,7 @@ class DFlowFMModel(MeshModel):
             gdf_bnd = None
         # 2. read timeseries boundaries
         if boundaries_timeseries_fn is not None:
-            self.logger.info("reading timeseries boundaries")
+            logger.info("reading timeseries boundaries")
             df_bnd = self.data_catalog.get_dataframe(
                 boundaries_timeseries_fn, time_tuple=(tstart, tstop)
             )  # could not use open_geodataset due to line geometry
@@ -2731,7 +2725,6 @@ class DFlowFMModel(MeshModel):
             boundary_value=boundary_value,
             boundary_type=boundary_type,
             boundary_unit=boundary_unit,
-            logger=self.logger,
         )
 
         # 5. set boundaries
@@ -2757,7 +2750,7 @@ class DFlowFMModel(MeshModel):
         constant_value: float
             Constant value for the rainfall_rate timeseries in mm/day.
         """
-        self.logger.info("Preparing rainfall meteo forcing from uniform timeseries.")
+        logger.info("Preparing rainfall meteo forcing from uniform timeseries.")
 
         refdate, tstart, tstop = self.get_model_time()  # time slice
         meteo_location = (
@@ -2780,7 +2773,6 @@ class DFlowFMModel(MeshModel):
             fill_value=constant_value,
             is_rate=True,
             meteo_location=meteo_location,
-            logger=self.logger,
         )
 
         # 4. set meteo forcing
@@ -2830,7 +2822,7 @@ class DFlowFMModel(MeshModel):
             Note that Delft3DFM 1D2D Suite 2022.04 supports only "rainfall_rate".
 
         """
-        self.logger.info("Preparing rainfall meteo forcing from uniform timeseries.")
+        logger.info("Preparing rainfall meteo forcing from uniform timeseries.")
 
         refdate, tstart, tstop = self.get_model_time()  # time slice
         meteo_location = (
@@ -2850,7 +2842,7 @@ class DFlowFMModel(MeshModel):
                 "function arguments (eg pandas.read_csv for csv driver)."
             )
         if (df_meteo.index[-1] - df_meteo.index[0]) < (tstop - tstart):
-            self.logger.warning(
+            logger.warning(
                 "Time in meteo_timeseries_fn were shorter than model simulation time. "
                 "Will fill in using fill_value."
             )
@@ -2865,7 +2857,6 @@ class DFlowFMModel(MeshModel):
             fill_value=fill_value,
             is_rate=is_rate,
             meteo_location=meteo_location,
-            logger=self.logger,
         )
 
         # 4. set meteo forcing
@@ -2881,7 +2872,7 @@ class DFlowFMModel(MeshModel):
 
         # FIXME: where to read crs?.
         """
-        self.logger.info(f"Reading model data from {self.root}")
+        logger.info(f"Reading model data from {self.root}")
         self.read_dimr()
         self.read_config()
         self.read_mesh()
@@ -2892,10 +2883,10 @@ class DFlowFMModel(MeshModel):
 
     def write(self):  # complete model
         """Write the complete model schematization and configuration to file."""
-        self.logger.info(f"Writing model data to {self.root}")
+        logger.info(f"Writing model data to {self.root}")
         # if in r, r+ mode, only write updated components
         if not self._write:
-            self.logger.warning("Cannot write in read-only mode")
+            logger.warning("Cannot write in read-only mode")
             return
 
         if self._maps:
@@ -2946,7 +2937,7 @@ class DFlowFMModel(MeshModel):
         cf_dict = self._config.copy()
         # Need to switch to dflowfm folder for files to be found and properly added
         mdu_fn = cf_dict.pop("filepath", None)
-        mdu_fn = Path(join(self.root, self._config_fn))
+        mdu_fn = Path(join(self.root.path, self._config_fn))
         cwd = os.getcwd()
         os.chdir(dirname(mdu_fn))
         mdu = FMModel(**cf_dict)
@@ -2991,7 +2982,7 @@ class DFlowFMModel(MeshModel):
                     # does not parse correclty the relative path
                     # For now re-update manually....
                     if not isfile(_fn):
-                        _fn = join(self.root, "maps", _fn.name)
+                        _fn = join(self.root.path, "maps", _fn.name)
                     inimap = hydromt.io.open_raster(_fn)
                     name = inidict.quantity
                     # Need to get branchid from config
@@ -3024,14 +3015,14 @@ class DFlowFMModel(MeshModel):
     def write_maps(self) -> None:
         """Write maps as tif files in maps folder and update initial fields."""
         if len(self._maps) == 0:
-            self.logger.debug("No maps data found, skip writing.")
+            logger.debug("No maps data found, skip writing.")
             return
         self._assert_write_mode()
         # Global parameters
-        mapsroot = join(self.root, "maps")
+        mapsroot = join(self.root.path, "maps")
         inilist = []
         paramlist = []
-        self.logger.info(f"Writing maps files to {mapsroot}")
+        logger.info(f"Writing maps files to {mapsroot}")
 
         def _prepare_inifields(da_dict, da):
             # Write tif files
@@ -3110,7 +3101,7 @@ class DFlowFMModel(MeshModel):
             inifield_model.parameter[i].datafile.filepath = path
         # Write inifield file
         inifield_model_filename = inifield_model._filename() + ".ini"
-        fm_dir = dirname(join(self.root, self._config_fn))
+        fm_dir = dirname(join(self.root.path, self._config_fn))
         inifield_model.save(
             join(fm_dir, inifield_model_filename),
             recurse=False,
@@ -3134,17 +3125,17 @@ class DFlowFMModel(MeshModel):
             # Add crosssections properties, should be done before friction
             # Branches are needed do derive locations,
             # self.branches should start the read if not done yet
-            self.logger.info("Reading cross-sections files")
+            logger.info("Reading cross-sections files")
             crosssections = utils.read_crosssections(self.branches, self.dfmmodel)
 
             # Add friction properties from roughness files
-            # self.logger.info("Reading friction files")
+            # logger.info("Reading friction files")
             crosssections = utils.read_friction(crosssections, self.dfmmodel)
             self.set_geoms(crosssections, "crosssections")
 
         # Read manholes
         if self.dfmmodel.geometry.storagenodefile is not None:
-            self.logger.info("Reading manholes file")
+            logger.info("Reading manholes file")
             network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
                 self.mesh_datasets["network1d"]
             )
@@ -3153,7 +3144,7 @@ class DFlowFMModel(MeshModel):
 
         # Read structures
         if self.dfmmodel.geometry.structurefile is not None:
-            self.logger.info("Reading structures file")
+            logger.info("Reading structures file")
             structures = utils.read_structures(self.branches, self.dfmmodel)
             for st_type in structures["type"].unique():
                 self.set_geoms(structures[structures["type"] == st_type], f"{st_type}s")
@@ -3172,26 +3163,26 @@ class DFlowFMModel(MeshModel):
         super().write_geoms(fn="geoms/{name}.geojson")
 
         # Write dfm files
-        savedir = dirname(join(self.root, self._config_fn))
+        savedir = dirname(join(self.root.path, self._config_fn))
 
         # Write cross-sections (inc. friction)
         if "crosssections" in self._geoms:
             # Crosssections
             gdf_crs = self.geoms["crosssections"]
-            self.logger.info("Writting cross-sections files crsdef and crsloc")
+            logger.info("Writting cross-sections files crsdef and crsloc")
             crsdef_fn, crsloc_fn = utils.write_crosssections(gdf_crs, savedir)
             self.set_config("geometry.crossdeffile", crsdef_fn)
             self.set_config("geometry.crosslocfile", crsloc_fn)
 
             # Friction
-            self.logger.info("Writting friction file(s)")
+            logger.info("Writting friction file(s)")
             friction_fns = utils.write_friction(gdf_crs, savedir)
             self.set_config("geometry.frictfile", ";".join(friction_fns))
 
         # Write structures
         # Manholes
         if "manholes" in self._geoms:
-            self.logger.info("Writting manholes file.")
+            logger.info("Writting manholes file.")
             storage_fn = utils.write_manholes(
                 self.geoms["manholes"],
                 savedir,
@@ -3208,7 +3199,7 @@ class DFlowFMModel(MeshModel):
             structures = list(itertools.chain.from_iterable(structures))
             structures = pd.DataFrame(structures).replace(np.nan, None)
             # write
-            self.logger.info("Writting structures file.")
+            logger.info("Writting structures file.")
             structures_fn = utils.write_structures(
                 structures,
                 savedir,
@@ -3303,11 +3294,11 @@ class DFlowFMModel(MeshModel):
     def write_forcing(self) -> None:
         """Write forcing into hydrolib-core ext and forcing models."""
         if len(self._forcing) == 0:
-            self.logger.debug("No forcing data found, skip writing.")
+            logger.debug("No forcing data found, skip writing.")
         else:
             self._assert_write_mode()
-            self.logger.info("Writting forcing files.")
-            savedir = dirname(join(self.root, self._config_fn))
+            logger.info("Writting forcing files.")
+            savedir = dirname(join(self.root.path, self._config_fn))
             # create new external forcing file
             ext_fn = "bnd.ext"
             Path(join(savedir, ext_fn)).unlink(missing_ok=True)
@@ -3328,7 +3319,7 @@ class DFlowFMModel(MeshModel):
         # FIXME: crs info is not available in dfmmodel, so get it from region.geojson
         # Cannot use read_geoms yet because for some some geoms
         # (crosssections, manholes) mesh needs to be read first...
-        region_fn = join(self.root, "geoms", "region.geojson")
+        region_fn = join(self.root.path, "geoms", "region.geojson")
         if (not self._crs) and isfile(region_fn):
             crs = gpd.read_file(region_fn).crs
             self._crs = crs
@@ -3356,7 +3347,7 @@ class DFlowFMModel(MeshModel):
             # https://github.com/Deltares/HYDROLIB-core/issues/561
 
             # Add branchtype, properties from branches.gui file
-            self.logger.info("Reading branches GUI file")
+            logger.info("Reading branches GUI file")
             branches = utils.read_branches_gui(branches, self.dfmmodel)
 
             # Set branches
@@ -3365,7 +3356,7 @@ class DFlowFMModel(MeshModel):
     def write_mesh(self, write_gui=True):
         """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc>."""
         self._assert_write_mode()
-        savedir = join(self.root, "dflowfm")
+        savedir = join(self.root.path, "dflowfm")
         mesh_filename = "fm_net.nc"
 
         # write mesh
@@ -3387,7 +3378,7 @@ class DFlowFMModel(MeshModel):
 
         # other mesh1d related geometry TODO update
         if "mesh1d" in self.mesh_names and write_gui:
-            self.logger.info("Writting branches.gui file")
+            logger.info("Writting branches.gui file")
             if "manholes" in self.geoms:
                 utils.write_branches_gui(self.branches, savedir)
 
@@ -3425,29 +3416,37 @@ class DFlowFMModel(MeshModel):
         """Return model mesh bounds."""
         return self.region.total_bounds
 
-    @property
-    def region(self) -> gpd.GeoDataFrame:
-        """Return geometry of region of the model area of interest."""
-        # First tries in geoms
-        if "region" in self.geoms:
-            region = self.geoms["region"]
-        # Else derives from mesh or branches
-        else:
-            if self.mesh is not None:
-                bounds = self.mesh.ugrid.total_bounds
-                crs = self.crs
-            elif not self.branches.empty:
-                bounds = self.branches.total_bounds
-                crs = self.branches.crs
-            else:
-                # Finally raise error assuming model is empty
-                raise ValueError(
-                    "Could not derive region from geoms, or mesh. Model may be empty."
-                )
-            region = gpd.GeoDataFrame(geometry=[box(*bounds)], crs=crs)
-            self.set_geoms(region, "region")
+    # @property
+    # def region(self) -> gpd.GeoDataFrame:
+    #     """Return geometry of region of the model area of interest."""
+    #     # First tries in geoms
+    #     # TODO: TypeError: argument of type 'GeomsComponent' is not iterable
+    #     # self has geoms component if we add GeomsComponent do DflowFMModel
+    #     # self.geoms has region attribute (not always), but it is sometimes None
+    #     # if present and not None, it behaves different than legacy region
+    #     # so it seems quite complex to update this part of the code
+    #     # self.region does also exist, but `TypeError: argument of
+    #     # type 'GeomsComponent' is not iterable` and `RecursionError: maximum
+    #     # recursion depth exceeded`, probably because we redefine region here
+    #     if "region" in self.geoms:
+    #         region = self.geoms["region"]
+    #     # Else derives from mesh or branches
+    #     else:
+    #         if self.mesh is not None:
+    #             bounds = self.mesh.ugrid.total_bounds
+    #             crs = self.crs
+    #         elif not self.branches.empty:
+    #             bounds = self.branches.total_bounds
+    #             crs = self.branches.crs
+    #         else:
+    #             # Finally raise error assuming model is empty
+    #             raise ValueError(
+    #                 "Could not derive region from geoms, or mesh. Model may be empty."
+    #             )
+    #         region = gpd.GeoDataFrame(geometry=[box(*bounds)], crs=crs)
+    #         self.set_geoms(region, "region")
 
-        return region
+    #     return region
 
     @property
     def dfmmodel(self):
@@ -3459,13 +3458,13 @@ class DFlowFMModel(MeshModel):
     def init_dfmmodel(self):
         """Initialise the hydrolib-core FMModel object."""
         # create a new MDU-Model
-        mdu_fn = Path(join(self.root, self._config_fn))
-        if isfile(mdu_fn) and self._read:
-            self.logger.info(f"Reading mdu file at {mdu_fn}")
+        mdu_fn = Path(join(self.root.path, self._config_fn))
+        if isfile(mdu_fn) and self._read():
+            logger.info(f"Reading mdu file at {mdu_fn}")
             self._dfmmodel = FMModel(filepath=mdu_fn)
         else:  # use hydrolib template
             self._assert_write_mode()
-            self.logger.info("Initialising empty mdu file")
+            logger.info("Initialising empty mdu file")
             self._dfmmodel = FMModel()
             self._dfmmodel.filepath = mdu_fn
 
@@ -3479,15 +3478,15 @@ class DFlowFMModel(MeshModel):
     def read_dimr(self, dimr_fn: Optional[str] = None) -> None:
         """Read DIMR from file and else create from hydrolib-core."""
         if dimr_fn is None:
-            dimr_fn = join(self.root, self._dimr_fn)
+            dimr_fn = join(self.root.path, self._dimr_fn)
         # if file exist, read
         if isfile(dimr_fn) and self._read:
-            self.logger.info(f"Reading dimr file at {dimr_fn}")
+            logger.info(f"Reading dimr file at {dimr_fn}")
             dimr = DIMR(filepath=Path(dimr_fn))
         # else initialise
         else:
             self._assert_write_mode()
-            self.logger.info("Initialising empty dimr file")
+            logger.info("Initialising empty dimr file")
             dimr = DIMR()
         self._dimr = dimr
 
@@ -3499,13 +3498,13 @@ class DFlowFMModel(MeshModel):
         # force read
         self.dimr
         if dimr_fn is not None:
-            self._dimr.filepath = join(self.root, dimr_fn)
+            self._dimr.filepath = join(self.root.path, dimr_fn)
         else:
-            self._dimr.filepath = join(self.root, self._dimr_fn)
+            self._dimr.filepath = join(self.root.path, self._dimr_fn)
 
         if not self._read:
             # Updates the dimr file first before writing
-            self.logger.info("Adding dflowfm component to dimr config")
+            logger.info("Adding dflowfm component to dimr config")
 
             # update component
             components = self._dimr.component
@@ -3528,7 +3527,7 @@ class DFlowFMModel(MeshModel):
             self._dimr.control = control
 
         # write
-        self.logger.info(f"Writing model dimr file to {self._dimr.filepath}")
+        logger.info(f"Writing model dimr file to {self._dimr.filepath}")
         self.dimr.save(recurse=False)
 
     @property
@@ -3550,7 +3549,7 @@ class DFlowFMModel(MeshModel):
         if "branchtype" in branches.columns:
             self._branches = branches
         else:
-            self.logger.error(
+            logger.error(
                 "'branchtype' column absent from the new branches, could not update."
             )
 
@@ -3560,10 +3559,10 @@ class DFlowFMModel(MeshModel):
         _ = self.set_branches_component(name="pipe")
 
         # update geom
-        self.logger.debug("Adding branches vector to geoms.")
+        logger.debug("Adding branches vector to geoms.")
         self.set_geoms(branches, "branches")
 
-        self.logger.debug("Updating branches in network.")
+        logger.debug("Updating branches in network.")
 
     def set_branches_component(self, name: str):
         """Extract component name from branches and add it to geoms."""
@@ -3692,7 +3691,7 @@ class DFlowFMModel(MeshModel):
         if overwrite_grid and "link1d2d" in self.mesh.data_vars:
             if grid_name == "mesh1d" or grid_name == "mesh2d":
                 # TODO check if warning is enough or if we should remove to be sure?
-                self.logger.warning(
+                logger.warning(
                     f"{grid_name} grid was updated in self.mesh. "
                     "Re-run setup_link1d2d method to update the model 1D2D links."
                 )
@@ -3729,7 +3728,7 @@ class DFlowFMModel(MeshModel):
         # FIXME current implementation of below does not support updating partial
         # 1d2d links. Either document or adapt. #1
         if "link1d2d" in self.mesh.data_vars:
-            self.logger.info("Overwriting existing link1d2d in self.mesh.")
+            logger.info("Overwriting existing link1d2d in self.mesh.")
             self._mesh = self._mesh.drop_vars(
                 [
                     "link1d2d",
@@ -3759,8 +3758,8 @@ class DFlowFMModel(MeshModel):
     def _check_crs(self):
         """Check if model crs is defined."""
         if self.crs is None:
-            if self._read:
-                self.logger.warning(
+            if self.read:
+                logger.warning(
                     "Could not derive CRS from reading the mesh file."
                     "Please define the CRS in the [global] init attributes before"
                     "setting up the model."
@@ -3771,4 +3770,4 @@ class DFlowFMModel(MeshModel):
                     "attributes before setting up the model."
                 )
         else:
-            self.logger.info(f"project crs: {self.crs.to_epsg()}")
+            logger.info(f"project crs: {self.crs.to_epsg()}")
