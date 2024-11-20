@@ -125,7 +125,7 @@ def test_model_build_local_code(tmp_path):
     model.setup_mesh2d(**opt['setup_mesh2d'])
     # model.setup_mesh2d_refine(**opt['setup_mesh2d_refine'])
     model.setup_maps_from_rasterdataset(**opt['setup_maps_from_rasterdataset'])
-    model.setup_2dboundary(**opt['setup_2dboundary'])
+    model.setup_2dboundary_from_lines(**opt['setup_2dboundary_from_lines'])
     model.setup_rainfall_from_uniform_timeseries(**opt['setup_rainfall_from_uniform_timeseries'])
     model.setup_link1d2d(**opt['setup_link1d2d'])
 
