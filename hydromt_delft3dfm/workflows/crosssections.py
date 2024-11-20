@@ -745,10 +745,29 @@ def set_point_crosssections(
                 ],
             )
             crosssections_ = pd.concat([crosssections_, _set_yz_crs(yz_crs)])
+        elif shape == "xyz":
+            xyz_crs = crosssections.loc[crosssections["shape"] == shape, :]
+            check_gpd_attributes(
+                xyz_crs,
+                required_columns=[
+                    "branch_id",
+                    "branch_offset",
+                    "frictionid",
+                    "frictiontype",
+                    "frictionvalue",
+                    "xyzcount",
+                    "xcoordinates",
+                    "ycoordinates",
+                    "zcoordinates",
+                    "frictionpositions",
+                    "closed",
+                ],
+            )
+            crosssections_ = pd.concat([crosssections_, _set_xyz_crs(xyz_crs)])
         else:
             logger.error(
                 "crossection shape not supported. For now only"
-                "support rectangle, trapezoid, zw and yz"
+                "support rectangle, trapezoid, zw, yz and xyz"
             )
 
     # setup thaiweg for GUI
@@ -965,6 +984,51 @@ def _set_yz_crs(crosssections: gpd.GeoDataFrame):
                 "crsdef_ycoordinates": c.ycoordinates,
                 "crsdef_zcoordinates": c.zcoordinates,
                 "crsdef_frictionpositions": f"0 { c.ycoordinates.split(' ')[-1]}",
+                "crsdef_frictionids": c.frictionid,
+                "frictiontype": c.frictiontype,
+                "frictionvalue": c.frictionvalue,
+            }
+        )
+        crslocs.append(
+            {
+                "crsloc_id": f"{c.branch_id}_{c.branch_offset:.2f}",
+                "crsloc_branchid": c.branch_id,
+                "crsloc_chainage": c.branch_offset,
+                "crsloc_shift": c.shift,
+                "crsloc_definitionid": c.Index,
+                "geometry": c.geometry,
+            }
+        )
+
+    crosssections_ = pd.merge(
+        pd.DataFrame.from_records(crslocs),
+        pd.DataFrame.from_records(crsdefs).drop_duplicates(),
+        how="left",
+        left_on=["crsloc_branchid", "crsloc_definitionid"],
+        right_on=["crsdef_branchid", "crsdef_id"],
+    )
+
+    crosssections_.index = crosssections.index
+
+    return crosssections_
+
+
+def _set_xyz_crs(crosssections: gpd.GeoDataFrame):
+    """Set xyz profile."""
+    crsdefs = []
+    crslocs = []
+    for c in crosssections.itertuples():
+        crsdefs.append(
+            {
+                "crsdef_id": c.Index,
+                "crsdef_type": "xyz",
+                "crsdef_branchid": c.branch_id,
+                "crsdef_xyzcount": c.xyzcount,
+                "crsdef_xcoordinates": c.xcoordinates,
+                "crsdef_ycoordinates": c.ycoordinates,
+                "crsdef_zcoordinates": c.zcoordinates,
+                "crsdef_frictionpositions": f"0 { c.ycoordinates.split(' ')[-1]}",
+                "crsdef_closed": c.closed,
                 "crsdef_frictionids": c.frictionid,
                 "frictiontype": c.frictiontype,
                 "frictionvalue": c.frictionvalue,

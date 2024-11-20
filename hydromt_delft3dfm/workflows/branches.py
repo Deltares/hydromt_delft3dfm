@@ -29,7 +29,10 @@ __all__ = [
     "update_data_columns_attributes",
     "update_data_columns_attribute_from_query",
     "snap_newbranches_to_branches_at_snappednodes",
+    "intersect_lines",
+    "explode_and_deduplicate_geometries",
     "snap_geom_to_branches_and_drop_nonsnapped",
+    "split_branches",
 ]
 
 
@@ -1222,7 +1225,7 @@ def _remove_branches_with_ring_geometries(
 ) -> gpd.GeoDataFrame:
     first_nodes = [l.coords[0] for l in branches.geometry]
     last_nodes = [l.coords[-1] for l in branches.geometry]
-    duplicate_ids = np.isclose(first_nodes, last_nodes)
+    duplicate_ids = np.isclose(first_nodes, last_nodes, atol=0, rtol=1e-10)
     duplicate_ids = [
         branches.index[i] for i in range(len(branches)) if np.all(duplicate_ids[i])
     ]
@@ -1230,6 +1233,98 @@ def _remove_branches_with_ring_geometries(
     logger.debug("Removing branches with ring geometries.")
 
     return branches
+
+
+def intersect_lines(gdf1, gdf2):
+    """
+    Compute the intersection between two geopandas GeoDataFrames with line geometries.
+
+    Parameters
+    ----------
+    - gdf1 : geopandas.GeoDataFrame
+        The first GeoDataFrame.
+    - gdf2 : geopandas.GeoDataFrame
+        The second GeoDataFrame.
+
+    Returns
+    -------
+    - gdf1_cleaned : geopandas.GeoDataFrame
+        Part of gdf1 that intersects with gdf2.
+    - gdf2_cleaned : geopandas.GeoDataFrame
+        Part of gdf2 that intersects with gdf1.
+    - points_cleaned : geopandas.GeoDataFrame
+        The intersection points between gdf1 and gdf2.
+    """
+    # Assign identifiers to distinguish the source of the geometries later
+    gdf1 = gdf1.copy()
+    gdf2 = gdf2.copy()
+    gdf1["_from_left"] = True
+    gdf2["_from_right"] = True
+
+    # Compute the union of the two GeoDataFrames
+    union_result = gpd.overlay(
+        gdf1, gdf2, how="union", keep_geom_type=False, make_valid=True
+    )
+
+    # Extract lines and points from the union result
+    union_lines = union_result[
+        union_result.geometry.type.isin(["LineString", "MultiLineString"])
+    ]
+    union_points = union_result[
+        union_result.geometry.type.isin(["Point", "MultiPoint"])
+    ]
+
+    # Explode in case of MultiGeometries and reset the index
+    lines_exploded = union_lines.explode().reset_index(drop=True)
+    points_exploded = union_points.explode().reset_index(drop=True)
+
+    # Filter the exploded lines based on the source identifiers
+    gdf1_intersected = lines_exploded[lines_exploded["_from_left"] == True].drop(
+        columns=["_from_left", "_from_right"]
+    )
+    columns_to_drop = [col for col in gdf1_intersected.columns if col.endswith("_2")]
+    gdf1_cleaned = gdf1_intersected.drop(columns=columns_to_drop)
+    columns_to_rename = {
+        col: col.rstrip("_1") for col in gdf1_cleaned.columns if col.endswith("_1")
+    }
+    gdf1_cleaned = gdf1_cleaned.rename(columns=columns_to_rename)
+
+    gdf2_intersected = lines_exploded[lines_exploded["_from_right"] == True].drop(
+        columns=["_from_left", "_from_right"]
+    )
+    columns_to_drop = [col for col in gdf2_intersected.columns if col.endswith("_1")]
+    gdf2_cleaned = gdf2_intersected.drop(columns=columns_to_drop)
+    columns_to_rename = {
+        col: col.rstrip("_2") for col in gdf2_cleaned.columns if col.endswith("_2")
+    }
+    gdf2_cleaned = gdf2_cleaned.rename(columns=columns_to_rename)
+
+    # Filter the exploded points
+    points_exploded["id"] = points_exploded.index
+    points_cleaned = points_exploded[["id", "geometry"]]
+
+    # Return the intersected parts and the intersection points
+    return gdf1_cleaned, gdf2_cleaned, points_cleaned
+
+
+def explode_and_deduplicate_geometries(gpd: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """Explodes and deduplicates geometries a GeoDataFrame.
+
+    Parameters
+    ----------
+        gpd (gpd.GeoDataFrame): Input GeoDataFrame.
+
+    Returns
+    -------
+        gpd.GeoDataFrame: GeoDataFrame with exploded and deduplicated geometries.
+    """
+    gpd = gpd.explode()
+    gpd = gpd[
+        gpd.index.isin(
+            gpd.geometry.apply(lambda geom: geom.wkb).drop_duplicates().index
+        )
+    ]
+    return gpd
 
 
 def snap_geom_to_branches_and_drop_nonsnapped(
