@@ -1,4 +1,4 @@
-"""Workflows to prepare mesh schematisation for Delft3D-FM model."""
+"""Workflows to prepare mesh schematisation for Delft3D FM model."""
 
 import logging
 from typing import List, Tuple, Union

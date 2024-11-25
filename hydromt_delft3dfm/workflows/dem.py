@@ -1,4 +1,4 @@
-"""Workflows to process dem data for Delft3D-FM model."""
+"""Workflows to process dem data for Delft3D FM model."""
 
 import logging
 from typing import Tuple

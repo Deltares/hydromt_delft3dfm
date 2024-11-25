@@ -1,4 +1,4 @@
-"""Workflows to prepare branches for Delft3D-FM model."""
+"""Workflows to prepare branches for Delft3D FM model."""
 
 import logging
 from typing import List, Literal, Tuple

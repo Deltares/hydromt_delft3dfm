@@ -1,4 +1,4 @@
-"""Workflows to prepare 1D structures for Delft3D-FM model."""
+"""Workflows to prepare 1D structures for Delft3D FM model."""
 
 import logging
 from typing import Literal

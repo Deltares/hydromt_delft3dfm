@@ -1,4 +1,4 @@
-"""Workflows to parse region for Delft3D-FM model."""
+"""Workflows to parse region for Delft3D FM model."""
 
 import logging
 
@@ -19,7 +19,7 @@ def parse_region_geometry(
     crs: CRS,
     logger: logging.Logger = logger,
 ):
-    """Parse hydromt stype region argument into region geometry."""
+    """Parse HydroMT stype region argument into region geometry."""
     kind, region = parse_region(region, logger=logger)
     if kind == "bbox":
         bbox = region["bbox"]
