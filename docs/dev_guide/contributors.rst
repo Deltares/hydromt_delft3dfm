@@ -9,3 +9,4 @@ Contributors
 * Hélène Boisgontier `@hboisgon <https://github.com/hboisgon>`_
 * Rinske Hutten `@rhutten <https://github.com/rhutten>`_
 * Arthur van Dam `https://github.com/arthurvd`_
+* Sebastian Hartgring `https://github.com/shartgring`_
