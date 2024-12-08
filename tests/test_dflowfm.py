@@ -1,11 +1,12 @@
 import pytest
 from os.path import abspath, dirname, join
 from hydromt_delft3dfm import DFlowFMModel
+import numpy as np
 from pathlib import Path
 
 TESTDATADIR = join(dirname(abspath(__file__)), "data")
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
-
+TOLERANCE = 1e-6
 
 def test_read_write_config_empty_paths(tmpdir):
     # Instantiate an empty model
@@ -84,12 +85,14 @@ def test_setup_maps_from_rasterdataset(tmpdir):
     model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
     model.read()
     model.set_root(tmpdir, mode="w")
-    raster_fn = ""
-    variables = []
-    #TODO expand this test
-    #TODO assert if there are no NaN values, should be -999
-    # model.setup_maps_from_rasterdataset(raster_fn, variables)
+    raster_fn = join(TESTDATADIR, "local_data","frictioncoefficient.tif")
+    variable = 'roughness_manning'
+    variables = [variable]
+    model.setup_maps_from_rasterdataset(raster_fn, variables)
 
+    roughness_values = np.unique(model.maps[variable]).tolist()
+    expected_values = [-999.0, 0.025, 0.044, 0.050, 0.055]
+    assert np.allclose(roughness_values, expected_values, atol=TOLERANCE)
 
 def test_read_maps():
     model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
