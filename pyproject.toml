@@ -17,9 +17,9 @@ dependencies = [
     "numpy",
     "pandas>=2.0.0",
     "xarray",
-    "hydrolib-core>=0.8.0",
+    "hydrolib-core>=0.8.1",
     "xugrid>=0.9.0",
-    "meshkernel>=4.3.0",
+    "meshkernel>=6.0.0",
     "pyproj",
     "shapely>=2.0.0",
     "scipy",
@@ -40,6 +40,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 dynamic = ['version', 'description']
 
@@ -59,7 +60,7 @@ test = [
 ]
 docs = [
     "nbsphinx", # docs notebook examples
-    "sphinx",
+    "sphinx<8.2", # temporary upper limit until fixing https://github.com/Deltares/hydromt_delft3dfm/issues/209
     "sphinx_design",
     "pydata-sphinx-theme",
     "sphinx_autosummary_accessors",

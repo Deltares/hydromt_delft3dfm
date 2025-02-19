@@ -61,7 +61,7 @@ SigmaGrowthFactor = 1
 AllowBndAtBifurcation= 1
 ChangeVelocityAtStructures= 1
 ChangeStructureDimensions= 0
-UseCaching        = 0
+UseCaching        = 1
 
 [numerics]
 CFLMax            = 0.7
