@@ -15,8 +15,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -26,18 +26,18 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/theme-deltares.css?v=17060807" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
@@ -353,9 +353,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -404,17 +409,17 @@
   <h1>Source code for hydromt_delft3dfm.workflows.crosssections</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Workflows to prepare crosssections for Delft3D-FM model.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">Point</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">Point</span>
 
 <span class="c1"># from delft3dfmpy.core import geometry</span>
-<span class="kn">from</span> <span class="nn">..gis_utils</span> <span class="kn">import</span> <span class="n">check_gpd_attributes</span>
-<span class="kn">from</span> <span class="nn">.branches</span> <span class="kn">import</span> <span class="n">find_nearest_branch</span><span class="p">,</span> <span class="n">update_data_columns_attributes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..gis_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_gpd_attributes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.branches</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_nearest_branch</span><span class="p">,</span> <span class="n">update_data_columns_attributes</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -431,7 +436,7 @@
 
 <div class="viewcode-block" id="prepare_default_friction_and_crosssection">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.prepare_default_friction_and_crosssection.html#hydromt_delft3dfm.workflows.prepare_default_friction_and_crosssection">[docs]</a>
-<span class="k">def</span> <span class="nf">prepare_default_friction_and_crosssection</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">prepare_default_friction_and_crosssection</span><span class="p">(</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">br_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;river&quot;</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="s2">&quot;pipe&quot;</span><span class="p">],</span>
     <span class="n">friction_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Manning&quot;</span><span class="p">,</span>
@@ -516,7 +521,7 @@
 
 <div class="viewcode-block" id="init_crosssections_options">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.init_crosssections_options.html#hydromt_delft3dfm.workflows.init_crosssections_options">[docs]</a>
-<span class="k">def</span> <span class="nf">init_crosssections_options</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">init_crosssections_options</span><span class="p">(</span>
     <span class="n">crosssections_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">crosssections_fn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise crosssection options from user input.&quot;&quot;&quot;</span>
@@ -538,7 +543,7 @@
 
 <div class="viewcode-block" id="add_crosssections">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.add_crosssections.html#hydromt_delft3dfm.workflows.add_crosssections">[docs]</a>
-<span class="k">def</span> <span class="nf">add_crosssections</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_crosssections</span><span class="p">(</span>
     <span class="n">crosssections</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">new_crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add new_crossections to crosssections.</span>
@@ -602,7 +607,7 @@
 
 <div class="viewcode-block" id="set_branch_crosssections">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.set_branch_crosssections.html#hydromt_delft3dfm.workflows.set_branch_crosssections">[docs]</a>
-<span class="k">def</span> <span class="nf">set_branch_crosssections</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_branch_crosssections</span><span class="p">(</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">midpoint</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
@@ -803,7 +808,7 @@
 
 <div class="viewcode-block" id="set_xyz_crosssections">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.set_xyz_crosssections.html#hydromt_delft3dfm.workflows.set_xyz_crosssections">[docs]</a>
-<span class="k">def</span> <span class="nf">set_xyz_crosssections</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_xyz_crosssections</span><span class="p">(</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
 <span class="p">):</span>
@@ -961,7 +966,7 @@
 
 <div class="viewcode-block" id="set_point_crosssections">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.set_point_crosssections.html#hydromt_delft3dfm.workflows.set_point_crosssections">[docs]</a>
-<span class="k">def</span> <span class="nf">set_point_crosssections</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_point_crosssections</span><span class="p">(</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">maxdist</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -1185,7 +1190,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_set_circle_crs</span><span class="p">(</span><span class="n">crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_set_circle_crs</span><span class="p">(</span><span class="n">crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Circle crossection.&quot;&quot;&quot;</span>
     <span class="n">crsdefs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">crslocs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1226,7 +1231,7 @@
     <span class="k">return</span> <span class="n">crosssections_</span>
 
 
-<span class="k">def</span> <span class="nf">_set_rectangle_crs</span><span class="p">(</span><span class="n">crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_set_rectangle_crs</span><span class="p">(</span><span class="n">crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Rectangle crossection.&quot;&quot;&quot;</span>
     <span class="n">crsdefs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">crslocs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1268,7 +1273,7 @@
     <span class="k">return</span> <span class="n">crosssections_</span>
 
 
-<span class="k">def</span> <span class="nf">_set_trapezoid_crs</span><span class="p">(</span><span class="n">crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_set_trapezoid_crs</span><span class="p">(</span><span class="n">crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Trapezoid need to be converted into zw type.&quot;&quot;&quot;</span>
     <span class="c1"># check for non-valid trapezoid crs</span>
     <span class="k">if</span> <span class="p">(</span>
@@ -1330,7 +1335,7 @@
     <span class="k">return</span> <span class="n">crosssections_</span>
 
 
-<span class="k">def</span> <span class="nf">_set_zw_crs</span><span class="p">(</span><span class="n">crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_set_zw_crs</span><span class="p">(</span><span class="n">crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Set zw profile.&quot;&quot;&quot;</span>
     <span class="n">crsdefs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">crslocs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1373,7 +1378,7 @@
     <span class="k">return</span> <span class="n">crosssections_</span>
 
 
-<span class="k">def</span> <span class="nf">_set_yz_crs</span><span class="p">(</span><span class="n">crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_set_yz_crs</span><span class="p">(</span><span class="n">crosssections</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Set yz profile.&quot;&quot;&quot;</span>
     <span class="n">crsdefs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">crslocs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1416,7 +1421,7 @@
     <span class="k">return</span> <span class="n">crosssections_</span>
 
 
-<span class="k">def</span> <span class="nf">xyzp2xyzl</span><span class="p">(</span><span class="n">xyz</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">sort_by</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">xyzp2xyzl</span><span class="p">(</span><span class="n">xyz</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">sort_by</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert xyz points to xyz lines.</span>
 
 <span class="sd">    Parameters</span>
@@ -1497,8 +1502,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1531,7 +1536,8 @@
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

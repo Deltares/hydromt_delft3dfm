@@ -15,8 +15,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -26,18 +26,18 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/theme-deltares.css?v=17060807" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
@@ -353,9 +353,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -404,22 +409,22 @@
   <h1>Source code for hydromt_delft3dfm.workflows.branches</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Workflows to prepare branches for Delft3D-FM model.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">pyproj</span>
-<span class="kn">import</span> <span class="nn">shapely</span>
-<span class="kn">from</span> <span class="nn">hydromt</span> <span class="kn">import</span> <span class="n">gis_utils</span>
-<span class="kn">from</span> <span class="nn">hydromt.gis_utils</span> <span class="kn">import</span> <span class="n">nearest_merge</span>
-<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">distance</span>
-<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">MultiLineString</span><span class="p">,</span> <span class="n">MultiPoint</span><span class="p">,</span> <span class="n">Point</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyproj</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shapely</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hydromt</span><span class="w"> </span><span class="kn">import</span> <span class="n">gis_utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hydromt.gis_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">nearest_merge</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial</span><span class="w"> </span><span class="kn">import</span> <span class="n">distance</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">MultiLineString</span><span class="p">,</span> <span class="n">MultiPoint</span><span class="p">,</span> <span class="n">Point</span>
 
-<span class="kn">from</span> <span class="nn">hydromt_delft3dfm</span> <span class="kn">import</span> <span class="n">graph_utils</span><span class="p">,</span> <span class="n">mesh_utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hydromt_delft3dfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">graph_utils</span><span class="p">,</span> <span class="n">mesh_utils</span>
 
-<span class="kn">from</span> <span class="nn">..gis_utils</span> <span class="kn">import</span> <span class="n">cut_pieces</span><span class="p">,</span> <span class="n">split_lines</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..gis_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">cut_pieces</span><span class="p">,</span> <span class="n">split_lines</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -439,7 +444,7 @@
 
 <div class="viewcode-block" id="prepare_branches">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.prepare_branches.html#hydromt_delft3dfm.workflows.prepare_branches">[docs]</a>
-<span class="k">def</span> <span class="nf">prepare_branches</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">prepare_branches</span><span class="p">(</span>
     <span class="n">gdf_br</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">params</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">br_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;river&quot;</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="s2">&quot;pipe&quot;</span><span class="p">],</span>
@@ -553,7 +558,7 @@
 
 <div class="viewcode-block" id="add_branches">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.add_branches.html#hydromt_delft3dfm.workflows.add_branches">[docs]</a>
-<span class="k">def</span> <span class="nf">add_branches</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_branches</span><span class="p">(</span>
     <span class="n">mesh1d</span><span class="p">,</span>
     <span class="n">branches</span><span class="p">,</span>
     <span class="n">new_branches</span><span class="p">,</span>
@@ -588,7 +593,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_snap_nodes</span><span class="p">(</span><span class="n">mesh1d</span><span class="p">,</span> <span class="n">branches</span><span class="p">,</span> <span class="n">newbranches</span><span class="p">,</span> <span class="n">snap_offset</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_snap_nodes</span><span class="p">(</span><span class="n">mesh1d</span><span class="p">,</span> <span class="n">branches</span><span class="p">,</span> <span class="n">newbranches</span><span class="p">,</span> <span class="n">snap_offset</span><span class="p">):</span>
     <span class="c1"># snap nodes</span>
     <span class="c1"># get mesh1d nodes that allows to be snapped</span>
     <span class="n">mesh1d_nodes</span> <span class="o">=</span> <span class="n">mesh_utils</span><span class="o">.</span><span class="n">mesh1d_nodes_geodataframe</span><span class="p">(</span><span class="n">mesh1d</span><span class="p">,</span> <span class="n">branches</span><span class="p">)</span>
@@ -608,7 +613,7 @@
     <span class="k">return</span> <span class="n">snappednodes</span>
 
 
-<span class="k">def</span> <span class="nf">_get_possible_unsnappednodes</span><span class="p">(</span><span class="n">newbranches</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_possible_unsnappednodes</span><span class="p">(</span><span class="n">newbranches</span><span class="p">):</span>
     <span class="n">branchtype</span> <span class="o">=</span> <span class="n">newbranches</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">branchtype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;pipe&quot;</span><span class="p">,</span> <span class="s2">&quot;tunnel&quot;</span><span class="p">]:</span>
@@ -620,7 +625,7 @@
     <span class="k">return</span> <span class="n">endnodes</span>
 
 
-<span class="k">def</span> <span class="nf">_snap_unsnappednodes_to_nodes</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_snap_unsnappednodes_to_nodes</span><span class="p">(</span>
     <span class="n">unsnapped_nodes</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
     <span class="n">snapped_nodes</span> <span class="o">=</span> <span class="n">gis_utils</span><span class="o">.</span><span class="n">nearest_merge</span><span class="p">(</span>
@@ -636,7 +641,7 @@
 
 <div class="viewcode-block" id="update_data_columns_attributes">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.update_data_columns_attributes.html#hydromt_delft3dfm.workflows.update_data_columns_attributes">[docs]</a>
-<span class="k">def</span> <span class="nf">update_data_columns_attributes</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_data_columns_attributes</span><span class="p">(</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">attributes</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">brtype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -690,7 +695,7 @@
 
 <div class="viewcode-block" id="update_data_columns_attribute_from_query">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.update_data_columns_attribute_from_query.html#hydromt_delft3dfm.workflows.update_data_columns_attribute_from_query">[docs]</a>
-<span class="k">def</span> <span class="nf">update_data_columns_attribute_from_query</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_data_columns_attribute_from_query</span><span class="p">(</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">attribute</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">attribute_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -773,7 +778,7 @@
 
 <div class="viewcode-block" id="process_branches">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.process_branches.html#hydromt_delft3dfm.workflows.process_branches">[docs]</a>
-<span class="k">def</span> <span class="nf">process_branches</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">process_branches</span><span class="p">(</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">id_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;branchid&quot;</span><span class="p">,</span>
     <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
@@ -834,7 +839,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">cleanup_branches</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cleanup_branches</span><span class="p">(</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">id_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;branchid&quot;</span><span class="p">,</span>
     <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
@@ -975,7 +980,7 @@
     <span class="k">return</span> <span class="n">branches</span>
 
 
-<span class="k">def</span> <span class="nf">space_branches</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">space_branches</span><span class="p">(</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">spacing_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;spacing&quot;</span><span class="p">,</span>
     <span class="n">smooth_branches</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1015,7 +1020,7 @@
     <span class="k">return</span> <span class="n">branches_</span>
 
 
-<span class="k">def</span> <span class="nf">generate_branchnodes</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_branchnodes</span><span class="p">(</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">id_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
@@ -1074,7 +1079,7 @@
 
 <div class="viewcode-block" id="validate_branches">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.validate_branches.html#hydromt_delft3dfm.workflows.validate_branches">[docs]</a>
-<span class="k">def</span> <span class="nf">validate_branches</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_branches</span><span class="p">(</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span>
 <span class="p">):</span>  <span class="c1"># TODO: add more content and maybe make a seperate module</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate the branches.</span>
@@ -1101,7 +1106,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">split_branches</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">split_branches</span><span class="p">(</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">spacing_const</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span>
     <span class="n">spacing_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1178,7 +1183,7 @@
     <span class="k">return</span> <span class="n">split_branches</span>
 
 
-<span class="k">def</span> <span class="nf">_split_branches_by_spacing_const</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_split_branches_by_spacing_const</span><span class="p">(</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">spacing_const</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">id_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;BRANCH_ID&quot;</span><span class="p">,</span>
@@ -1298,7 +1303,7 @@
     <span class="k">return</span> <span class="n">split_branches</span>
 
 
-<span class="k">def</span> <span class="nf">reduce_gdf_precision</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">rounding_precision</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">reduce_gdf_precision</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">rounding_precision</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reduce the geometry coordinate precision with the provided number of digits.</span>
 
 <span class="sd">    Parameters</span>
@@ -1342,7 +1347,7 @@
     <span class="k">return</span> <span class="n">gdf</span>
 
 
-<span class="k">def</span> <span class="nf">snap_branch_ends</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">snap_branch_ends</span><span class="p">(</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
     <span class="n">subsets</span><span class="o">=</span><span class="p">[],</span>
@@ -1429,7 +1434,7 @@
 
 
 <span class="c1"># TODO copied from dhydamo geometry.py, update when available in main</span>
-<span class="k">def</span> <span class="nf">possibly_intersecting</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">possibly_intersecting</span><span class="p">(</span>
     <span class="n">dataframebounds</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">geometry</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">buffer</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1459,7 +1464,7 @@
 
 <div class="viewcode-block" id="find_nearest_branch">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.find_nearest_branch.html#hydromt_delft3dfm.workflows.find_nearest_branch">[docs]</a>
-<span class="k">def</span> <span class="nf">find_nearest_branch</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_nearest_branch</span><span class="p">(</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">geometries</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;overal&quot;</span><span class="p">,</span>
@@ -1563,7 +1568,7 @@
 
 <div class="viewcode-block" id="snap_newbranches_to_branches_at_snappednodes">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.snap_newbranches_to_branches_at_snappednodes.html#hydromt_delft3dfm.workflows.snap_newbranches_to_branches_at_snappednodes">[docs]</a>
-<span class="k">def</span> <span class="nf">snap_newbranches_to_branches_at_snappednodes</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">snap_newbranches_to_branches_at_snappednodes</span><span class="p">(</span>
     <span class="n">new_branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">snappednodes</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
@@ -1645,7 +1650,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_remove_branches_with_ring_geometries</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_remove_branches_with_ring_geometries</span><span class="p">(</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
     <span class="n">first_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">branches</span><span class="o">.</span><span class="n">geometry</span><span class="p">]</span>
@@ -1662,7 +1667,7 @@
 
 <div class="viewcode-block" id="snap_geom_to_branches_and_drop_nonsnapped">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.snap_geom_to_branches_and_drop_nonsnapped.html#hydromt_delft3dfm.workflows.snap_geom_to_branches_and_drop_nonsnapped">[docs]</a>
-<span class="k">def</span> <span class="nf">snap_geom_to_branches_and_drop_nonsnapped</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">snap_geom_to_branches_and_drop_nonsnapped</span><span class="p">(</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">geoms</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">snap_offset</span><span class="o">=</span><span class="mf">0.0</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1714,8 +1719,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1748,7 +1753,8 @@
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

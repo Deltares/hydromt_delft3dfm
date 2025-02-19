@@ -15,8 +15,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -26,18 +26,18 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/theme-deltares.css?v=17060807" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
@@ -353,9 +353,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -404,18 +409,18 @@
   <h1>Source code for hydromt_delft3dfm.workflows.mesh</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Workflows to prepare mesh schematisation for Delft3D-FM model.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
-<span class="kn">import</span> <span class="nn">meshkernel</span> <span class="k">as</span> <span class="nn">mk</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
-<span class="kn">import</span> <span class="nn">xugrid</span> <span class="k">as</span> <span class="nn">xu</span>
-<span class="kn">from</span> <span class="nn">hydrolib.core.dflowfm</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Network</span>
-<span class="kn">from</span> <span class="nn">hydrolib.core.dflowfm.net.models</span> <span class="kn">import</span> <span class="n">split_by</span>
-<span class="kn">from</span> <span class="nn">meshkernel</span> <span class="kn">import</span> <span class="n">Contacts</span><span class="p">,</span> <span class="n">GeometryList</span>
-<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">meshkernel</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mk</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xugrid</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.core.dflowfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Network</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.core.dflowfm.net.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">split_by</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">meshkernel</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contacts</span><span class="p">,</span> <span class="n">GeometryList</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">LineString</span><span class="p">,</span>
     <span class="n">MultiLineString</span><span class="p">,</span>
     <span class="n">MultiPoint</span><span class="p">,</span>
@@ -424,9 +429,9 @@
     <span class="n">Polygon</span><span class="p">,</span>
     <span class="n">box</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">shapely.wkt</span> <span class="kn">import</span> <span class="n">dumps</span><span class="p">,</span> <span class="n">loads</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely.wkt</span><span class="w"> </span><span class="kn">import</span> <span class="n">dumps</span><span class="p">,</span> <span class="n">loads</span>
 
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">mesh_utils</span> <span class="k">as</span> <span class="n">mutils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">mesh_utils</span> <span class="k">as</span> <span class="n">mutils</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -443,7 +448,7 @@
 
 <div class="viewcode-block" id="mesh1d_network1d_from_branches">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches.html#hydromt_delft3dfm.workflows.mesh1d_network1d_from_branches">[docs]</a>
-<span class="k">def</span> <span class="nf">mesh1d_network1d_from_branches</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mesh1d_network1d_from_branches</span><span class="p">(</span>
     <span class="n">opensystem</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">closedsystem</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">openwater_computation_node_distance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">40.0</span><span class="p">,</span>
@@ -508,7 +513,7 @@
 
 <div class="viewcode-block" id="mesh1d_add_branch">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.mesh1d_add_branch.html#hydromt_delft3dfm.workflows.mesh1d_add_branch">[docs]</a>
-<span class="k">def</span> <span class="nf">mesh1d_add_branch</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mesh1d_add_branch</span><span class="p">(</span>
     <span class="n">network</span><span class="p">:</span> <span class="n">Network</span><span class="p">,</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
         <span class="n">LineString</span><span class="p">,</span> <span class="n">MultiLineString</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">LineString</span><span class="p">,</span> <span class="n">MultiLineString</span><span class="p">]]</span>
@@ -570,7 +575,7 @@
 
 <div class="viewcode-block" id="mesh2d_refine">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.mesh2d_refine.html#hydromt_delft3dfm.workflows.mesh2d_refine">[docs]</a>
-<span class="k">def</span> <span class="nf">mesh2d_refine</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mesh2d_refine</span><span class="p">(</span>
     <span class="n">mesh2d</span><span class="p">:</span> <span class="n">xu</span><span class="o">.</span><span class="n">Ugrid2d</span><span class="p">,</span>
     <span class="n">res</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">gdf_polygon</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -718,7 +723,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">round_geometry</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">rounding_precision</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">round_geometry</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">rounding_precision</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Round the coordinates of the geometry object to the provided precision.</span>
 
@@ -740,7 +745,7 @@
 <span class="c1"># The function below is an altered version of the from_polygon method from hydrolib</span>
 <span class="c1"># hydrolib &gt; dhydamo &gt; geometry &gt; models.py &gt; GeometryList &gt; from_polygon</span>
 <span class="c1"># hydrolib uses class methods to access inner_outer_separator; here an object is used</span>
-<span class="k">def</span> <span class="nf">polygon_to_geometrylist</span><span class="p">(</span><span class="n">polygon</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">polygon_to_geometrylist</span><span class="p">(</span><span class="n">polygon</span><span class="p">):</span>
     <span class="c1"># Create a list of coordinate lists</span>
     <span class="n">geometrylist</span> <span class="o">=</span> <span class="n">GeometryList</span><span class="p">()</span>
     <span class="c1"># Add exterior</span>
@@ -762,7 +767,7 @@
 
 <span class="c1"># The function below is an altered version of the from_polygon method from hydrolib</span>
 <span class="c1"># hydrolib &gt; dhydamo &gt; geometry &gt; models.py &gt; GeometryList &gt; _to_polygon, to_geometry</span>
-<span class="k">def</span> <span class="nf">polygon_to_geometry</span><span class="p">(</span><span class="n">geometrylist</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">polygon_to_geometry</span><span class="p">(</span><span class="n">geometrylist</span><span class="p">):</span>
     <span class="n">geometries</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">geo</span>
         <span class="k">for</span> <span class="n">geo</span> <span class="ow">in</span> <span class="n">split_by</span><span class="p">(</span><span class="n">geometrylist</span><span class="p">,</span> <span class="n">geometrylist</span><span class="o">.</span><span class="n">geometry_separator</span><span class="p">)</span>
@@ -780,7 +785,7 @@
 
 <div class="viewcode-block" id="links1d2d_add_links_1d_to_2d">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.links1d2d_add_links_1d_to_2d.html#hydromt_delft3dfm.workflows.links1d2d_add_links_1d_to_2d">[docs]</a>
-<span class="k">def</span> <span class="nf">links1d2d_add_links_1d_to_2d</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">links1d2d_add_links_1d_to_2d</span><span class="p">(</span>
     <span class="n">mesh</span><span class="p">:</span> <span class="n">xu</span><span class="o">.</span><span class="n">UgridDataset</span><span class="p">,</span>
     <span class="n">branchids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">within</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Polygon</span><span class="p">,</span> <span class="n">MultiPolygon</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -868,7 +873,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_set_link1d2d</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">link1d2d_arr</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_set_link1d2d</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">link1d2d_arr</span><span class="p">):</span>
     <span class="c1"># set contacts on meshkernel, use .copy() to avoid strided arrays</span>
     <span class="n">mesh1d_indices</span> <span class="o">=</span> <span class="n">link1d2d_arr</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">mesh2d_indices</span> <span class="o">=</span> <span class="n">link1d2d_arr</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -876,7 +881,7 @@
     <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">contacts_set</span><span class="p">(</span><span class="n">contacts</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_filter_links_on_idx</span><span class="p">(</span><span class="n">network</span><span class="p">:</span> <span class="n">Network</span><span class="p">,</span> <span class="n">keep</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_filter_links_on_idx</span><span class="p">(</span><span class="n">network</span><span class="p">:</span> <span class="n">Network</span><span class="p">,</span> <span class="n">keep</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># Select the remaining links</span>
     <span class="n">link1d2d_arr</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
     <span class="n">_set_link1d2d</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">link1d2d_arr</span><span class="p">)</span>
@@ -884,7 +889,7 @@
 
 <div class="viewcode-block" id="links1d2d_add_links_2d_to_1d_embedded">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_embedded.html#hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_embedded">[docs]</a>
-<span class="k">def</span> <span class="nf">links1d2d_add_links_2d_to_1d_embedded</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">links1d2d_add_links_2d_to_1d_embedded</span><span class="p">(</span>
     <span class="n">mesh</span><span class="p">:</span> <span class="n">xu</span><span class="o">.</span><span class="n">UgridDataset</span><span class="p">,</span>
     <span class="n">branchids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">within</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Polygon</span><span class="p">,</span> <span class="n">MultiPolygon</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -988,7 +993,7 @@
 
 <div class="viewcode-block" id="links1d2d_add_links_2d_to_1d_lateral">
 <a class="viewcode-back" href="../../../_generated/hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_lateral.html#hydromt_delft3dfm.workflows.links1d2d_add_links_2d_to_1d_lateral">[docs]</a>
-<span class="k">def</span> <span class="nf">links1d2d_add_links_2d_to_1d_lateral</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">links1d2d_add_links_2d_to_1d_lateral</span><span class="p">(</span>
     <span class="n">mesh</span><span class="p">:</span> <span class="n">xu</span><span class="o">.</span><span class="n">UgridDataset</span><span class="p">,</span>
     <span class="n">dist_factor</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
     <span class="n">branchids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1153,8 +1158,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1187,7 +1192,8 @@
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>
