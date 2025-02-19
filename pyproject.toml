@@ -60,7 +60,7 @@ test = [
 ]
 docs = [
     "nbsphinx", # docs notebook examples
-    "sphinx<8.2",
+    "sphinx<8.2", # temporary upper limit until fixing https://github.com/Deltares/hydromt_delft3dfm/issues/209
     "sphinx_design",
     "pydata-sphinx-theme",
     "sphinx_autosummary_accessors",
