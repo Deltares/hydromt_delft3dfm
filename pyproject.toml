@@ -60,7 +60,7 @@ test = [
 ]
 docs = [
     "nbsphinx", # docs notebook examples
-    "sphinx",
+    "sphinx<8.2",
     "sphinx_design",
     "pydata-sphinx-theme",
     "sphinx_autosummary_accessors",
