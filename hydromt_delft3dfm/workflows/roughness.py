@@ -1,11 +1,6 @@
 """Workflows to prepare roughness for Delft3D-FM model."""
 
-import logging
-
 import geopandas as gpd
-
-logger = logging.getLogger(__name__)
-
 
 __all__ = ["generate_roughness"]
 
