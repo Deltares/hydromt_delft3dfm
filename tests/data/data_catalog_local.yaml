@@ -170,3 +170,30 @@ roughness_manning:
     frictioncoefficient: roughness_manning
   meta:
     category: roughness_manning
+gpex:
+  crs: 4326
+  data_type: RasterDataset
+  driver: netcdf
+  kwargs:
+    decode_times: true
+  meta:
+    category: stats
+    notes: The file "GPEX.nc" contains global estimates of extreme precipitation using four extreme value methods (GEV, POT, MEV and Gumbel), the observed extremes, underlying parameters and variables for Gründemann et al. (2021) for 8 durations ranging between 3 hours and 10 days. The spatial resolution is 0.1 arc degrees, and the provided coordinates are the middle of the grid-cells. 
+    paper_doi: 10.1016/j.jhydrol.2023.129558
+    paper_ref: Extreme Precipitation Return Levels for Multiple Durations on a Global Scale, Gründemann et al., 2021. 
+    source_license: https://creativecommons.org/licenses/by/4.0/
+    source_url: https://data.4tu.nl/articles/_/12764429/4
+    source_version: 20210830
+  path: ./urbansewer_data/gpex_clip.nc
+
+urbansewernetwork_rivers:
+  data_type: GeoDataFrame
+  driver: vector
+  path: urbansewer_data/rivers.geojson
+  crs: 32647
+
+urbansewernetwork_pipes:
+  data_type: GeoDataFrame
+  driver: vector
+  path: urbansewer_data/pipes.geojson
+  crs: 32647
