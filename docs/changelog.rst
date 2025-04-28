@@ -15,6 +15,7 @@ Added
 
 Changed
 -------
+- Dropped support for Python 3.9. (PR #XXX)
 
 Fixed
 -----
