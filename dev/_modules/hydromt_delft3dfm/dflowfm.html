@@ -2844,10 +2844,10 @@
 <span class="sd">            &#39;lanczos&#39;, &#39;average&#39;, &#39;mode&#39;, &#39;gauss&#39;, &#39;max&#39;, &#39;min&#39;, &#39;med&#39;, &#39;q1&#39;, &#39;q3&#39;,</span>
 <span class="sd">            &#39;sum&#39;, &#39;rms&#39;]</span>
 <span class="sd">        interpolation_method : str, optional</span>
-<span class="sd">            Interpolation method for DFlow-FM. By default triangulation. Except for</span>
-<span class="sd">            waterlevel and waterdepth then the default is mean.</span>
-<span class="sd">            When methods other than &#39;triangulation&#39;, the relative search cell size will</span>
-<span class="sd">            be estimated based on resolution of the raster.</span>
+<span class="sd">            Interpolation method for DFlow-FM. By default mean for waterlevel and</span>
+<span class="sd">            waterdepth, and triangulation for all other variables. When methods other</span>
+<span class="sd">            than &#39;triangulation&#39; are used, the relative search cell size will be</span>
+<span class="sd">            estimated based on resolution of the raster.</span>
 <span class="sd">            Available methods: [&#39;triangulation&#39;, &#39;mean&#39;, &#39;nearestNb&#39;, &#39;max&#39;, &#39;min&#39;,</span>
 <span class="sd">            &#39;invDist&#39;, &#39;minAbs&#39;, &#39;median&#39;]</span>
 <span class="sd">        locationtype : str, optional</span>
@@ -2856,15 +2856,15 @@
 <span class="sd">            Variable name, only in case data is of type DataArray or if a Dataset is</span>
 <span class="sd">            added as is (split_dataset=False).</span>
 <span class="sd">        split_dataset: bool, optional</span>
-<span class="sd">            If data is a xarray.Dataset, either add it as is to maps or split it into</span>
-<span class="sd">            several xarray.DataArrays.</span>
+<span class="sd">            If data is a xarray.Dataset, either add it as a Dataset to maps or split it</span>
+<span class="sd">            into a xarray.DataArrays per variable.</span>
 <span class="sd">            Default to True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># check for name when split_dataset is False</span>
         <span class="k">if</span> <span class="n">split_dataset</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;name must be specified when split_dataset = False&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Call super method</span>
+        <span class="c1"># Call super method from HydroMT Core</span>
         <span class="n">variables</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup_maps_from_rasterdataset</span><span class="p">(</span>
             <span class="n">raster_fn</span><span class="o">=</span><span class="n">raster_fn</span><span class="p">,</span>
             <span class="n">variables</span><span class="o">=</span><span class="n">variables</span><span class="p">,</span>
@@ -2873,6 +2873,11 @@
             <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
             <span class="n">split_dataset</span><span class="o">=</span><span class="n">split_dataset</span><span class="p">,</span>
         <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">:</span>
+            <span class="n">da</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maps</span><span class="p">[</span><span class="n">var</span><span class="p">]</span>
+            <span class="n">da</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">da</span> <span class="o">==</span> <span class="n">da</span><span class="o">.</span><span class="n">raster</span><span class="o">.</span><span class="n">nodata</span><span class="p">,</span> <span class="o">-</span><span class="mf">999.0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_maps</span><span class="p">(</span><span class="n">da</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span>
 
         <span class="n">allowed_methods</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;triangulation&quot;</span><span class="p">,</span>
@@ -3447,17 +3452,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_assert_read_mode</span><span class="p">()</span>
         <span class="c1"># Read initial fields</span>
         <span class="n">inifield_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dfmmodel</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">inifieldfile</span>
-        <span class="c1"># seperate 1d and 2d</span>
-        <span class="c1"># inifield_model_1d = [</span>
-        <span class="c1">#     i for i in inifield_model.initial if &quot;1d&quot; in i.locationtype</span>
-        <span class="c1"># ] # not supported yet</span>
-        <span class="n">inifield_model_2dinitial</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">inifield_model</span><span class="o">.</span><span class="n">initial</span> <span class="k">if</span> <span class="s2">&quot;2d&quot;</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">locationtype</span>
-        <span class="p">]</span>
-        <span class="n">inifield_model_2dparameter</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">inifield_model</span><span class="o">.</span><span class="n">parameter</span> <span class="k">if</span> <span class="s2">&quot;2d&quot;</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">locationtype</span>
-        <span class="p">]</span>
-        <span class="n">inifield_model_2d</span> <span class="o">=</span> <span class="n">inifield_model_2dinitial</span> <span class="o">+</span> <span class="n">inifield_model_2dparameter</span>
+        <span class="k">if</span> <span class="n">inifield_model</span><span class="p">:</span>
+            <span class="c1"># seperate 1d and 2d</span>
+            <span class="c1"># inifield_model_1d = [</span>
+            <span class="c1">#     i for i in inifield_model.initial if &quot;1d&quot; in i.locationtype</span>
+            <span class="c1"># ] # not supported yet</span>
+            <span class="n">inifield_model_2dinitial</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">inifield_model</span><span class="o">.</span><span class="n">initial</span> <span class="k">if</span> <span class="s2">&quot;2d&quot;</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">locationtype</span>
+            <span class="p">]</span>
+            <span class="n">inifield_model_2dparameter</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">inifield_model</span><span class="o">.</span><span class="n">parameter</span> <span class="k">if</span> <span class="s2">&quot;2d&quot;</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">locationtype</span>
+            <span class="p">]</span>
+            <span class="n">inifield_model_2d</span> <span class="o">=</span> <span class="n">inifield_model_2dinitial</span> <span class="o">+</span> <span class="n">inifield_model_2dparameter</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">inifield_model_2d</span> <span class="o">=</span> <span class="p">[]</span>
+
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">inifield_model_2d</span><span class="p">):</span>
             <span class="c1"># Loop over initial / parameter to read the geotif</span>
             <span class="n">inilist</span> <span class="o">=</span> <span class="n">inifield_model_2d</span>
@@ -3528,6 +3537,7 @@
             <span class="k">if</span> <span class="n">da</span><span class="o">.</span><span class="n">raster</span><span class="o">.</span><span class="n">nodata</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">raster</span><span class="o">.</span><span class="n">nodata</span><span class="p">):</span>
                 <span class="n">da</span><span class="o">.</span><span class="n">raster</span><span class="o">.</span><span class="n">set_nodata</span><span class="p">(</span><span class="o">-</span><span class="mi">999</span><span class="p">)</span>
             <span class="n">da</span><span class="o">.</span><span class="n">raster</span><span class="o">.</span><span class="n">to_raster</span><span class="p">(</span><span class="n">_fn</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing file </span><span class="si">{</span><span class="n">mapsroot</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.tif&quot;</span><span class="p">)</span>
             <span class="c1"># Prepare dict</span>
             <span class="k">if</span> <span class="n">interp_method</span> <span class="o">==</span> <span class="s2">&quot;triangulation&quot;</span><span class="p">:</span>
                 <span class="n">inidict</span> <span class="o">=</span> <span class="p">{</span>
@@ -3568,20 +3578,26 @@
                     <span class="c1"># update config if infiltration</span>
                     <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;infiltcap&quot;</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">set_config</span><span class="p">(</span><span class="s2">&quot;grw.infiltrationmodel&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Could not write map to model: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> not recognized&quot;</span>
+                    <span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">:</span>
                         <span class="n">_prepare_inifields</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="n">ds</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
                         <span class="c1"># update config if frcition</span>
-                        <span class="k">if</span> <span class="s2">&quot;frictype&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">name</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;frictype&quot;</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">set_config</span><span class="p">(</span>
                                 <span class="s2">&quot;physics.uniffricttype&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MAPS</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;frictype&quot;</span><span class="p">]</span>
                             <span class="p">)</span>
                         <span class="c1"># update config if infiltration</span>
-                        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;infiltcap&quot;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="s2">&quot;infiltcap&quot;</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">set_config</span><span class="p">(</span><span class="s2">&quot;grw.infiltrationmodel&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Could not write map to model: </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> not found in map </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
         <span class="c1"># Assign initial fields to model and write</span>
         <span class="n">inifield_model</span> <span class="o">=</span> <span class="n">IniFieldModel</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="n">inilist</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="n">paramlist</span><span class="p">)</span>
         <span class="c1"># Bug: when initialising IniFieldModel hydrolib-core does not parse correclty</span>
@@ -4357,7 +4373,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>
