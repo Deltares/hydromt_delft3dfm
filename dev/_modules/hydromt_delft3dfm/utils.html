@@ -407,7 +407,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for hydromt_delft3dfm.utils</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Utilities read/write functions for Delft3D-FM model.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Utilities read/write functions for Delft3D FM model.&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">join</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
@@ -1129,7 +1129,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">nodeids</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">nodeid</span><span class="o">.</span><span class="n">values</span>
     <span class="n">nodeids</span> <span class="o">=</span> <span class="n">nodeids</span><span class="p">[</span><span class="n">nodeids</span> <span class="o">!=</span> <span class="s2">&quot;nan&quot;</span><span class="p">]</span>
-    <span class="c1"># Assume one forcing file (hydromt writer) and read</span>
+    <span class="c1"># Assume one forcing file (HydroMT writer) and read</span>
     <span class="n">forcing</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">forcingfile</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">df_forcing</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="vm">__dict__</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">forcing</span><span class="o">.</span><span class="n">forcing</span><span class="p">])</span>
     <span class="c1"># Filter for the current nodes, remove nans</span>
@@ -1296,7 +1296,7 @@
 <span class="sd">    da_out: xr.DataArray</span>
 <span class="sd">        External and focing values combined into a DataArray for variable quantity.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Assume one discharge (lateral specific) file (hydromt writer) and read</span>
+    <span class="c1"># Assume one discharge (lateral specific) file (HydroMT writer) and read</span>
     <span class="n">forcing</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">discharge</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">df_forcing</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="vm">__dict__</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">forcing</span><span class="o">.</span><span class="n">forcing</span><span class="p">])</span>
 
@@ -1500,12 +1500,12 @@
 <span class="sd">        &quot;boundary2d&quot;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># location file</span>
-    <span class="c1"># assume one location file has only one location (hydromt writer) and read</span>
+    <span class="c1"># assume one location file has only one location (HydroMT writer) and read</span>
     <span class="n">locationfile</span> <span class="o">=</span> <span class="n">PolyFile</span><span class="p">(</span><span class="n">workdir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">locationfile</span><span class="o">.</span><span class="n">filepath</span><span class="p">))</span>
     <span class="n">boundary_name</span> <span class="o">=</span> <span class="n">locationfile</span><span class="o">.</span><span class="n">objects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">name</span>
     <span class="n">boundary_points</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="vm">__dict__</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">locationfile</span><span class="o">.</span><span class="n">objects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">points</span><span class="p">])</span>
 
-    <span class="c1"># Assume one forcing file (hydromt writer) and read</span>
+    <span class="c1"># Assume one forcing file (HydroMT writer) and read</span>
     <span class="n">forcing</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">forcingfile</span>
     <span class="n">df_forcing</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="vm">__dict__</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">forcing</span><span class="o">.</span><span class="n">forcing</span><span class="p">])</span>
 
@@ -1648,7 +1648,7 @@
 <span class="sd">    da_out: xr.DataArray</span>
 <span class="sd">        External and focing values combined into a DataArray for variable quantity.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Assume one forcing file (hydromt writer) and read</span>
+    <span class="c1"># Assume one forcing file (HydroMT writer) and read</span>
     <span class="n">forcing</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">forcingfile</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">df_forcing</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="vm">__dict__</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">forcing</span><span class="o">.</span><span class="n">forcing</span><span class="p">])</span>
     <span class="c1"># Filter for the current nodes</span>

@@ -418,7 +418,7 @@ packages required to run the notebooks.</p>
 <section id="install-hydromt-delft3d-fm">
 <h2>1 - Install HydroMT-Delft3D FM<a class="headerlink" href="#install-hydromt-delft3d-fm" title="Link to this heading">#</a></h2>
 <p>The next step is to install all the python dependencies required to run the notebooks, including HydroMT and HydroMT-Delft3D FM.</p>
-<p><strong>If you do not have hydromt-delft3dfm yet installed</strong>, first create a new empty environment with the base hydromt installation:</p>
+<p><strong>If you do not have hydromt-delft3dfm yet installed</strong>, first create a new empty environment with the base HydroMT installation:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>hydromt-delft3dfm<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>hydromt
 </pre></div>
 </div>
@@ -448,8 +448,8 @@ To check the version of hydromt_delft3dfm that you have installed, do:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>hydromt<span class="w"> </span>--models
 
 <span class="go">model plugins:</span>
-<span class="go"> - dflowfm (hydromt_delft3dfm 0.1.2)</span>
-<span class="go">generic models (hydromt 0.9.0)</span>
+<span class="go"> - dflowfm (hydromt_delft3dfm 0.3.0)</span>
+<span class="go">generic models (hydromt 0.10.0)</span>
 <span class="go"> - grid_model</span>
 <span class="go"> - vector_model</span>
 <span class="go"> - mesh_model</span>
@@ -457,12 +457,12 @@ To check the version of hydromt_delft3dfm that you have installed, do:</p>
 </pre></div>
 </div>
 </div>
-<p>In the examples above, we see version 0.1.2 of hydromt_delft3dfm is installed and version 0.9.0 of hydromt.</p>
+<p>In the examples above, we see version 0.3.0 of hydromt_delft3dfm is installed and version 0.10.0 of hydromt.</p>
 <p><strong>Option 1: manual download and unzip</strong></p>
 <p>To manually download the examples on Windows, do (!replace with your own hydromt_delft3dfm version!):</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>curl<span class="w"> </span>https://github.com/Deltares/hydromt_delft3dfm/archive/refs/tags/v0.1.2.zip<span class="w"> </span>-O<span class="w"> </span>-L
-<span class="gp">$ </span>tar<span class="w"> </span>-xf<span class="w"> </span>v0.1.2.zip
-<span class="gp">$ </span>ren<span class="w"> </span>hydromt_delft3dfm-0.1.2<span class="w"> </span>hydromt_delft3dfm
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>curl<span class="w"> </span>https://github.com/Deltares/hydromt_delft3dfm/archive/refs/tags/v0.3.0.zip<span class="w"> </span>-O<span class="w"> </span>-L
+<span class="gp">$ </span>tar<span class="w"> </span>-xf<span class="w"> </span>v0.3.0.zip
+<span class="gp">$ </span>ren<span class="w"> </span>hydromt_delft3dfm-0.3.0<span class="w"> </span>hydromt_delft3dfm
 </pre></div>
 </div>
 <p>You can also download, unzip and rename manually if you prefer, rather than using the windows command prompt.</p>
@@ -470,7 +470,7 @@ To check the version of hydromt_delft3dfm that you have installed, do:</p>
 <p>For git users, you can also get the examples by cloning the hydromt_delft3dfm github repository and checking the version
 you have installed:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Deltares/hydromt_delft3dfm.git
-<span class="gp">$ </span>git<span class="w"> </span>checkout<span class="w"> </span>v0.1.2
+<span class="gp">$ </span>git<span class="w"> </span>checkout<span class="w"> </span>v0.3.0
 </pre></div>
 </div>
 </section>
