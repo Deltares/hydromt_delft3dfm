@@ -68,6 +68,50 @@ def test_setup_channels(tmpdir):
     )
 
 
+def test_setup_bridges(tmpdir):
+    # Instantiate a dummy model
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model.read()
+    model.set_root(tmpdir, mode="w")
+    
+    # first add channels to obtain friction values for branches
+    # see also https://github.com/Deltares/hydromt_delft3dfm/issues/168
+    region = {'geom': join(TESTDATADIR, "local_data","1D_extent.geojson")}
+    channels_fn = join(TESTDATADIR, "local_data","1D_rivers.geojson")
+    crosssections_fn = join(TESTDATADIR, "local_data","1D_rivers_pointcrosssections.geojson")
+    model.setup_channels(
+        region=region, channels_fn=channels_fn,
+        crosssections_fn=crosssections_fn,
+        crosssections_type='point'
+    )
+
+    # setup bridges (total of 2 bridges)
+    bridges_fn = join(TESTDATADIR, "local_data","bridges.geojson")
+    model.setup_bridges(bridges_fn=bridges_fn)
+    assert len(model.geoms['bridges']) == 2 
+
+def test_setup_culverts(tmpdir):
+    # Instantiate a dummy model
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model.read()
+    model.set_root(tmpdir, mode="w")
+
+    # first add channels to obtain friction values for branches
+    # see also https://github.com/Deltares/hydromt_delft3dfm/issues/168
+    region = {'geom': join(TESTDATADIR, "local_data","1D_extent.geojson")}
+    channels_fn = join(TESTDATADIR, "local_data","1D_rivers.geojson")
+    crosssections_fn = join(TESTDATADIR, "local_data","1D_rivers_pointcrosssections.geojson")
+    model.setup_channels(
+        region=region, channels_fn=channels_fn,
+        crosssections_fn=crosssections_fn,
+        crosssections_type='point'
+    )
+
+    # setup culverts (total of 1 culvert)
+    culverts_fn = join(TESTDATADIR, "local_data","culverts.geojson")
+    model.setup_culverts(culverts_fn=culverts_fn)
+    assert len(model.geoms['culverts']) == 1
+
 def test_write_structures(tmpdir):
     """
     failed before for dflowfm_local model due to nan values in gdf
