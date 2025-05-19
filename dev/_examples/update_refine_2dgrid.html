@@ -568,69 +568,69 @@ Options:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2025-05-19 09:17:41,593 - update - log - INFO - HydroMT version: 0.10.1
-2025-05-19 09:17:41,593 - update - main - INFO - Updating dflowfm model at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/dflowfm_piave (r).
-2025-05-19 09:17:41,593 - update - main - INFO - Output dir: /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine
-2025-05-19 09:17:41,593 - update - main - INFO - User settings:
-2025-05-19 09:17:42,392 - update - model_api - INFO - Initializing dflowfm model from hydromt_delft3dfm (v0.3.1.dev0).
-2025-05-19 09:17:42,393 - update - data_catalog - INFO - Parsing data catalog from /usr/share/miniconda/envs/test/lib/python3.12/site-packages/hydromt_delft3dfm/data/parameters_data.yml
-2025-05-19 09:17:42,397 - update - dflowfm - INFO - Reading mdu file at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/dflowfm_piave/dflowfm/DFlowFM.mdu
-2025-05-19 09:17:43,093 - update - dflowfm - INFO - project crs: 3857
-2025-05-19 09:17:43,094 - update - dflowfm - INFO - Reading model data from /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/dflowfm_piave
-2025-05-19 09:17:43,094 - update - dflowfm - INFO - Reading dimr file at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/dflowfm_piave/dimr_config.xml
-2025-05-19 09:17:44,237 - update - dflowfm - INFO - Reading branches GUI file
-2025-05-19 09:17:44,526 - update - dflowfm - INFO - Reading cross-sections files
-2025-05-19 09:17:44,640 - update - dflowfm - INFO - Reading manholes file
-2025-05-19 09:17:44,738 - update - model_api - WARNING - Replacing result: elevtn
-2025-05-19 09:17:44,742 - update - model_api - WARNING - Replacing result: infiltcap
-2025-05-19 09:17:44,747 - update - model_api - WARNING - Replacing result: roughness_manning
-2025-05-19 09:17:44,749 - update - model_api - WARNING - Replacing geom: region
-2025-05-19 09:17:44,749 - update - dflowfm - INFO - Reading cross-sections files
-2025-05-19 09:17:44,864 - update - model_api - WARNING - Replacing geom: crosssections
-2025-05-19 09:17:44,864 - update - dflowfm - INFO - Reading manholes file
-2025-05-19 09:17:44,914 - update - model_api - WARNING - Replacing geom: manholes
-2025-05-19 09:17:45,005 - update - model_api - WARNING - Replacing forcing: boundary1d_waterlevelbndbnd
-2025-05-19 09:17:45,007 - update - model_api - WARNING - Replacing forcing: rainfall_rate
-2025-05-19 09:17:45,007 - update - dflowfm - INFO - project crs: 3857
-2025-05-19 09:17:45,008 - update - model_api - INFO - setup_mesh2d_refine.polygon_fn: /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/data/refine.geojson
-2025-05-19 09:17:45,008 - update - model_api - INFO - setup_mesh2d_refine.sample_fn: None
-2025-05-19 09:17:45,008 - update - model_api - INFO - setup_mesh2d_refine.steps: 2
-2025-05-19 09:17:45,008 - update - dflowfm - INFO - reading geometry from file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/data/refine.geojson.
-2025-05-19 09:17:45,009 - update - geodataframe - INFO - Reading  vector data from /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/data/refine.geojson
-2025-05-19 09:17:45,034 - update - mesh - INFO - 2d mesh refined based on polygon.Number of faces before: 460 and after: 828
-2025-05-19 09:17:45,036 - update - model_mesh - WARNING - Overwriting grid mesh2d and the corresponding data variables in mesh.
-2025-05-19 09:17:45,144 - update - model_api - INFO - setup_link1d2d.link_direction: 1d_to_2d
-2025-05-19 09:17:45,144 - update - model_api - INFO - setup_link1d2d.link_type: embedded
-2025-05-19 09:17:45,144 - update - model_api - INFO - setup_link1d2d.polygon_fn: None
-2025-05-19 09:17:45,144 - update - model_api - INFO - setup_link1d2d.branch_type: None
-2025-05-19 09:17:45,144 - update - model_api - INFO - setup_link1d2d.max_length: inf
-2025-05-19 09:17:45,144 - update - model_api - INFO - setup_link1d2d.dist_factor: 2.0
-2025-05-19 09:17:45,145 - update - dflowfm - WARNING - adding 1d2d links for all branches at non boundary locations.
-2025-05-19 09:17:45,145 - update - dflowfm - INFO - setting up 1d_to_2d links.
-2025-05-19 09:17:45,295 - update - dflowfm - INFO - Writing model data to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine
-2025-05-19 09:17:45,295 - update - dflowfm - INFO - Writing maps files to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine/maps
-2025-05-19 09:17:45,305 - update - dflowfm - INFO - Writing file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine/maps/bedlevel.tif
-2025-05-19 09:17:45,311 - update - dflowfm - INFO - Writing file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine/maps/InfiltrationCapacity.tif
-2025-05-19 09:17:45,318 - update - dflowfm - INFO - Writing file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine/maps/frictioncoefficient.tif
-2025-05-19 09:17:45,491 - update - dflowfm - INFO - Writting cross-sections files crsdef and crsloc
-2025-05-19 09:17:45,833 - update - dflowfm - INFO - Writting friction file(s)
-2025-05-19 09:17:45,838 - update - dflowfm - INFO - Writting manholes file.
-2025-05-19 09:17:46,119 - update - model_api - WARNING - Replacing geom: mesh1d
-2025-05-19 09:17:46,120 - update - model_api - WARNING - Replacing geom: network1d
-2025-05-19 09:17:46,120 - update - model_api - WARNING - Replacing geom: mesh2d
-2025-05-19 09:17:46,133 - update - model_api - WARNING - Replacing geom: crosssections
-2025-05-19 09:17:46,139 - update - model_api - WARNING - Replacing geom: manholes
-2025-05-19 09:17:46,140 - update - model_api - WARNING - Replacing geom: rivers
-2025-05-19 09:17:46,142 - update - model_api - WARNING - Replacing geom: pipes
-2025-05-19 09:17:46,144 - update - model_api - WARNING - Replacing geom: branches
-2025-05-19 09:17:46,145 - update - model_api - WARNING - Replacing geom: region
-2025-05-19 09:17:46,145 - update - model_api - WARNING - Replacing geom: mesh1d
-2025-05-19 09:17:46,146 - update - model_api - WARNING - Replacing geom: network1d
-2025-05-19 09:17:46,146 - update - model_api - WARNING - Replacing geom: mesh2d
-2025-05-19 09:17:46,610 - update - dflowfm - INFO - Writting branches.gui file
-2025-05-19 09:17:46,873 - update - dflowfm - INFO - Writting forcing files.
-2025-05-19 09:17:47,641 - update - dflowfm - INFO - Adding dflowfm component to dimr config
-2025-05-19 09:17:47,647 - update - dflowfm - INFO - Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine/dimr_config.xml
+2025-05-19 09:19:19,029 - update - log - INFO - HydroMT version: 0.10.1
+2025-05-19 09:19:19,029 - update - main - INFO - Updating dflowfm model at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/dflowfm_piave (r).
+2025-05-19 09:19:19,029 - update - main - INFO - Output dir: /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine
+2025-05-19 09:19:19,029 - update - main - INFO - User settings:
+2025-05-19 09:19:19,818 - update - model_api - INFO - Initializing dflowfm model from hydromt_delft3dfm (v0.3.1.dev0).
+2025-05-19 09:19:19,818 - update - data_catalog - INFO - Parsing data catalog from /usr/share/miniconda/envs/test/lib/python3.12/site-packages/hydromt_delft3dfm/data/parameters_data.yml
+2025-05-19 09:19:19,822 - update - dflowfm - INFO - Reading mdu file at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/dflowfm_piave/dflowfm/DFlowFM.mdu
+2025-05-19 09:19:20,519 - update - dflowfm - INFO - project crs: 3857
+2025-05-19 09:19:20,519 - update - dflowfm - INFO - Reading model data from /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/dflowfm_piave
+2025-05-19 09:19:20,519 - update - dflowfm - INFO - Reading dimr file at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/dflowfm_piave/dimr_config.xml
+2025-05-19 09:19:21,637 - update - dflowfm - INFO - Reading branches GUI file
+2025-05-19 09:19:21,927 - update - dflowfm - INFO - Reading cross-sections files
+2025-05-19 09:19:22,043 - update - dflowfm - INFO - Reading manholes file
+2025-05-19 09:19:22,139 - update - model_api - WARNING - Replacing result: elevtn
+2025-05-19 09:19:22,144 - update - model_api - WARNING - Replacing result: infiltcap
+2025-05-19 09:19:22,148 - update - model_api - WARNING - Replacing result: roughness_manning
+2025-05-19 09:19:22,150 - update - model_api - WARNING - Replacing geom: region
+2025-05-19 09:19:22,150 - update - dflowfm - INFO - Reading cross-sections files
+2025-05-19 09:19:22,268 - update - model_api - WARNING - Replacing geom: crosssections
+2025-05-19 09:19:22,268 - update - dflowfm - INFO - Reading manholes file
+2025-05-19 09:19:22,317 - update - model_api - WARNING - Replacing geom: manholes
+2025-05-19 09:19:22,407 - update - model_api - WARNING - Replacing forcing: boundary1d_waterlevelbndbnd
+2025-05-19 09:19:22,409 - update - model_api - WARNING - Replacing forcing: rainfall_rate
+2025-05-19 09:19:22,409 - update - dflowfm - INFO - project crs: 3857
+2025-05-19 09:19:22,410 - update - model_api - INFO - setup_mesh2d_refine.polygon_fn: /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/data/refine.geojson
+2025-05-19 09:19:22,410 - update - model_api - INFO - setup_mesh2d_refine.sample_fn: None
+2025-05-19 09:19:22,410 - update - model_api - INFO - setup_mesh2d_refine.steps: 2
+2025-05-19 09:19:22,410 - update - dflowfm - INFO - reading geometry from file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/data/refine.geojson.
+2025-05-19 09:19:22,411 - update - geodataframe - INFO - Reading  vector data from /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/data/refine.geojson
+2025-05-19 09:19:22,436 - update - mesh - INFO - 2d mesh refined based on polygon.Number of faces before: 460 and after: 828
+2025-05-19 09:19:22,437 - update - model_mesh - WARNING - Overwriting grid mesh2d and the corresponding data variables in mesh.
+2025-05-19 09:19:22,545 - update - model_api - INFO - setup_link1d2d.link_direction: 1d_to_2d
+2025-05-19 09:19:22,545 - update - model_api - INFO - setup_link1d2d.link_type: embedded
+2025-05-19 09:19:22,545 - update - model_api - INFO - setup_link1d2d.polygon_fn: None
+2025-05-19 09:19:22,545 - update - model_api - INFO - setup_link1d2d.branch_type: None
+2025-05-19 09:19:22,545 - update - model_api - INFO - setup_link1d2d.max_length: inf
+2025-05-19 09:19:22,545 - update - model_api - INFO - setup_link1d2d.dist_factor: 2.0
+2025-05-19 09:19:22,545 - update - dflowfm - WARNING - adding 1d2d links for all branches at non boundary locations.
+2025-05-19 09:19:22,545 - update - dflowfm - INFO - setting up 1d_to_2d links.
+2025-05-19 09:19:22,693 - update - dflowfm - INFO - Writing model data to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine
+2025-05-19 09:19:22,693 - update - dflowfm - INFO - Writing maps files to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine/maps
+2025-05-19 09:19:22,703 - update - dflowfm - INFO - Writing file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine/maps/bedlevel.tif
+2025-05-19 09:19:22,710 - update - dflowfm - INFO - Writing file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine/maps/InfiltrationCapacity.tif
+2025-05-19 09:19:22,717 - update - dflowfm - INFO - Writing file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine/maps/frictioncoefficient.tif
+2025-05-19 09:19:22,888 - update - dflowfm - INFO - Writting cross-sections files crsdef and crsloc
+2025-05-19 09:19:23,226 - update - dflowfm - INFO - Writting friction file(s)
+2025-05-19 09:19:23,231 - update - dflowfm - INFO - Writting manholes file.
+2025-05-19 09:19:23,512 - update - model_api - WARNING - Replacing geom: mesh1d
+2025-05-19 09:19:23,513 - update - model_api - WARNING - Replacing geom: network1d
+2025-05-19 09:19:23,513 - update - model_api - WARNING - Replacing geom: mesh2d
+2025-05-19 09:19:23,527 - update - model_api - WARNING - Replacing geom: crosssections
+2025-05-19 09:19:23,532 - update - model_api - WARNING - Replacing geom: manholes
+2025-05-19 09:19:23,533 - update - model_api - WARNING - Replacing geom: rivers
+2025-05-19 09:19:23,535 - update - model_api - WARNING - Replacing geom: pipes
+2025-05-19 09:19:23,537 - update - model_api - WARNING - Replacing geom: branches
+2025-05-19 09:19:23,538 - update - model_api - WARNING - Replacing geom: region
+2025-05-19 09:19:23,538 - update - model_api - WARNING - Replacing geom: mesh1d
+2025-05-19 09:19:23,539 - update - model_api - WARNING - Replacing geom: network1d
+2025-05-19 09:19:23,540 - update - model_api - WARNING - Replacing geom: mesh2d
+2025-05-19 09:19:24,002 - update - dflowfm - INFO - Writting branches.gui file
+2025-05-19 09:19:24,268 - update - dflowfm - INFO - Writting forcing files.
+2025-05-19 09:19:25,033 - update - dflowfm - INFO - Adding dflowfm component to dimr config
+2025-05-19 09:19:25,039 - update - dflowfm - INFO - Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_mesh2d_refine/dimr_config.xml
 </pre></div></div>
 </div>
 <p>The example above means the following: run <strong>hydromt</strong> with:</p>
