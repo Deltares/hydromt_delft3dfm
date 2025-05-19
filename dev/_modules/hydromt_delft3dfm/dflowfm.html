@@ -1921,6 +1921,133 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_geoms</span><span class="p">(</span><span class="n">manholes</span><span class="p">,</span> <span class="s2">&quot;manholes&quot;</span><span class="p">)</span></div>
 
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_retentions</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">retentions_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">retention_defaults_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;retentions_defaults&quot;</span><span class="p">,</span>
+        <span class="n">snap_offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare the 1D retentions branches.</span>
+
+<span class="sd">        Can only be used after all branches are setup.</span>
+<span class="sd">        The retentions are read from ``retentions_fn``.</span>
+
+<span class="sd">        Use ``retentions_fn`` to set the retentions from a dataset of point locations.</span>
+<span class="sd">        Only locations within the model region are selected. They are snapped to the</span>
+<span class="sd">        model network nodes within a max distance defined in ``snap_offset``.</span>
+<span class="sd">        #TODO: allow branch and chainage</span>
+<span class="sd">        retention attributes [&quot;numLevels&quot;, &quot;levels&quot;, &quot;storageArea&quot;, &quot;interpolate&quot;]</span>
+<span class="sd">        are either taken from ``retentions_fn`` or filled in using defaults in</span>
+<span class="sd">        ``retention_defaults_fn``.</span>
+
+<span class="sd">        Adds/Updates model layers:</span>
+<span class="sd">        * **retentions** geom: 1D retentions vector</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        retentions_fn: str Path, optional</span>
+<span class="sd">            Path or data source name for retentions_fn, see data/data_sources.yml.</span>
+<span class="sd">            Note: only the points that are within the region polygon will be used.</span>
+<span class="sd">            * Optional variables: [&quot;numLevels&quot;, &quot;levels&quot;, &quot;storageArea&quot;, &quot;interpolate&quot;]</span>
+<span class="sd">        retention_defaults_fn : str Path, optional</span>
+<span class="sd">            Path to a csv file containing all defaults values per &quot;branchtype&quot;.</span>
+<span class="sd">            By default</span>
+<span class="sd">            `hydrolib.hydromt_delft3dfm.data.storages.retentions_defaults.csv` is used.</span>
+<span class="sd">            * Allowed variables: [&quot;numLevels&quot;, &quot;levels&quot;, &quot;storageArea&quot;, &quot;interpolate&quot;]</span>
+<span class="sd">        snap_offset: float, optional</span>
+<span class="sd">            Snapping tolenrance to automatically connecting retentions to network nodes.</span>
+<span class="sd">            By default 0.001. Use a higher value if needed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_allowed_columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;geometry&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;nodeid&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;numlevels&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;levels&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;storagearea&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;interpolate&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;usetable&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="c1"># read user manhole</span>
+        <span class="k">if</span> <span class="n">retentions_fn</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;reading retentions from </span><span class="si">{</span><span class="n">retentions_fn</span><span class="si">}</span><span class="s2">. &quot;</span><span class="p">)</span>
+            <span class="c1"># read</span>
+            <span class="n">gdf_retentions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_geodataframe</span><span class="p">(</span>
+                <span class="n">retentions_fn</span><span class="p">,</span>
+                <span class="n">geom</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">,</span>
+                <span class="n">buffer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_network_snap_offset</span><span class="p">,</span>
+                <span class="n">predicate</span><span class="o">=</span><span class="s2">&quot;contains&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># reproject</span>
+            <span class="k">if</span> <span class="n">gdf_retentions</span><span class="o">.</span><span class="n">crs</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">:</span>
+                <span class="n">gdf_retentions</span> <span class="o">=</span> <span class="n">gdf_retentions</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
+            <span class="c1"># set index</span>
+            <span class="k">if</span> <span class="s2">&quot;id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">gdf_retentions</span><span class="p">:</span>
+                <span class="n">gdf_retentions</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="sa">f</span><span class="s2">&quot;retention_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">gdf_retentions</span><span class="p">))</span>
+                <span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">gdf_retentions</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf_retentions</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+            <span class="c1"># filter for allowed columns</span>
+            <span class="n">allowed_columns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">_allowed_columns</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">gdf_retentions</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;filtering for allowed columns:</span><span class="si">{</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">allowed_columns</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+            <span class="n">gdf_retentions</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
+                <span class="n">gdf_retentions</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">allowed_columns</span><span class="p">)],</span> <span class="n">crs</span><span class="o">=</span><span class="n">gdf_retentions</span><span class="o">.</span><span class="n">crs</span>
+            <span class="p">)</span>
+            <span class="c1"># add defaults</span>
+            <span class="n">gdf_retentions</span><span class="p">[</span><span class="s2">&quot;branchtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;river&quot;</span>
+            <span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_catalog</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">retention_defaults_fn</span><span class="p">)</span>
+            <span class="n">gdf_retentions</span> <span class="o">=</span> <span class="n">workflows</span><span class="o">.</span><span class="n">update_data_columns_attributes</span><span class="p">(</span>
+                <span class="n">gdf_retentions</span><span class="p">,</span> <span class="n">defaults</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gdf_retentions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;No retention ponds were setup.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Path to &#39;retentions_fn&#39; missing.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gdf_retentions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Process </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">gdf_retentions</span><span class="p">)</span><span class="si">}</span><span class="s2"> retention ponds.&quot;</span><span class="p">)</span>
+            <span class="c1"># add nodeid to retentions</span>
+            <span class="n">network1d_nodes</span> <span class="o">=</span> <span class="n">mesh_utils</span><span class="o">.</span><span class="n">network1d_nodes_geodataframe</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mesh_datasets</span><span class="p">[</span><span class="s2">&quot;network1d&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">retentions</span> <span class="o">=</span> <span class="n">hydromt</span><span class="o">.</span><span class="n">gis_utils</span><span class="o">.</span><span class="n">nearest_merge</span><span class="p">(</span>
+                <span class="n">gdf_retentions</span><span class="p">,</span> <span class="n">network1d_nodes</span><span class="p">,</span> <span class="n">max_dist</span><span class="o">=</span><span class="n">snap_offset</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+            <span class="c1"># drop not snapped</span>
+            <span class="n">dropped_retentions</span> <span class="o">=</span> <span class="n">retentions</span><span class="p">[</span><span class="n">retentions</span><span class="p">[</span><span class="s2">&quot;nodeid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()]</span>
+            <span class="n">retentions</span> <span class="o">=</span> <span class="n">retentions</span><span class="p">[</span><span class="o">~</span><span class="n">retentions</span><span class="p">[</span><span class="s2">&quot;nodeid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Drop unsnapped </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">dropped_retentions</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># drop duplicated nodeid</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Dropping duplicated retentions&quot;</span><span class="p">)</span>
+            <span class="n">retentions</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;nodeid&quot;</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">retentions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;No retention ponds left after processing.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="c1"># add additional required columns</span>
+            <span class="n">retentions</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">retentions</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+            <span class="n">retentions</span><span class="p">[</span><span class="s2">&quot;usetable&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">retentions</span><span class="p">[</span><span class="s2">&quot;numlevels&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">retentions</span><span class="p">[</span><span class="s2">&quot;levels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+            <span class="p">)</span>
+
+            <span class="n">retentions</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
+                <span class="n">retentions</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">_allowed_columns</span><span class="p">)],</span> <span class="n">crs</span><span class="o">=</span><span class="n">gdf_retentions</span><span class="o">.</span><span class="n">crs</span>
+            <span class="p">)</span>
+
+            <span class="c1"># setup geoms</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding retentions vector to geoms.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_geoms</span><span class="p">(</span><span class="n">retentions</span><span class="p">,</span> <span class="s2">&quot;retentions&quot;</span><span class="p">)</span>
+
 <div class="viewcode-block" id="DFlowFMModel.setup_1dboundary">
 <a class="viewcode-back" href="../../_generated/hydromt_delft3dfm.DFlowFMModel.setup_1dboundary.html#hydromt_delft3dfm.DFlowFMModel.setup_1dboundary">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">setup_1dboundary</span><span class="p">(</span>
