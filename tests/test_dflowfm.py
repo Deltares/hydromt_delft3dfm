@@ -1,11 +1,12 @@
 import pytest
 from os.path import abspath, dirname, join
 from hydromt_delft3dfm import DFlowFMModel
+import numpy as np
 from pathlib import Path
 
 TESTDATADIR = join(dirname(abspath(__file__)), "data")
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
-
+TOLERANCE = 1e-6
 
 def test_read_write_config_empty_paths(tmpdir):
     # Instantiate an empty model
@@ -66,17 +67,62 @@ def test_setup_channels(tmpdir):
         crosssections_type='point'
     )
 
-
 def test_setup_retentions(tmpdir):
     # Instantiate a dummy model
     model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
     model.read()
     model.set_root(tmpdir, mode="w")
     
+    # setup_retentions
     retentions_fn = join(TESTDATADIR, "local_data","retention_ponds.geojson")
     # Add 1 retention pond, should be included with snap_offset = 200
     model.setup_retentions(retentions_fn=retentions_fn, snap_offset=200)
     assert len(model.geoms["retentions"]) == 1
+
+def test_setup_bridges(tmpdir):
+    # Instantiate a dummy model
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model.read()
+    model.set_root(tmpdir, mode="w")
+    
+    # first add channels to obtain friction values for branches
+    # see also https://github.com/Deltares/hydromt_delft3dfm/issues/168
+    region = {'geom': join(TESTDATADIR, "local_data","1D_extent.geojson")}
+    channels_fn = join(TESTDATADIR, "local_data","1D_rivers.geojson")
+    crosssections_fn = join(TESTDATADIR, "local_data","1D_rivers_pointcrosssections.geojson")
+    model.setup_channels(
+        region=region, channels_fn=channels_fn,
+        crosssections_fn=crosssections_fn,
+        crosssections_type='point'
+    )
+
+    # setup bridges (total of 2 bridges)
+    bridges_fn = join(TESTDATADIR, "local_data","bridges.geojson")
+    model.setup_bridges(bridges_fn=bridges_fn)
+    assert len(model.geoms['bridges']) == 2 
+
+def test_setup_culverts(tmpdir):
+    # Instantiate a dummy model
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model.read()
+    model.set_root(tmpdir, mode="w")
+
+    # first add channels to obtain friction values for branches
+    # see also https://github.com/Deltares/hydromt_delft3dfm/issues/168
+    region = {'geom': join(TESTDATADIR, "local_data","1D_extent.geojson")}
+    channels_fn = join(TESTDATADIR, "local_data","1D_rivers.geojson")
+    crosssections_fn = join(TESTDATADIR, "local_data","1D_rivers_pointcrosssections.geojson")
+    model.setup_channels(
+        region=region, channels_fn=channels_fn,
+        crosssections_fn=crosssections_fn,
+        crosssections_type='point'
+    )
+
+    # setup culverts (total of 1 culvert)
+    culverts_fn = join(TESTDATADIR, "local_data","culverts.geojson")
+    model.setup_culverts(culverts_fn=culverts_fn)
+    assert len(model.geoms['culverts']) == 1
+
 
 def test_write_structures(tmpdir):
     """
@@ -89,3 +135,22 @@ def test_write_structures(tmpdir):
     
     # indirectly call hidden write_structures() method
     model.write_geoms(write_mesh_gdf=False)
+
+
+def test_setup_maps_from_rasterdataset(tmpdir):
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model.read()
+    model.set_root(tmpdir, mode="w")
+    raster_fn = join(TESTDATADIR, "local_data","frictioncoefficient.tif")
+    variable = 'roughness_manning'
+    variables = [variable]
+    model.setup_maps_from_rasterdataset(raster_fn, variables)
+
+    roughness_values = np.unique(model.maps[variable]).tolist()
+    expected_values = [-999.0, 0.025, 0.044, 0.050, 0.055]
+    assert np.allclose(roughness_values, expected_values, atol=TOLERANCE)
+
+def test_read_maps():
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    #TODO assert if initialfields are read correctly
+    #TODO check if NaN values are read correctly

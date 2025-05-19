@@ -26,9 +26,10 @@ jobs:
       - name: Setup environment
         uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           channels: conda-forge
           channel-priority: strict
+          conda-remove-defaults: "true"
 
       - name: Install hydromt-delft3dfm
         run: |

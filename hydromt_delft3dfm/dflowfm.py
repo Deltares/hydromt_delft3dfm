@@ -2516,10 +2516,10 @@ class DFlowFMModel(MeshModel):
             'lanczos', 'average', 'mode', 'gauss', 'max', 'min', 'med', 'q1', 'q3',
             'sum', 'rms']
         interpolation_method : str, optional
-            Interpolation method for DFlow-FM. By default triangulation. Except for
-            waterlevel and waterdepth then the default is mean.
-            When methods other than 'triangulation', the relative search cell size will
-            be estimated based on resolution of the raster.
+            Interpolation method for DFlow-FM. By default mean for waterlevel and
+            waterdepth, and triangulation for all other variables. When methods other
+            than 'triangulation' are used, the relative search cell size will be
+            estimated based on resolution of the raster.
             Available methods: ['triangulation', 'mean', 'nearestNb', 'max', 'min',
             'invDist', 'minAbs', 'median']
         locationtype : str, optional
@@ -2528,15 +2528,15 @@ class DFlowFMModel(MeshModel):
             Variable name, only in case data is of type DataArray or if a Dataset is
             added as is (split_dataset=False).
         split_dataset: bool, optional
-            If data is a xarray.Dataset, either add it as is to maps or split it into
-            several xarray.DataArrays.
+            If data is a xarray.Dataset, either add it as a Dataset to maps or split it
+            into a xarray.DataArrays per variable.
             Default to True.
         """
         # check for name when split_dataset is False
         if split_dataset is False and name is None:
             self.logger.error("name must be specified when split_dataset = False")
 
-        # Call super method
+        # Call super method from HydroMT Core
         variables = super().setup_maps_from_rasterdataset(
             raster_fn=raster_fn,
             variables=variables,
@@ -2545,6 +2545,11 @@ class DFlowFMModel(MeshModel):
             name=name,
             split_dataset=split_dataset,
         )
+
+        for var in variables:
+            da = self.maps[var]
+            da.where(da == da.raster.nodata, -999.0)
+            self.set_maps(da, var)
 
         allowed_methods = [
             "triangulation",
@@ -3092,17 +3097,21 @@ class DFlowFMModel(MeshModel):
         self._assert_read_mode()
         # Read initial fields
         inifield_model = self.dfmmodel.geometry.inifieldfile
-        # seperate 1d and 2d
-        # inifield_model_1d = [
-        #     i for i in inifield_model.initial if "1d" in i.locationtype
-        # ] # not supported yet
-        inifield_model_2dinitial = [
-            i for i in inifield_model.initial if "2d" in i.locationtype
-        ]
-        inifield_model_2dparameter = [
-            i for i in inifield_model.parameter if "2d" in i.locationtype
-        ]
-        inifield_model_2d = inifield_model_2dinitial + inifield_model_2dparameter
+        if inifield_model:
+            # seperate 1d and 2d
+            # inifield_model_1d = [
+            #     i for i in inifield_model.initial if "1d" in i.locationtype
+            # ] # not supported yet
+            inifield_model_2dinitial = [
+                i for i in inifield_model.initial if "2d" in i.locationtype
+            ]
+            inifield_model_2dparameter = [
+                i for i in inifield_model.parameter if "2d" in i.locationtype
+            ]
+            inifield_model_2d = inifield_model_2dinitial + inifield_model_2dparameter
+        else:
+            inifield_model_2d = []
+
         if any(inifield_model_2d):
             # Loop over initial / parameter to read the geotif
             inilist = inifield_model_2d
@@ -3170,6 +3179,7 @@ class DFlowFMModel(MeshModel):
             if da.raster.nodata is None or np.isnan(da.raster.nodata):
                 da.raster.set_nodata(-999)
             da.raster.to_raster(_fn)
+            self.logger.info(f"Writing file {mapsroot}/{name}.tif")
             # Prepare dict
             if interp_method == "triangulation":
                 inidict = {
@@ -3210,20 +3220,26 @@ class DFlowFMModel(MeshModel):
                     # update config if infiltration
                     if name == "infiltcap":
                         self.set_config("grw.infiltrationmodel", 2)
-
+                else:
+                    self.logger.error(
+                        f"Could not write map to model: {name} not recognized"
+                    )
             elif isinstance(ds, xr.Dataset):
                 for v in ds.data_vars:
                     if v in self._MAPS:
                         _prepare_inifields(self._MAPS[v], ds[v])
                         # update config if frcition
-                        if "frictype" in self._MAPS[name]:
+                        if self._MAPS[v] == "frictype":
                             self.set_config(
                                 "physics.uniffricttype", self._MAPS[name]["frictype"]
                             )
                         # update config if infiltration
-                        if name == "infiltcap":
+                        if v == "infiltcap":
                             self.set_config("grw.infiltrationmodel", 2)
-
+                    else:
+                        self.logger.error(
+                            f"Could not write map to model: {v} not found in map {name}"
+                        )
         # Assign initial fields to model and write
         inifield_model = IniFieldModel(initial=inilist, parameter=paramlist)
         # Bug: when initialising IniFieldModel hydrolib-core does not parse correclty
