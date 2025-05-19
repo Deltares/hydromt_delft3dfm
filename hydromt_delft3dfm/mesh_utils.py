@@ -1,4 +1,4 @@
-"""Utilities mesh functions for Delft3D-FM model."""
+"""Utilities mesh functions for Delft3D FM model."""
 
 import logging
 from typing import Tuple

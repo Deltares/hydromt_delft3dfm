@@ -1,4 +1,4 @@
-"""Workflows to prepare manholes for Delft3D-FM model."""
+"""Workflows to prepare manholes for Delft3D FM model."""
 
 import logging
 

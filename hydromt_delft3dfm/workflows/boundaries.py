@@ -1,4 +1,4 @@
-"""Workflows to prepare boundaries for Delft3D-FM model."""
+"""Workflows to prepare boundaries for Delft3D FM model."""
 
 import logging
 from pathlib import Path
@@ -207,7 +207,7 @@ def compute_boundary_values(
         # snap user boundary to potential boundary locations to get nodeid
         gdf_bnd = da_bnd.vector.to_gdf()
         gdf_bnd.crs = boundaries.crs
-        # TODO remove after hydromt release>0.9.0
+        # TODO remove after HydroMT release>0.9.0
         gdf_bnd = hydromt.gis_utils.nearest_merge(
             gdf_bnd,
             boundaries,
