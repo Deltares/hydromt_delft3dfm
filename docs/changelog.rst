@@ -12,6 +12,7 @@ UNRELEASED
 Added
 -----
 - Included new example notebook for basic HydroMT use through CLI. (PR #202)
+- New method **setup_retentions**. (PR #170)
 
 Changed
 -------
