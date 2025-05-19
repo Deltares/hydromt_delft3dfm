@@ -47,7 +47,7 @@ Fixed
 - Fix writing of structures with newer (geo)pandas versions. (PR #151)
 - Several bugfixes related to processing of cross-sections (PR #153)
 - Support for geopandas v1 (PR #158)
-- Support for latest version hydromt artifact data. (PR #160)
+- Support for latest version HydroMT artifact data. (PR #160)
 - Avoid sediment section in mdu so generated models can run in Delft3D FM Suite 2024.03 1D2D. (PR #184)
 - fixed typo so ``setup_pipes()`` now allows field ``invlev_dn``. (PR #193)
 
@@ -76,7 +76,7 @@ Added
 
 Changed
 -------
-- Upgraded hydromt dependency to version 0.9.0. (PR#100)
+- Upgraded HydroMT dependency to version 0.9.0. (PR#100)
 - Updated documentation. (PR #97)
 
 v0.1.1 (13 October 2023)

@@ -1,4 +1,4 @@
-"""Utilities read/write functions for Delft3D-FM model."""
+"""Utilities read/write functions for Delft3D FM model."""
 
 from os.path import join
 from pathlib import Path
@@ -688,7 +688,7 @@ def read_1dboundary(
     """
     nodeids = df.nodeid.values
     nodeids = nodeids[nodeids != "nan"]
-    # Assume one forcing file (hydromt writer) and read
+    # Assume one forcing file (HydroMT writer) and read
     forcing = df.forcingfile.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
     # Filter for the current nodes, remove nans
@@ -849,7 +849,7 @@ def read_1dlateral(
     da_out: xr.DataArray
         External and focing values combined into a DataArray for variable quantity.
     """
-    # Assume one discharge (lateral specific) file (hydromt writer) and read
+    # Assume one discharge (lateral specific) file (HydroMT writer) and read
     forcing = df.discharge.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
 
@@ -1047,12 +1047,12 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
         "boundary2d".
     """
     # location file
-    # assume one location file has only one location (hydromt writer) and read
+    # assume one location file has only one location (HydroMT writer) and read
     locationfile = PolyFile(workdir.joinpath(df.locationfile.filepath))
     boundary_name = locationfile.objects[0].metadata.name
     boundary_points = pd.DataFrame([f.__dict__ for f in locationfile.objects[0].points])
 
-    # Assume one forcing file (hydromt writer) and read
+    # Assume one forcing file (HydroMT writer) and read
     forcing = df.forcingfile
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
 
@@ -1189,7 +1189,7 @@ def read_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
     da_out: xr.DataArray
         External and focing values combined into a DataArray for variable quantity.
     """
-    # Assume one forcing file (hydromt writer) and read
+    # Assume one forcing file (HydroMT writer) and read
     forcing = df.forcingfile.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
     # Filter for the current nodes

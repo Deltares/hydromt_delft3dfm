@@ -16,7 +16,7 @@ This plugin provides an implementation of the model API for the Delft3D FM_ mode
 
 Why HydroMT-Delft3D FM?
 -----------------------
-Setting up distributed hydrological models typically requires many (manual) steps
+Setting up distributed hydrological and hydrodynamic models typically requires many (manual) steps
 to process input data and might therefore be time consuming and hard to reproduce.
 Especially improving models based on global-local geospatial datasets, which are
 rapidly becoming available at increasingly high resolutions, might be challenging.

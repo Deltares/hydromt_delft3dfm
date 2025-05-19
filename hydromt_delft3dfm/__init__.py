@@ -1,4 +1,4 @@
-"""hydroMT plugin for Delft3D-FM models."""
+"""hydroMT plugin for Delft3D FM models."""
 
 from os.path import abspath, dirname, join
 
