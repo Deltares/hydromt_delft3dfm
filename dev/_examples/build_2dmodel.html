@@ -580,66 +580,66 @@ method.</p></li>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2025-05-19 09:27:21,813 - build - log - DEBUG - Writing log messages to new file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/hydromt.log.
-2025-05-19 09:27:21,813 - build - log - INFO - HydroMT version: 0.10.1
-2025-05-19 09:27:21,813 - build - main - INFO - Building instance of dflowfm model at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d.
-2025-05-19 09:27:21,813 - build - main - INFO - User settings:
-2025-05-19 09:27:22,635 - build - data_catalog - INFO - Reading data catalog artifact_data latest
-2025-05-19 09:27:22,635 - build - data_catalog - INFO - Parsing data catalog from /home/runner/.hydromt_data/artifact_data/v0.0.9/data_catalog.yml
-2025-05-19 09:27:23,194 - build - model_api - INFO - Initializing dflowfm model from hydromt_delft3dfm (v0.3.1.dev0).
-2025-05-19 09:27:23,195 - build - data_catalog - INFO - Parsing data catalog from /usr/share/miniconda/envs/test/lib/python3.12/site-packages/hydromt_delft3dfm/data/parameters_data.yml
-2025-05-19 09:27:23,198 - build - dflowfm - INFO - Initialising empty mdu file
-2025-05-19 09:27:23,204 - build - dflowfm - INFO - project crs: 3857
-2025-05-19 09:27:23,204 - build - model_api - INFO - setup_mesh2d.region: {&#39;bbox&#39;: [12.4331, 46.4661, 12.5212, 46.5369]}
-2025-05-19 09:27:23,205 - build - model_api - INFO - setup_mesh2d.res: 500
-2025-05-19 09:27:23,275 - build - model_api - INFO - setup_maps_from_rasterdataset.raster_fn: merit_hydro
-2025-05-19 09:27:23,275 - build - model_api - INFO - setup_maps_from_rasterdataset.variables: [&#39;elevtn&#39;]
-2025-05-19 09:27:23,275 - build - model_api - INFO - setup_maps_from_rasterdataset.fill_method: nearest
-2025-05-19 09:27:23,275 - build - model_api - INFO - setup_maps_from_rasterdataset.reproject_method: nearest
-2025-05-19 09:27:23,275 - build - model_api - INFO - setup_maps_from_rasterdataset.interpolation_method: nearestNb
-2025-05-19 09:27:23,275 - build - model_api - INFO - setup_maps_from_rasterdataset.locationtype: 2d
-2025-05-19 09:27:23,275 - build - model_api - INFO - setup_maps_from_rasterdataset.name: None
-2025-05-19 09:27:23,275 - build - model_api - INFO - setup_maps_from_rasterdataset.split_dataset: True
-2025-05-19 09:27:23,275 - build - model_api - INFO - Preparing maps data from raster source merit_hydro
-2025-05-19 09:27:23,276 - build - rasterdataset - INFO - Reading merit_hydro raster data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/merit_hydro/{variable}.tif
-2025-05-19 09:27:23,308 - build - rasterdataset - DEBUG - Clip to [12.433, 46.467, 12.523, 46.538] (epsg:4326))
-2025-05-19 09:27:23,405 - build - model_api - WARNING - Replacing result: elevtn
-2025-05-19 09:27:23,406 - build - model_api - INFO - setup_maps_from_raster_reclass.raster_fn: vito_2015
-2025-05-19 09:27:23,406 - build - model_api - INFO - setup_maps_from_raster_reclass.reclass_table_fn: vito_mapping
-2025-05-19 09:27:23,406 - build - model_api - INFO - setup_maps_from_raster_reclass.reclass_variables: [&#39;roughness_manning&#39;, &#39;infiltcap&#39;]
-2025-05-19 09:27:23,406 - build - model_api - INFO - setup_maps_from_raster_reclass.fill_method: None
-2025-05-19 09:27:23,406 - build - model_api - INFO - setup_maps_from_raster_reclass.reproject_method: nearest
-2025-05-19 09:27:23,406 - build - model_api - INFO - setup_maps_from_raster_reclass.interpolation_method: triangulation
-2025-05-19 09:27:23,406 - build - model_api - INFO - setup_maps_from_raster_reclass.locationtype: 2d
-2025-05-19 09:27:23,406 - build - model_api - INFO - setup_maps_from_raster_reclass.name: None
-2025-05-19 09:27:23,406 - build - model_api - INFO - setup_maps_from_raster_reclass.split_dataset: True
-2025-05-19 09:27:23,406 - build - model_api - INFO - Preparing map data by reclassifying the data in vito_2015 based on vito_mapping
-2025-05-19 09:27:23,406 - build - rasterdataset - INFO - Reading vito_2015 raster data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/vito.tif
-2025-05-19 09:27:23,415 - build - rasterdataset - DEBUG - Clip to [12.433, 46.467, 12.523, 46.538] (epsg:4326))
-2025-05-19 09:27:23,416 - build - dataframe - INFO - Reading vito_mapping csv data from /usr/share/miniconda/envs/test/lib/python3.12/site-packages/hydromt_delft3dfm/data/landuse/vito_mapping.csv
+2025-05-19 09:28:38,872 - build - log - DEBUG - Writing log messages to new file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/hydromt.log.
+2025-05-19 09:28:38,872 - build - log - INFO - HydroMT version: 0.10.1
+2025-05-19 09:28:38,873 - build - main - INFO - Building instance of dflowfm model at /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d.
+2025-05-19 09:28:38,873 - build - main - INFO - User settings:
+2025-05-19 09:28:39,708 - build - data_catalog - INFO - Reading data catalog artifact_data latest
+2025-05-19 09:28:39,708 - build - data_catalog - INFO - Parsing data catalog from /home/runner/.hydromt_data/artifact_data/v0.0.9/data_catalog.yml
+2025-05-19 09:28:40,267 - build - model_api - INFO - Initializing dflowfm model from hydromt_delft3dfm (v0.3.1.dev0).
+2025-05-19 09:28:40,268 - build - data_catalog - INFO - Parsing data catalog from /usr/share/miniconda/envs/test/lib/python3.12/site-packages/hydromt_delft3dfm/data/parameters_data.yml
+2025-05-19 09:28:40,271 - build - dflowfm - INFO - Initialising empty mdu file
+2025-05-19 09:28:40,277 - build - dflowfm - INFO - project crs: 3857
+2025-05-19 09:28:40,277 - build - model_api - INFO - setup_mesh2d.region: {&#39;bbox&#39;: [12.4331, 46.4661, 12.5212, 46.5369]}
+2025-05-19 09:28:40,277 - build - model_api - INFO - setup_mesh2d.res: 500
+2025-05-19 09:28:40,348 - build - model_api - INFO - setup_maps_from_rasterdataset.raster_fn: merit_hydro
+2025-05-19 09:28:40,348 - build - model_api - INFO - setup_maps_from_rasterdataset.variables: [&#39;elevtn&#39;]
+2025-05-19 09:28:40,348 - build - model_api - INFO - setup_maps_from_rasterdataset.fill_method: nearest
+2025-05-19 09:28:40,348 - build - model_api - INFO - setup_maps_from_rasterdataset.reproject_method: nearest
+2025-05-19 09:28:40,348 - build - model_api - INFO - setup_maps_from_rasterdataset.interpolation_method: nearestNb
+2025-05-19 09:28:40,348 - build - model_api - INFO - setup_maps_from_rasterdataset.locationtype: 2d
+2025-05-19 09:28:40,348 - build - model_api - INFO - setup_maps_from_rasterdataset.name: None
+2025-05-19 09:28:40,348 - build - model_api - INFO - setup_maps_from_rasterdataset.split_dataset: True
+2025-05-19 09:28:40,348 - build - model_api - INFO - Preparing maps data from raster source merit_hydro
+2025-05-19 09:28:40,349 - build - rasterdataset - INFO - Reading merit_hydro raster data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/merit_hydro/{variable}.tif
+2025-05-19 09:28:40,381 - build - rasterdataset - DEBUG - Clip to [12.433, 46.467, 12.523, 46.538] (epsg:4326))
+2025-05-19 09:28:40,477 - build - model_api - WARNING - Replacing result: elevtn
+2025-05-19 09:28:40,478 - build - model_api - INFO - setup_maps_from_raster_reclass.raster_fn: vito_2015
+2025-05-19 09:28:40,478 - build - model_api - INFO - setup_maps_from_raster_reclass.reclass_table_fn: vito_mapping
+2025-05-19 09:28:40,478 - build - model_api - INFO - setup_maps_from_raster_reclass.reclass_variables: [&#39;roughness_manning&#39;, &#39;infiltcap&#39;]
+2025-05-19 09:28:40,478 - build - model_api - INFO - setup_maps_from_raster_reclass.fill_method: None
+2025-05-19 09:28:40,478 - build - model_api - INFO - setup_maps_from_raster_reclass.reproject_method: nearest
+2025-05-19 09:28:40,478 - build - model_api - INFO - setup_maps_from_raster_reclass.interpolation_method: triangulation
+2025-05-19 09:28:40,478 - build - model_api - INFO - setup_maps_from_raster_reclass.locationtype: 2d
+2025-05-19 09:28:40,479 - build - model_api - INFO - setup_maps_from_raster_reclass.name: None
+2025-05-19 09:28:40,479 - build - model_api - INFO - setup_maps_from_raster_reclass.split_dataset: True
+2025-05-19 09:28:40,479 - build - model_api - INFO - Preparing map data by reclassifying the data in vito_2015 based on vito_mapping
+2025-05-19 09:28:40,479 - build - rasterdataset - INFO - Reading vito_2015 raster data from /home/runner/.hydromt_data/artifact_data/v0.0.9/data.tar/vito.tif
+2025-05-19 09:28:40,488 - build - rasterdataset - DEBUG - Clip to [12.433, 46.467, 12.523, 46.538] (epsg:4326))
+2025-05-19 09:28:40,489 - build - dataframe - INFO - Reading vito_mapping csv data from /usr/share/miniconda/envs/test/lib/python3.12/site-packages/hydromt_delft3dfm/data/landuse/vito_mapping.csv
 The nodata value None is not in the reclass table.None will be used for the params.
-2025-05-19 09:27:23,502 - build - model_api - INFO - setup_rainfall_from_constant.constant_value: 150
-2025-05-19 09:27:23,502 - build - dflowfm - INFO - Preparing rainfall meteo forcing from uniform timeseries.
-2025-05-19 09:27:23,504 - build - boundaries - INFO - Preparing global (spatially uniform) timeseries.
-2025-05-19 09:27:23,504 - build - boundaries - WARNING - time unit days is not supported by the current GUI version: 2022.04
-2025-05-19 09:27:23,506 - build - dflowfm - INFO - Writing model data to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d
-2025-05-19 09:27:23,506 - build - dflowfm - INFO - Writing maps files to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/maps
-2025-05-19 09:27:23,510 - build - dflowfm - INFO - Writing file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/maps/bedlevel.tif
-2025-05-19 09:27:23,536 - build - dflowfm - INFO - Writing file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/maps/frictioncoefficient.tif
-2025-05-19 09:27:23,552 - build - dflowfm - INFO - Writing file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/maps/InfiltrationCapacity.tif
-2025-05-19 09:27:23,558 - build - model_api - DEBUG - Writing file geoms/region.geojson
-2025-05-19 09:27:23,561 - build - model_api - DEBUG - Writing file geoms/mesh2d.geojson
-2025-05-19 09:27:23,575 - build - model_api - WARNING - Replacing geom: mesh2d
-2025-05-19 09:27:23,576 - build - model_api - WARNING - Replacing geom: region
-2025-05-19 09:27:23,576 - build - model_api - WARNING - Replacing geom: mesh2d
-2025-05-19 09:27:23,576 - build - model_api - DEBUG - Writing file geoms/region.geojson
-2025-05-19 09:27:23,578 - build - model_api - DEBUG - Writing file geoms/mesh2d.geojson
-2025-05-19 09:27:23,642 - build - dflowfm - INFO - Writting forcing files.
-2025-05-19 09:27:23,671 - build - dflowfm - INFO - Initialising empty dimr file
+2025-05-19 09:28:40,571 - build - model_api - INFO - setup_rainfall_from_constant.constant_value: 150
+2025-05-19 09:28:40,571 - build - dflowfm - INFO - Preparing rainfall meteo forcing from uniform timeseries.
+2025-05-19 09:28:40,573 - build - boundaries - INFO - Preparing global (spatially uniform) timeseries.
+2025-05-19 09:28:40,573 - build - boundaries - WARNING - time unit days is not supported by the current GUI version: 2022.04
+2025-05-19 09:28:40,575 - build - dflowfm - INFO - Writing model data to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d
+2025-05-19 09:28:40,575 - build - dflowfm - INFO - Writing maps files to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/maps
+2025-05-19 09:28:40,578 - build - dflowfm - INFO - Writing file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/maps/bedlevel.tif
+2025-05-19 09:28:40,605 - build - dflowfm - INFO - Writing file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/maps/frictioncoefficient.tif
+2025-05-19 09:28:40,621 - build - dflowfm - INFO - Writing file /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/maps/InfiltrationCapacity.tif
+2025-05-19 09:28:40,627 - build - model_api - DEBUG - Writing file geoms/region.geojson
+2025-05-19 09:28:40,630 - build - model_api - DEBUG - Writing file geoms/mesh2d.geojson
+2025-05-19 09:28:40,644 - build - model_api - WARNING - Replacing geom: mesh2d
+2025-05-19 09:28:40,644 - build - model_api - WARNING - Replacing geom: region
+2025-05-19 09:28:40,645 - build - model_api - WARNING - Replacing geom: mesh2d
+2025-05-19 09:28:40,645 - build - model_api - DEBUG - Writing file geoms/region.geojson
+2025-05-19 09:28:40,646 - build - model_api - DEBUG - Writing file geoms/mesh2d.geojson
+2025-05-19 09:28:40,709 - build - dflowfm - INFO - Writting forcing files.
+2025-05-19 09:28:40,738 - build - dflowfm - INFO - Initialising empty dimr file
 INFO:build:Initialising empty dimr file
-2025-05-19 09:27:23,672 - build - dflowfm - INFO - Adding dflowfm component to dimr config
+2025-05-19 09:28:40,739 - build - dflowfm - INFO - Adding dflowfm component to dimr config
 INFO:build:Adding dflowfm component to dimr config
-2025-05-19 09:27:23,672 - build - dflowfm - INFO - Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/dimr_config.xml
+2025-05-19 09:28:40,739 - build - dflowfm - INFO - Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/dimr_config.xml
 INFO:build:Writing model dimr file to /home/runner/work/hydromt_delft3dfm/hydromt_delft3dfm/docs/_examples/build/dflowfm_2d/dimr_config.xml
 </pre></div></div>
 </div>
