@@ -73,9 +73,8 @@ setup_maps_from_rasterdataset:
   interpolation_method: nearestNb
   split_dataset: True
 
-setup_2dboundary:
-  boundaries_fn: 2D_boundary
-  boundaries_timeseries_fn: 2D_boundary_timeseries
+setup_2dboundary_from_lines:
+  boundaries_geodataset_fn: 2D_boundaries_lines_timeseries
   boundary_type: waterlevel
   boundary_value: -999
 

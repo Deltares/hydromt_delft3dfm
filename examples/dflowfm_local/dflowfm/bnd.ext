@@ -16,13 +16,13 @@ forcingFile  = boundarycondition1d.bc
 
 [Boundary]
 quantity     = waterlevelbnd
-locationFile = 0.pli
-forcingFile  = boundaryconditions2d_0.bc
+locationFile = waterlevelbnd_0.pli
+forcingFile  = boundary2d.bc
 
 [Boundary]
 quantity     = waterlevelbnd
-locationFile = 1.pli
-forcingFile  = boundaryconditions2d_1.bc
+locationFile = waterlevelbnd_1.pli
+forcingFile  = boundary2d.bc
 
 [Lateral]
 id             = lateral1d_points_0

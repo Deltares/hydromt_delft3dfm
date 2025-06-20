@@ -1704,10 +1704,15 @@ class DFlowFMModel(MeshModel):
             precision errors.
         """
         self.logger.info(f"Preparing 1D {boundary_type} boundaries for {branch_type}.")
+        boundaries = workflows.get_boundaries_with_nodeid(
+            self.branches,
+            mesh_utils.network1d_nodes_geodataframe(self.mesh_datasets["network1d"]),
+        )
+        refdate, tstart, tstop = self.get_model_time()
 
         # 1. get potential boundary locations based on branch_type and boundary_type
         boundaries_branch_type = workflows.select_boundary_type(
-            self.boundaries, branch_type, boundary_type, boundary_locs
+            boundaries, branch_type, boundary_type, boundary_locs
         )
 
         # 2. read boundary from user data
@@ -1749,8 +1754,14 @@ class DFlowFMModel(MeshModel):
                 forcing_geodataset_fn,
                 geom=self.region.buffer(region_buffer),  # buffer region
                 variables=[forcing_name],
-                time_tuple=(tstart, tstop),
-            )
+                time_tuple=(
+                    tstart,
+                    tstop
+                    + timedelta(
+                        seconds=1
+                    ),  # extend with 1 seconds to include the last timestep
+                ),
+            ).rename(forcing_name)
             # error if time mismatch
             if np.logical_and(
                 pd.to_datetime(da.time.values[0]) == pd.to_datetime(tstart),
@@ -1784,6 +1795,30 @@ class DFlowFMModel(MeshModel):
             gdf = None
             da = None
         return gdf, da
+
+    def _snap_geom_to_branches_and_drop_nonsnapped(
+        self, branches: gpd.GeoDataFrame, geoms: gpd.GeoDataFrame, snap_offset=0.0
+    ):
+        """Snaps geoms to branches and drop the ones that are not snapped.
+
+        Returns snapped geoms with branchid and chainage.
+        branches must have branchid.
+        """
+        workflows.find_nearest_branch(
+            branches=branches,
+            geometries=geoms,
+            maxdist=snap_offset,
+        )
+        geoms = geoms.rename(
+            columns={"branch_id": "branchid", "branch_offset": "chainage"}
+        )
+
+        # drop ones non snapped
+        _drop_geoms = geoms["chainage"].isna()
+        if any(_drop_geoms):
+            self.logger.debug(f"Unable to snap to branches: {geoms[_drop_geoms].index}")
+
+        return geoms[~_drop_geoms]
 
     def setup_1dlateral_from_points(
         self,
@@ -2706,6 +2741,86 @@ class DFlowFMModel(MeshModel):
                     relsize = 1.01
                 self._MAPS[var]["averagingrelsize"] = relsize
 
+    def setup_2dboundary_from_lines(
+        self,
+        boundaries_geodataset_fn: str = None,
+        boundary_value: float = 0.0,
+        boundary_type: str = "waterlevel",
+        tolerance: float = 3.0,
+    ):
+        """Prepare the 2D boundaries from geodataset of line geometries.
+
+        E.g. `boundary_value` m3/s `boundary_type` boundary for all lines in
+        `boundaries_geodataset_fn`.
+
+        Use ``boundaries_geodataset_fn`` to set the boundary timeseries from a
+        geodataset of line geometries.
+        Support also geodataframe of line geometries in combination of
+        ``boundary_value`` and ``boundary_type``.
+
+        Only lines that are within a max distance defined in ``tolerance`` are used.
+
+        The timeseries are clipped to the model time based on the model config
+        tstart and tstop entries. If the timeseries has missing values, the constant
+        ``boundary_value`` will be used.
+
+        Adds/Updates model layers:
+            * **boundary2d_{boundary_name}** forcing: 2D boundaries DataArray
+
+        Parameters
+        ----------
+        boundaries_geodataset_fn : str, Path
+            Path or data source name for geospatial point location file.
+            * Required variables if geodataset is provided [``boundary_type``]
+            NOTE: Use universal datetime format e.g. yyyy-mm-dd to avoid ambiguity when
+            using a csv timeseries.
+        boundary_value : float, optional
+            Constant value to use for all boundaries, and to
+            fill in missing data. By default 0.0 m.
+        boundary_type : str, optional
+            Type of boundary tu use. One of ["waterlevel", "discharge"].
+            By default "waterlevel".
+        tolerance: float, optional
+            Search tolerance factor between boundary polyline and grid cells.
+            Unit: in cell size units (i.e., not meters)
+            By default, 3.0
+
+        """
+        self.logger.info("Preparing 2D boundaries.")
+
+        if boundary_type == "waterlevel":
+            boundary_unit = "m"
+        if boundary_type == "discharge":
+            boundary_unit = "m3/s"
+
+        # 1. read boundary geodataset
+        gdf_bnd, da_bnd = self._read_forcing_geodataset(
+            boundaries_geodataset_fn,
+            boundary_type,
+            region_buffer=self.res * tolerance,
+        )
+        if len(gdf_bnd) == 0:
+            return None
+
+        # set boundary index -> name of the pli line
+        gdf_bnd.index = [f"{boundary_type}bnd_{i}" for i in gdf_bnd.index]
+
+        # 2. Compute boundary dataarray
+        da_out = workflows.compute_forcing_values_lines(
+            gdf=gdf_bnd,
+            da=da_bnd,
+            forcing_value=boundary_value,
+            forcing_type=boundary_type + "bnd",
+            forcing_unit=boundary_unit,
+            logger=self.logger,
+        )
+
+        # 3. set laterals
+        self.set_forcing(da_out, name=f"boundary2d_lines_{boundary_type+'bnd'}")
+
+        # adjust parameters
+        self.set_config("geometry.openboundarytolerance", tolerance)
+
     def setup_2dboundary(
         self,
         boundaries_fn: str = None,
@@ -3415,12 +3530,13 @@ class DFlowFMModel(MeshModel):
                 # 2d boundary
                 df_ext_2d = df_ext.loc[df_ext.nodeid.isna(), :]
                 if len(df_ext_2d) > 0:
-                    for _, df in df_ext_2d.iterrows():
+                    for quantity in df_ext_2d.quantity.unique():
                         da_out = utils.read_2dboundary(
-                            df, workdir=self.dfmmodel.filepath.parent
+                            df_ext_2d[df_ext_2d.quantity == quantity],
+                            workdir=self.dfmmodel.filepath.parent,
                         )
                         # Add to forcing
-                        self.set_forcing(da_out)
+                        self.set_forcing(da_out, name=f"boundary2d_{da_out.name}")
             # lateral
             if len(ext_model.lateral) > 0:
                 df_ext = pd.DataFrame([f.__dict__ for f in ext_model.lateral])
@@ -3508,7 +3624,7 @@ class DFlowFMModel(MeshModel):
     def write_mesh(self, write_gui=True):
         """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc>."""
         self._assert_write_mode()
-        savedir = join(self.root, "dflowfm")
+        savedir = dirname(join(self.root, self._config_fn))
         mesh_filename = "fm_net.nc"
 
         # write mesh
