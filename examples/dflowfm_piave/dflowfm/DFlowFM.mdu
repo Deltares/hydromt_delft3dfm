@@ -96,7 +96,6 @@ maxitVerticalForesterTem = 0      # Forester iterations for temperature (0: no v
 turbulenceModel          = 3      # 0=no, 1 = constant, 2 = algebraic, 3 = k-epsilon, 4 = k-tau.
 turbulenceAdvection      = 3      # Turbulence advection (0=no, 3 = horizontal explicit vertical implicit).
 antiCreep                = 0      # Include anti-creep calculation (0: no, 1: yes).
-barocZLayBed             = 0      # Use fix in baroclinic pressure for zlaybed (1: yes, 0: no)
 barocPOnBnd              = 0      # Use baroclinic pressure correction on open boundaries (1: yes, 0: no)
 maxWaterLevelDiff        = 0.0    # Upper bound [m] on water level changes, (<= 0: no bounds). Run will abort when violated.
 maxVelocityDiff          = 0.0    # Upper bound [m/s] on velocity changes, (<= 0: no bounds). Run will abort when violated.
@@ -144,7 +143,6 @@ tempMin                    = 0.0     # Limit the temperature to min value [°C]
 saliMax                    = -999.0  # Limit for salinity to max value [ppt]
 saliMin                    = 0.0     # Limit for salinity to min value [ppt]
 heat_eachStep              = 0       # '1=heat each timestep, 0=heat each usertimestep
-rhoAirRhoWater             = 0       # 'windstress rhoa/rhow: 0=Rhoair/Rhomean, 1=Rhoair/rhow(), 2=rhoa0()/rhow(), 3=rhoa10()/Rhow()
 nudgeTimeUni               = 3600.0  # Uniform nudge relaxation time [s]
 iniWithNudge               = 0       # Initialize salinity and temperature with nudge variables (0: no, 1: yes, 2: only initialize, no nudging)
 secondaryFlow              = 0       # Secondary flow (0: no, 1: yes).
