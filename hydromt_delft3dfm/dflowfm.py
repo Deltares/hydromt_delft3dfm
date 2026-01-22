@@ -1,4 +1,4 @@
-"""Implement Delft3D-FM hydromt plugin model class."""
+"""Implement Delft3D FM HydroMT plugin model class."""
 
 import itertools
 import logging
@@ -450,8 +450,8 @@ class DFlowFMModel(Model):
 
         Adds model layers
 
-        * **rivmsk** map: map of river cells (not used by SFINCS)
-        * **rivers** geom: geometry of rivers (not used by SFINCS)
+        * **rivmsk** map: map of river cells (not used by DFlowFM)
+        * **rivers** geom: geometry of rivers (not used by DFlowFM)
 
         Parameters
         ----------
@@ -1490,6 +1490,133 @@ class DFlowFMModel(Model):
         logger.debug("Adding manholes vector to geoms.")
         self.set_geoms(manholes, "manholes")
 
+    def setup_retentions(
+        self,
+        retentions_fn: str = None,
+        retention_defaults_fn: str = "retentions_defaults",
+        snap_offset: float = 1.0,
+    ):
+        """
+        Prepare the 1D retentions branches.
+
+        Can only be used after all branches are setup.
+        The retentions are read from ``retentions_fn``.
+
+        Use ``retentions_fn`` to set the retentions from a dataset of point locations.
+        Only locations within the model region are selected. They are snapped to the
+        model network nodes within a max distance defined in ``snap_offset``.
+        #TODO: allow branch and chainage
+        retention attributes ["numLevels", "levels", "storageArea", "interpolate"]
+        are either taken from ``retentions_fn`` or filled in using defaults in
+        ``retention_defaults_fn``.
+
+        Adds/Updates model layers:
+        * **retentions** geom: 1D retentions vector
+
+        Parameters
+        ----------
+        retentions_fn: str Path, optional
+            Path or data source name for retentions_fn, see data/data_sources.yml.
+            Note: only the points that are within the region polygon will be used.
+            * Optional variables: ["numLevels", "levels", "storageArea", "interpolate"]
+        retention_defaults_fn : str Path, optional
+            Path to a csv file containing all defaults values per "branchtype".
+            By default
+            `hydrolib.hydromt_delft3dfm.data.storages.retentions_defaults.csv` is used.
+            * Allowed variables: ["numLevels", "levels", "storageArea", "interpolate"]
+        snap_offset: float, optional
+            Snapping tolenrance to automatically connecting retentions to network nodes.
+            By default 0.001. Use a higher value if needed.
+        """
+        _allowed_columns = [
+            "geometry",
+            "id",
+            "name",
+            "nodeid",
+            "numlevels",
+            "levels",
+            "storagearea",
+            "interpolate",
+            "usetable",
+        ]
+
+        # read user manhole
+        if retentions_fn:
+            self.logger.info(f"reading retentions from {retentions_fn}. ")
+            # read
+            gdf_retentions = self.data_catalog.get_geodataframe(
+                retentions_fn,
+                geom=self.region,
+                buffer=self._network_snap_offset,
+                predicate="contains",
+            )
+            # reproject
+            if gdf_retentions.crs != self.crs:
+                gdf_retentions = gdf_retentions.to_crs(self.crs)
+            # set index
+            if "id" not in gdf_retentions:
+                gdf_retentions["id"] = [
+                    f"retention_{i}" for i in range(len(gdf_retentions))
+                ]
+            else:
+                gdf_retentions["id"] = gdf_retentions["id"].astype(str)
+            # filter for allowed columns
+            allowed_columns = set(_allowed_columns).intersection(gdf_retentions.columns)
+            self.logger.debug(
+                f'filtering for allowed columns:{",".join(allowed_columns)}'
+            )
+            gdf_retentions = gpd.GeoDataFrame(
+                gdf_retentions[list(allowed_columns)], crs=gdf_retentions.crs
+            )
+            # add defaults
+            gdf_retentions["branchtype"] = "river"
+            defaults = self.data_catalog.get_dataframe(retention_defaults_fn)
+            gdf_retentions = workflows.update_data_columns_attributes(
+                gdf_retentions, defaults
+            )
+            if len(gdf_retentions) == 0:
+                self.logger.error("No retention ponds were setup.")
+                return None
+        else:
+            raise ValueError("Path to 'retentions_fn' missing.")
+
+        if len(gdf_retentions) > 0:
+            self.logger.info(f"Process {len(gdf_retentions)} retention ponds.")
+            # add nodeid to retentions
+            network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
+                self.mesh_datasets["network1d"]
+            )
+            retentions = hydromt.gis_utils.nearest_merge(
+                gdf_retentions, network1d_nodes, max_dist=snap_offset, overwrite=False
+            )
+            # drop not snapped
+            dropped_retentions = retentions[retentions["nodeid"].isna()]
+            retentions = retentions[~retentions["nodeid"].isna()]
+            self.logger.info(f"Drop unsnapped {list(dropped_retentions.id)}")
+
+            # drop duplicated nodeid
+            self.logger.debug("Dropping duplicated retentions")
+            retentions.drop_duplicates(subset=["nodeid"])
+
+            if len(retentions) == 0:
+                self.logger.error("No retention ponds left after processing.")
+                return None
+
+            # add additional required columns
+            retentions["name"] = retentions["id"]
+            retentions["usetable"] = True
+            retentions["numlevels"] = retentions["levels"].apply(
+                lambda x: len(x.split())
+            )
+
+            retentions = gpd.GeoDataFrame(
+                retentions[list(_allowed_columns)], crs=gdf_retentions.crs
+            )
+
+            # setup geoms
+            self.logger.debug("Adding retentions vector to geoms.")
+            self.set_geoms(retentions, "retentions")
+
     def setup_1dboundary(
         self,
         boundaries_geodataset_fn: str = None,
@@ -1635,7 +1762,7 @@ class DFlowFMModel(Model):
             # reproject if needed and convert to location
             if da.vector.crs != self.crs:
                 da = da.vector.to_crs(self.crs)
-                # TODO update after hydromt release >0.9.0
+                # TODO update after HydroMT release >0.9.0
             # get geom
             gdf = da.vector.to_gdf(reducer=np.mean)
         elif (
@@ -2383,10 +2510,10 @@ class DFlowFMModel(Model):
             'lanczos', 'average', 'mode', 'gauss', 'max', 'min', 'med', 'q1', 'q3',
             'sum', 'rms']
         interpolation_method : str, optional
-            Interpolation method for DFlow-FM. By default triangulation. Except for
-            waterlevel and waterdepth then the default is mean.
-            When methods other than 'triangulation', the relative search cell size will
-            be estimated based on resolution of the raster.
+            Interpolation method for DFlow-FM. By default mean for waterlevel and
+            waterdepth, and triangulation for all other variables. When methods other
+            than 'triangulation' are used, the relative search cell size will be
+            estimated based on resolution of the raster.
             Available methods: ['triangulation', 'mean', 'nearestNb', 'max', 'min',
             'invDist', 'minAbs', 'median']
         locationtype : str, optional
@@ -2395,15 +2522,15 @@ class DFlowFMModel(Model):
             Variable name, only in case data is of type DataArray or if a Dataset is
             added as is (split_dataset=False).
         split_dataset: bool, optional
-            If data is a xarray.Dataset, either add it as is to maps or split it into
-            several xarray.DataArrays.
+            If data is a xarray.Dataset, either add it as a Dataset to maps or split it
+            into a xarray.DataArrays per variable.
             Default to True.
         """
         # check for name when split_dataset is False
         if split_dataset is False and name is None:
             logger.error("name must be specified when split_dataset = False")
 
-        # Call super method
+        # Call super method from HydroMT Core
         variables = super().setup_maps_from_rasterdataset(
             raster_fn=raster_fn,
             variables=variables,
@@ -2412,6 +2539,11 @@ class DFlowFMModel(Model):
             name=name,
             split_dataset=split_dataset,
         )
+
+        for var in variables:
+            da = self.maps[var]
+            da.where(da == da.raster.nodata, -999.0)
+            self.set_maps(da, var)
 
         allowed_methods = [
             "triangulation",
@@ -2956,17 +3088,21 @@ class DFlowFMModel(Model):
         self._assert_read_mode()
         # Read initial fields
         inifield_model = self.dfmmodel.geometry.inifieldfile
-        # seperate 1d and 2d
-        # inifield_model_1d = [
-        #     i for i in inifield_model.initial if "1d" in i.locationtype
-        # ] # not supported yet
-        inifield_model_2dinitial = [
-            i for i in inifield_model.initial if "2d" in i.locationtype
-        ]
-        inifield_model_2dparameter = [
-            i for i in inifield_model.parameter if "2d" in i.locationtype
-        ]
-        inifield_model_2d = inifield_model_2dinitial + inifield_model_2dparameter
+        if inifield_model:
+            # seperate 1d and 2d
+            # inifield_model_1d = [
+            #     i for i in inifield_model.initial if "1d" in i.locationtype
+            # ] # not supported yet
+            inifield_model_2dinitial = [
+                i for i in inifield_model.initial if "2d" in i.locationtype
+            ]
+            inifield_model_2dparameter = [
+                i for i in inifield_model.parameter if "2d" in i.locationtype
+            ]
+            inifield_model_2d = inifield_model_2dinitial + inifield_model_2dparameter
+        else:
+            inifield_model_2d = []
+
         if any(inifield_model_2d):
             # Loop over initial / parameter to read the geotif
             inilist = inifield_model_2d
@@ -3006,7 +3142,7 @@ class DFlowFMModel(Model):
                         else:
                             interpmethod = inidict.interpolationmethod
                         self._MAPS[rm_dict[name]]["interpolation"] = interpmethod
-                        # Rename to hydromt name
+                        # Rename to HydroMT name
                         name = rm_dict[name]
                     # Add to maps
                     inimap.name = name
@@ -3034,6 +3170,7 @@ class DFlowFMModel(Model):
             if da.raster.nodata is None or np.isnan(da.raster.nodata):
                 da.raster.set_nodata(-999)
             da.raster.to_raster(_fn)
+            self.logger.info(f"Writing file {mapsroot}/{name}.tif")
             # Prepare dict
             if interp_method == "triangulation":
                 inidict = {
@@ -3074,20 +3211,26 @@ class DFlowFMModel(Model):
                     # update config if infiltration
                     if name == "infiltcap":
                         self.set_config("grw.infiltrationmodel", 2)
-
+                else:
+                    self.logger.error(
+                        f"Could not write map to model: {name} not recognized"
+                    )
             elif isinstance(ds, xr.Dataset):
                 for v in ds.data_vars:
                     if v in self._MAPS:
                         _prepare_inifields(self._MAPS[v], ds[v])
                         # update config if frcition
-                        if "frictype" in self._MAPS[name]:
+                        if self._MAPS[v] == "frictype":
                             self.set_config(
                                 "physics.uniffricttype", self._MAPS[name]["frictype"]
                             )
                         # update config if infiltration
-                        if name == "infiltcap":
+                        if v == "infiltcap":
                             self.set_config("grw.infiltrationmodel", 2)
-
+                    else:
+                        self.logger.error(
+                            f"Could not write map to model: {v} not found in map {name}"
+                        )
         # Assign initial fields to model and write
         inifield_model = IniFieldModel(initial=inilist, parameter=paramlist)
         # Bug: when initialising IniFieldModel hydrolib-core does not parse correclty
@@ -3360,7 +3503,7 @@ class DFlowFMModel(Model):
         mesh_filename = "fm_net.nc"
 
         # write mesh
-        # hydromt convention - FIXME hydrolib does not seem to read the 1D and links
+        # HydroMT convention - FIXME hydrolib does not seem to read the 1D and links
         # part of the mesh
         # super().write_mesh(fn=join(savedir, mesh_filename))
 
@@ -3697,7 +3840,7 @@ class DFlowFMModel(Model):
                 )
 
         # update related geoms if necessary: region - boundaries
-        # the region is done in hydromt core
+        # the region is done in HydroMT Core
         if overwrite_grid or new_grid:
             # 1D boundaries
             if grid_name == "mesh1d":

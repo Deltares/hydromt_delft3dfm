@@ -10,7 +10,7 @@ For more information about the prerequisites for an installation of the HydroMT 
 and related dependencies, please visit the documentation of
 `HydroMT core <https://deltares.github.io/hydromt/latest/getting_started/installation.html#installation-guide>`_
 
-Compared to HydroMT, HydroMT-delft3dfm has additional dependencies, namely:
+Compared to HydroMT, HydroMT Delft3D FM has additional dependencies, namely:
 
 - `xugrid <https://github.com/Deltares/xugrid>`_
 - `hydrolib-core <https://github.com/Deltares/HYDROLIB-core>`_
@@ -20,13 +20,13 @@ Compared to HydroMT, HydroMT-delft3dfm has additional dependencies, namely:
 Installation
 ============
 
-HydroMT-Delft3DFM is available on pypi.
+HydroMT Delft3D FM is available on pypi.
 
-Install HydroMT-Delft3DFM in a new environment
+Install HydroMT Delft3D FM in a new environment
 ----------------------------------------------
 
-You can install HydroMT-Delft3DFM in a new environment (recommended!) called `hydromt-delft3dfm`.
-HydroMT-Delft3DFM is available on pypi but not yet available on conda-forge.
+You can install HydroMT Delft3D FM in a new environment (recommended!) called `hydromt-delft3dfm`.
+HydroMT Delft3D FM is available on pypi but not yet available on conda-forge.
 Therefore, we recommend creating a conda environment and install everything with pip.
 
 .. code-block:: console
@@ -39,7 +39,7 @@ Then, activate the environment:
 
   $ conda activate hydromt-delft3dfm
 
-Finally, install Hydromt-Delft3DFM from pypi using pip.
+Finally, install HydroMT Delft3D FM from pypi using pip.
 
 .. code-block:: console
 

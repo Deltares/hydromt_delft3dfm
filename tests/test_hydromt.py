@@ -1,4 +1,4 @@
-"""Test for hydromt plugin model class DFlowFMModel"""
+"""Test for HydroMT plugin model class DFlowFMModel"""
 
 import logging
 import pdb

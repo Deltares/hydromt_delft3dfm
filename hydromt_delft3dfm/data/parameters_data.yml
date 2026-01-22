@@ -31,6 +31,12 @@ manholes_defaults:
     options: {}
   metadata:
     notes: default manhole parameters.
+retentions_defaults:
+  data_type: DataFrame
+  driver: csv
+  path: storages/retentions_defaults.csv
+  meta:
+    notes: default manhole parameters.
 1D_bridges_defaults:
   data_type: DataFrame
   uri: structures/bridges_defaults.csv

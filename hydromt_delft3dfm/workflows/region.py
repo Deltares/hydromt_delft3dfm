@@ -1,4 +1,4 @@
-"""Workflows to parse region for Delft3D-FM model."""
+"""Workflows to parse region for Delft3D FM model."""
 
 
 import geopandas as gpd
@@ -15,7 +15,7 @@ def parse_region_geometry(
     region: dict,
     crs: CRS,
 ):
-    """Parse hydromt stype region argument into region geometry."""
+    """Parse hydromt region argument into region geometry."""
     kind, region = parse_region_geom(region)
     if kind == "bbox":
         bbox = region["bbox"]

@@ -2,7 +2,7 @@
 
 Updating a model
 ----------------
-To add or change one or more components of an existing Delft3DFM model the ``update`` method can be used.
+To add or change one or more components of an existing Delft3D FM model the ``update`` method can be used.
 
 **Steps in brief:**
 
@@ -33,4 +33,4 @@ To add or change one or more components of an existing Delft3DFM model the ``upd
 .. toctree::
     :hidden:
 
-    Example: Update Delft3DFM model (refine 2dgrid) <../_examples/update_refine_2dgrid.ipynb>
+    Example: Update Delft3D FM model (refine 2dgrid) <../_examples/update_refine_2dgrid.ipynb>

@@ -1,4 +1,4 @@
-"""Workflows to prepare boundaries for Delft3D-FM model."""
+"""Workflows to prepare boundaries for Delft3D FM model."""
 
 import logging
 from pathlib import Path
@@ -7,7 +7,7 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import xarray as xr
-from hydromt.gis._vector_utils import _nearest_merge
+from hydromt.gis.vector_utils import nearest_merge
 
 from hydromt_delft3dfm import graph_utils
 
@@ -52,7 +52,7 @@ def get_boundaries_with_nodeid(
     # generate all possible and allowed boundary locations
     _boundaries = graph_utils.get_endnodes_from_lines(branches, where="both")
 
-    boundaries = _nearest_merge(
+    boundaries = nearest_merge(
         _boundaries, network1d_nodes, max_dist=0.1, overwrite=False
     )
     return boundaries
@@ -201,8 +201,7 @@ def compute_boundary_values(
         # snap user boundary to potential boundary locations to get nodeid
         gdf_bnd = da_bnd.vector.to_gdf()
         gdf_bnd.crs = boundaries.crs
-        # TODO remove after hydromt release>0.9.0
-        gdf_bnd = _nearest_merge(
+        gdf_bnd = nearest_merge(
             gdf_bnd,
             boundaries,
             max_dist=snap_offset,

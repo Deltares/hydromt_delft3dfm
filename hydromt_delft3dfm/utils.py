@@ -1,4 +1,4 @@
-"""Utilities read/write functions for Delft3D-FM model."""
+"""Utilities read/write functions for Delft3D FM model."""
 
 from os.path import join
 from pathlib import Path
@@ -475,29 +475,27 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     """
     # Add compound structures
     cmp_structures = gdf.groupby(["chainage", "branchid"])["id"].apply(list)
+    list_df = []
     for cmp_count, cmp_st in enumerate(cmp_structures, start=1):
-        gdf = pd.concat(
-            [
-                gdf,
-                pd.DataFrame(
-                    index=[max(gdf.index) + 1],
-                    data={
-                        "id": [f"CompoundStructure_{cmp_count}"],
-                        "name": [f"CompoundStructure_{cmp_count}"],
-                        "type": ["compound"],
-                        "numStructures": [len(cmp_st)],
-                        "structureIds": [";".join(cmp_st)],
-                    },
-                ),
-            ],
-            axis=0,
-        )
-
+        data = {
+            "id": [f"CompoundStructure_{cmp_count}"],
+            "name": [f"CompoundStructure_{cmp_count}"],
+            "type": ["compound"],
+            "numStructures": [len(cmp_st)],
+            "structureIds": [";".join(cmp_st)],
+        }
+        list_df.append(pd.DataFrame(data))
+    if len(list_df) == 0:
+        gdf_cmp = gdf_cmp = pd.DataFrame()
+    else:
+        gdf_cmp = pd.concat(list_df, axis=0)
     # replace nan with None
     gdf = gdf.replace(np.nan, None)
 
     # Write structures
-    structures = StructureModel(structure=gdf.to_dict("records"))
+    structures = StructureModel(
+        structure=gdf.to_dict("records") + gdf_cmp.to_dict("records")
+    )
 
     structures_fn = structures._filename() + ".ini"
     structures.save(
@@ -690,7 +688,7 @@ def read_1dboundary(
     """
     nodeids = df.nodeid.values
     nodeids = nodeids[nodeids != "nan"]
-    # Assume one forcing file (hydromt writer) and read
+    # Assume one forcing file (HydroMT writer) and read
     forcing = df.forcingfile.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
     # Filter for the current nodes, remove nans
@@ -851,7 +849,7 @@ def read_1dlateral(
     da_out: xr.DataArray
         External and focing values combined into a DataArray for variable quantity.
     """
-    # Assume one discharge (lateral specific) file (hydromt writer) and read
+    # Assume one discharge (lateral specific) file (HydroMT writer) and read
     forcing = df.discharge.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
 
@@ -1049,12 +1047,12 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
         "boundary2d".
     """
     # location file
-    # assume one location file has only one location (hydromt writer) and read
+    # assume one location file has only one location (HydroMT writer) and read
     locationfile = PolyFile(workdir.joinpath(df.locationfile.filepath))
     boundary_name = locationfile.objects[0].metadata.name
     boundary_points = pd.DataFrame([f.__dict__ for f in locationfile.objects[0].points])
 
-    # Assume one forcing file (hydromt writer) and read
+    # Assume one forcing file (HydroMT writer) and read
     forcing = df.forcingfile
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
 
@@ -1191,7 +1189,7 @@ def read_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
     da_out: xr.DataArray
         External and focing values combined into a DataArray for variable quantity.
     """
-    # Assume one forcing file (hydromt writer) and read
+    # Assume one forcing file (HydroMT writer) and read
     forcing = df.forcingfile.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
     # Filter for the current nodes

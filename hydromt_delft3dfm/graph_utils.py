@@ -1,4 +1,4 @@
-"""Utilities graph functions for Delft3D-FM model."""
+"""Utilities graph functions for Delft3D FM model."""
 
 import logging
 
