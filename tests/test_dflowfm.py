@@ -1,6 +1,6 @@
 import pytest
 from os.path import abspath, dirname, join
-from hydromt_delft3dfm import DFlowFMModel
+from hydromt_delft3dfm import DFlowFM1D2DModel
 import numpy as np
 from pathlib import Path
 
@@ -14,7 +14,7 @@ def test_read_write_config_empty_paths(tmpdir):
     dir_model = join(tmpdir, "dflowfm_piave")
     import shutil
     shutil.copytree(dir_root, dir_model)
-    model = DFlowFMModel(root=dir_model, mode="r+")
+    model = DFlowFM1D2DModel(root=dir_model, mode="r+")
     # Get the mdu settings
     model.read_config()
     # Check whether the path is an emtpy string
@@ -24,7 +24,7 @@ def test_read_write_config_empty_paths(tmpdir):
     # write the mdu to read again
     model.write_config()
     # re-read the model
-    model2 = DFlowFMModel(root=dir_model, mode="r")
+    model2 = DFlowFM1D2DModel(root=dir_model, mode="r")
     # Get the mdu settings
     model2.read_config()
     # Check whether the path is an emtpy string
@@ -35,7 +35,7 @@ def test_read_write_config_empty_paths(tmpdir):
 
 def test_setup_mesh2d_refine(tmpdir):
     # get dummy model
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_piave"), mode="r")
+    model = DFlowFM1D2DModel(root=join(EXAMPLEDIR, "dflowfm_piave"), mode="r")
     mesh2d = model.get_mesh('mesh2d')
     assert mesh2d.face_coordinates.shape == (460, 2)
     assert mesh2d.edge_coordinates.shape == (963, 2)
@@ -53,7 +53,7 @@ def test_setup_mesh2d_refine(tmpdir):
 
 def test_setup_channels(tmpdir):
     # Instantiate a dummy model
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model = DFlowFM1D2DModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
     model.read()
     model.set_root(tmpdir, mode="w")
 
@@ -69,7 +69,7 @@ def test_setup_channels(tmpdir):
 
 def test_setup_retentions(tmpdir):
     # Instantiate a dummy model
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model = DFlowFM1D2DModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
     model.read()
     model.set_root(tmpdir, mode="w")
     
@@ -81,7 +81,7 @@ def test_setup_retentions(tmpdir):
 
 def test_setup_bridges(tmpdir):
     # Instantiate a dummy model
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model = DFlowFM1D2DModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
     model.read()
     model.set_root(tmpdir, mode="w")
     
@@ -103,7 +103,7 @@ def test_setup_bridges(tmpdir):
 
 def test_setup_culverts(tmpdir):
     # Instantiate a dummy model
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model = DFlowFM1D2DModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
     model.read()
     model.set_root(tmpdir, mode="w")
 
@@ -129,7 +129,7 @@ def test_write_structures(tmpdir):
     failed before for dflowfm_local model due to nan values in gdf
     https://github.com/Deltares/hydromt_delft3dfm/issues/150
     """
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model = DFlowFM1D2DModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
     model.read()
     model.set_root(tmpdir, mode="w")
     
@@ -138,7 +138,7 @@ def test_write_structures(tmpdir):
 
 
 def test_setup_maps_from_rasterdataset(tmpdir):
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model = DFlowFM1D2DModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
     model.read()
     model.set_root(tmpdir, mode="w")
     raster_fn = join(TESTDATADIR, "local_data","frictioncoefficient.tif")
@@ -151,6 +151,6 @@ def test_setup_maps_from_rasterdataset(tmpdir):
     assert np.allclose(roughness_values, expected_values, atol=TOLERANCE)
 
 def test_read_maps():
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model = DFlowFM1D2DModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
     #TODO assert if initialfields are read correctly
     #TODO check if NaN values are read correctly

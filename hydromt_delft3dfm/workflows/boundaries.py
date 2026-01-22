@@ -11,7 +11,7 @@ from hydromt.gis.vector_utils import nearest_merge
 
 from hydromt_delft3dfm import graph_utils
 
-logger = logging.getLogger("hydromt")
+logger = logging.getLogger(f"hydromt.{__name__}")
 
 __all__ = [
     "get_boundaries_with_nodeid",

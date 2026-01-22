@@ -1,8 +1,8 @@
 """hydroMT plugin for Delft3D FM models."""
 
-from os.path import abspath, dirname, join
+from pathlib import Path
 
 __version__ = "0.3.1.dev"
-DATADIR = join(dirname(abspath(__file__)), "data")
+DATADIR = Path(__file__).parent / "data"
 
 from .dflowfm import *

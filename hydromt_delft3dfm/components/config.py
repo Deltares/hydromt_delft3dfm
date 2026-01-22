@@ -1,0 +1,106 @@
+"""Custom Delft3D-FM config component."""
+
+import logging
+import os
+from os.path import dirname, join
+from pathlib import Path
+
+from hydrolib.core.dflowfm import FMModel
+from hydromt import hydromt_step
+from hydromt.model import Model
+from hydromt.model.components import ConfigComponent
+
+__all__ = ["MDUComponent"]
+
+logger = logging.getLogger(f"hydromt.{__name__}")
+
+
+class MDUComponent(ConfigComponent):
+    """Manage the dflowfm MDU file for model simulations/settings.
+
+    ``MDUComponent`` data is stored in a dictionary. The component
+    is used to prepare and update model simulations/settings of the dflowfm model.
+    """
+
+    def __init__(
+        self,
+        model: Model,
+        *,
+        filename: str = "DFlowFM.mdu",
+    ):
+        """Manage MDU configuration file for dflowfm simulations/settings.
+
+        Parameters
+        ----------
+        model : Model
+            HydroMT model instance
+        filename : str
+            A path relative to the root where the configuration files will
+            be read and written if user does not provide a path themselves.
+            By default 'DFlowFM.mdu'.
+        """
+        super().__init__(
+            model,
+            filename=filename,
+        )
+
+    @hydromt_step
+    def read(self) -> None:
+        """
+        Read the dflowfm MDU file from <root/filename>.
+
+        If the file does not exist, the hydrolib template will be used.
+        """
+        self._initialize(skip_read=True)
+
+        # Read via init_dfmmodel
+        if self.model._dfmmodel is None:
+            self.model.init_dfmmodel()
+        # Convert to full dictionary without hydrolib-core objects
+        cf_dict = dict()
+        for k, v in self.model._dfmmodel.__dict__.items():
+            if v is None or k == "filepath":
+                cf_dict[k] = v
+            else:
+                ci_dict = dict()
+                for ki, vi in v.__dict__.items():
+                    if ki == "frictfile" and isinstance(vi, list):  # list of filepath
+                        ci_dict[ki] = ";".join([str(vj.filepath) for vj in vi])
+                    elif ki != "comments":
+                        if hasattr(vi, "filepath"):
+                            # need to change the filepath object to path
+                            ci_dict[ki] = vi.filepath
+                        else:
+                            ci_dict[ki] = vi
+                cf_dict[k] = ci_dict
+        self._data = cf_dict
+
+    @hydromt_step
+    def write(self):
+        """Write the dflowfm MDU to a file."""
+        # Check if dict is empty
+        if not self.data:
+            logger.info("No dflowfm config data found, skip writing.")
+            return
+
+        # Not sure if this is worth it compared to just calling write_config from super
+        # advantage is the validator but the whole model is then read
+        # when initialising FMModel
+        self.root.is_writing_mode()
+
+        cf_dict = self.data.copy()
+        # Need to switch to dflowfm folder for files to be found and properly added
+        mdu_fn = cf_dict.pop("filepath", None)
+        mdu_fn = Path(join(self.root.path, self._filename))
+        cwd = os.getcwd()
+        os.chdir(dirname(mdu_fn))
+        mdu = FMModel(**cf_dict)
+        # add filepath
+        mdu.filepath = mdu_fn
+        # temporarily remove sediment section to avoid error in Delft3D FM 1D2D 2024.03
+        # https://issuetracker.deltares.nl/browse/FM1D2D-3047
+        del mdu.sediment
+        # write
+        mdu.save(recurse=False)
+        # Go back to working dir
+        os.chdir(cwd)

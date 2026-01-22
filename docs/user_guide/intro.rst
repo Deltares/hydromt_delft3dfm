@@ -15,7 +15,7 @@ This plugin assists the Delft3D FM modeller in:
 
 Two Delft3dFM Model classes are currently available:
 
-- ``dflowfm`` (DFlowFMModel): class for the Delft3d FM flow component.
+- ``dflowfm`` (DFlowFM1D2DModel): class for the Delft3d FM flow component.
 
 .. toctree::
    :caption: Table of Contents

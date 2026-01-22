@@ -4,10 +4,10 @@ import logging
 
 import geopandas as gpd
 import pandas as pd
-from hydromt.gis._vector_utils import _nearest_merge
+from hydromt.gis.vector_utils import nearest_merge
 from shapely.geometry import Point
 
-logger = logging.getLogger("hydromt")
+logger = logging.getLogger(f"hydromt.{__name__}")
 
 
 __all__ = [
@@ -140,7 +140,7 @@ def generate_manholes_on_branches(
     )
     if len(_nodes_channels) > 0:
         nodes_channels = gpd.GeoDataFrame(_nodes_channels, crs=branches.crs)
-        nodes_to_remove = _nearest_merge(
+        nodes_to_remove = nearest_merge(
             nodes_pipes, nodes_channels, max_dist=0.001, overwrite=True
         )
         nodes_pipes = nodes_pipes.loc[nodes_to_remove.index_right == -1]

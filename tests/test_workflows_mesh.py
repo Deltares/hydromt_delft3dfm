@@ -1,12 +1,12 @@
 from os.path import abspath, dirname, join
-from hydromt_delft3dfm import DFlowFMModel
+from hydromt_delft3dfm import DFlowFM1D2DModel
 from hydromt_delft3dfm.mesh_utils import hydrolib_network_from_mesh
 
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 
 
 def test_hydrolib_network_from_mesh(tmpdir):
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_piave"), mode="r")
+    model = DFlowFM1D2DModel(root=join(EXAMPLEDIR, "dflowfm_piave"), mode="r")
     model.read()
     model.set_root(tmpdir, mode="w")
 
@@ -26,7 +26,7 @@ def test_hydrolib_network_from_mesh(tmpdir):
 
 def test_setup_links1d2d_add_links(tmpdir):
     # Instantiate an empty model
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model = DFlowFM1D2DModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
     model.read()
     model.set_root(tmpdir, mode="w")
     

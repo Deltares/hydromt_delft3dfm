@@ -7,11 +7,11 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 
-from ..gis_utils import update_data_columns_attributes_based_on_filter
-from .branches import find_nearest_branch
-from .crosssections import set_point_crosssections
+from hydromt_delft3dfm.gis_utils import update_data_columns_attributes_based_on_filter
+from hydromt_delft3dfm.workflows.branches import find_nearest_branch
+from hydromt_delft3dfm.workflows.crosssections import set_point_crosssections
 
-logger = logging.getLogger("hydromt")
+logger = logging.getLogger(f"hydromt.{__name__}")
 
 
 __all__ = [

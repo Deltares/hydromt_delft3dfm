@@ -25,8 +25,8 @@ from hydrolib.core.dflowfm import (
 )
 from shapely.geometry import Point, Polygon
 
-from . import gis_utils
-from .workflows import boundaries
+from hydromt_delft3dfm import gis_utils
+from hydromt_delft3dfm.workflows import boundaries
 
 __all__ = [
     "read_branches_gui",

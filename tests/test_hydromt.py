@@ -1,4 +1,4 @@
-"""Test for HydroMT plugin model class DFlowFMModel"""
+"""Test for HydroMT plugin model class DFlowFM1D2DModel"""
 
 import logging
 import pdb
@@ -7,7 +7,7 @@ from os.path import abspath, dirname, join
 import pytest
 from hydromt.cli._utils import parse_config
 
-from hydromt_delft3dfm import DFlowFMModel
+from hydromt_delft3dfm import DFlowFM1D2DModel
 
 TESTDATADIR = join(dirname(abspath(__file__)), "data")
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
@@ -28,7 +28,7 @@ _models = {
 def test_model_class(modelname):
     # read model in examples folder
     root = join(EXAMPLEDIR, f"dflowfm_{modelname}")
-    mod = DFlowFMModel(root=root, mode="r")
+    mod = DFlowFM1D2DModel(root=root, mode="r")
     mod.read()
     # run test_model_api() method
     non_compliant_list = mod._test_model_api()
@@ -54,7 +54,7 @@ def test_model_build(tmpdir, modelname):
     root = join(tmpdir, f"dflowfm_{modelname}")
     logger = logging.getLogger("hydromt")
     logger.setLevel(10)
-    mod1 = DFlowFMModel(
+    mod1 = DFlowFM1D2DModel(
         root=root,
         mode="w",
         data_libs=[model_dict["data"]],
@@ -70,10 +70,10 @@ def test_model_build(tmpdir, modelname):
 
     # Compare with model from examples folder
     # (need to read it again for proper geoms check)
-    mod1 = DFlowFMModel(root=root, mode="r")
+    mod1 = DFlowFM1D2DModel(root=root, mode="r")
     mod1.read()
     root = join(EXAMPLEDIR, f"dflowfm_{modelname}")
-    mod0 = DFlowFMModel(root=root, mode="r")
+    mod0 = DFlowFM1D2DModel(root=root, mode="r")
     mod0.read()
     # check if equal, geoms are temporarily skipped
     # https://github.com/Deltares/hydromt_delft3dfm/issues/138
@@ -104,7 +104,7 @@ def test_model_build_local_code(tmp_path):
     # initialize model
     logger = logging.getLogger("hydromt")
     logger.setLevel(10)
-    model = DFlowFMModel(
+    model = DFlowFM1D2DModel(
         root=tmp_path,
         mode="w",
         data_libs=[model_dict["data"]],
@@ -148,7 +148,7 @@ def test_model_build_piave_code(tmp_path):
     # initialize model
     logger = logging.getLogger("hydromt")
     logger.setLevel(10)
-    model = DFlowFMModel(
+    model = DFlowFM1D2DModel(
         root=tmp_path,
         mode="w",
         data_libs=[model_dict["data"]],

@@ -12,7 +12,7 @@ authors = [
     { name = "Sebastian Hartgring", email = "sebastian.hartgring@deltares.nl" },
 ]
 dependencies = [
-    "hydromt>=1.0.0",
+    "hydromt>=1.3.0",
     "geopandas>=0.10, !=1.0.0", # gpd 1.0.0 has sjoin bug: https://github.com/geopandas/geopandas/issues/352
     "numpy",
     "pandas>=2.0.0",
@@ -76,7 +76,7 @@ Documentation = "http://deltares.github.io/hydromt_delft3dfm/latest/"
 Source = "https://github.com/Deltares/hydromt_delft3dfm"
 
 [project.entry-points."hydromt.models"]
-dflowfm = "hydromt_delft3dfm.dflowfm:DFlowFMModel"
+dflowfm_1d2d = "hydromt_delft3dfm.dflowfm"
 
 [tool.black]
 line-length = 88

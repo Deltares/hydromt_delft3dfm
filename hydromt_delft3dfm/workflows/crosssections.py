@@ -9,10 +9,13 @@ import pandas as pd
 from shapely.geometry import LineString, Point
 
 # from delft3dfmpy.core import geometry
-from ..gis_utils import check_gpd_attributes
-from .branches import find_nearest_branch, update_data_columns_attributes
+from hydromt_delft3dfm.gis_utils import check_gpd_attributes
+from hydromt_delft3dfm.workflows.branches import (
+    find_nearest_branch,
+    update_data_columns_attributes,
+)
 
-logger = logging.getLogger("hydromt")
+logger = logging.getLogger(f"hydromt.{__name__}")
 
 
 __all__ = [

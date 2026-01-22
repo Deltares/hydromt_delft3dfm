@@ -11,7 +11,7 @@ from shapely.geometry import (
 )
 from shapely.ops import snap, split
 
-logger = logging.getLogger("hydromt")
+logger = logging.getLogger(f"hydromt.{__name__}")
 
 
 __all__ = [
