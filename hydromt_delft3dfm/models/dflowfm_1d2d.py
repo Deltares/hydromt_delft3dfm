@@ -1,4 +1,4 @@
-"""Implement Delft3D FM HydroMT plugin model class."""
+"""Implement Delft3D FM 1D2D HydroMT plugin model class."""
 
 import logging
 from datetime import datetime, timedelta
