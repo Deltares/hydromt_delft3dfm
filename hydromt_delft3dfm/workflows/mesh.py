@@ -284,7 +284,6 @@ def mesh2d_refine(
     mesh2d = xu.ugrid.ugrid2d.Ugrid2d.from_meshkernel(
         mesh2d_mk.mesh2d_get(),
         name="mesh2d",
-        projected=crs.is_projected,
         crs=crs,
     )
     # Convert to UgridDataset
