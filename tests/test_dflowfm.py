@@ -8,10 +8,9 @@ TESTDATADIR = join(dirname(abspath(__file__)), "data")
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 TOLERANCE = 1e-6
 
-def test_read_config(tmpdir):
+def test_read_config():
     # Instantiate a dummy model
     model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
-    #model.read()
 
 
 def test_read_write_config_empty_paths(tmpdir):
