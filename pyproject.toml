@@ -22,7 +22,7 @@ dependencies = [
     "meshkernel>=6.0.0",
     "pyproj",
     "shapely>=2.0.0",
-    "scipy <0.17", # TODO: temporary upper pin to see if scipy version introduced this issue
+    "scipy<0.17", # TODO: temporary upper pin to see if scipy version introduced this issue
     "pyflwdir>=0.5.4",
     "networkx",
 ]
