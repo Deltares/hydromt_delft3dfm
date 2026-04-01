@@ -14,11 +14,11 @@ authors = [
 dependencies = [
     "hydromt>=0.10.0, <1", # TODO: move to hydromt>=1: https://github.com/Deltares/hydromt_delft3dfm/issues/137
     "geopandas>=0.10, !=1.0.0", # gpd 1.0.0 has sjoin bug: https://github.com/geopandas/geopandas/issues/352
-    "numpy",
+    "numpy<2.4", # TODO: remove temporary upper limit: https://github.com/Deltares/hydromt_delft3dfm/issues/223
     "pandas>=2.0.0",
     "xarray",
     "hydrolib-core>=0.9.9",
-    "xugrid>=0.9.0",
+    "xugrid>=0.9.0, <0.15", # TODO: temporary upper pin to avoid having to do changes in https://github.com/Deltares/hydromt_delft3dfm/issues/218
     "meshkernel>=6.0.0",
     "pyproj",
     "shapely>=2.0.0",
