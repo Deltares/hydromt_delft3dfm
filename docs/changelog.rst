@@ -20,6 +20,8 @@ Changed
 
 Fixed
 -----
+- Write geoms only once (PR #224)
+
 
 v0.3.0 (18 October 2024)
 ==========
