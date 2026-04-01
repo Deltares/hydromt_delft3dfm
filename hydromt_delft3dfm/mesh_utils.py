@@ -112,7 +112,6 @@ def mesh1d_network1d_from_hydrolib_network(
             fill_value=-1,
             edge_node_connectivity=mesh1d.mesh1d_edge_nodes,
             name="mesh1d",
-            projected=crs.is_projected,
             crs=crs,
         )
         grid_mesh1d.set_crs(crs)
@@ -144,7 +143,6 @@ def mesh1d_network1d_from_hydrolib_network(
             fill_value=-1,
             edge_node_connectivity=mesh1d.network1d_edge_nodes,
             name="network1d",
-            projected=crs.is_projected,
             crs=crs,
         )
         grid_network1d.set_crs(crs)
@@ -262,7 +260,6 @@ def mesh2d_from_hydrolib_network(
     uds_mesh2d = xu.Ugrid2d.from_meshkernel(
         mk_mesh2d,
         name="mesh2d",
-        projected=crs.is_projected,
         crs=crs,
     )
 
