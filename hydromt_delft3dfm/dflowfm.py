@@ -3167,6 +3167,10 @@ class DFlowFMModel(MeshModel):
             for name, gdf in self.mesh_gdf.items():
                 self.set_geoms(gdf, name)
 
+        # Write geojson equivalent of all objects.
+        # Note that these files are not directly used when updating the model
+        super().write_geoms(fn="geoms/{name}.geojson")
+
         # Write dfm files
         savedir = dirname(join(self.root, self._config_fn))
 
@@ -3231,8 +3235,6 @@ class DFlowFMModel(MeshModel):
         for name in self.geoms:
             self.set_geoms(convert_lists_to_strings(self.geoms[name]), name)
 
-        # Write geojson equivalent of all objects.
-        # Note that these files are not directly used when updating the model
         super().write_geoms(fn="geoms/{name}.geojson")
 
     def read_forcing(
