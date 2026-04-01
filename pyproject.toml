@@ -17,7 +17,7 @@ dependencies = [
     "numpy<2.4", # TODO: remove temporary upper limit: https://github.com/Deltares/hydromt_delft3dfm/issues/223
     "pandas>=2.0.0",
     "xarray",
-    "hydrolib-core>=0.9.9",
+    "hydrolib-core>=1.0.0b5", #>=0.9.9",
     "xugrid>=0.15.0", # consistent projected/geographic properties and crs attributes in the resulting datasets
     "meshkernel>=6.0.0",
     "pyproj",
