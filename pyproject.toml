@@ -17,7 +17,7 @@ dependencies = [
     "numpy<2.4", # TODO: remove temporary upper limit: https://github.com/Deltares/hydromt_delft3dfm/issues/223
     "pandas>=2.0.0",
     "xarray",
-    "hydrolib-core @ git+https://github.com/Deltares/HYDROLIB-core.git@main",
+    "hydrolib-core @ git+https://github.com/Deltares/HYDROLIB-core.git@fix/default-pydantic-values",
     "xugrid>=0.15.0", # consistent projected/geographic properties and crs attributes in the resulting datasets
     "meshkernel>=6.0.0",
     "pyproj",
@@ -103,3 +103,6 @@ exclude = ["docs", "examples", "envs", "tests", ".github"]
 
 [tool.pytest.ini_options]
 addopts = "--durations=0"
+
+#[tool.uv]
+#managed = false
