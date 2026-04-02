@@ -690,7 +690,7 @@ def read_1dboundary(
     nodeids = nodeids[nodeids != "nan"]
     # Assume one forcing file (HydroMT writer) and read
     forcing = df.forcingfile.iloc[0]
-    df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
+    df_forcing = pd.DataFrame([f.__dict__ for f in forcing[0].forcing])
     # Filter for the current nodes, remove nans
     df_forcing = df_forcing[np.isin(df_forcing.name, nodeids)]
 
@@ -1054,7 +1054,7 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
 
     # Assume one forcing file (HydroMT writer) and read
     forcing = df.forcingfile
-    df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
+    df_forcing = pd.DataFrame([f.__dict__ for f in forcing[0].forcing])
 
     data, dims, coords, bc = _read_forcing_dataframe(
         df_forcing,
