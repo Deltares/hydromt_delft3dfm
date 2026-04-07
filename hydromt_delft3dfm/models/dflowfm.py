@@ -4,7 +4,7 @@ import logging
 from datetime import datetime, timedelta
 from os.path import basename, isfile, join
 from pathlib import Path
-from typing import List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import geopandas as gpd
 import hydromt
