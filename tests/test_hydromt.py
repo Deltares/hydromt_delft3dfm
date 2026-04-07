@@ -1,12 +1,10 @@
 """Test for HydroMT plugin model class DFlowFMModel"""
 
 import logging
-import pdb
 from os.path import abspath, dirname, join
-
 import pytest
-from hydromt.cli._utils import parse_config
 
+import hydromt
 from hydromt_delft3dfm import DFlowFMModel
 
 TESTDATADIR = join(dirname(abspath(__file__)), "data")
@@ -42,7 +40,7 @@ def test_model_build(tmpdir, modelname):
 
     # Build method options
     config = model_dict["ini"]
-    opt = parse_config(config)
+    opt = hydromt.DataCatalog(config)
     # pop global section and get model init arguments
     global_sect = opt.pop('global')
     crs = global_sect['crs']
