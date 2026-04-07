@@ -17,7 +17,7 @@ Initialize
 .. autosummary::
    :toctree: _generated
 
-   DFlowFM1D2DModel
+   DFlowFMModel
 
 .. _components:
 
@@ -27,25 +27,25 @@ Setup components
 .. autosummary::
    :toctree: _generated
 
-   DFlowFM1D2DModel.setup_config
-   DFlowFM1D2DModel.setup_channels
-   DFlowFM1D2DModel.setup_rivers_from_dem
-   DFlowFM1D2DModel.setup_rivers
-   DFlowFM1D2DModel.setup_pipes
-   DFlowFM1D2DModel.setup_manholes
-   DFlowFM1D2DModel.setup_1dboundary
-   DFlowFM1D2DModel.setup_1dlateral_from_points
-   DFlowFM1D2DModel.setup_1dlateral_from_polygons
-   DFlowFM1D2DModel.setup_bridges
-   DFlowFM1D2DModel.setup_culverts
-   DFlowFM1D2DModel.setup_mesh2d
-   DFlowFM1D2DModel.setup_mesh2d_refine
-   DFlowFM1D2DModel.setup_link1d2d
-   DFlowFM1D2DModel.setup_maps_from_rasterdataset
-   DFlowFM1D2DModel.setup_maps_from_raster_reclass
-   DFlowFM1D2DModel.setup_2dboundary
-   DFlowFM1D2DModel.setup_rainfall_from_constant
-   DFlowFM1D2DModel.setup_rainfall_from_uniform_timeseries
+   DFlowFMModel.setup_config
+   DFlowFMModel.setup_channels
+   DFlowFMModel.setup_rivers_from_dem
+   DFlowFMModel.setup_rivers
+   DFlowFMModel.setup_pipes
+   DFlowFMModel.setup_manholes
+   DFlowFMModel.setup_1dboundary
+   DFlowFMModel.setup_1dlateral_from_points
+   DFlowFMModel.setup_1dlateral_from_polygons
+   DFlowFMModel.setup_bridges
+   DFlowFMModel.setup_culverts
+   DFlowFMModel.setup_mesh2d
+   DFlowFMModel.setup_mesh2d_refine
+   DFlowFMModel.setup_link1d2d
+   DFlowFMModel.setup_maps_from_rasterdataset
+   DFlowFMModel.setup_maps_from_raster_reclass
+   DFlowFMModel.setup_2dboundary
+   DFlowFMModel.setup_rainfall_from_constant
+   DFlowFMModel.setup_rainfall_from_uniform_timeseries
 
 Attributes
 ----------
@@ -53,30 +53,30 @@ Attributes
 .. autosummary::
    :toctree: _generated
 
-   DFlowFM1D2DModel.region
-   DFlowFM1D2DModel.crs
-   DFlowFM1D2DModel.bounds
-   DFlowFM1D2DModel.res
-   DFlowFM1D2DModel.root
-   DFlowFM1D2DModel.config
-   DFlowFM1D2DModel.maps
-   DFlowFM1D2DModel.geoms
-   DFlowFM1D2DModel.forcing
-   DFlowFM1D2DModel.states
-   DFlowFM1D2DModel.results
-   DFlowFM1D2DModel.mesh
-   DFlowFM1D2DModel.dfmmodel
-   DFlowFM1D2DModel.dimr
-   DFlowFM1D2DModel.branches
-   DFlowFM1D2DModel.rivers
-   DFlowFM1D2DModel.channels
-   DFlowFM1D2DModel.pipes
-   DFlowFM1D2DModel.opensystem
-   DFlowFM1D2DModel.closedsystem
-   DFlowFM1D2DModel.mesh_names
-   DFlowFM1D2DModel.mesh_grids
-   DFlowFM1D2DModel.mesh_datasets
-   DFlowFM1D2DModel.mesh_gdf
+   DFlowFMModel.region
+   DFlowFMModel.crs
+   DFlowFMModel.bounds
+   DFlowFMModel.res
+   DFlowFMModel.root
+   DFlowFMModel.config
+   DFlowFMModel.maps
+   DFlowFMModel.geoms
+   DFlowFMModel.forcing
+   DFlowFMModel.states
+   DFlowFMModel.results
+   DFlowFMModel.mesh
+   DFlowFMModel.dfmmodel
+   DFlowFMModel.dimr
+   DFlowFMModel.branches
+   DFlowFMModel.rivers
+   DFlowFMModel.channels
+   DFlowFMModel.pipes
+   DFlowFMModel.opensystem
+   DFlowFMModel.closedsystem
+   DFlowFMModel.mesh_names
+   DFlowFMModel.mesh_grids
+   DFlowFMModel.mesh_datasets
+   DFlowFMModel.mesh_gdf
 
 
 High level methods
@@ -85,12 +85,12 @@ High level methods
 .. autosummary::
    :toctree: _generated
 
-   DFlowFM1D2DModel.read
-   DFlowFM1D2DModel.write
-   DFlowFM1D2DModel.build
-   DFlowFM1D2DModel.update
-   DFlowFM1D2DModel.set_root
-   DFlowFM1D2DModel.write_data_catalog
+   DFlowFMModel.read
+   DFlowFMModel.write
+   DFlowFMModel.build
+   DFlowFMModel.update
+   DFlowFMModel.set_root
+   DFlowFMModel.write_data_catalog
 
 General methods
 ---------------
@@ -98,49 +98,49 @@ General methods
 .. autosummary::
    :toctree: _generated
 
-   DFlowFM1D2DModel.get_config
-   DFlowFM1D2DModel.set_config
-   DFlowFM1D2DModel.read_config
-   DFlowFM1D2DModel.write_config
+   DFlowFMModel.get_config
+   DFlowFMModel.set_config
+   DFlowFMModel.read_config
+   DFlowFMModel.write_config
 
-   DFlowFM1D2DModel.set_maps
-   DFlowFM1D2DModel.read_maps
-   DFlowFM1D2DModel.write_maps
+   DFlowFMModel.set_maps
+   DFlowFMModel.read_maps
+   DFlowFMModel.write_maps
 
-   DFlowFM1D2DModel.set_geoms
-   DFlowFM1D2DModel.read_geoms
-   DFlowFM1D2DModel.write_geoms
+   DFlowFMModel.set_geoms
+   DFlowFMModel.read_geoms
+   DFlowFMModel.write_geoms
 
-   DFlowFM1D2DModel.set_forcing
-   DFlowFM1D2DModel.read_forcing
-   DFlowFM1D2DModel.write_forcing
+   DFlowFMModel.set_forcing
+   DFlowFMModel.read_forcing
+   DFlowFMModel.write_forcing
 
-   DFlowFM1D2DModel.set_states
-   DFlowFM1D2DModel.read_states
-   DFlowFM1D2DModel.write_states
+   DFlowFMModel.set_states
+   DFlowFMModel.read_states
+   DFlowFMModel.write_states
 
-   DFlowFM1D2DModel.set_results
-   DFlowFM1D2DModel.read_results
+   DFlowFMModel.set_results
+   DFlowFMModel.read_results
 
-   DFlowFM1D2DModel.get_mesh
-   DFlowFM1D2DModel.set_mesh
-   DFlowFM1D2DModel.set_link1d2d
-   DFlowFM1D2DModel.read_mesh
-   DFlowFM1D2DModel.write_mesh
+   DFlowFMModel.get_mesh
+   DFlowFMModel.set_mesh
+   DFlowFMModel.set_link1d2d
+   DFlowFMModel.read_mesh
+   DFlowFMModel.write_mesh
 
-   DFlowFM1D2DModel.set_branches
+   DFlowFMModel.set_branches
 
-   DFlowFM1D2DModel.read_dimr
-   DFlowFM1D2DModel.write_dimr
+   DFlowFMModel.read_dimr
+   DFlowFMModel.write_dimr
 
-   DFlowFM1D2DModel.init_dfmmodel
+   DFlowFMModel.init_dfmmodel
 
-   DFlowFM1D2DModel.get_model_time
+   DFlowFMModel.get_model_time
 
 
 .. _workflows:
 
-DFlowFM1D2DModel workflows
+DFlowFMModel workflows
 ======================
 
 Boundaries

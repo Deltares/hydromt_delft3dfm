@@ -31,39 +31,39 @@ a specific method see its documentation.
 
     * - Method
       - Explanation
-    * - :py:func:`~DFlowFM1D2DModel.setup_config`
+    * - :py:func:`~DFlowFMModel.setup_config`
       - Update config with a dictionary
-    * - :py:func:`~DFlowFM1D2DModel.setup_rivers`
+    * - :py:func:`~DFlowFMModel.setup_rivers`
       - This component sets the 1D river branches with parameters.
-    * - :py:func:`~DFlowFM1D2DModel.setup_channels`
+    * - :py:func:`~DFlowFMModel.setup_channels`
       - This component sets the 1D channel branches with parameters.
-    * - :py:func:`~DFlowFM1D2DModel.setup_rivers_from_dem`
+    * - :py:func:`~DFlowFMModel.setup_rivers_from_dem`
       - This component sets the 1D river branches with parameters derived from hydrography.
-    * - :py:func:`~DFlowFM1D2DModel.setup_pipes`
+    * - :py:func:`~DFlowFMModel.setup_pipes`
       - This component sets the 1D pipe branches with parameters.
-    * - :py:func:`~DFlowFM1D2DModel.setup_manholes`
+    * - :py:func:`~DFlowFMModel.setup_manholes`
       - This component adds manholes with parameters to 1D pipes.
-    * - :py:func:`~DFlowFM1D2DModel.setup_bridges`
+    * - :py:func:`~DFlowFMModel.setup_bridges`
       - This component adds bridges with parameters to 1D branches.
-    * - :py:func:`~DFlowFM1D2DModel.setup_culverts`
+    * - :py:func:`~DFlowFMModel.setup_culverts`
       - This component adds culverts with parameters to 1D branches.
-    * - :py:func:`~DFlowFM1D2DModel.setup_mesh2d`
+    * - :py:func:`~DFlowFMModel.setup_mesh2d`
       - This component sets a 2D mesh.
-    * - :py:func:`~DFlowFM1D2DModel.setup_mesh2d_refine`
+    * - :py:func:`~DFlowFMModel.setup_mesh2d_refine`
       - This component refines the 2D mesh.
-    * - :py:func:`~DFlowFM1D2DModel.setup_link1d2d`
+    * - :py:func:`~DFlowFMModel.setup_link1d2d`
       - This component sets 1d2d links that link the 1D branchs to the 2D mesh.
-    * - :py:func:`~DFlowFM1D2DModel.setup_maps_from_rasterdataset`
+    * - :py:func:`~DFlowFMModel.setup_maps_from_rasterdataset`
       - This component adds parameter maps to the 2D mesh.
-    * - :py:func:`~DFlowFM1D2DModel.setup_maps_from_raster_reclass`
+    * - :py:func:`~DFlowFMModel.setup_maps_from_raster_reclass`
       - This component adds parameter maps that are derived by reclass existing maps to the 2D mesh.
-    * - :py:func:`~DFlowFM1D2DModel.setup_1dboundary`
+    * - :py:func:`~DFlowFMModel.setup_1dboundary`
       -  Setup a 1D boundary forcing to the 1D branches.
-    * - :py:func:`~DFlowFM1D2DModel.setup_2dboundary`
+    * - :py:func:`~DFlowFMModel.setup_2dboundary`
       -  Setup a 2D boundary forcing to the 2D mesh.
-    * - :py:func:`~DFlowFM1D2DModel.setup_rainfall_from_constant`
+    * - :py:func:`~DFlowFMModel.setup_rainfall_from_constant`
       -  Setup a constant precipitation forcing to the 2D mesh.
-    * - :py:func:`~DFlowFM1D2DModel.setup_rainfall_from_uniform_timeseries`
+    * - :py:func:`~DFlowFMModel.setup_rainfall_from_uniform_timeseries`
       -  Setup a spatial uniform precipitation forcing to the 2D mesh.
 
 
@@ -72,26 +72,26 @@ a specific method see its documentation.
 Model components
 ================
 
-The following table provides an overview of which :py:class:`~hydromt_delft3dfm.DFlowFM1D2DModel`
+The following table provides an overview of which :py:class:`~hydromt_delft3dfm.DFlowFMModel`
 component contains which Delft3DFM in- and output files. The files are read and written with the associated
-read- and write- methods, i.e. :py:func:`~DFlowFM1D2DModel.read_config`
-and :py:func:`~DFlowFM1D2DModel.write_config` for the
-:py:attr:`~DFlowFM1D2DModel.config` component.
+read- and write- methods, i.e. :py:func:`~DFlowFMModel.read_config`
+and :py:func:`~DFlowFMModel.write_config` for the
+:py:attr:`~DFlowFMModel.config` component.
 
 
 .. list-table::
    :widths: 30 70
    :header-rows: 1
 
-   * - :py:class:`~hydromt_delft3dfm.DFlowFM1D2DModel` component
+   * - :py:class:`~hydromt_delft3dfm.DFlowFMModel` component
      - Delft3DFM files, saved in dflowfm folder.
-   * - :py:attr:`~hydromt_delft3dfm.DFlowFM1D2DModel.config`
+   * - :py:attr:`~hydromt_delft3dfm.DFlowFMModel.config`
      - DFlowFM.mdu, saved in dflowfm folder.
-   * - :py:attr:`~hydromt_delft3dfm.DFlowFM1D2DModel.geoms`
+   * - :py:attr:`~hydromt_delft3dfm.DFlowFMModel.geoms`
      - 1D model geometries, saved in the geoms folder.
-   * - :py:attr:`~hydromt_delft3dfm.DFlowFM1D2DModel.maps`
+   * - :py:attr:`~hydromt_delft3dfm.DFlowFMModel.maps`
      - 2D model data on regular grid, saved in the maps folder
-   * - :py:attr:`~hydromt_delft3dfm.DFlowFM1D2DModel.mesh`
+   * - :py:attr:`~hydromt_delft3dfm.DFlowFMModel.mesh`
      - unstructured mesh schematisation and data, saved in the dflowfm folder
-   * - :py:attr:`~hydromt_delft3dfm.DFlowFM1D2DModel.forcing`
+   * - :py:attr:`~hydromt_delft3dfm.DFlowFMModel.forcing`
      - 1D and 2D forcing, saved in dflowfm  folder.
