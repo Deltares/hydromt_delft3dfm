@@ -28,15 +28,15 @@ from hydromt_delft3dfm.components import (
     MDUComponent,
 )
 
-__all__ = ["DFlowFM1D2DModel"]
-__hydromt_eps__ = ["DFlowFM1D2DModel"]  # core entrypoints
+__all__ = ["DFlowFMModel"]
+__hydromt_eps__ = ["DFlowFMModel"]  # core entrypoints
 logger = logging.getLogger(f"hydromt.{__name__}")
 
 
-class DFlowFM1D2DModel(Model):
+class DFlowFMModel(Model):
     """API for Delft3D-FM models in HydroMT."""
 
-    name: str = "dflowfm_1d2d"
+    name: str = "dflowfm"
     _DATADIR: Path = DATADIR
 
     def __init__(
@@ -51,7 +51,7 @@ class DFlowFM1D2DModel(Model):
         snap_newbranches_to_branches_at_snapnodes=True,
         openwater_computation_node_distance=40,
     ):
-        """Initialize the DFlowFM1D2DModel.
+        """Initialize the DFlowFMModel.
 
         Parameters
         ----------
@@ -2787,7 +2787,7 @@ class DFlowFM1D2DModel(Model):
     #     """Return geometry of region of the model area of interest."""
     #     # First tries in geoms
     #     # TODO: TypeError: argument of type 'GeomsComponent' is not iterable
-    #     # self has geoms component if we add GeomsComponent do DflowFM1D2DModel
+    #     # self has geoms component if we add GeomsComponent do DFlowFMModel
     #     # self.geoms has region attribute (not always), but it is sometimes None
     #     # if present and not None, it behaves different than legacy region
     #     # so it seems quite complex to update this part of the code
