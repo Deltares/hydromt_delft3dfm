@@ -93,7 +93,7 @@ def test_model_build_local_code(tmp_path):
     model_dict = _models["local"]
     # Build method options
     config = model_dict["ini"]
-    opt = parse_config(config)
+    opt = hydromt.DataCatalog(config)
     # pop global section and get model init arguments
     global_sect = opt.pop('global')
     crs = global_sect['crs']
@@ -137,7 +137,7 @@ def test_model_build_piave_code(tmp_path):
     model_dict = _models["piave"]
     # Build method options
     config = model_dict["ini"]
-    opt = parse_config(config)
+    opt = hydromt.DataCatalog(config)
     # pop global section and get model init arguments
     global_sect = opt.pop('global')
     crs = global_sect['crs']
