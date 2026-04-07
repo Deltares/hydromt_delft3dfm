@@ -76,8 +76,7 @@ Documentation = "http://deltares.github.io/hydromt_delft3dfm/latest/"
 Source = "https://github.com/Deltares/hydromt_delft3dfm"
 
 [project.entry-points."hydromt.models"]
-dflowfm_1d2d = "hydromt_delft3dfm.models.dflowfm_1d2d"
-dflowfm_2d3d = "hydromt_delft3dfm.models.dflowfm_2d3d"
+dflowfm = "hydromt_delft3dfm.models.dflowfm"
 
 [tool.black]
 line-length = 88
