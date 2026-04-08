@@ -83,6 +83,18 @@ def test_model_build(tmpdir, modelname):
         errors.pop("config.filepath", None)
         if len(errors) == 0:
             equal = True
+    if "config.geometry.structurefile" in errors:
+        # fails comparison with hydrolib-core v1 somehow, even though the structurefile is identical
+        # so compare them manually and check for identicallness
+        # the test_equal check if probably improved in hydromt v1, so make sure to simplify
+        # this test again when updating to hydromt v1: https://github.com/Deltares/hydromt_delft3dfm/issues/137
+        struct0 = mod0.dfmmodel.geometry.structurefile[0]
+        struct1 = mod1.dfmmodel.geometry.structurefile[0]
+        assert struct0.dict() == struct1.dict()
+        # then remove from the errors
+        errors.pop("config.geometry.structurefile", None)
+        if len(errors) == 0:
+            equal = True
     assert equal, errors
 
 
