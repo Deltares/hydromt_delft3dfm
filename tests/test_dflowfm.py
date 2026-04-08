@@ -68,6 +68,7 @@ def test_setup_channels(tmpdir):
         crosssections_type='point'
     )
 
+
 def test_setup_retentions(tmpdir): #fail
     # Instantiate a dummy model
     model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
@@ -79,6 +80,7 @@ def test_setup_retentions(tmpdir): #fail
     # Add 1 retention pond, should be included with snap_offset = 200
     model.setup_retentions(retentions_fn=retentions_fn, snap_offset=200)
     assert len(model.geoms["retentions"]) == 1
+
 
 def test_setup_bridges(tmpdir):
     # Instantiate a dummy model
@@ -101,6 +103,7 @@ def test_setup_bridges(tmpdir):
     bridges_fn = join(TESTDATADIR, "local_data","bridges.geojson")
     model.setup_bridges(bridges_fn=bridges_fn)
     assert len(model.geoms.data['bridges']) == 2 
+
 
 def test_setup_culverts(tmpdir):
     # Instantiate a dummy model
