@@ -85,7 +85,7 @@ class Delft3DFMGeomsComponent(GeomsComponent):
         if self.model.dfmmodel.geometry.storagenodefile is not None:
             logger.info("Reading manholes file")
             network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
-                self.model.mesh_datasets["network1d"]
+                self.model.mesh.mesh_datasets["network1d"]
             )
             manholes = utils.read_manholes(network1d_nodes, self.model.dfmmodel)
             self.set(manholes, "manholes")
@@ -104,7 +104,7 @@ class Delft3DFMGeomsComponent(GeomsComponent):
 
         # Optional: also write mesh_gdf object
         if write_mesh_gdf:
-            for name, gdf in self.model.mesh_gdf.items():
+            for name, gdf in self.model.mesh.mesh_gdf.items():
                 self.set(gdf, name)
 
         if len(self.data) == 0:
@@ -164,7 +164,7 @@ class Delft3DFMGeomsComponent(GeomsComponent):
         # write hydromt
         # Optional: also write mesh_gdf object
         if write_mesh_gdf:
-            for name, gdf in self.model.mesh_gdf.items():
+            for name, gdf in self.model.mesh.mesh_gdf.items():
                 self.set(gdf, name)
 
         # Write geojson equivalent of all objects.

@@ -331,6 +331,10 @@ def mesh_from_hydrolib_network(
     if mesh is not None:
         for grid in mesh.ugrid.grids:
             grid.set_crs(crs)
+    else:
+        raise ValueError(
+            "The provided network does not contain mesh1d or mesh2d data."
+        )
 
     return mesh
 

@@ -26,7 +26,7 @@ class MDUComponent(ConfigComponent):
         self,
         model: Model,
         *,
-        filename: str = "DFlowFM.mdu",
+        filename: str = "dflowfm/DFlowFM.mdu",
     ):
         """Manage MDU configuration file for dflowfm simulations/settings.
 
@@ -37,7 +37,7 @@ class MDUComponent(ConfigComponent):
         filename : str
             A path relative to the root where the configuration files will
             be read and written if user does not provide a path themselves.
-            By default 'DFlowFM.mdu'.
+            By default 'dflowfm/DFlowFM.mdu'.
         """
         super().__init__(
             model,

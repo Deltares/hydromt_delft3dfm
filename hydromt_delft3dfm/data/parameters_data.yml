@@ -33,9 +33,10 @@ manholes_defaults:
     notes: default manhole parameters.
 retentions_defaults:
   data_type: DataFrame
-  driver: csv
-  path: storages/retentions_defaults.csv
-  meta:
+  driver:
+    name: pandas
+  uri: storages/retentions_defaults.csv
+  metadata:
     notes: default manhole parameters.
 1D_bridges_defaults:
   data_type: DataFrame
@@ -63,7 +64,7 @@ vito_mapping:
   metadata:
     category: landuse
     source_version: 1.0
-    info: landuse parameters based on vito classification (https://land.copernicus.eu/global/products/lc)
+    notes: landuse parameters based on vito classification (https://land.copernicus.eu/global/products/lc)
     nodata:
       landuse: 0
       roughness_manning: -999.0
@@ -78,7 +79,7 @@ corine_mapping:
   metadata:
     category: landuse
     source_version: 1.0
-    info: landuse parameters based on corine classification (https://land.copernicus.eu/pan-european/corine-land-cover/clc2018)
+    notes: landuse parameters based on corine classification (https://land.copernicus.eu/pan-european/corine-land-cover/clc2018)
     nodata:
       landuse: 0
       roughness_manning: -999.0
