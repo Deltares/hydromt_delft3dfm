@@ -22,17 +22,6 @@ _models = {
 }
 
 
-@pytest.mark.parametrize("modelname", list(_models.keys()))
-def test_model_class(modelname):
-    # read model in examples folder
-    root = join(EXAMPLEDIR, f"dflowfm_{modelname}")
-    mod = DFlowFMModel(root=root, mode="r")
-    mod.read()
-    # run test_model_api() method
-    non_compliant_list = mod._test_model_api()
-    assert len(non_compliant_list) == 0
-
-
 @pytest.mark.timeout(300)  # max 5 min
 @pytest.mark.parametrize("modelname", list(_models.keys()))
 def test_model_build(tmpdir, modelname):
@@ -40,9 +29,7 @@ def test_model_build(tmpdir, modelname):
 
     # Build method options
     config = model_dict["ini"]
-    opt = hydromt.DataCatalog(config)
-    # pop global section and get model init arguments
-    global_sect = opt.pop('global')
+    _, global_sect, steps = hydromt.readers.read_workflow_yaml(config)
     crs = global_sect['crs']
     network_snap_offset = global_sect['network_snap_offset']
     openwater_computation_node_distance = global_sect['openwater_computation_node_distance']
@@ -61,10 +48,7 @@ def test_model_build(tmpdir, modelname):
         openwater_computation_node_distance=openwater_computation_node_distance,
     )
     # Build model (now excludes global section because of pop)
-    mod1.build(opt=opt)
-    # Check if model is api compliant
-    non_compliant_list = mod1._test_model_api()
-    assert len(non_compliant_list) == 0
+    mod1.build(steps=steps)
 
     # Compare with model from examples folder
     # (need to read it again for proper geoms check)
@@ -122,7 +106,7 @@ def test_model_build_local_code(tmp_path):
     model.setup_1dlateral_from_polygons(**opt['setup_1dlateral_from_polygons'])
     model.setup_mesh2d(**opt['setup_mesh2d'])
     # model.setup_mesh2d_refine(**opt['setup_mesh2d_refine'])
-    model.setup_maps_from_rasterdataset(**opt['setup_maps_from_rasterdataset'])
+    model.inifield.add_raster_data_from_rasterdataset(**opt['inifield.add_raster_data_from_rasterdataset'])
     model.setup_2dboundary(**opt['setup_2dboundary'])
     model.setup_rainfall_from_uniform_timeseries(**opt['setup_rainfall_from_uniform_timeseries'])
     model.setup_link1d2d(**opt['setup_link1d2d'])
@@ -160,7 +144,7 @@ def test_model_build_piave_code(tmp_path):
     model.setup_manholes(**opt['setup_manholes'])
     model.setup_1dboundary(**opt['setup_1dboundary'])
     model.setup_mesh2d(**opt['setup_mesh2d'])
-    model.setup_maps_from_rasterdataset(**opt['setup_maps_from_rasterdataset'])
-    model.setup_maps_from_raster_reclass(**opt['setup_maps_from_raster_reclass'])
+    model.inifield.add_raster_data_from_rasterdataset(**opt['inifield.add_raster_data_from_rasterdataset'])
+    model.inifield.add_raster_data_from_raster_reclass(**opt['inifield.add_raster_data_from_raster_reclass'])
     model.setup_rainfall_from_constant(**opt["setup_rainfall_from_constant"])
     model.setup_link1d2d(**opt['setup_link1d2d'])

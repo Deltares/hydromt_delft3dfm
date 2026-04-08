@@ -41,8 +41,8 @@ Setup components
    DFlowFMModel.setup_mesh2d
    DFlowFMModel.setup_mesh2d_refine
    DFlowFMModel.setup_link1d2d
-   DFlowFMModel.setup_maps_from_rasterdataset
-   DFlowFMModel.setup_maps_from_raster_reclass
+   DFlowFMModel.inifield.add_raster_data_from_rasterdataset
+   DFlowFMModel.inifield.add_raster_data_from_raster_reclass
    DFlowFMModel.setup_2dboundary
    DFlowFMModel.setup_rainfall_from_constant
    DFlowFMModel.setup_rainfall_from_uniform_timeseries

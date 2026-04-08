@@ -180,5 +180,3 @@ class Delft3DFMGeomsComponent(GeomsComponent):
 
         for name in self.data:
             self.set(convert_lists_to_strings(self.data[name]), name)
-
-        super().write_geoms()

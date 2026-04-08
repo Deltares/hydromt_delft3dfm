@@ -387,7 +387,7 @@ class DFlowFMModel(Model):
         (default), which is estimated as the `rivbankq` elevation percentile [0-100] of
         cells neighboring river cells. This option requires the flow direction
         ("flwdir") and upstream area ("uparea") maps to be set using the
-        hydromt.flw.flwdir_from_da method. If `rivbank=False` the depth is simply
+        hydromt.gis.flw.flwdir_from_da method. If `rivbank=False` the depth is simply
         subtracted from the elevation of river cells.
 
         Missing river width and river depth values are filled by propagating valid
@@ -493,10 +493,10 @@ class DFlowFMModel(Model):
 
         # check if flwdir and uparea in ds_hydro
         if "flwdir" not in ds_hydro.data_vars:
-            da_flw = hydromt.flw.d8_from_dem(ds_hydro["elevtn"])
+            da_flw = hydromt.gis.flw.d8_from_dem(ds_hydro["elevtn"])
         else:
             da_flw = ds_hydro["flwdir"]
-        flwdir = hydromt.flw.flwdir_from_da(da_flw, ftype="d8")
+        flwdir = hydromt.gis.flw.flwdir_from_da(da_flw, ftype="d8")
         if "uparea" not in ds_hydro.data_vars:
             da_upa = xr.DataArray(
                 dims=ds_hydro["elevtn"].raster.dims,
@@ -1395,7 +1395,7 @@ class DFlowFMModel(Model):
             )
             # replace generated manhole using user manholes
             logger.debug("overwriting generated manholes using user manholes.")
-            manholes = hydromt.gis_utils.nearest_merge(
+            manholes = hydromt.gis.nearest_merge(
                 manholes, gdf_manhole, max_dist=snap_offset, overwrite=True
             )
 
@@ -1422,7 +1422,7 @@ class DFlowFMModel(Model):
         network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
             self.mesh.mesh_datasets["network1d"]
         )
-        manholes = hydromt.gis_utils.nearest_merge(
+        manholes = hydromt.gis.nearest_merge(
             manholes, network1d_nodes, max_dist=0.1, overwrite=False
         )
         # add additional required columns
@@ -1538,7 +1538,7 @@ class DFlowFMModel(Model):
             network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
                 self.mesh.mesh_datasets["network1d"]
             )
-            retentions = hydromt.gis_utils.nearest_merge(
+            retentions = hydromt.gis.nearest_merge(
                 gdf_retentions, network1d_nodes, max_dist=snap_offset, overwrite=False
             )
             # drop not snapped
@@ -2290,7 +2290,7 @@ class DFlowFMModel(Model):
 
         # refine
         mesh2d, res = workflows.mesh2d_refine(
-            mesh2d=self.get_mesh("mesh2d"),
+            mesh2d=self.mesh.get_mesh("mesh2d"),
             res=self.mesh.res,
             gdf_polygon=gdf if polygon_fn is not None else None,
             da_sample=da if sample_fn is not None else None,
@@ -2772,10 +2772,8 @@ class DFlowFMModel(Model):
     @property
     def crs(self):
         """Return model crs."""
-        # return pyproj.CRS.from_epsg(self.get_config("global.epsg", fallback=4326))
         if self._crs is None:
-            # try to read it from mesh
-            self._crs = self.mesh.data.crs
+            self._crs = self.region.crs
         return self._crs
 
     @property
@@ -2815,7 +2813,7 @@ class DFlowFMModel(Model):
         if dimr_fn is None:
             dimr_fn = join(self.root.path, self._dimr_fn)
         # if file exist, read
-        if isfile(dimr_fn) and self._read:
+        if isfile(dimr_fn) and self.root.is_reading_mode():
             logger.info(f"Reading dimr file at {dimr_fn}")
             dimr = DIMR(filepath=Path(dimr_fn))
         # else initialise
@@ -2837,7 +2835,7 @@ class DFlowFMModel(Model):
         else:
             self._dimr.filepath = join(self.root.path, self._dimr_fn)
 
-        if not self._read:
+        if not self.root.is_reading_mode():
             # Updates the dimr file first before writing
             logger.info("Adding dflowfm component to dimr config")
 
@@ -2872,7 +2870,7 @@ class DFlowFMModel(Model):
 
         Contains several "branchtype" for : channel, river, pipe, tunnel.
         """
-        if self._branches is None and self._read:
+        if self._branches is None and self.root.is_reading_mode():
             self.read_mesh()
         if self._branches is None:
             self._branches = gpd.GeoDataFrame()

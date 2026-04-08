@@ -250,6 +250,8 @@ def get_river_bathymetry(
     if gdf_riv is not None:
         cols = [c for c in ["rivwth", "qbankfull"] if c in gdf_riv]
         gdf_riv = nearest_merge(gdf_stream, gdf_riv, columns=cols, max_dist=max_dist)
+        # bug: nearest_merge looses the crs info
+        gdf_riv = gdf_riv.set_crs(gdf_stream.crs)
         gdf_riv["rivlen"] = gdf_riv["rivdst"] - flw.downstream(gdf_riv["rivdst"])
     else:
         gdf_riv = gdf_stream

@@ -1,10 +1,8 @@
 """Workflows to parse region for Delft3D FM model."""
 
 
-import geopandas as gpd
-from hydromt.model.processes.region import parse_region_geom
+from hydromt.model.processes.region import parse_region_bbox, parse_region_geom
 from pyproj.crs import CRS
-from shapely.geometry import box
 
 __all__ = [
     "parse_region_geometry",
@@ -16,12 +14,11 @@ def parse_region_geometry(
     crs: CRS,
 ):
     """Parse hydromt region argument into region geometry."""
-    kind, region = parse_region_geom(region)
+    kind = next(iter(region))
     if kind == "bbox":
-        bbox = region["bbox"]
-        geom = gpd.GeoDataFrame(geometry=[box(*bbox)], crs=4326)
+        geom = parse_region_bbox(region)
     elif kind == "geom":
-        geom = region["geom"]
+        geom = parse_region_geom(region)
         if geom.crs is None:
             raise ValueError('Model region "geom" has no CRS')
     else:

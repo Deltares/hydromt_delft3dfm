@@ -130,6 +130,7 @@ class DFlowFMForcingComponent(SpatialDatasetsComponent):
             # create new external forcing file
             ext_fn = "bnd.ext"
             Path(join(savedir, ext_fn)).unlink(missing_ok=True)
+            ext_fn.parent.mkdir(parents=True, exist_ok=True)
             # populate external forcing file
             utils.write_1dboundary(self.data, savedir, ext_fn=ext_fn)
             utils.write_2dboundary(self.data, savedir, ext_fn=ext_fn)

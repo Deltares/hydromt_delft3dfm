@@ -197,6 +197,7 @@ class IniFieldComponent(SpatialDatasetsComponent):
 
         # Global parameters
         mapsroot = join(self.root.path, "maps")
+        Path(mapsroot).mkdir(parents=True, exist_ok=True)
         inilist = []
         paramlist = []
         logger.info(f"Writing maps files to {mapsroot}")

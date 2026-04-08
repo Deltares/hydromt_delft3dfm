@@ -104,6 +104,7 @@ class DFlowFMMeshComponent(MeshComponent):
         """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc>."""
         self.root.is_writing_mode()
         savedir = join(self.root.path, "dflowfm")
+        Path(savedir).mkdir(parents=True, exist_ok=True)
         mesh_filename = "fm_net.nc"
 
         # write mesh
@@ -183,15 +184,13 @@ class DFlowFMMeshComponent(MeshComponent):
         if overwrite_grid or new_grid:
             # 1D boundaries
             if grid_name == "mesh1d":
-                self.model.geoms.set(
-                    workflows.get_boundaries_with_nodeid(
-                        self.model.branches,
-                        mesh_utils.network1d_nodes_geodataframe(
-                            self.mesh_datasets["network1d"]
-                        ),
+                mesh1d_geom = workflows.get_boundaries_with_nodeid(
+                    self.model.branches,
+                    mesh_utils.network1d_nodes_geodataframe(
+                        self.mesh_datasets["network1d"]
                     ),
-                    "boundaries",
                 )
+                self.model.geoms.set(mesh1d_geom, "boundaries")
 
     def set_link1d2d(
         self,

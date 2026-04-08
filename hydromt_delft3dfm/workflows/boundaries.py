@@ -55,6 +55,9 @@ def get_boundaries_with_nodeid(
     boundaries = nearest_merge(
         _boundaries, network1d_nodes, max_dist=0.1, overwrite=False
     )
+    # bug: nearest_merge looses the crs info
+    boundaries.set_crs(network1d_nodes.crs, inplace=True)
+
     return boundaries
 
 
