@@ -396,11 +396,12 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
         ["frictionid", "frictionvalue", "frictiontype"]
     ]
     frictions = frictions.drop_duplicates().dropna(how="all")
+    frictions = frictions.where(frictions.notna(), None)
 
     friction_fns = []
     # create a new friction
     for i, row in frictions.iterrows():
-        if isinstance(row.frictionvalue, float) and not np.isnan(row.frictionvalue):
+        if row.frictionid is not None and row.frictionvalue is not None:
             fric_model = FrictionModel(global_=row.to_dict())
             fric_name = f"{row.frictionid}"
             fric_filename = f"{fric_model._filename()}_{fric_name}" + fric_model._ext()
