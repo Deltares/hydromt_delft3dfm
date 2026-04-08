@@ -100,12 +100,6 @@ def test_model_build_local_code(tmp_path):
         method(**kwargs)
 
 
-from pathlib import Path
-tmpdir = Path(r"c:\Users\veenstra\Downloads\hydromt_tests")
-modelname = "local"
-test_model_build(tmpdir, modelname)
-# test_model_build_local_code(tmpdir)
-
 def test_model_build_piave_code(tmp_path):
     """
     A python code version of the piave model, to make debugging easier.
