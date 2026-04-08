@@ -332,9 +332,7 @@ def mesh_from_hydrolib_network(
         for grid in mesh.ugrid.grids:
             grid.set_crs(crs)
     else:
-        raise ValueError(
-            "The provided network does not contain mesh1d or mesh2d data."
-        )
+        raise ValueError("The provided network does not contain mesh1d or mesh2d data.")
 
     return mesh
 

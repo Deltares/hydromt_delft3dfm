@@ -4,7 +4,7 @@ import logging
 from datetime import datetime, timedelta
 from os.path import basename, isfile, join
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import geopandas as gpd
 import hydromt
@@ -19,7 +19,7 @@ from hydromt.model import Model
 from hydromt.model.processes.mesh import create_mesh2d_from_region
 from pyproj import CRS
 
-from hydromt_delft3dfm import DATADIR, gis_utils, mesh_utils, utils, workflows
+from hydromt_delft3dfm import DATADIR, gis_utils, mesh_utils, workflows
 from hydromt_delft3dfm.components import (
     Delft3DFMGeomsComponent,
     DFlowFMForcingComponent,
