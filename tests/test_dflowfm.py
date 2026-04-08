@@ -51,7 +51,7 @@ def test_setup_mesh2d_refine(tmpdir):
     assert mesh1d.edge_coordinates.shape == (1732, 2)
 
 
-def test_setup_channels(tmpdir): # fail
+def test_setup_channels(tmpdir):
     # Instantiate a dummy model
     model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
     model.read()
@@ -80,7 +80,7 @@ def test_setup_retentions(tmpdir): #fail
     model.setup_retentions(retentions_fn=retentions_fn, snap_offset=200)
     assert len(model.geoms["retentions"]) == 1
 
-def test_setup_bridges(tmpdir): #fail
+def test_setup_bridges(tmpdir):
     # Instantiate a dummy model
     model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
     model.read()
@@ -100,9 +100,9 @@ def test_setup_bridges(tmpdir): #fail
     # setup bridges (total of 2 bridges)
     bridges_fn = join(TESTDATADIR, "local_data","bridges.geojson")
     model.setup_bridges(bridges_fn=bridges_fn)
-    assert len(model.geoms['bridges']) == 2 
+    assert len(model.geoms.data['bridges']) == 2 
 
-def test_setup_culverts(tmpdir): #fail
+def test_setup_culverts(tmpdir):
     # Instantiate a dummy model
     model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
     model.read()
@@ -122,7 +122,7 @@ def test_setup_culverts(tmpdir): #fail
     # setup culverts (total of 1 culvert)
     culverts_fn = join(TESTDATADIR, "local_data","culverts.geojson")
     model.setup_culverts(culverts_fn=culverts_fn)
-    assert len(model.geoms['culverts']) == 1
+    assert len(model.geoms.data['culverts']) == 1
 
 
 def test_write_structures(tmpdir):

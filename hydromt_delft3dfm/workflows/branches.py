@@ -8,12 +8,13 @@ import numpy as np
 import pandas as pd
 import pyproj
 import shapely
-from hydromt.gis.vector_utils import nearest_merge
+
+# from hydromt.gis.vector_utils import nearest_merge
 from scipy.spatial import distance
 from shapely.geometry import LineString, MultiLineString, MultiPoint, Point
 
 from hydromt_delft3dfm import graph_utils, mesh_utils
-from hydromt_delft3dfm.gis_utils import cut_pieces, split_lines
+from hydromt_delft3dfm.gis_utils import cut_pieces, nearest_merge, split_lines
 
 logger = logging.getLogger(f"hydromt.{__name__}")
 
@@ -210,7 +211,9 @@ def _snap_unsnappednodes_to_nodes(
     snapped_nodes = nearest_merge(
         unsnapped_nodes, nodes, max_dist=snap_offset, overwrite=False
     )
-    snapped_nodes = snapped_nodes[snapped_nodes.index_right != -1]  # drop not snapped
+    # drop not snapped
+    snapped_nodes = snapped_nodes[~np.isnan(snapped_nodes.index_right)]
+    snapped_nodes = snapped_nodes[snapped_nodes.index_right != -1]
     snapped_nodes["geometry_left"] = snapped_nodes["geometry"]
     snapped_nodes["geometry_right"] = [
         nodes.at[i, "geometry"] for i in snapped_nodes["index_right"]

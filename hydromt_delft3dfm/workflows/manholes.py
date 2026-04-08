@@ -4,8 +4,11 @@ import logging
 
 import geopandas as gpd
 import pandas as pd
-from hydromt.gis.vector_utils import nearest_merge
+
+# from hydromt.gis.vector_utils import nearest_merge
 from shapely.geometry import Point
+
+from hydromt_delft3dfm.gis_utils import nearest_merge
 
 logger = logging.getLogger(f"hydromt.{__name__}")
 

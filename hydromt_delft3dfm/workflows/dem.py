@@ -8,10 +8,12 @@ import numpy as np
 import pyflwdir
 import xarray as xr
 from hydromt.gis.raster_utils import spread2d
-from hydromt.gis.vector_utils import nearest, nearest_merge
+from hydromt.gis.vector_utils import nearest  # nearest_merge
 from hydromt.model.processes import rivers
 from scipy import ndimage
 from shapely.geometry import Point
+
+from hydromt_delft3dfm.gis_utils import nearest_merge
 
 logger = logging.getLogger(f"hydromt.{__name__}")
 
@@ -250,8 +252,6 @@ def get_river_bathymetry(
     if gdf_riv is not None:
         cols = [c for c in ["rivwth", "qbankfull"] if c in gdf_riv]
         gdf_riv = nearest_merge(gdf_stream, gdf_riv, columns=cols, max_dist=max_dist)
-        # bug: nearest_merge looses the crs info
-        gdf_riv = gdf_riv.set_crs(gdf_stream.crs)
         gdf_riv["rivlen"] = gdf_riv["rivdst"] - flw.downstream(gdf_riv["rivdst"])
     else:
         gdf_riv = gdf_stream

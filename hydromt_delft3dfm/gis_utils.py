@@ -5,6 +5,7 @@ import logging
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+from hydromt.gis import vector_utils
 from shapely.geometry import (
     LineString,
     Point,
@@ -224,3 +225,50 @@ def get_gdf_from_branches(
         df.loc[i, "geometry"] = new_point_geometry
 
     return gpd.GeoDataFrame(df, crs=branches.crs)
+
+
+# temporary until hydromt fixes crs bug issue #1413
+def nearest_merge(
+    gdf1: gpd.GeoDataFrame,
+    gdf2: gpd.GeoDataFrame,
+    *,
+    columns: list | None = None,
+    max_dist: float | None = None,
+    overwrite: bool = False,
+    inplace: bool = False,
+) -> gpd.GeoDataFrame:
+    """Merge attributes of gdf2 with the nearest feature of gdf1.
+
+    Output is optionally bounded by a maximum distance `max_dist`.
+    Unless `overwrite = True`, gdf2 values are only
+    merged where gdf1 has missing values.
+
+    Parameters
+    ----------
+    gdf1, gdf2: geopandas.GeoDataFrame
+        Source `gdf1` and destination `gdf2` geometries.
+    columns : list of str, optional
+        Names of columns in `gdf2` to merge, by default None
+    max_dist : float, optional
+        Maximum distance threshold for merge, by default None, i.e.: no threshold.
+    overwrite : bool, optional
+        If False (default) gdf2 values are only merged where gdf1 has missing values,
+        i.e. NaN values for existing columns or missing columns.
+    inplace : bool,
+        If True, apply the merge to gdf1, otherwise return a new object.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        Merged GeoDataFrames
+    """
+    crs = gdf1.crs
+    gdf = vector_utils.nearest_merge(
+        gdf1=gdf1,
+        gdf2=gdf2,
+        columns=columns,
+        max_dist=max_dist,
+        overwrite=overwrite,
+        inplace=inplace,
+    )
+    return gdf.set_crs(crs)

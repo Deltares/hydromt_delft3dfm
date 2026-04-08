@@ -1395,7 +1395,7 @@ class DFlowFMModel(Model):
             )
             # replace generated manhole using user manholes
             logger.debug("overwriting generated manholes using user manholes.")
-            manholes = hydromt.gis.nearest_merge(
+            manholes = gis_utils.nearest_merge(
                 manholes, gdf_manhole, max_dist=snap_offset, overwrite=True
             )
 
@@ -1422,7 +1422,7 @@ class DFlowFMModel(Model):
         network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
             self.mesh.mesh_datasets["network1d"]
         )
-        manholes = hydromt.gis.nearest_merge(
+        manholes = gis_utils.nearest_merge(
             manholes, network1d_nodes, max_dist=0.1, overwrite=False
         )
         # add additional required columns
@@ -1538,7 +1538,7 @@ class DFlowFMModel(Model):
             network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
                 self.mesh.mesh_datasets["network1d"]
             )
-            retentions = hydromt.gis.nearest_merge(
+            retentions = gis_utils.nearest_merge(
                 gdf_retentions, network1d_nodes, max_dist=snap_offset, overwrite=False
             )
             # drop not snapped

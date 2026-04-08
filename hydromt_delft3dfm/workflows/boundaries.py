@@ -7,9 +7,10 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import xarray as xr
-from hydromt.gis.vector_utils import nearest_merge
 
+# from hydromt.gis.vector_utils import nearest_merge
 from hydromt_delft3dfm import graph_utils
+from hydromt_delft3dfm.gis_utils import nearest_merge
 
 logger = logging.getLogger(f"hydromt.{__name__}")
 
@@ -55,8 +56,6 @@ def get_boundaries_with_nodeid(
     boundaries = nearest_merge(
         _boundaries, network1d_nodes, max_dist=0.1, overwrite=False
     )
-    # bug: nearest_merge looses the crs info
-    boundaries.set_crs(network1d_nodes.crs, inplace=True)
 
     return boundaries
 
