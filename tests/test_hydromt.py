@@ -4,7 +4,7 @@ import logging
 from os.path import abspath, dirname, join
 import pytest
 
-import hydromt
+from hydromt.readers import read_workflow_yaml
 from hydromt_delft3dfm import DFlowFMModel
 
 TESTDATADIR = join(dirname(abspath(__file__)), "data")
@@ -29,7 +29,7 @@ def test_model_build(tmpdir, modelname):
 
     # Build method options
     config = model_dict["ini"]
-    _, global_sect, steps = hydromt.readers.read_workflow_yaml(config)
+    _, global_sect, steps = read_workflow_yaml(config)
     crs = global_sect['crs']
     network_snap_offset = global_sect['network_snap_offset']
     openwater_computation_node_distance = global_sect['openwater_computation_node_distance']
@@ -77,9 +77,7 @@ def test_model_build_local_code(tmp_path):
     model_dict = _models["local"]
     # Build method options
     config = model_dict["ini"]
-    opt = hydromt.DataCatalog(config)
-    # pop global section and get model init arguments
-    global_sect = opt.pop('global')
+    _, global_sect, steps = read_workflow_yaml(config)
     crs = global_sect['crs']
     network_snap_offset = global_sect['network_snap_offset']
     openwater_computation_node_distance = global_sect['openwater_computation_node_distance']
@@ -95,22 +93,18 @@ def test_model_build_local_code(tmp_path):
         openwater_computation_node_distance=openwater_computation_node_distance,
     )
     # build model via steps corresponding to yml order
-    model.setup_rivers(**opt['setup_rivers'])
-    model.setup_rivers(**opt['setup_rivers1'])
-    model.setup_pipes(**opt['setup_pipes'])
-    model.setup_manholes(**opt['setup_manholes'])
-    model.setup_bridges(**opt['setup_bridges'])
-    model.setup_culverts(**opt['setup_culverts'])
-    model.setup_1dboundary(**opt['setup_1dboundary'])
-    model.setup_1dlateral_from_points(**opt['setup_1dlateral_from_points'])
-    model.setup_1dlateral_from_polygons(**opt['setup_1dlateral_from_polygons'])
-    model.setup_mesh2d(**opt['setup_mesh2d'])
-    # model.setup_mesh2d_refine(**opt['setup_mesh2d_refine'])
-    model.inifield.add_raster_data_from_rasterdataset(**opt['inifield.add_raster_data_from_rasterdataset'])
-    model.setup_2dboundary(**opt['setup_2dboundary'])
-    model.setup_rainfall_from_uniform_timeseries(**opt['setup_rainfall_from_uniform_timeseries'])
-    model.setup_link1d2d(**opt['setup_link1d2d'])
+    for step_dict in steps:
+        step, kwargs = next(iter(step_dict.items()))
+        method = getattr(model, step)
+        print(f"CALLING model.{step} with input:", kwargs)
+        method(**kwargs)
 
+
+from pathlib import Path
+tmpdir = Path(r"c:\Users\veenstra\Downloads\hydromt_tests")
+modelname = "local"
+test_model_build(tmpdir, modelname)
+# test_model_build_local_code(tmpdir)
 
 def test_model_build_piave_code(tmp_path):
     """
@@ -121,9 +115,7 @@ def test_model_build_piave_code(tmp_path):
     model_dict = _models["piave"]
     # Build method options
     config = model_dict["ini"]
-    opt = hydromt.DataCatalog(config)
-    # pop global section and get model init arguments
-    global_sect = opt.pop('global')
+    _, global_sect, steps = read_workflow_yaml(config)
     crs = global_sect['crs']
     network_snap_offset = global_sect['network_snap_offset']
     openwater_computation_node_distance = global_sect['openwater_computation_node_distance']
@@ -139,12 +131,8 @@ def test_model_build_piave_code(tmp_path):
         openwater_computation_node_distance=openwater_computation_node_distance,
     )
     # build model via steps corresponding to yml order
-    model.setup_rivers_from_dem(**opt['setup_rivers_from_dem'])
-    model.setup_pipes(**opt['setup_pipes'])
-    model.setup_manholes(**opt['setup_manholes'])
-    model.setup_1dboundary(**opt['setup_1dboundary'])
-    model.setup_mesh2d(**opt['setup_mesh2d'])
-    model.inifield.add_raster_data_from_rasterdataset(**opt['inifield.add_raster_data_from_rasterdataset'])
-    model.inifield.add_raster_data_from_raster_reclass(**opt['inifield.add_raster_data_from_raster_reclass'])
-    model.setup_rainfall_from_constant(**opt["setup_rainfall_from_constant"])
-    model.setup_link1d2d(**opt['setup_link1d2d'])
+    for step_dict in steps:
+        step, kwargs = next(iter(step_dict.items()))
+        method = getattr(model, step)
+        print(f"CALLING model.{step} with input:", kwargs)
+        method(**kwargs)

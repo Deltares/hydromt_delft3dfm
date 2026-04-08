@@ -706,7 +706,7 @@ def split_branches(
 
     elif branches[spacing_col].astype(float).notna().any():
         logger.info(
-            "Splitting branches with spacing specifed"
+            "Splitting branches with spacing specified "
             f"in datamodel branches[{spacing_col}]"
         )
         split_branches = []
@@ -973,6 +973,10 @@ def snap_branch_ends(
         # for each of the rest
         for j, (endpoint, branchid, side) in enumerate(points_to_snap):
             # Change coordinates of branch
+            branch_one = branches.at[branchid, "geometry"]
+            # print(type(branch_one))
+            if not hasattr(branch_one, "coords"):
+                pass
             crds = branches.at[branchid, "geometry"].coords[:]
             if crds[side] != ref_crd:
                 crds[side] = ref_crd
