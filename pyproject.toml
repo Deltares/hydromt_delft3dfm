@@ -103,6 +103,3 @@ exclude = ["docs", "examples", "envs", "tests", ".github"]
 
 [tool.pytest.ini_options]
 addopts = "--durations=0"
-
-#[tool.uv]
-#managed = false
