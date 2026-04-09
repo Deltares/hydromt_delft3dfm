@@ -2,9 +2,8 @@
 
 import logging
 from datetime import datetime, timedelta
-from os.path import basename, isfile, join
+from os.path import isfile, join
 from pathlib import Path
-from typing import List, Optional, Tuple, Union
 
 import geopandas as gpd
 import hydromt
@@ -13,7 +12,6 @@ import pandas as pd
 import xarray as xr
 import xugrid as xu
 from hydrolib.core.dflowfm import FMModel
-from hydrolib.core.dimr import DIMR, FMComponent, Start
 from hydromt import hydromt_step
 from hydromt.model import Model
 from hydromt.model.processes.mesh import create_mesh2d_from_region
@@ -24,6 +22,7 @@ from hydromt_delft3dfm.components import (
     Delft3DFMGeomsComponent,
     DFlowFMForcingComponent,
     DFlowFMMeshComponent,
+    DIMRComponent,
     IniFieldComponent,
     MDUComponent,
 )
@@ -45,9 +44,9 @@ class DFlowFMModel(Model):
         root: str | Path,
         mode: str = "w",
         mdu_filename: str | None = None,
-        data_libs: List[str] = [],  # yml
+        data_libs: list[str] = [],  # yml
         crs: int | str | None = None,
-        dimr_fn: str | None = None,
+        dimr_filename: str | None = None,
         network_snap_offset: float = 25,
         snap_newbranches_to_branches_at_snapnodes: bool = True,
         openwater_computation_node_distance: float = 40,
@@ -70,7 +69,7 @@ class DFlowFMModel(Model):
             Default is None.
         crs : EPSG code, int
             EPSG code of the model.
-        dimr_fn: str, optional
+        dimr_filename: str, optional
             Path to the dimr configuration file.
             If None, default dimr configuration file is used.
             Default is None.
@@ -88,11 +87,14 @@ class DFlowFMModel(Model):
         if not isinstance(root, (str, Path)):
             raise ValueError("The 'root' parameter should be a of str or Path.")
 
-        # FIXME Xiaohan mdu needs to be derived from dimr_fn if dimr_fn exists
+        # FIXME mdu needs to be derived from dimr_filename if dimr_filename exists
         if mdu_filename is None:
             mdu_filename = "dflowfm/DFlowFM.mdu"
+        dimr_filename = "dimr_config.xml" if dimr_filename is None else dimr_filename
+
         components = {
             "mdu": MDUComponent(self, filename=str(mdu_filename)),
+            "dimr": DIMRComponent(self, filename=str(dimr_filename)),
             "mesh": DFlowFMMeshComponent(self, filename="dflowfm/fm_net.nc"),
             "geoms": Delft3DFMGeomsComponent(
                 self,
@@ -120,8 +122,6 @@ class DFlowFMModel(Model):
 
         # model specific
         self._branches = None
-        self._dimr = None
-        self._dimr_fn = "dimr_config.xml" if dimr_fn is None else dimr_fn
         self._dfmmodel = None
         self.data_catalog.from_yml(self._DATADIR / "parameters_data.yml")
 
@@ -145,6 +145,11 @@ class DFlowFMModel(Model):
     def mdu(self) -> MDUComponent:
         """Return the mdu component."""
         return self.components["mdu"]
+
+    @property
+    def dimr(self) -> DIMRComponent:
+        """Return the dimr component."""
+        return self.components["dimr"]
 
     @property
     def geoms(self) -> Delft3DFMGeomsComponent:
@@ -172,11 +177,11 @@ class DFlowFMModel(Model):
         region: dict,
         channels_fn: str,
         channels_defaults_fn: str = "channels_defaults",
-        channel_filter: str = None,
+        channel_filter: str | None = None,
         friction_type: str = "Manning",
         friction_value: float = 0.023,
-        crosssections_fn: str = None,
-        crosssections_type: str = None,
+        crosssections_fn: str | None = None,
+        crosssections_type: str | None = None,
         spacing: float = np.inf,
         snap_offset: float = 0.0,
         maxdist: float = 1.0,
@@ -350,22 +355,22 @@ class DFlowFMModel(Model):
         self,
         region: dict,
         hydrography_fn: str,
-        river_geom_fn: str = None,
+        river_geom_fn: str | None = None,
         rivers_defaults_fn: str = "rivers_defaults",
-        rivdph_method="gvf",
-        rivwth_method="geom",
-        river_upa=25.0,
-        river_len=1000,
-        min_rivwth=50.0,
-        min_rivdph=1.0,
-        rivbank=True,
-        rivbankq=25,
-        segment_length=3e3,
-        smooth_length=10e3,
+        rivdph_method: str = "gvf",
+        rivwth_method: str = "geom",
+        river_upa: float = 25.0,
+        river_len: float = 1000,
+        min_rivwth: float = 50.0,
+        min_rivdph: float = 1.0,
+        rivbank: bool = True,
+        rivbankq: float = 25,
+        segment_length: float = 3e3,
+        smooth_length: float = 10e3,
         friction_type: str = "Manning",
         friction_value: float = 0.023,
-        constrain_rivbed=True,
-        constrain_estuary=True,
+        constrain_rivbed: bool = True,
+        constrain_estuary: bool = True,
         **kwargs,  # for workflows.get_river_bathymetry method
     ) -> None:
         """
@@ -630,8 +635,8 @@ class DFlowFMModel(Model):
         river_filter: str = None,
         friction_type: str = "Manning",
         friction_value: float = 0.023,
-        crosssections_fn: Union[int, list] = None,
-        crosssections_type: Union[int, list] = None,
+        crosssections_fn: int | list | None = None,
+        crosssections_type: int | list | None = None,
         snap_offset: float = 0.0,
         maxdist: float = 1.0,
         allow_intersection_snapping: bool = True,
@@ -833,13 +838,13 @@ class DFlowFMModel(Model):
         region: dict,
         pipes_fn: str,
         pipes_defaults_fn: str = "pipes_defaults",
-        pipe_filter: Union[str, None] = None,
+        pipe_filter: str | None = None,
         spacing: float = np.inf,
         friction_type: str = "WhiteColebrook",
         friction_value: float = 0.003,
         crosssections_shape: str = "circle",
-        crosssections_value: Union[int, list] = 0.5,
-        dem_fn: Union[str, None] = None,
+        crosssections_value: int | float | list = 0.5,
+        dem_fn: str | None = None,
         pipes_depth: float = 2.0,
         pipes_invlev: float = -2.5,
         snap_offset: float = 0.0,
@@ -1275,10 +1280,10 @@ class DFlowFMModel(Model):
     @hydromt_step
     def setup_manholes(
         self,
-        manholes_fn: str = None,
+        manholes_fn: str | None = None,
         manholes_defaults_fn: str = "manholes_defaults",
         bedlevel_shift: float = -0.5,
-        dem_fn: str = None,
+        dem_fn: str | None = None,
         snap_offset: float = 1e-3,
     ):
         """
@@ -1447,7 +1452,7 @@ class DFlowFMModel(Model):
     @hydromt_step
     def setup_retentions(
         self,
-        retentions_fn: str = None,
+        retentions_fn: str | None = None,
         retention_defaults_fn: str = "retentions_defaults",
         snap_offset: float = 1.0,
     ):
@@ -1573,8 +1578,7 @@ class DFlowFMModel(Model):
     @hydromt_step
     def setup_1dboundary(
         self,
-        boundaries_geodataset_fn: str = None,
-        boundaries_timeseries_fn: str = None,
+        boundaries_geodataset_fn: str | None = None,
         boundary_value: float = -2.5,
         branch_type: str = "river",
         boundary_type: str = "waterlevel",
@@ -1621,13 +1625,6 @@ class DFlowFMModel(Model):
             * Required variables if a combined point location file: ['index'] with type
                 int
             * Required index types if a time series data csv file: int
-            NOTE: Require equidistant time series
-        boundaries_timeseries_fn: str, Path
-            Path to tabulated timeseries csv file with time index in first column
-            and location IDs in the first row,
-            see :py:meth:`hydromt.open_timeseries_from_table`, for details.
-            NOTE: tabulated timeseries files can only in combination with point location
-            coordinates be set as a geodataset in the data_catalog yml file.
             NOTE: Require equidistant time series
         boundary_value : float, optional
             Constant value to use for all boundaries if ``boundaries_geodataset_fn`` is
@@ -1685,7 +1682,7 @@ class DFlowFMModel(Model):
 
     def _read_forcing_geodataset(
         self,
-        forcing_geodataset_fn: Union[str, Path],
+        forcing_geodataset_fn: str | Path,
         forcing_name: str = "discharge",
         region_buffer=0.0,
     ):
@@ -1741,7 +1738,7 @@ class DFlowFMModel(Model):
     @hydromt_step
     def setup_1dlateral_from_points(
         self,
-        laterals_geodataset_fn: str = None,
+        laterals_geodataset_fn: str | None = None,
         lateral_value: float = 0.0,
         snap_offset: float = 1.0,
         branch_type: str = "river",
@@ -1819,7 +1816,7 @@ class DFlowFMModel(Model):
     @hydromt_step
     def setup_1dlateral_from_polygons(
         self,
-        laterals_geodataset_fn: str = None,
+        laterals_geodataset_fn: str | None = None,
         lateral_value: float = -2.5,
     ):
         """
@@ -1877,10 +1874,10 @@ class DFlowFMModel(Model):
     @hydromt_step
     def setup_bridges(
         self,
-        bridges_fn: Optional[str] = None,
-        bridges_defaults_fn: Optional[str] = "1D_bridges_defaults",
-        bridge_filter: Optional[str] = None,
-        snap_offset: Optional[float] = None,
+        bridges_fn: str | None = None,
+        bridges_defaults_fn: str | None = "1D_bridges_defaults",
+        bridge_filter: str | None = None,
+        snap_offset: float | None = None,
     ):
         """Prepare bridges, including bridge locations and bridge crossections.
 
@@ -2009,10 +2006,10 @@ class DFlowFMModel(Model):
     @hydromt_step
     def setup_culverts(
         self,
-        culverts_fn: Optional[str] = None,
-        culverts_defaults_fn: Optional[str] = "1D_culverts_defaults",
-        culvert_filter: Optional[str] = None,
-        snap_offset: Optional[float] = None,
+        culverts_fn: str | None = None,
+        culverts_defaults_fn: str | None = "1D_culverts_defaults",
+        culvert_filter: str | None = None,
+        snap_offset: float | None = None,
     ):
         """Prepare culverts, including locations and crossections.
 
@@ -2157,7 +2154,7 @@ class DFlowFMModel(Model):
     def setup_mesh2d(
         self,
         region: dict,
-        res: Optional[float] = None,
+        res: float | None = None,
     ) -> xu.UgridDataset:
         """Create a 2D unstructured mesh according UGRID conventions.
 
@@ -2216,9 +2213,9 @@ class DFlowFMModel(Model):
     @hydromt_step
     def setup_mesh2d_refine(
         self,
-        polygon_fn: Optional[str] = None,
-        sample_fn: Optional[str] = None,
-        steps: Optional[int] = 1,
+        polygon_fn: str | None = None,
+        sample_fn: str | None = None,
+        steps: int | None = 1,
     ):
         """
         Refine the 2d mesh.
@@ -2308,12 +2305,12 @@ class DFlowFMModel(Model):
     @hydromt_step
     def setup_link1d2d(
         self,
-        link_direction: Optional[str] = "1d_to_2d",
-        link_type: Optional[str] = "embedded",
-        polygon_fn: Optional[str] = None,
-        branch_type: Optional[str] = None,
-        max_length: Union[float, None] = np.inf,
-        dist_factor: Union[float, None] = 2.0,
+        link_direction: str = "1d_to_2d",
+        link_type: str = "embedded",
+        polygon_fn: str | None = None,
+        branch_type: str | None = None,
+        max_length: float | None = np.inf,
+        dist_factor: float | None = 2.0,
         **kwargs,
     ):
         """
@@ -2440,8 +2437,8 @@ class DFlowFMModel(Model):
     @hydromt_step
     def setup_2dboundary(
         self,
-        boundaries_fn: str = None,
-        boundaries_timeseries_fn: str = None,
+        boundaries_fn: str | None = None,
+        boundaries_timeseries_fn: str | None = None,
         boundary_value: float = 0.0,
         boundary_type: str = "waterlevel",
         tolerance: float = 3.0,
@@ -2655,7 +2652,7 @@ class DFlowFMModel(Model):
     @hydromt_step
     def setup_rainfall_from_uniform_timeseries(
         self,
-        meteo_timeseries_fn: Union[str, Path],
+        meteo_timeseries_fn: str | Path,
         fill_value: float = 0.0,
         is_rate: bool = True,
     ):
@@ -2746,7 +2743,7 @@ class DFlowFMModel(Model):
         # FIXME: where to read crs?.
         """
         logger.info(f"Reading model data from {self.root}")
-        self.read_dimr()
+        self.dimr.read()
         self.mdu.read()
         self.mesh.read()
         self.inifield.read()
@@ -2770,7 +2767,7 @@ class DFlowFMModel(Model):
         self.forcing.write()
         self.mdu.write()
         if self.dimr:  # dimr config, should always be last after dflowfm config!
-            self.write_dimr()
+            self.dimr.write()
 
     @property
     def crs(self):
@@ -2780,7 +2777,7 @@ class DFlowFMModel(Model):
         return self._crs
 
     @property
-    def bounds(self) -> Tuple:
+    def bounds(self) -> tuple:
         """Return model mesh bounds."""
         return self.region.total_bounds
 
@@ -2803,68 +2800,6 @@ class DFlowFMModel(Model):
             logger.info("Initialising empty mdu file")
             self._dfmmodel = FMModel()
             self._dfmmodel.filepath = mdu_fn
-
-    @property
-    def dimr(self):
-        """DIMR file object."""
-        if not self._dimr:
-            self.read_dimr()
-        return self._dimr
-
-    def read_dimr(self, dimr_fn: Optional[str] = None) -> None:
-        """Read DIMR from file and else create from hydrolib-core."""
-        if dimr_fn is None:
-            dimr_fn = join(self.root.path, self._dimr_fn)
-        # if file exist, read
-        if isfile(dimr_fn) and self.root.is_reading_mode():
-            logger.info(f"Reading dimr file at {dimr_fn}")
-            dimr = DIMR(filepath=Path(dimr_fn))
-        # else initialise
-        else:
-            self.root.is_writing_mode()
-            logger.info("Initialising empty dimr file")
-            dimr = DIMR()
-        self._dimr = dimr
-
-    def write_dimr(self, dimr_fn: Optional[str] = None):
-        """Write the dmir file.
-
-        In write mode, updates first the FMModel component.
-        """
-        # force read
-        self.dimr
-        if dimr_fn is not None:
-            self._dimr.filepath = join(self.root.path, dimr_fn)
-        else:
-            self._dimr.filepath = join(self.root.path, self._dimr_fn)
-
-        if not self.root.is_reading_mode():
-            # Updates the dimr file first before writing
-            logger.info("Adding dflowfm component to dimr config")
-
-            # update component
-            components = self._dimr.component
-            if len(components) != 0:
-                components = []
-            fmcomponent = FMComponent(
-                name="dflowfm",
-                workingdir="dflowfm",
-                inputfile=basename(self.mdu._filename),
-                model=self.dfmmodel,
-            )
-            components.append(fmcomponent)
-            self._dimr.component = components
-            # update control
-            controls = self._dimr.control
-            if len(controls) != 0:
-                controls = []
-            control = Start(name="dflowfm")
-            controls.append(control)
-            self._dimr.control = control
-
-        # write
-        logger.info(f"Writing model dimr file to {self._dimr.filepath}")
-        self.dimr.save(recurse=False)
 
     @property
     def branches(self):

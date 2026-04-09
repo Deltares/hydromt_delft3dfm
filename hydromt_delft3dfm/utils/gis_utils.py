@@ -284,14 +284,3 @@ def nearest_merge(
         gdf1.loc[valid, col] = new_vals
 
     return gdf1
-
-    # crs = gdf1.crs
-    # gdf = vector_utils.nearest_merge(
-    #     gdf1=gdf1,
-    #     gdf2=gdf2,
-    #     columns=columns,
-    #     max_dist=max_dist,
-    #     overwrite=overwrite,
-    #     inplace=inplace,
-    # )
-    # return gdf.set_crs(crs)
