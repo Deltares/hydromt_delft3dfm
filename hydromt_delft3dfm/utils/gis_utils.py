@@ -227,7 +227,7 @@ def get_gdf_from_branches(
     return gpd.GeoDataFrame(df, crs=branches.crs)
 
 
-# temporary until hydromt fixes crs bug issue #1413
+# TODO: temporary until hydromt fixes crs bug issue #1413
 def nearest_merge(
     gdf1: gpd.GeoDataFrame,
     gdf2: gpd.GeoDataFrame,
