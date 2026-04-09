@@ -119,9 +119,6 @@ def test_model_build(tmpdir, modelname):
     assert equal, errors
 
 
-test_model_build("./pytest9", "piave")
-
-
 def test_model_build_local_code(tmp_path):
     """
     A python code version of the local model, to make debugging easier.
