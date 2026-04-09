@@ -25,7 +25,7 @@ from hydrolib.core.dflowfm import (
 )
 from shapely.geometry import Point, Polygon
 
-from hydromt_delft3dfm import gis_utils
+from hydromt_delft3dfm.utils import gis_utils
 from hydromt_delft3dfm.workflows import boundaries
 
 __all__ = [
@@ -1221,7 +1221,7 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     Write 2d meteo forcing from forcing dict.
 
     Note! only forcing file (.bc) is written in this function.
-    Use utils.write_ext() for writing external forcing (.ext) file.
+    Use io_utils.write_ext() for writing external forcing (.ext) file.
 
     Parameters
     ----------

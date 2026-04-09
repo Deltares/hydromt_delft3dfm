@@ -13,7 +13,8 @@ from hydromt import hydromt_step
 from hydromt.model import Model
 from hydromt.model.components import MeshComponent
 
-from hydromt_delft3dfm import mesh_utils, utils, workflows
+from hydromt_delft3dfm import workflows
+from hydromt_delft3dfm.utils import io_utils, mesh_utils
 
 __all__ = ["DFlowFMMeshComponent"]
 
@@ -94,7 +95,7 @@ class DFlowFMMeshComponent(MeshComponent):
 
             # Add branchtype, properties from branches.gui file
             logger.info("Reading branches GUI file")
-            branches = utils.read_branches_gui(branches, self.model.dfmmodel)
+            branches = io_utils.read_branches_gui(branches, self.model.dfmmodel)
 
             # Set branches
             self.model.set_branches(branches)
@@ -128,7 +129,7 @@ class DFlowFMMeshComponent(MeshComponent):
         if "mesh1d" in self.mesh_names and write_gui:
             logger.info("Writing branches.gui file")
             if "manholes" in self.model.geoms.data:
-                utils.write_branches_gui(self.model.branches, savedir)
+                io_utils.write_branches_gui(self.model.branches, savedir)
 
     ### Mutating methods ###
     def set(

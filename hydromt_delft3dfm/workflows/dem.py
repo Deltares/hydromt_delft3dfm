@@ -13,7 +13,7 @@ from hydromt.model.processes import rivers
 from scipy import ndimage
 from shapely.geometry import Point
 
-from hydromt_delft3dfm.gis_utils import nearest_merge
+from hydromt_delft3dfm.utils.gis_utils import nearest_merge
 
 logger = logging.getLogger(f"hydromt.{__name__}")
 

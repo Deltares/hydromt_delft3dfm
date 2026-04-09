@@ -10,7 +10,7 @@ from hydromt import hydromt_step
 from hydromt.model import Model
 from hydromt.model.components import GeomsComponent, ModelComponent
 
-from hydromt_delft3dfm import mesh_utils, utils
+from hydromt_delft3dfm.utils import io_utils, mesh_utils
 
 __all__ = ["Delft3DFMGeomsComponent"]
 
@@ -72,13 +72,13 @@ class Delft3DFMGeomsComponent(GeomsComponent):
             # Branches are needed do derive locations,
             # self.branches should start the read if not done yet
             logger.info("Reading cross-sections files")
-            crosssections = utils.read_crosssections(
+            crosssections = io_utils.read_crosssections(
                 self.model.branches, self.model.dfmmodel
             )
 
             # Add friction properties from roughness files
             # logger.info("Reading friction files")
-            crosssections = utils.read_friction(crosssections, self.model.dfmmodel)
+            crosssections = io_utils.read_friction(crosssections, self.model.dfmmodel)
             self.set(crosssections, "crosssections")
 
         # Read manholes
@@ -87,13 +87,15 @@ class Delft3DFMGeomsComponent(GeomsComponent):
             network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
                 self.model.mesh.mesh_datasets["network1d"]
             )
-            manholes = utils.read_manholes(network1d_nodes, self.model.dfmmodel)
+            manholes = io_utils.read_manholes(network1d_nodes, self.model.dfmmodel)
             self.set(manholes, "manholes")
 
         # Read structures
         if self.model.dfmmodel.geometry.structurefile is not None:
             logger.info("Reading structures file")
-            structures = utils.read_structures(self.model.branches, self.model.dfmmodel)
+            structures = io_utils.read_structures(
+                self.model.branches, self.model.dfmmodel
+            )
             for st_type in structures["type"].unique():
                 self.set(structures[structures["type"] == st_type], f"{st_type}s")
 
@@ -126,19 +128,19 @@ class Delft3DFMGeomsComponent(GeomsComponent):
             # Crosssections
             gdf_crs = self.data["crosssections"]
             logger.info("Writting cross-sections files crsdef and crsloc")
-            crsdef_fn, crsloc_fn = utils.write_crosssections(gdf_crs, savedir)
+            crsdef_fn, crsloc_fn = io_utils.write_crosssections(gdf_crs, savedir)
             self.model.mdu.set("geometry.crossdeffile", crsdef_fn)
             self.model.mdu.set("geometry.crosslocfile", crsloc_fn)
             # Friction
             logger.info("Writting friction file(s)")
-            friction_fns = utils.write_friction(gdf_crs, savedir)
+            friction_fns = io_utils.write_friction(gdf_crs, savedir)
             self.model.mdu.set("geometry.frictfile", ";".join(friction_fns))
 
         # Write structures
         # Manholes
         if "manholes" in self._data:
             logger.info("Writting manholes file.")
-            storage_fn = utils.write_manholes(
+            storage_fn = io_utils.write_manholes(
                 self.data["manholes"],
                 savedir,
             )
@@ -155,7 +157,7 @@ class Delft3DFMGeomsComponent(GeomsComponent):
             structures = pd.DataFrame(structures).replace(np.nan, None)
             # write
             logger.info("Writting structures file.")
-            structures_fn = utils.write_structures(
+            structures_fn = io_utils.write_structures(
                 structures,
                 savedir,
             )

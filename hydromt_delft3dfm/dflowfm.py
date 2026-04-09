@@ -19,7 +19,7 @@ from hydromt.model import Model
 from hydromt.model.processes.mesh import create_mesh2d_from_region
 from pyproj import CRS
 
-from hydromt_delft3dfm import DATADIR, gis_utils, mesh_utils, workflows
+from hydromt_delft3dfm import DATADIR, workflows
 from hydromt_delft3dfm.components import (
     Delft3DFMGeomsComponent,
     DFlowFMForcingComponent,
@@ -27,6 +27,7 @@ from hydromt_delft3dfm.components import (
     IniFieldComponent,
     MDUComponent,
 )
+from hydromt_delft3dfm.utils import gis_utils, mesh_utils
 
 __all__ = ["DFlowFMModel"]
 __hydromt_eps__ = ["DFlowFMModel"]  # core entrypoints

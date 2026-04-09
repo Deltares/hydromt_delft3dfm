@@ -5,4 +5,6 @@ from pathlib import Path
 __version__ = "0.3.1.dev"
 DATADIR = Path(__file__).parent / "data"
 
-from hydromt_delft3dfm.models.dflowfm import *
+from hydromt_delft3dfm.dflowfm import DFlowFMModel
+
+__all__ = ["DFlowFMModel"]

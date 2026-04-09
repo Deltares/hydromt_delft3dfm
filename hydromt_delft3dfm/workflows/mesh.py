@@ -22,7 +22,7 @@ from shapely.geometry import (
 )
 from shapely.wkt import dumps, loads
 
-from hydromt_delft3dfm import mesh_utils as mutils
+from hydromt_delft3dfm.utils import mesh_utils as mutils
 
 logger = logging.getLogger(f"hydromt.{__name__}")
 
