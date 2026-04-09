@@ -1693,13 +1693,14 @@ class DFlowFMModel(Model):
 
         if (
             forcing_geodataset_fn is not None
-            and self.data_catalog[forcing_geodataset_fn].data_type == "GeoDataset"
+            and self.data_catalog.get_source(forcing_geodataset_fn).data_type
+            == "GeoDataset"
         ):
             da = self.data_catalog.get_geodataset(
                 forcing_geodataset_fn,
                 geom=self.region.buffer(region_buffer),  # buffer region
                 variables=[forcing_name],
-                time_tuple=(tstart, tstop),
+                time_range=(tstart, tstop),
             )
             # error if time mismatch
             if np.logical_and(
@@ -1720,7 +1721,8 @@ class DFlowFMModel(Model):
             gdf = da.vector.to_gdf(reducer=np.mean)
         elif (
             forcing_geodataset_fn is not None
-            and self.data_catalog[forcing_geodataset_fn].data_type == "GeoDataFrame"
+            and self.data_catalog.get_source(forcing_geodataset_fn).data_type
+            == "GeoDataFrame"
         ):
             gdf = self.data_catalog.get_geodataframe(
                 forcing_geodataset_fn,
@@ -2512,7 +2514,7 @@ class DFlowFMModel(Model):
         _mesh_region = gpd.GeoDataFrame(
             geometry=_mesh.to_shapely(dim=_mesh.face_dimension)
         ).unary_union
-        _boundary_region = _mesh_region.buffer(tolerance * self.res).difference(
+        _boundary_region = _mesh_region.buffer(tolerance * self.mesh.res).difference(
             _mesh_region
         )  # region where 2d boundary is allowed
         _boundary_region = gpd.GeoDataFrame(
@@ -2527,7 +2529,6 @@ class DFlowFMModel(Model):
             gdf_bnd = self.data_catalog.get_geodataframe(
                 boundaries_fn,
                 geom=_boundary_region,
-                crs=self.crs,
                 predicate="contains",
             )
             if len(gdf_bnd) == 0:
@@ -2536,6 +2537,7 @@ class DFlowFMModel(Model):
                     "recognisable boundary region (cell size * tolerance to the mesh)."
                 )
             # preprocess
+            gdf_bnd = gdf_bnd.to_crs(self.crs)
             gdf_bnd = gdf_bnd.explode(index_parts=True)
             # set index
             if "boundary_id" not in gdf_bnd:
@@ -2550,7 +2552,7 @@ class DFlowFMModel(Model):
         if boundaries_timeseries_fn is not None:
             logger.info("reading timeseries boundaries")
             df_bnd = self.data_catalog.get_dataframe(
-                boundaries_timeseries_fn, time_tuple=(tstart, tstop)
+                boundaries_timeseries_fn, time_range=(tstart, tstop)
             )  # could not use open_geodataset due to line geometry
             # error if time mismatch or wrong parsing of dates
             if np.dtype(df_bnd.index).type != np.datetime64:
@@ -2701,7 +2703,7 @@ class DFlowFMModel(Model):
 
         # get meteo timeseries
         df_meteo = self.data_catalog.get_dataframe(
-            meteo_timeseries_fn, variables=["precip"], time_tuple=(tstart, tstop)
+            meteo_timeseries_fn, variables=["precip"], time_range=(tstart, tstop)
         )
         # error if time mismatch or wrong parsing of dates
         if np.dtype(df_meteo.index).type != np.datetime64:

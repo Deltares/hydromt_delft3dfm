@@ -4,6 +4,7 @@ import logging
 import os
 from os.path import dirname, join
 from pathlib import Path
+from typing import cast
 
 from hydrolib.core.dflowfm import FMModel
 from hydromt import hydromt_step
@@ -43,6 +44,16 @@ class MDUComponent(ConfigComponent):
             model,
             filename=filename,
         )
+
+    def _initialize(self, skip_read=False) -> None:
+        """Initialize the model config."""
+        if self._data is None:
+            self._data = {}
+            if not skip_read:
+                # no check for read mode here
+                # model config is read if in read-mode and it exists
+                # default config if in write-mode
+                self.read()
 
     @hydromt_step
     def read(self) -> None:
@@ -105,3 +116,48 @@ class MDUComponent(ConfigComponent):
         mdu.save(recurse=False)
         # Go back to working dir
         os.chdir(cwd)
+
+    def test_equal(self, other: ConfigComponent) -> tuple[bool, dict[str, str]]:
+        """Test if two components are equal.
+
+        Parameters
+        ----------
+        other : ModelComponent
+            The component to compare against.
+
+        Returns
+        -------
+        tuple[bool, Dict[str, str]]
+            True if the components are equal, and a dict with the associated errors per
+            property checked.
+        """
+        errors = {}
+        if not isinstance(other, self.__class__):
+            errors["__class__"] = f"other does not inherit from {self.__class__}."
+        eq = len(errors) == 0
+        if not eq:
+            return eq, {"mdu": errors}
+        other_config = cast(ConfigComponent, other)
+
+        # not enough details in python recursion
+        errors.update(**_check_equal(self.data, other_config.data, "mdu"))
+        return len(errors) == 0, {"mdu": errors}
+
+
+def _check_equal(a, b, name="") -> dict[str, str]:
+    """Recursive test of model components.
+
+    Returns dict with component name and associated error message.
+    """
+    errors = {}
+    try:
+        assert isinstance(b, type(a)), "property types do not match"
+        if isinstance(a, dict):
+            for key in a:
+                assert key in b, f"{key} missing"
+                errors.update(**_check_equal(a[key], b[key], f"{name}.{key}"))
+        else:
+            assert a == b, "values not equal"
+    except AssertionError as e:
+        errors.update({name: e})
+    return errors

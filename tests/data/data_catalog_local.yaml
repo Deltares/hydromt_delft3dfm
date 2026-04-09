@@ -105,7 +105,7 @@
   driver:
     name: geodataset_vector
     options:
-      fn_data: local_data/boundaries_series.csv
+      data_path: boundaries_series.csv
   metadata:
     crs: 32647
 1D_laterals_points:
@@ -122,7 +122,7 @@
   driver:
     name: geodataset_vector
     options:
-      fn_data: local_data/laterals_series.csv
+      data_path: laterals_series.csv
   metadata:
     crs: 32647
   data_adapter:
@@ -142,7 +142,7 @@
   driver:
     name: geodataset_vector
     options:
-      fn_data: local_data/laterals_series.csv
+      data_path: laterals_series.csv
       assert_gtype: Polygon
   metadata:
     crs: 32647

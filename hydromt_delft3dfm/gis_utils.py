@@ -262,13 +262,36 @@ def nearest_merge(
     gpd.GeoDataFrame
         Merged GeoDataFrames
     """
-    crs = gdf1.crs
-    gdf = vector_utils.nearest_merge(
-        gdf1=gdf1,
-        gdf2=gdf2,
-        columns=columns,
-        max_dist=max_dist,
-        overwrite=overwrite,
-        inplace=inplace,
-    )
-    return gdf.set_crs(crs)
+    idx_nn, dst = vector_utils.nearest(gdf1, gdf2)
+    if not inplace:
+        gdf1 = gdf1.copy()
+    valid = dst < max_dist if max_dist is not None else np.ones_like(idx_nn, dtype=bool)
+    columns = gdf2.columns if columns is None else columns
+    gdf1["distance_right"] = dst
+    gdf1["index_right"] = -1
+    gdf1.loc[valid, "index_right"] = idx_nn[valid]
+    skip = ["geometry"]
+    for col in columns:
+        if col in skip or col not in gdf2:
+            if col not in gdf2:
+                logger.warning(f"Column {col} not found in gdf2 and skipped.")
+            continue
+        new_vals = gdf2.loc[idx_nn[valid], col].values
+        if col in gdf1 and not overwrite:
+            old_vals = gdf1.loc[valid, col]
+            replace = np.logical_or(old_vals.isnull(), old_vals.eq(""))
+            new_vals = np.where(replace, new_vals, old_vals)
+        gdf1.loc[valid, col] = new_vals
+
+    return gdf1
+
+    # crs = gdf1.crs
+    # gdf = vector_utils.nearest_merge(
+    #     gdf1=gdf1,
+    #     gdf2=gdf2,
+    #     columns=columns,
+    #     max_dist=max_dist,
+    #     overwrite=overwrite,
+    #     inplace=inplace,
+    # )
+    # return gdf.set_crs(crs)

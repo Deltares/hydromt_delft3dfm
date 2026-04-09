@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from hydromt import hydromt_step
 from hydromt.model import Model
-from hydromt.model.components import GeomsComponent
+from hydromt.model.components import GeomsComponent, ModelComponent
 
 from hydromt_delft3dfm import mesh_utils, utils
 
@@ -180,3 +180,21 @@ class Delft3DFMGeomsComponent(GeomsComponent):
 
         for name in self.data:
             self.set(convert_lists_to_strings(self.data[name]), name)
+
+    def test_equal(self, other: ModelComponent) -> tuple[bool, dict[str, str]]:
+        """Test if two GeomsComponents are equal.
+
+        Parameters
+        ----------
+        other: GeomsComponent
+            The other GeomsComponent to compare with.
+
+        Returns
+        -------
+        tuple[bool, dict[str, str]]
+            True if the components are equal, and a dict with the associated errors per
+            property checked.
+        """
+        eq, errors = super().test_equal(other)
+
+        return eq, {"geoms": errors}

@@ -425,7 +425,7 @@ class IniFieldComponent(SpatialDatasetsComponent):
         ----------
         raster_filename: str
             Source name of raster data in data_catalog. Should be a DataArray. Else use
-            **kwargs to select variables/time_tuple in
+            **kwargs to select variables/time_range in
             hydromt.data_catalog.get_rasterdataset method
         reclass_table_filename: str
             Source name of mapping table of raster_filename in data_catalog. Make sure

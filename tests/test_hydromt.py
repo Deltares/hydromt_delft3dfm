@@ -57,12 +57,20 @@ def test_model_build(tmpdir, modelname):
     root = join(EXAMPLEDIR, f"dflowfm_{modelname}")
     mod0 = DFlowFMModel(root=root, mode="r")
     mod0.read()
-    # check if equal, geoms are temporarily skipped
+    # check if equal
+    equal, errors = mod0.test_equal(mod1)
+    # geoms are temporarily skipped
     # https://github.com/Deltares/hydromt_delft3dfm/issues/138
-    equal, errors = mod0._test_equal(mod1, skip_component=["geoms"])
-    # skip config.filepath (root is different)
-    if "config.filepath" in errors:
-        errors.pop("config.filepath", None)
+    if "geoms" in errors:
+        errors.pop("geoms", None)
         if len(errors) == 0:
             equal = True
+    # skip config.filepath (root is different)
+    if "mdu" in errors and "mdu.filepath" in errors["mdu"]:
+        errors["mdu"].pop("mdu.filepath", None)
+        if len(errors["mdu"]) == 0:
+            errors.pop("mdu", None)
+        if len(errors) == 0:
+            equal = True
+
     assert equal, errors
