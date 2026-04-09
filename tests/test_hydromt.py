@@ -82,7 +82,7 @@ def test_model_build(tmpdir, modelname):
         errors.pop("config.filepath", None)
         if len(errors) == 0:
             equal = True
-    # geoms are failing, to be fixed in
+    # test_equal fails for geoms, to be fixed hydromt-core or in
     # https://github.com/Deltares/hydromt_delft3dfm/issues/138
     # for now, check whether the situation does not detoriate by asserting the failing geoms
     if "geoms.crosssections" in errors: # local
