@@ -205,7 +205,7 @@ class IniFieldComponent(SpatialDatasetsComponent):
         def _prepare_inifields(da_dict, da):
             # Write tif files
             name = da_dict["name"]
-            type = da_dict["initype"]
+            initype = da_dict["initype"]
             interp_method = da_dict["interpolation"]
             locationtype = da_dict["locationtype"]
             _fn = join(mapsroot, f"{name}.tif")
@@ -234,9 +234,9 @@ class IniFieldComponent(SpatialDatasetsComponent):
                     "averagingRelSize": da_dict.get("averagingrelsize"),
                     "locationType": locationtype,
                 }
-            if type == "initial":
+            if initype == "initial":
                 inilist.append(inidict)
-            elif type == "parameter":
+            elif initype == "parameter":
                 paramlist.append(inidict)
 
         # Only write maps that are listed in self._MAPS, rename tif on the fly
