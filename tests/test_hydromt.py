@@ -68,6 +68,7 @@ def test_model_build(tmpdir, modelname):
         if len(errors) == 0:
             equal = True
 
+    # somehow a successful check still has {"geoms":{}), so this should be popped
     if len(errors["geoms"]) == 0:
         errors.pop("geoms", None)
         if len(errors) == 0:
