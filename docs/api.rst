@@ -291,8 +291,8 @@ Graph methods
 .. autosummary::
    :toctree: _generated
 
-   graph_utils.gpd_to_digraph
-   graph_utils.get_endnodes_from_lines
+   utils.graph_utils.gpd_to_digraph
+   utils.graph_utils.get_endnodes_from_lines
 
 GIS methods
 -----------
