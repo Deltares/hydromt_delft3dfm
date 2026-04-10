@@ -1,5 +1,6 @@
 {
 "type": "FeatureCollection",
+"name": "boundaries",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::32647" } },
 "features": [
 { "type": "Feature", "properties": { "level_0": 662793.79418679164, "level_1": 1524515.4517321615, "branchid": "river_1", "branchtype": "river", "branchorder": 1.0, "friction_type": "Manning", "friction_value": 0.023, "shape": "rectangle", "width": 10.0, "t_width": 20.0, "height": 10.0, "bedlev": -10.0, "closed": "no", "ORIG_branchid": "river_1", "frictiontype": "Manning", "frictionvalue": 0.023, "frictionid": "Manning_0.023", "diameter": null, "index_right": 1, "OBJECTID": null, "invlev_up": null, "invlev_dn": null, "where": "downstream", "distance_right": 2.6354886210617495e-07, "nodeid": "662793.794187_1524515.451732" }, "geometry": { "type": "Point", "coordinates": [ 662793.794186791637912, 1524515.451732161454856 ] } },

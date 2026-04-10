@@ -1,5 +1,6 @@
 {
 "type": "FeatureCollection",
+"name": "rivers",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::32647" } },
 "features": [
 { "type": "Feature", "properties": { "branchid": "river_1", "branchtype": "river", "branchorder": 1.0, "friction_type": "Manning", "friction_value": 0.023, "shape": "rectangle", "width": 10.0, "t_width": 20.0, "height": 10.0, "bedlev": -10.0, "closed": "no", "ORIG_branchid": "river_1", "frictiontype": "Manning", "frictionvalue": 0.023, "frictionid": "Manning_0.023", "diameter": null, "index_right": null, "OBJECTID": null, "invlev_up": null, "invlev_dn": null, "manhole_up": null, "manhole_dn": null }, "geometry": { "type": "LineString", "coordinates": [ [ 664057.966296999948099, 1526147.834882 ], [ 663918.391924358904362, 1525803.10090322420001 ], [ 663700.482064640615135, 1525466.331120023271069 ], [ 663353.045365229598247, 1525088.417517154943198 ], [ 662879.129516471526586, 1524643.454726681346074 ], [ 662793.794186791637912, 1524515.451732161454856 ] ] } },

@@ -1,5 +1,6 @@
 {
 "type": "FeatureCollection",
+"name": "branches",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::32647" } },
 "features": [
 { "type": "Feature", "properties": { "branchid": "pipe_4", "branchtype": "pipe", "branchorder": -1.0, "friction_type": null, "friction_value": null, "shape": "circle", "width": null, "t_width": null, "height": null, "bedlev": null, "closed": "yes", "ORIG_branchid": "pipe_4", "frictiontype": "WhiteColeBrook", "frictionvalue": 0.003, "frictionid": "WhiteColeBrook_0.003", "diameter": 0.5, "index_right": 0.0, "OBJECTID": 1.0, "invlev_up": -2.5, "invlev_dn": -2.5, "manhole_up": "manhole_0_generated", "manhole_dn": "" }, "geometry": { "type": "LineString", "coordinates": [ [ 664438.813829420600086, 1525829.800284768920392 ], [ 664429.038999999989755, 1526107.098 ] ] } },

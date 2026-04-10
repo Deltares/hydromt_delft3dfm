@@ -1,5 +1,6 @@
 {
 "type": "FeatureCollection",
+"name": "crosssections",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::32647" } },
 "features": [
 { "type": "Feature", "properties": { "index": "1", "crsloc_id": "river_2_517.67", "crsloc_branchid": "river_2", "crsloc_chainage": 517.66731089307473, "crsloc_shift": -10.0, "crsloc_definitionid": "rect_h10.000_w50.000_c0_point", "crsdef_id": "rect_h10.000_w50.000_c0_point", "crsdef_type": "rectangle", "crsdef_branchid": "river_2", "crsdef_height": 10.0, "crsdef_width": 50.0, "crsdef_closed": "0", "crsdef_frictionid": "Manning_0.023", "frictiontype": "Manning", "frictionvalue": 0.023, "crsdef_thalweg": 0.0, "temp_id": "river_2_517.67", "crsdef_xyzcount": null, "crsdef_xcoordinates": null, "crsdef_ycoordinates": null, "crsdef_zcoordinates": null, "crsdef_frictionids": null, "crsdef_frictionpositions": null, "crsdef_diameter": null }, "geometry": { "type": "Point", "coordinates": [ 664218.310854589915834, 1526639.322860097046942 ] } },
