@@ -300,8 +300,8 @@ GIS methods
 .. autosummary::
    :toctree: _generated
 
-   gis_utils.split_lines
-   gis_utils.cut_pieces
-   gis_utils.check_gpd_attributes
-   gis_utils.update_data_columns_attributes_based_on_filter
-   gis_utils.get_gdf_from_branches
+   utils.gis_utils.split_lines
+   utils.gis_utils.cut_pieces
+   utils.gis_utils.check_gpd_attributes
+   utils.gis_utils.update_data_columns_attributes_based_on_filter
+   utils.gis_utils.get_gdf_from_branches
