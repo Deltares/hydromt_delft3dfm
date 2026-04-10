@@ -1,5 +1,6 @@
 {
 "type": "FeatureCollection",
+"name": "rivers_nodes",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::32647" } },
 "features": [
 { "type": "Feature", "properties": { "branchnodeid": "branchnodes_0", "branch_id": "branch_1", "branchid": "branch_1", "branchtype": "river", "branchorder": -1.0, "friction_type": "Manning", "friction_value": 0.023, "shape": "rectangle", "width": 10.0, "t_width": 20.0, "height": 10.0, "bedlev": -10.0, "closed": "no", "ORIG_branchid": "branch_1" }, "geometry": { "type": "Point", "coordinates": [ 665115.70000000030268, 1524944.7899999988731 ] } },
