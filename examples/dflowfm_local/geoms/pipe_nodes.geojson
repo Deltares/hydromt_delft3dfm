@@ -1,5 +1,6 @@
 {
 "type": "FeatureCollection",
+"name": "pipe_nodes",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::32647" } },
 "features": [
 { "type": "Feature", "properties": { "branchnodeid": "branchnodes_0", "branch_id": "pipe_4", "branchid": "pipe_4", "branchtype": "pipe", "branchorder": -1.0, "closed": "yes", "ORIG_branchid": "pipe_4" }, "geometry": { "type": "Point", "coordinates": [ 664438.813829420600086, 1525829.800284768920392 ] } },

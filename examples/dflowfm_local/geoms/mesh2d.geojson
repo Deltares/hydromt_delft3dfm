@@ -1,5 +1,6 @@
 {
 "type": "FeatureCollection",
+"name": "mesh2d",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::32647" } },
 "features": [
 { "type": "Feature", "properties": { "index": "0" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 664200.0, 1527200.0 ], [ 664200.0, 1527300.0 ], [ 664100.0, 1527300.0 ], [ 664100.0, 1527200.0 ], [ 664200.0, 1527200.0 ] ] ] } },
