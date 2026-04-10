@@ -14,7 +14,7 @@ authors = [
 dependencies = [
     "hydromt>=0.10.0, <1", # TODO: move to hydromt>=1: https://github.com/Deltares/hydromt_delft3dfm/issues/137
     "geopandas>=0.10, !=1.0.0", # gpd 1.0.0 has sjoin bug: https://github.com/geopandas/geopandas/issues/352
-    "numpy",
+    "numpy>=1.26", # latest <2 version is already EOL, but better for compatibility with other packages
     "pandas>=2.0.0",
     "xarray",
     #"hydrolib-core>=1.0.0b5", #>=0.9.9",
