@@ -692,7 +692,7 @@ def read_1dboundary(
     nodeids = nodeids[nodeids != "nan"]
     # Assume one forcing file (HydroMT writer) and read
     forcing = df.forcingfile.iloc[0]
-    df_forcing = pd.DataFrame([f.__dict__ for f in forcing[0].forcing])
+    df_forcing = pd.DataFrame([f.__dict__ for forcingfile in forcing for f in forcingfile.forcing])
     # Filter for the current nodes, remove nans
     df_forcing = df_forcing[np.isin(df_forcing.name, nodeids)]
 
