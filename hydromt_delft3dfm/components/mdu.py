@@ -101,7 +101,6 @@ class MDUComponent(ConfigComponent):
 
         cf_dict = self.data.copy()
         # Need to switch to dflowfm folder for files to be found and properly added
-        mdu_fn = cf_dict.pop("filepath", None)
         mdu_fn = Path(join(self.root.path, self._filename))
         mdu_fn.parent.mkdir(parents=True, exist_ok=True)
         cwd = os.getcwd()

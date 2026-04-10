@@ -178,9 +178,7 @@ def read_crosssections(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataF
     def _list2Str(lst):
         if isinstance(lst, list):
             # apply conversion to list columns
-            if isinstance(lst[0], float):
-                return " ".join(["{}".format(i) for i in lst])
-            elif isinstance(lst[0], str):
+            if isinstance(lst[0], (float, str)):
                 return " ".join(["{}".format(i) for i in lst])
         else:
             return lst
@@ -280,7 +278,6 @@ def write_crosssections(gdf: gpd.GeoDataFrame, savedir: str) -> Tuple[str, str]:
     gpd_crsdef = gpd_crsdef.drop_duplicates(subset="id")
     gpd_crsdef = gpd_crsdef.astype(object).replace(np.nan, None)
     crsdef = CrossDefModel(definition=gpd_crsdef.to_dict("records"))
-    # fm_model.geometry.crossdeffile = crsdef
 
     crsdef_fn = crsdef._filename() + ".ini"
     crsdef.save(
@@ -294,9 +291,8 @@ def write_crosssections(gdf: gpd.GeoDataFrame, savedir: str) -> Tuple[str, str]:
     gpd_crsloc = gpd_crsloc.rename(
         columns={c: c.removeprefix("crsloc_") for c in gpd_crsloc.columns}
     )
-    gpd_crsloc = gpd_crsloc.dropna(
-        subset="id"
-    )  # structures have crsdefs but no crslocs
+    # structures have crsdefs but no crslocs
+    gpd_crsloc = gpd_crsloc.dropna(subset="id")
 
     crsloc = CrossLocModel(crosssection=gpd_crsloc.to_dict("records"))
 
