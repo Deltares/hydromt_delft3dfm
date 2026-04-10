@@ -278,12 +278,12 @@ Mesh conversion methods
 .. autosummary::
    :toctree: _generated
 
-   mesh_utils.hydrolib_network_from_mesh
-   mesh_utils.mesh1d_network1d_from_hydrolib_network
-   mesh_utils.links1d2d_from_hydrolib_network
-   mesh_utils.mesh_from_hydrolib_network
-   mesh_utils.mesh1d_nodes_geodataframe
-   mesh_utils.network1d_nodes_geodataframe
+   utils.mesh_utils.hydrolib_network_from_mesh
+   utils.mesh_utils.mesh1d_network1d_from_hydrolib_network
+   utils.mesh_utils.links1d2d_from_hydrolib_network
+   utils.mesh_utils.mesh_from_hydrolib_network
+   utils.mesh_utils.mesh1d_nodes_geodataframe
+   utils.mesh_utils.network1d_nodes_geodataframe
 
 Graph methods
 -------------
