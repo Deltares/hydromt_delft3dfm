@@ -1,4 +1,4 @@
-# written by HYDROLIB-core 0.5.2
+# written by HYDROLIB-core 0.10.1
 
 [General]
 fileVersion = 2.01
@@ -25,12 +25,12 @@ locationFile = 1.pli
 forcingFile  = boundaryconditions2d_1.bc
 
 [Lateral]
-id             = lateral1d_points_0
-name           = lateral1d_points_0
-locationType   = 1d
-branchId       = branch_7
-chainage       = 370.839
-discharge      = lateral1d.bc
+id           = lateral1d_points_0
+name         = lateral1d_points_0
+locationType = 1d
+branchId     = branch_7
+chainage     = 370.8390975220465
+discharge    = lateral1d.bc
 
 [Lateral]
 id             = lateral1d_polygons_0
@@ -42,7 +42,8 @@ yCoordinates   = 1525273.2984456269 1524966.7915079996 1524208.1868373717 152486
 discharge      = lateral1d.bc
 
 [Meteo]
-quantity            = rainfall_rate               # Name of the quantity. See UM Section C.5.3
-forcingFile         = meteo_boundaryconditions.bc # Name of file containing the forcing for this meteo quantity.
-forcingFileType     = bcAscii                     # Type of forcingFile.
+quantity        = rainfall_rate               # Name of the quantity. See UM Section C.5.3
+forcingFile     = meteo_boundaryconditions.bc # Name of file containing the forcing for this meteo quantity.
+forcingFileType = bcAscii                     # Type of forcingFile.
+operand         = O                           # How this data is combined with previous data for the same quantity (if any).
 

@@ -1,6 +1,7 @@
 grip_roads:
   data_type: GeoDataFrame
-  path: C:\Users\li_xn\.hydromt_data\artifact_data\v0.0.8\grip_roads.gpkg
+  version: v4
+  path: C:\Users\veenstra\.hydromt_data\artifact_data\v0.0.9\data.tar\grip_roads.gpkg
   driver: vector
   meta:
     category: road
@@ -8,41 +9,11 @@ grip_roads:
     paper_ref: Meijer et al, 2018
     source_license: CC0-1.0
     source_url: https://www.globio.info/download-grip-dataset
-    source_version: v4
   crs: 4326
-manholes_defaults:
-  data_type: DataFrame
-  path: c:\Developments\hydromt_delft3dfm\hydromt_delft3dfm\data\storages\manholes_defaults.csv
-  driver: csv
-  meta:
-    notes: default manhole parameters.
-merit_hydro:
-  data_type: RasterDataset
-  path: C:\Users\li_xn\.hydromt_data\artifact_data\v0.0.8\merit_hydro\{variable}.tif
-  driver: raster
-  meta:
-    category: topography
-    paper_doi: 10.1029/2019WR024873
-    paper_ref: Yamazaki et al. (2019)
-    source_license: CC-BY-NC 4.0 or ODbL 1.0
-    source_url: http://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_Hydro
-    source_version: 1.0
-  crs: 4326
-pipes_defaults:
-  data_type: DataFrame
-  path: c:\Developments\hydromt_delft3dfm\hydromt_delft3dfm\data\branches\pipes_defaults.csv
-  driver: csv
-  meta:
-    notes: default pipe parameters.
-rivers_defaults:
-  data_type: DataFrame
-  path: c:\Developments\hydromt_delft3dfm\hydromt_delft3dfm\data\branches\rivers_defaults.csv
-  driver: csv
-  meta:
-    notes: default river parameters.
-rivers_lin2019_v1:
+hydro_rivers_lin:
   data_type: GeoDataFrame
-  path: C:\Users\li_xn\.hydromt_data\artifact_data\v0.0.8\rivers_lin2019_v1.gpkg
+  version: '1'
+  path: C:\Users\veenstra\.hydromt_data\artifact_data\v0.0.9\data.tar\rivers_lin2019_v1.gpkg
   driver: vector
   meta:
     category: hydrography
@@ -50,21 +21,51 @@ rivers_lin2019_v1:
     paper_ref: Lin et al. (2019)
     source_license: CC-BY-NC 4.0
     source_url: https://zenodo.org/record/3552776#.YVbOrppByUk
-    source_version: 1
-vito:
+    processing_notes: hydrography/rivers_lin2019/README
+manholes_defaults:
+  data_type: DataFrame
+  path: C:\DATA\checkouts\hydromt_delft3dfm\hydromt_delft3dfm\data\storages\manholes_defaults.csv
+  driver: csv
+  meta:
+    notes: default manhole parameters.
+merit_hydro:
   data_type: RasterDataset
-  path: C:\Users\li_xn\.hydromt_data\artifact_data\v0.0.8\vito.tif
+  version: '1.0'
+  path: C:\Users\veenstra\.hydromt_data\artifact_data\v0.0.9\data.tar\merit_hydro\{variable}.tif
+  driver: raster
+  meta:
+    category: topography
+    paper_doi: 10.1029/2019WR024873
+    paper_ref: Yamazaki et al. (2019)
+    source_license: CC-BY-NC 4.0 or ODbL 1.0
+    source_url: http://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_Hydro
+  crs: 4326
+pipes_defaults:
+  data_type: DataFrame
+  path: C:\DATA\checkouts\hydromt_delft3dfm\hydromt_delft3dfm\data\branches\pipes_defaults.csv
+  driver: csv
+  meta:
+    notes: default pipe parameters.
+rivers_defaults:
+  data_type: DataFrame
+  path: C:\DATA\checkouts\hydromt_delft3dfm\hydromt_delft3dfm\data\branches\rivers_defaults.csv
+  driver: csv
+  meta:
+    notes: default river parameters.
+vito_2015:
+  data_type: RasterDataset
+  version: 2.0.2
+  path: C:\Users\veenstra\.hydromt_data\artifact_data\v0.0.9\data.tar\vito.tif
   driver: raster
   meta:
     category: landuse & landcover
     paper_doi: 10.5281/zenodo.3939038
     paper_ref: Buchhorn et al (2020)
     source_url: https://land.copernicus.eu/global/products/lc
-    source_version: v2.0.2
   crs: 4326
 vito_mapping:
   data_type: DataFrame
-  path: c:\Developments\hydromt_delft3dfm\hydromt_delft3dfm\data\landuse\vito_mapping.csv
+  path: C:\DATA\checkouts\hydromt_delft3dfm\hydromt_delft3dfm\data\landuse\vito_mapping.csv
   driver: csv
   driver_kwargs:
     index_col: 0
