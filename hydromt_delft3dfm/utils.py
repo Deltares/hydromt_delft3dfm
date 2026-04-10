@@ -689,6 +689,11 @@ def read_1dboundary(
         External and focing values combined into a DataArray for variable quantity.
     """
     nodeids = df.nodeid.values
+    # TODO: the comparison to nan below might have become invalid since the nan-to-None
+    # change in https://github.com/Deltares/hydromt_delft3dfm/pull/226 when updating
+    # to hydrolib-core v1. There is no test in the testbank that contains nodeid=nan
+    # so this cannot be checked. If this method fails on nan/None, fix this and add a
+    # test.
     nodeids = nodeids[nodeids != "nan"]
     # Assume one forcing file (HydroMT writer) and read
     forcing = df.forcingfile.iloc[0]
