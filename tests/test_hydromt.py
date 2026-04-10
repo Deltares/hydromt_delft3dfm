@@ -70,10 +70,12 @@ def test_model_build(tmpdir, modelname):
 
     if len(errors["geoms"]) == 0:
         errors.pop("geoms", None)
+        if len(errors) == 0:
+            equal = True
 
     assert equal, errors
 
 
 # for debugging in IDE
 if __name__ == "__main__":
-    test_model_build(tmpdir=".", modelname="piave")
+    test_model_build(tmpdir=".", modelname="local")
