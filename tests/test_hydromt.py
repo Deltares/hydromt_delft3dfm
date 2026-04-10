@@ -68,6 +68,9 @@ def test_model_build(tmpdir, modelname):
         if len(errors) == 0:
             equal = True
 
+    if len(errors["geoms"]) == 0:
+        errors.pop("geoms", None)
+
     assert equal, errors
 
 
