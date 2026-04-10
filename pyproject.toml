@@ -15,7 +15,7 @@ dependencies = [
     "hydromt>=0.10.0, <1", # TODO: move to hydromt>=1: https://github.com/Deltares/hydromt_delft3dfm/issues/137
     "geopandas>=0.10, !=1.0.0", # gpd 1.0.0 has sjoin bug: https://github.com/geopandas/geopandas/issues/352
     "numpy>=2.0.0", # latest <2 version is already EOL
-    "pandas>=2.0.0",
+    "pandas>=2.0.0, <3", # TODO: remove temporary upper limit: https://github.com/Deltares/hydromt_delft3dfm/issues/229
     "xarray",
     #"hydrolib-core>=1.0.0b5", #>=0.9.9",
     "hydrolib-core @ git+https://github.com/Deltares/HYDROLIB-core.git@main", # TODO: move to release when available
