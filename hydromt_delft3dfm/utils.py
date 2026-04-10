@@ -1056,7 +1056,7 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
 
     # Assume one forcing file (HydroMT writer) and read
     forcing = df.forcingfile
-    df_forcing = pd.DataFrame([f.__dict__ for f in forcing[0].forcing])
+    df_forcing = pd.DataFrame([f.__dict__ for forcingfile in forcing for f in forcingfile.forcing])
 
     data, dims, coords, bc = _read_forcing_dataframe(
         df_forcing,
