@@ -22,8 +22,8 @@ def test_reduce_gdf_precision():
         data={"crsid": [1, 1, 1, 1], "order": [1, 2, 3, 4], "z": [10, 0, 1, 11]}, crs=28992)
     mixed.index = mixed.index.astype(str)
 
-    reduce_gdf_precision(linestrings)
-    reduce_gdf_precision(points)
+    _ = reduce_gdf_precision(linestrings)
+    _ = reduce_gdf_precision(points)
     with pytest.raises(NotImplementedError) as e:
-        reduce_gdf_precision(mixed)
+        _ = reduce_gdf_precision(mixed)
     assert "Mixed geometry types are not supported." in str(e.value)
