@@ -195,7 +195,7 @@ def read_crosssections(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataF
     df_crsdef["crs_id"] = df_crsdef["id"]  # column to merge
     # convertion needed  for xyz/zw crossections
     # convert list to str ()
-    df_crsdef = df_crsdef.applymap(lambda x: _list2Str(x))
+    df_crsdef = df_crsdef.map(lambda x: _list2Str(x))
     # except for frictionids
     if "frictionids" in df_crsdef.columns:
         df_crsdef["frictionids"] = df_crsdef["frictionids"].str.replace(
