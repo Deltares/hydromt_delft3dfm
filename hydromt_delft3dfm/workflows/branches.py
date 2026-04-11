@@ -870,9 +870,13 @@ def reduce_gdf_precision(gdf: gpd.GeoDataFrame, rounding_precision: int = 8):
     Raises
     ------
     NotImplementedError
-        If the geometry is not a LineString or Point.
+        If the geometry is not a LineString or Point, or if the types are mixed.
     """
-    if isinstance(gdf.geometry[0], LineString):
+    # check for mixed geometry types
+    if len(gdf.geometry.geom_type.unique()) != 1:
+        raise NotImplementedError("Mixed geometry types are not supported.")
+
+    if isinstance(gdf.geometry.iloc[0], LineString):
         branches = gdf.copy()
         for i_branch, branch in enumerate(branches.itertuples()):
             points = shapely.wkt.loads(
@@ -882,7 +886,7 @@ def reduce_gdf_precision(gdf: gpd.GeoDataFrame, rounding_precision: int = 8):
             ).coords[:]
             branches.at[i_branch, "geometry"] = LineString(points)
 
-    elif isinstance(gdf.geometry[0], Point):
+    elif isinstance(gdf.geometry.iloc[0], Point):
         points = gdf.copy()
         for i_point, point in enumerate(points.itertuples()):
             new_point = shapely.wkt.loads(
@@ -891,7 +895,7 @@ def reduce_gdf_precision(gdf: gpd.GeoDataFrame, rounding_precision: int = 8):
             points.at[i_point, "geometry"] = Point(new_point)
 
     else:
-        raise NotImplementedError
+        raise NotImplementedError("Only LineString and Point geometry types supported.")
 
     return gdf
 
