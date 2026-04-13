@@ -201,7 +201,7 @@ class DFlowFMModel(Model):
         self.mdu.update(data)
 
     @hydromt_step
-    def setup_maps_from_raster(self, data):
+    def setup_maps_from_rasterdataset(self, data):
         """
         :py:meth:`~hydromt_delft3dfm.components.inifield.IniFieldComponent.add_raster_data_from_rasterdataset()`
         """
