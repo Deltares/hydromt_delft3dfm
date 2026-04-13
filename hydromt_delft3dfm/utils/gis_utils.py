@@ -5,7 +5,7 @@ import logging
 import geopandas as gpd
 import numpy as np
 import pandas as pd
-from hydromt.gis import vector_utils
+from hydromt.gis.vector_utils import nearest
 from shapely.geometry import (
     LineString,
     Point,
@@ -262,13 +262,13 @@ def nearest_merge(
     gpd.GeoDataFrame
         Merged GeoDataFrames
     """
-    idx_nn, dst = vector_utils.nearest(gdf1, gdf2)
+    idx_nn, dst = nearest(gdf1, gdf2)
     if not inplace:
         gdf1 = gdf1.copy()
     valid = dst < max_dist if max_dist is not None else np.ones_like(idx_nn, dtype=bool)
     columns = gdf2.columns if columns is None else columns
     gdf1["distance_right"] = dst
-    gdf1["index_right"] = -1
+    gdf1["index_right"] = None
     gdf1.loc[valid, "index_right"] = idx_nn[valid]
     skip = ["geometry"]
     for col in columns:
