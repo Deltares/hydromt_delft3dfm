@@ -2,18 +2,21 @@ global:
   crs: 3857
 
 steps:
+  - setup_config:
+      data: {geometry.bedlevuni: -5}
+
   - setup_mesh2d:
       region: 
         bbox: [12.4331, 46.4661, 12.5212, 46.5369]
       res: 500
 
-  - inifield.add_raster_data_from_rasterdataset:
+  - setup_maps_from_rasterdataset:
       raster_filename: merit_hydro
       variables: ["elevtn"]
       fill_method: nearest
       interpolation_method: nearestNb
 
-  - inifield.add_raster_data_from_raster_reclass:
+  - setup_maps_from_raster_reclass:
       raster_filename: vito_2015
       reclass_table_filename: vito_mapping
       reclass_variables: ['roughness_manning', 'infiltcap']

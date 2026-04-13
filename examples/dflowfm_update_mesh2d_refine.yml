@@ -2,6 +2,9 @@ global:
   crs: 3857
 
 steps:
+  - setup_config:
+      data: {geometry.bedlevuni: -5}
+
   - setup_mesh2d_refine:
       polygon_fn: ./data/refine.geojson
       steps: 2

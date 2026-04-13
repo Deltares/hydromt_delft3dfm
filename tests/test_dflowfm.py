@@ -1,4 +1,3 @@
-import pytest
 from os.path import abspath, dirname, join
 from hydromt_delft3dfm import DFlowFMModel
 import numpy as np

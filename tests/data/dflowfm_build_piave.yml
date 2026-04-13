@@ -4,6 +4,9 @@ global:
   openwater_computation_node_distance: 40
 
 steps:
+  - setup_config:
+      data: {geometry.bedlevuni: -5}
+
   - setup_rivers_from_dem:
       region: 
         bbox: [12.4331, 46.4661, 12.5212, 46.5369]
@@ -51,13 +54,13 @@ steps:
         bbox: [12.4331, 46.4661, 12.5212, 46.5369]
       res: 500
 
-  - inifield.add_raster_data_from_rasterdataset:
+  - setup_maps_from_rasterdataset:
       raster_filename: merit_hydro
       variables: ["elevtn"]
       fill_method: nearest
       interpolation_method: nearestNb
 
-  - inifield.add_raster_data_from_raster_reclass:
+  - setup_maps_from_raster_reclass:
       raster_filename: vito_2015
       reclass_table_filename: vito_mapping
       reclass_variables: ['roughness_manning', 'infiltcap']

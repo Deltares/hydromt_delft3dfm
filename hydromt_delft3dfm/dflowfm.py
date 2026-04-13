@@ -4,6 +4,7 @@ import logging
 from datetime import datetime, timedelta
 from os.path import isfile, join
 from pathlib import Path
+from typing import Any
 
 import geopandas as gpd
 import hydromt
@@ -170,6 +171,48 @@ class DFlowFMModel(Model):
     def forcing(self) -> DFlowFMForcingComponent:
         """Return the forcing component."""
         return self.components["forcing"]
+
+    @hydromt_step
+    def setup_config(self, data: dict[str, Any]):
+        """Set the config dictionary at key(s) with values.
+
+        Parameters
+        ----------
+        data : dict[str, Any]
+            A dictionary with the values to be set. keys can be dotted like in
+            :py:meth:`~hydromt.model.components.config.ConfigComponent.set_value`
+
+        Examples
+        --------
+        Setting data as a nested dictionary::
+
+
+            >> self.setup_config({'a': 1, 'b': {'c': {'d': 2}}})
+            >> self.config.data
+            {'a': 1, 'b': {'c': {'d': 2}}}
+
+        Setting data using dotted notation::
+
+            >> self.setup_config({'a.d.f.g': 1, 'b': {'c': {'d': 2}}})
+            >> self.config.data
+            {'a': {'d':{'f':{'g': 1}}}, 'b': {'c': {'d': 2}}}
+
+        """
+        self.mdu.update(data)
+
+    @hydromt_step
+    def setup_maps_from_raster(self, data):
+        """
+        :py:meth:`~hydromt_delft3dfm.components.inifield.IniFieldComponent.add_raster_data_from_rasterdataset()`
+        """
+        self.inifield.add_raster_data_from_rasterdataset(data)
+
+    @hydromt_step
+    def setup_maps_from_raster_reclass(self, data):
+        """
+        :py:meth:`~hydromt_delft3dfm.components.inifield.IniFieldComponent.add_raster_data_from_raster_reclass()`
+        """
+        self.inifield.add_raster_data_from_raster_reclass(data)
 
     @hydromt_step
     def setup_channels(
