@@ -38,7 +38,7 @@ def test_model_build(tmpdir, modelname):
     # compare results with model from examples folder
     root = join(tmpdir, f"dflowfm_{modelname}")
     logger = logging.getLogger("hydromt")
-    logger.setLevel(logger.DEBUG)
+    logger.setLevel(logging.DEBUG)
     mod1 = DFlowFMModel(
         root=root,
         mode="w",
