@@ -53,9 +53,9 @@ a specific method see its documentation.
       - This component refines the 2D mesh.
     * - :py:func:`~DFlowFMModel.setup_link1d2d`
       - This component sets 1d2d links that link the 1D branchs to the 2D mesh.
-    * - :py:func:`~DFlowFMModel.inifield.add_raster_data_from_rasterdataset`
+    * - :py:func:`~DFlowFMModel.setup_maps_from_rasterdataset`
       - This component adds parameter maps to the 2D mesh.
-    * - :py:func:`~DFlowFMModel.inifield.add_raster_data_from_raster_reclass`
+    * - :py:func:`~DFlowFMModel.setup_maps_from_raster_reclass`
       - This component adds parameter maps that are derived by reclass existing maps to the 2D mesh.
     * - :py:func:`~DFlowFMModel.setup_1dboundary`
       -  Setup a 1D boundary forcing to the 1D branches.
