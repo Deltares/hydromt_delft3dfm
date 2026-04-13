@@ -212,7 +212,7 @@ def _snap_unsnappednodes_to_nodes(
         unsnapped_nodes, nodes, max_dist=snap_offset, overwrite=False
     )
     # drop not snapped
-    snapped_nodes = snapped_nodes[snapped_nodes.index_right != -1]
+    snapped_nodes = snapped_nodes[snapped_nodes.index_right.notna()]
     snapped_nodes["geometry_left"] = snapped_nodes["geometry"]
     snapped_nodes["geometry_right"] = [
         nodes.at[i, "geometry"] for i in snapped_nodes["index_right"]
