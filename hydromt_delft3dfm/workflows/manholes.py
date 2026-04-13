@@ -146,7 +146,7 @@ def generate_manholes_on_branches(
         nodes_to_remove = nearest_merge(
             nodes_pipes, nodes_channels, max_dist=0.001, overwrite=True
         )
-        nodes_pipes = nodes_pipes.loc[nodes_to_remove.index_right.isna()]
+        nodes_pipes = nodes_pipes.loc[nodes_to_remove.index_right == -1]
 
     # manhole generated
     manholes_generated = gpd.GeoDataFrame(

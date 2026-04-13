@@ -79,4 +79,4 @@ def test_model_build(tmpdir, modelname):
 
 # for debugging in IDE
 if __name__ == "__main__":
-    test_model_build(tmpdir=".", modelname="piave")
+    test_model_build(tmpdir=".", modelname="local")
