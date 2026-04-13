@@ -173,7 +173,7 @@ class DFlowFMModel(Model):
         return self.components["forcing"]
 
     @hydromt_step
-    def setup_config(self, data: dict[str, Any]):
+    def setup_config(self, **data: dict[str, Any]):
         """Set the config dictionary at key(s) with values.
 
         Parameters
@@ -201,18 +201,18 @@ class DFlowFMModel(Model):
         self.mdu.update(data)
 
     @hydromt_step
-    def setup_maps_from_rasterdataset(self, data):
+    def setup_maps_from_rasterdataset(self, **data):
         """
         :py:meth:`~hydromt_delft3dfm.components.inifield.IniFieldComponent.add_raster_data_from_rasterdataset()`
         """
-        self.inifield.add_raster_data_from_rasterdataset(data)
+        self.inifield.add_raster_data_from_rasterdataset(**data)
 
     @hydromt_step
-    def setup_maps_from_raster_reclass(self, data):
+    def setup_maps_from_raster_reclass(self, **data):
         """
         :py:meth:`~hydromt_delft3dfm.components.inifield.IniFieldComponent.add_raster_data_from_raster_reclass()`
         """
-        self.inifield.add_raster_data_from_raster_reclass(data)
+        self.inifield.add_raster_data_from_raster_reclass(**data)
 
     @hydromt_step
     def setup_channels(

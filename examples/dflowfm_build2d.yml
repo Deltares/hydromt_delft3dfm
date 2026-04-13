@@ -23,4 +23,4 @@ steps:
       constant_value: 150
 
   - setup_config:
-      data: {geometry.bedlevuni: -5}
+      geometry.bedlevuni: -5

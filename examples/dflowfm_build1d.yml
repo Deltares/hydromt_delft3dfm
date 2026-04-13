@@ -47,4 +47,4 @@ steps:
       boundary_locs: both
 
   - setup_config:
-      data: {geometry.bedlevuni: -5}
+      geometry.bedlevuni: -5

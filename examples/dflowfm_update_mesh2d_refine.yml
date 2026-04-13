@@ -10,4 +10,4 @@ steps:
       link_direction: 1d_to_2d
 
   - setup_config:
-      data: {geometry.bedlevuni: -5}
+      geometry.bedlevuni: -5
