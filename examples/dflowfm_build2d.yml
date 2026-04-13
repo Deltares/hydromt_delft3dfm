@@ -2,9 +2,6 @@ global:
   crs: 3857
 
 steps:
-  - setup_config:
-      data: {geometry.bedlevuni: -5}
-
   - setup_mesh2d:
       region: 
         bbox: [12.4331, 46.4661, 12.5212, 46.5369]
@@ -24,3 +21,6 @@ steps:
 
   - setup_rainfall_from_constant:
       constant_value: 150
+
+  - setup_config:
+      data: {geometry.bedlevuni: -5}
