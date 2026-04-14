@@ -25,8 +25,8 @@ from hydrolib.core.dflowfm import (
 )
 from shapely.geometry import Point, Polygon
 
-from . import gis_utils
-from .workflows import boundaries
+from hydromt_delft3dfm.utils import gis_utils
+from hydromt_delft3dfm.workflows import boundaries
 
 __all__ = [
     "read_branches_gui",
@@ -134,7 +134,7 @@ def write_branches_gui(
     #TODO: branches.gui has a column is custumised length written as bool, which is not
     recongnised by GUI. improvement of the hydrolib-core writer is needed.
     """
-    if not all([col in gdf.columns for col in ["manhole_up", "manhole_dn"]]):
+    if not set(["manhole_up", "manhole_dn"]).issubset(gdf.columns):
         gdf[["manhole_up", "manhole_dn"]] = ""
 
     branches = gdf[["branchid", "branchtype", "manhole_up", "manhole_dn"]]
@@ -178,9 +178,7 @@ def read_crosssections(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataF
     def _list2Str(lst):
         if isinstance(lst, list):
             # apply conversion to list columns
-            if isinstance(lst[0], float):
-                return " ".join(["{}".format(i) for i in lst])
-            elif isinstance(lst[0], str):
+            if isinstance(lst[0], (float, str)):
                 return " ".join(["{}".format(i) for i in lst])
         else:
             return lst
@@ -280,7 +278,6 @@ def write_crosssections(gdf: gpd.GeoDataFrame, savedir: str) -> Tuple[str, str]:
     gpd_crsdef = gpd_crsdef.drop_duplicates(subset="id")
     gpd_crsdef = gpd_crsdef.astype(object).replace(np.nan, None)
     crsdef = CrossDefModel(definition=gpd_crsdef.to_dict("records"))
-    # fm_model.geometry.crossdeffile = crsdef
 
     crsdef_fn = crsdef._filename() + ".ini"
     crsdef.save(
@@ -294,9 +291,8 @@ def write_crosssections(gdf: gpd.GeoDataFrame, savedir: str) -> Tuple[str, str]:
     gpd_crsloc = gpd_crsloc.rename(
         columns={c: c.removeprefix("crsloc_") for c in gpd_crsloc.columns}
     )
-    gpd_crsloc = gpd_crsloc.dropna(
-        subset="id"
-    )  # structures have crsdefs but no crslocs
+    # structures have crsdefs but no crslocs
+    gpd_crsloc = gpd_crsloc.dropna(subset="id")
 
     crsloc = CrossLocModel(crosssection=gpd_crsloc.to_dict("records"))
 
@@ -1221,7 +1217,7 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     Write 2d meteo forcing from forcing dict.
 
     Note! only forcing file (.bc) is written in this function.
-    Use utils.write_ext() for writing external forcing (.ext) file.
+    Use io_utils.write_ext() for writing external forcing (.ext) file.
 
     Parameters
     ----------

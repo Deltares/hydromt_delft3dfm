@@ -7,11 +7,13 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 
-from ..gis_utils import update_data_columns_attributes_based_on_filter
-from .branches import find_nearest_branch
-from .crosssections import set_point_crosssections
+from hydromt_delft3dfm.utils.gis_utils import (
+    update_data_columns_attributes_based_on_filter,
+)
+from hydromt_delft3dfm.workflows.branches import find_nearest_branch
+from hydromt_delft3dfm.workflows.crosssections import set_point_crosssections
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(f"hydromt.{__name__}")
 
 
 __all__ = [
@@ -27,7 +29,6 @@ def prepare_1dstructures(
     id_start: int = 1,
     filter: str = None,
     snap_offset: float = 0.0,
-    logger: logging.Logger = logger,
 ) -> gpd.GeoDataFrame:
     """Prepare 1D structures from geodataframe.
 
@@ -56,8 +57,6 @@ def prepare_1dstructures(
     snap_offset: float, optional
         Snapping tolerance to automatically snapping to branch.
         By default 0.0, no snapping is applied.
-    logger: logging.Logger, optional
-        Logger.
 
     Returns
     -------
