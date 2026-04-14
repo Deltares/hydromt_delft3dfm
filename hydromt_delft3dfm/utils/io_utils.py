@@ -986,21 +986,14 @@ def write_1dlateral(
                     _d = da.sel(index=i).values
                     if len(_d.shape) == 1:
                         # point
-                        bc["datablock"] = [
-                            [t, x]
-                            for t, x in zip(da.time.values, da.sel(index=i).values)
-                        ]
+                        data_array = np.c_[da.time.values, da.sel(index=i).values]
                     else:
                         # polygon
-                        bc["datablock"] = [
-                            [t, x]
-                            for t, x in zip(
-                                da.time.values,
-                                np.unique(
-                                    da.sel(index=i).values, axis=1
-                                ),  # get the unique value to reduce polygon dimention
-                            )
+                        # get the unique value to reduce polygon dimention
+                        data_array = np.c_[
+                            da.time.values, np.unique(da.sel(index=i).values, axis=1)
                         ]
+                    bc["datablock"] = [x.tolist() for x in data_array]
                 bc.pop("quantity")
                 bc.pop("units")
                 bcdict.append(bc)
