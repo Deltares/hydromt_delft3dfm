@@ -8,6 +8,7 @@ The format is based on `Keep a Changelog`_, and this project adheres to
 
 UNRELEASED
 ==========
+This release supports Python 3.11 and up.
 
 Added
 -----
@@ -17,6 +18,7 @@ Added
 Changed
 -------
 - Dropped support for Python 3.9. (PR #214)
+- Updated to hydromt v1 API and dropped support for Python 3.10. (PR #162)
 
 Fixed
 -----

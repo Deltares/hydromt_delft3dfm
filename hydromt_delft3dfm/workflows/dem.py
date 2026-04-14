@@ -7,12 +7,15 @@ import geopandas as gpd
 import numpy as np
 import pyflwdir
 import xarray as xr
-from hydromt.gis_utils import nearest, nearest_merge, spread2d
-from hydromt.workflows import rivers
+from hydromt.gis.raster_utils import spread2d
+from hydromt.gis.vector_utils import nearest  # nearest_merge
+from hydromt.model.processes import rivers
 from scipy import ndimage
 from shapely.geometry import Point
 
-logger = logging.getLogger(__name__)
+from hydromt_delft3dfm.utils.gis_utils import nearest_merge
+
+logger = logging.getLogger(f"hydromt.{__name__}")
 
 
 __all__ = ["invert_levels_from_dem", "get_river_bathymetry"]
@@ -164,7 +167,6 @@ def get_river_bathymetry(
     elevtn_name: str = "elevtn",
     uparea_name: str = "uparea",
     rivmsk_name: str = "rivmsk",
-    logger=logger,
     **kwargs,
 ) -> Tuple[gpd.GeoDataFrame, xr.DataArray]:
     """Estimate river bedlevel zb.

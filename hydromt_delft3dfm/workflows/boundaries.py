@@ -4,14 +4,15 @@ import logging
 from pathlib import Path
 
 import geopandas as gpd
-import hydromt.io
 import numpy as np
 import pandas as pd
 import xarray as xr
 
-from hydromt_delft3dfm import graph_utils
+# from hydromt.gis.vector_utils import nearest_merge
+from hydromt_delft3dfm.utils import graph_utils
+from hydromt_delft3dfm.utils.gis_utils import nearest_merge
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(f"hydromt.{__name__}")
 
 __all__ = [
     "get_boundaries_with_nodeid",
@@ -52,9 +53,10 @@ def get_boundaries_with_nodeid(
     # generate all possible and allowed boundary locations
     _boundaries = graph_utils.get_endnodes_from_lines(branches, where="both")
 
-    boundaries = hydromt.gis_utils.nearest_merge(
+    boundaries = nearest_merge(
         _boundaries, network1d_nodes, max_dist=0.1, overwrite=False
     )
+
     return boundaries
 
 
@@ -63,7 +65,6 @@ def select_boundary_type(
     branch_type: str,
     boundary_type: str,
     boundary_locs: str,
-    logger=logger,
 ) -> pd.DataFrame:
     """Select boundary location per branch type and boundary type.
 
@@ -78,8 +79,6 @@ def select_boundary_type(
         For pipes 'waterlevel' is supported.
     boundary_locs : {'both', 'upstream', 'downstream'}
         The boundary location to use.
-    logger
-        The logger to log messages with.
 
     Returns
     -------
@@ -165,7 +164,6 @@ def compute_boundary_values(
     boundary_type: str = "waterlevel",
     boundary_unit: str = "m",
     snap_offset: float = 0.1,
-    logger=logger,
 ):
     """
     Compute 1d boundary values.
@@ -197,8 +195,6 @@ def compute_boundary_values(
         Snapping tolerance to automatically applying boundaries
         at the correct network nodes. By default 0.1,
         a small snapping is applied to avoid precision errors.
-    logger
-        Logger to log messages.
     """
     # Timeseries boundary values
     if da_bnd is not None:
@@ -207,8 +203,7 @@ def compute_boundary_values(
         # snap user boundary to potential boundary locations to get nodeid
         gdf_bnd = da_bnd.vector.to_gdf()
         gdf_bnd.crs = boundaries.crs
-        # TODO remove after HydroMT release>0.9.0
-        gdf_bnd = hydromt.gis_utils.nearest_merge(
+        gdf_bnd = nearest_merge(
             gdf_bnd,
             boundaries,
             max_dist=snap_offset,
@@ -280,7 +275,6 @@ def compute_2dboundary_values(
     boundary_value: float = 0.0,
     boundary_type: str = "waterlevel",
     boundary_unit: str = "m",
-    logger=logger,
 ):
     """
     Compute 2d boundary timeseries.
@@ -313,8 +307,6 @@ def compute_2dboundary_values(
         if ''boundary_type`` = "discharge":
             Allowed unit is [m3/s]
         By default m.
-    logger :
-        Logger to log messages.
 
     Raises
     ------
@@ -471,7 +463,6 @@ def compute_meteo_forcings(
     fill_value: float = 0.0,
     is_rate: bool = True,
     meteo_location: tuple = None,
-    logger=logger,
 ) -> xr.DataArray:
     """
     Compute meteo forcings.
@@ -493,8 +484,6 @@ def compute_meteo_forcings(
         If rate, unit is expected to be in mm/day and else mm.
     meteo_location : tuple
         Global location for meteo timeseries
-    logger
-        Logger to log messages.
 
     Returns
     -------
@@ -592,7 +581,6 @@ def compute_forcing_values_points(
     forcing_value: float = 0.0,
     forcing_type: str = "lateral_discharge",
     forcing_unit: str = "m3/s",
-    logger=logger,
 ):
     """
     Compute 1d forcing values.
@@ -622,8 +610,6 @@ def compute_forcing_values_points(
     forcing_unit : {'m3/s'}
         Unit corresponding to ``forcing_type``.
         By default 'm3/s'
-    logger
-        Logger to log messages.
     """
     # TODO: harmonize for other point forcing #21
     # first process data based on either timeseries or constant
@@ -744,7 +730,6 @@ def compute_forcing_values_polygon(
     forcing_value: float = 0.0,
     forcing_type: str = "waterlevelbnd",
     forcing_unit: str = "m",
-    logger=logger,
 ):
     """
     Compute 1d forcing values.
@@ -774,8 +759,6 @@ def compute_forcing_values_polygon(
     forcing_unit : {'m3/s'}
         Unit corresponding to ``forcing_type``.
         By default 'm3/s'
-    logger
-        Logger to log messages.
     """
     # default dims, coords and attris for polygon geometry type
     _dims_defaults = ["index", "numcoordinates"]
