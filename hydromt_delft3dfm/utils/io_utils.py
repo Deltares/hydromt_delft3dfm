@@ -148,7 +148,7 @@ def write_branches_gui(
     branches["branchtype"] = branches["branchtype"].replace(
         {"river": 0, "pipe": 2, "sewerconnection": 1}
     )
-    branches = branches.where(branches.notna(), None)
+    branches = branches.replace(np.nan, None)
     branchgui_model = BranchModel(branch=branches.to_dict("records"))
     branchgui_fn = branchgui_model._filename() + branchgui_model._ext()
     branchgui_model.filepath = join(savedir, branchgui_fn)
@@ -392,7 +392,7 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
         ["frictionid", "frictionvalue", "frictiontype"]
     ]
     frictions = frictions.drop_duplicates().dropna(how="all")
-    frictions = frictions.where(frictions.notna(), None)
+    frictions = frictions.replace(np.nan, None)
 
     friction_fns = []
     # create a new friction

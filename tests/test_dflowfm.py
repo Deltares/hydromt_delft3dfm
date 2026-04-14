@@ -18,7 +18,10 @@ def test_read_write_config_empty_paths(tmpdir):
     model.mdu.read()
     # Check whether the path is an emtpy string
     # TODO: we temporarly put . in the example mdu, so this is now also here
-    assert model.mdu.data["output"]["outputdir"] == Path(".") 
+    assert model.mdu.data["output"]["outputdir"] == ""
+    assert model.mdu.data["output"]["waqoutputdir"] == Path(".")
+    assert model.mdu.data["trachytopes"]["trtdef"] == Path(".")
+    assert model.mdu.data["trachytopes"]["trtl"] == Path(".")
     
     # write the mdu to read again
     model.mdu.write()
@@ -28,8 +31,12 @@ def test_read_write_config_empty_paths(tmpdir):
     model2.mdu.read()
     # Check whether the path is an emtpy string
     # TODO: should be an empty string: https://github.com/Deltares/HYDROLIB-core/issues/703
+    # follow-up: https://github.com/Deltares/HYDROLIB-core/issues/1053
     # then update this test: https://github.com/Deltares/hydromt_delft3dfm/issues/148
-    assert model2.mdu.data["output"]["outputdir"] == Path(".")
+    assert model2.mdu.data["output"]["outputdir"] == ""
+    assert model2.mdu.data["output"]["waqoutputdir"] == Path(".")
+    assert model2.mdu.data["trachytopes"]["trtdef"] == Path(".")
+    assert model2.mdu.data["trachytopes"]["trtl"] == Path(".")
 
 
 def test_setup_mesh2d_refine(tmpdir):
