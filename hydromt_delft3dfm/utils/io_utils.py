@@ -990,7 +990,9 @@ def write_1dlateral(
                     else:
                         # polygon
                         # get the unique value to reduce polygon dimention
-                        data_array = np.c_[da.time.values, np.unique(da.sel(index=i).values, axis=1)]
+                        data_array = np.c_[
+                            da.time.values, np.unique(da.sel(index=i).values, axis=1)
+                        ]
                     bc["datablock"] = [x.tolist() for x in data_array]
                 bc.pop("quantity")
                 bc.pop("units")
