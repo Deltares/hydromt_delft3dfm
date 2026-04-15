@@ -82,7 +82,7 @@ steps:
       # setup_mesh2d_refine reduced the resolution from 100 to 50, wich reduced the buffer size (tolerance*res)
       # this made the (pretty large) 2D_boundary not completely inside the (now smaller) buffer
       # increasing the tolerance from 3 to 6 is a workaround since it increases the buffer again
-      # better to have setup_mesh2d just generating a mesh that includes the entire geom, or having a 2D_boundary that is not too big
+      # better to have setup_mesh2d just generating a mesh that includes the entire geom, or having a 2D_boundary that is not too big, or having a grid that completely fills the initial geometry
       tolerance: 6
 
   - setup_rainfall_from_uniform_timeseries:
