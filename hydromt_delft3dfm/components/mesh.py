@@ -56,6 +56,7 @@ class DFlowFMMeshComponent(MeshComponent):
 
     @property
     def is_empty(self):
+        """Check whether the mesh is empty or not."""
         ndims = len(self.data.sizes)
         if ndims == 0:
             return True
