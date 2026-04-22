@@ -54,6 +54,14 @@ class DFlowFMMeshComponent(MeshComponent):
             filename=filename,
         )
 
+    @property
+    def is_empty(self):
+        ndims = len(self.data.sizes)
+        if ndims == 0:
+            return True
+        else:
+            return False
+
     ### I/O methods ###
     @hydromt_step
     def read(self) -> None:
