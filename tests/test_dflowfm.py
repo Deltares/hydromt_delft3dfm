@@ -7,6 +7,20 @@ TESTDATADIR = join(dirname(abspath(__file__)), "data")
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 TOLERANCE = 1e-6
 
+
+def test_write_empty_model(tmpdir):
+    """
+    failed before: https://github.com/Deltares/hydromt_delft3dfm/issues/246
+    """
+    root = join(tmpdir, "dflowfm_example")
+    mod1 = DFlowFMModel(
+        root=root,
+        mode="w",
+        crs=3857,
+    )
+    mod1.write()
+
+
 def test_read_write_config_empty_paths(tmpdir):
     # Instantiate an empty model
     dir_root = join(EXAMPLEDIR, "dflowfm_piave")
