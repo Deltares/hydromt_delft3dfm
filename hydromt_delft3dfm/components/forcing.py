@@ -123,7 +123,7 @@ class DFlowFMForcingComponent(SpatialDatasetsComponent):
     @hydromt_step
     def write(self) -> None:
         """Write forcing into hydrolib-core ext and forcing models."""
-        if len(self._data) == 0:
+        if len(self.data) == 0:
             logger.debug("No forcing data found, skip writing.")
         else:
             self.root.is_writing_mode()
