@@ -126,7 +126,7 @@ class DFlowFMForcingComponent(SpatialDatasetsComponent):
         if len(self.data) == 0:
             logger.debug("No forcing data found, skip writing.")
             return
-        
+
         self.root.is_writing_mode()
         logger.info("Writing forcing files.")
         savedir = dirname(join(self.root.path, self.model.mdu._filename))
