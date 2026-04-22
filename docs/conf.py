@@ -49,7 +49,7 @@ version = hydromt_delft3dfm.__version__
 if os.path.isdir("_examples"):
     remove_dir_content("_examples")
 os.makedirs("_examples")
-shutil.copytree("../examples", "_examples")
+shutil.copytree("../examples", "_examples", dirs_exist_ok=True)
 
 # -- General configuration ------------------------------------------------
 
