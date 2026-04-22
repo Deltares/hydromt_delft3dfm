@@ -14,6 +14,8 @@ jobs:
   Docs:
     name: build docs
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
     env:
       DOC_VERSION: dev
     defaults:
