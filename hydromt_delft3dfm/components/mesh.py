@@ -112,6 +112,7 @@ class DFlowFMMeshComponent(MeshComponent):
     def write(self, write_gui: bool = True) -> None:
         """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc>."""
         self.root.is_writing_mode()
+        logger.info("Writing mesh file.")
         savedir = join(self.root.path, "dflowfm")
         Path(savedir).mkdir(parents=True, exist_ok=True)
         mesh_filename = "fm_net.nc"

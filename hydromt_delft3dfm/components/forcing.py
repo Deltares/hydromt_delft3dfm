@@ -125,17 +125,18 @@ class DFlowFMForcingComponent(SpatialDatasetsComponent):
         """Write forcing into hydrolib-core ext and forcing models."""
         if len(self.data) == 0:
             logger.debug("No forcing data found, skip writing.")
-        else:
-            self.root.is_writing_mode()
-            logger.info("Writing forcing files.")
-            savedir = dirname(join(self.root.path, self.model.mdu._filename))
-            # create new external forcing file
-            ext_fn = "bnd.ext"
-            Path(join(savedir, ext_fn)).unlink(missing_ok=True)
-            Path(savedir).mkdir(parents=True, exist_ok=True)
-            # populate external forcing file
-            io_utils.write_1dboundary(self.data, savedir, ext_fn=ext_fn)
-            io_utils.write_2dboundary(self.data, savedir, ext_fn=ext_fn)
-            io_utils.write_1dlateral(self.data, savedir, ext_fn=ext_fn)
-            io_utils.write_meteo(self.data, savedir, ext_fn=ext_fn)
-            self.model.mdu.set("external_forcing.extforcefilenew", ext_fn)
+            return
+        
+        self.root.is_writing_mode()
+        logger.info("Writing forcing files.")
+        savedir = dirname(join(self.root.path, self.model.mdu._filename))
+        # create new external forcing file
+        ext_fn = "bnd.ext"
+        Path(join(savedir, ext_fn)).unlink(missing_ok=True)
+        Path(savedir).mkdir(parents=True, exist_ok=True)
+        # populate external forcing file
+        io_utils.write_1dboundary(self.data, savedir, ext_fn=ext_fn)
+        io_utils.write_2dboundary(self.data, savedir, ext_fn=ext_fn)
+        io_utils.write_1dlateral(self.data, savedir, ext_fn=ext_fn)
+        io_utils.write_meteo(self.data, savedir, ext_fn=ext_fn)
+        self.model.mdu.set("external_forcing.extforcefilenew", ext_fn)
