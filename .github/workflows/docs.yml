@@ -14,8 +14,6 @@ jobs:
   Docs:
     name: build docs
     runs-on: ubuntu-latest
-    permissions:
-      pages: write
     env:
       DOC_VERSION: dev
     defaults:
@@ -55,7 +53,7 @@ jobs:
           >> $GITHUB_ENV
 
       - name: Upload to GitHub Pages
-        #if: ${{ github.event_name != 'pull_request'}}
+        if: ${{ github.event_name != 'pull_request'}}
         uses: peaceiris/actions-gh-pages@v3.8.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

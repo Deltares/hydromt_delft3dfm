@@ -56,14 +56,11 @@ Attributes
    DFlowFMModel.region
    DFlowFMModel.crs
    DFlowFMModel.bounds
-   DFlowFMModel.res
    DFlowFMModel.root
-   DFlowFMModel.config
-   DFlowFMModel.maps
+   DFlowFMModel.mdu   
+   DFlowFMModel.inifield
    DFlowFMModel.geoms
    DFlowFMModel.forcing
-   DFlowFMModel.states
-   DFlowFMModel.results
    DFlowFMModel.mesh
    DFlowFMModel.dfmmodel
    DFlowFMModel.dimr
@@ -73,11 +70,6 @@ Attributes
    DFlowFMModel.pipes
    DFlowFMModel.opensystem
    DFlowFMModel.closedsystem
-   DFlowFMModel.mesh_names
-   DFlowFMModel.mesh_grids
-   DFlowFMModel.mesh_datasets
-   DFlowFMModel.mesh_gdf
-
 
 High level methods
 ------------------
@@ -89,7 +81,6 @@ High level methods
    DFlowFMModel.write
    DFlowFMModel.build
    DFlowFMModel.update
-   DFlowFMModel.set_root
    DFlowFMModel.write_data_catalog
 
 General methods
@@ -98,40 +89,7 @@ General methods
 .. autosummary::
    :toctree: _generated
 
-   DFlowFMModel.get_config
-   DFlowFMModel.set_config
-   DFlowFMModel.read_config
-   DFlowFMModel.write_config
-
-   DFlowFMModel.set_maps
-   DFlowFMModel.read_maps
-   DFlowFMModel.write_maps
-
-   DFlowFMModel.set_geoms
-   DFlowFMModel.read_geoms
-   DFlowFMModel.write_geoms
-
-   DFlowFMModel.set_forcing
-   DFlowFMModel.read_forcing
-   DFlowFMModel.write_forcing
-
-   DFlowFMModel.set_states
-   DFlowFMModel.read_states
-   DFlowFMModel.write_states
-
-   DFlowFMModel.set_results
-   DFlowFMModel.read_results
-
-   DFlowFMModel.get_mesh
-   DFlowFMModel.set_mesh
-   DFlowFMModel.set_link1d2d
-   DFlowFMModel.read_mesh
-   DFlowFMModel.write_mesh
-
    DFlowFMModel.set_branches
-
-   DFlowFMModel.read_dimr
-   DFlowFMModel.write_dimr
 
    DFlowFMModel.init_dfmmodel
 
@@ -253,24 +211,24 @@ Input/Output methods
 .. autosummary::
    :toctree: _generated
 
-   utils.read_branches_gui
-   utils.write_branches_gui
-   utils.read_crosssections
-   utils.write_crosssections
-   utils.read_friction
-   utils.write_friction
-   utils.read_structures
-   utils.write_structures
-   utils.read_manholes
-   utils.write_manholes
-   utils.read_1dboundary
-   utils.write_1dboundary
-   utils.read_1dlateral
-   utils.write_1dlateral
-   utils.read_2dboundary
-   utils.write_2dboundary
-   utils.read_meteo
-   utils.write_meteo
+   utils.io_utils.read_branches_gui
+   utils.io_utils.write_branches_gui
+   utils.io_utils.read_crosssections
+   utils.io_utils.write_crosssections
+   utils.io_utils.read_friction
+   utils.io_utils.write_friction
+   utils.io_utils.read_structures
+   utils.io_utils.write_structures
+   utils.io_utils.read_manholes
+   utils.io_utils.write_manholes
+   utils.io_utils.read_1dboundary
+   utils.io_utils.write_1dboundary
+   utils.io_utils.read_1dlateral
+   utils.io_utils.write_1dlateral
+   utils.io_utils.read_2dboundary
+   utils.io_utils.write_2dboundary
+   utils.io_utils.read_meteo
+   utils.io_utils.write_meteo
 
 Mesh conversion methods
 -----------------------
