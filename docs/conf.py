@@ -51,7 +51,7 @@ if os.path.isdir("_examples"):
 os.makedirs("_examples")
 shutil.copytree("../examples", "_examples", dirs_exist_ok=True)
 
-# -- General configuration ------------------------------------------------
+# -- General configuration -----------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
