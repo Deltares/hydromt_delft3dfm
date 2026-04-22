@@ -1,4 +1,4 @@
-.. _delft3dfm_update:
+.. _dflowfm_update:
 
 Updating a model
 ----------------
