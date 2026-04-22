@@ -2801,7 +2801,7 @@ class DFlowFMModel(Model):
         self.write_data_catalog()
         self.inifield.write()
         self.geoms.write()
-        if self.mesh._data is not None or not self.branches.empty:
+        if not self.mesh.is_empty or not self.branches.empty:
             self.mesh.write()
         self.forcing.write()
         self.mdu.write()
