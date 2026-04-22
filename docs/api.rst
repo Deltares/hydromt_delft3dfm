@@ -57,7 +57,7 @@ Attributes
    DFlowFMModel.crs
    DFlowFMModel.bounds
    DFlowFMModel.root
-   DFlowFMModel.mdu   
+   DFlowFMModel.mdu
    DFlowFMModel.inifield
    DFlowFMModel.geoms
    DFlowFMModel.forcing
