@@ -22,13 +22,20 @@ def test_write_empty_model(tmpdir):
 
 
 def test_write_readonlymode(tmpdir, caplog):
-    root = "./dflowfm_example"
+    root = join(tmpdir, "dflowfm_example")
     mod1 = DFlowFMModel(
+        root=root,
+        mode="w",
+        crs=3857,
+    )
+    mod1.write()
+    
+    mod2 = DFlowFMModel(
         root=root,
         mode="r",
         crs=3857,
     )
-    mod1.write()
+    mod2.write()
     assert "Cannot write in read-only mode" in caplog.text
 
 
