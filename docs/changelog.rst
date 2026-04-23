@@ -24,6 +24,7 @@ Fixed
 -----
 - Write geoms only once (PR #224)
 - support for writing models without mesh/inifield/forcing (PR #248)
+- fixed mesh crs/bounds/region properties (PR #251)
 
 
 v0.3.0 (18 October 2024)
