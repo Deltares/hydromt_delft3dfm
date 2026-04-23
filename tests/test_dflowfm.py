@@ -51,9 +51,9 @@ def test_read_write_config_empty_paths(tmpdir):
     model1.mdu.read()
     # Check whether the path is an emtpy string
     assert model1.mdu.data["output"]["outputdir"] == ""
-    assert model1.mdu.data["output"]["waqoutputdir"] == Path(".")
-    assert model1.mdu.data["trachytopes"]["trtdef"] == Path(".")
-    assert model1.mdu.data["trachytopes"]["trtl"] == Path(".")
+    assert model1.mdu.data["output"]["waqoutputdir"] == ""
+    assert model1.mdu.data["trachytopes"]["trtdef"] == ""
+    assert model1.mdu.data["trachytopes"]["trtl"] == ""
     
     # write the model to read it again
     model1.write()
