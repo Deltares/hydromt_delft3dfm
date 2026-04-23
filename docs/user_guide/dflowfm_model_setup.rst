@@ -1,6 +1,6 @@
 .. currentmodule:: hydromt_delft3dfm
 
-.. _model_set_up:
+.. _dflowfm_model_setup:
 
 ============================
 Model methods and components

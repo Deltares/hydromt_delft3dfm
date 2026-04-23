@@ -21,7 +21,6 @@ import sys
 import shutil
 import hydromt
 import hydromt_delft3dfm
-from distutils.dir_util import copy_tree
 
 here = os.path.dirname(__file__)
 sys.path.insert(0, os.path.abspath(os.path.join(here, "..")))
@@ -50,9 +49,9 @@ version = hydromt_delft3dfm.__version__
 if os.path.isdir("_examples"):
     remove_dir_content("_examples")
 os.makedirs("_examples")
-copy_tree("../examples", "_examples")
+shutil.copytree("../examples", "_examples", dirs_exist_ok=True)
 
-# -- General configuration ------------------------------------------------
+# -- General configuration -----------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
