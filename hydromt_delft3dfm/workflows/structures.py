@@ -130,7 +130,7 @@ def prepare_1dstructures(
     # add a dummy "shift" for crossection locations if missing (e.g. culverts),
     # because structures only needs crossection definitions.
     if "shift" not in gdf_st.columns:
-        gdf_st["shift"] = np.nan
+        gdf_st["shift"] = None
     # derive crosssections
     gdf_st_crossections = set_point_crosssections(
         branches, gdf_st, maxdist=snap_offset, check_dupl_geom=False

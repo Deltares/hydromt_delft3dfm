@@ -2612,7 +2612,7 @@ class DFlowFMModel(Model):
                 ), "Not all boundary_id are in df_bnd"
         else:
             # default timeseries
-            d_bnd = {bnd_id: np.nan for bnd_id in gdf_bnd["boundary_id"].unique()}
+            d_bnd = {bnd_id: None for bnd_id in gdf_bnd["boundary_id"].unique()}
             d_bnd.update(
                 {
                     "time": pd.date_range(
