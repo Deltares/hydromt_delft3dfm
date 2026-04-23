@@ -23,7 +23,7 @@ Installation
 HydroMT Delft3D FM is available on pypi.
 
 Install HydroMT Delft3D FM in a new environment
-----------------------------------------------
+-----------------------------------------------
 
 You can install HydroMT Delft3D FM in a new environment (recommended!) called `hydromt-delft3dfm`.
 HydroMT Delft3D FM is available on pypi but not yet available on conda-forge.
@@ -53,5 +53,5 @@ Finally, install HydroMT Delft3D FM from pypi using pip.
 
 
 Developer install
-==================
+=================
 To be able to test and develop the HydroMT-delft3dfm package see instructions in the :ref:`Developer installation guide <dev_env>`.

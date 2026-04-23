@@ -1664,7 +1664,8 @@ class DFlowFMModel(Model):
             * Required variables if a combined point location file: ['index'] with type
                 int
             * Required index types if a time series data csv file: int
-            NOTE: Require equidistant time series
+                NOTE: Require equidistant time series
+
         boundary_value : float, optional
             Constant value to use for all boundaries if ``boundaries_geodataset_fn`` is
             None and to fill in missing data. By default -2.5 m.

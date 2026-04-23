@@ -38,8 +38,4 @@ jobs:
 
       - name: Run tests
         run: |
-          pixi run --locked -e ${{ matrix.hydromt-version }}-${{ matrix.python-version }} test-cov
-
-      - uses: codecov/codecov-action@v4
-        env:
-          CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
+          pixi run --locked -e ${{ matrix.hydromt-version }}-${{ matrix.python-version }} test
