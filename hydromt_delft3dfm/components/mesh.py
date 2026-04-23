@@ -9,12 +9,12 @@ import geopandas as gpd
 import numpy as np
 import xarray as xr
 import xugrid as xu
-from pyproj import CRS
-from shapely.geometry import box
 
 from hydromt import hydromt_step
 from hydromt.model import Model
 from hydromt.model.components import MeshComponent
+from pyproj import CRS
+from shapely.geometry import box
 
 from hydromt_delft3dfm import workflows
 from hydromt_delft3dfm.utils import io_utils, mesh_utils
@@ -57,7 +57,7 @@ class DFlowFMMeshComponent(MeshComponent):
             filename=filename,
         )
 
-    # TODO: fix in hydromt-core
+    # TODO: improved hydromt-core method, fix in hydromt-core instead
     @property
     def crs(self) -> CRS | None:
         """Returns model mesh crs."""
@@ -65,7 +65,7 @@ class DFlowFMMeshComponent(MeshComponent):
             return next(iter(self.data.ugrid.crs.values()))
         return None
 
-    # TODO: fix in hydromt-core
+    # TODO: improved hydromt-core method, fix in hydromt-core instead
     @property
     def bounds(self) -> tuple[float, float, float, float] | None:
         """Returns model mesh bounds."""
@@ -73,7 +73,7 @@ class DFlowFMMeshComponent(MeshComponent):
             return self.data.ugrid.bounds
         return None
 
-    # TODO: fix in hydromt-core
+    # TODO: improved hydromt-core method, fix in hydromt-core instead
     @property
     def _region_data(self) -> gpd.GeoDataFrame | None:
         """Return mesh total_bounds as a geodataframe."""
@@ -84,7 +84,7 @@ class DFlowFMMeshComponent(MeshComponent):
             return region
         return None
 
-    # TODO: fix in hydromt-core
+    # TODO: add to hydromt-core instead
     @property
     def is_empty(self):
         """Check whether the mesh is empty or not."""
