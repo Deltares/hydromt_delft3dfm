@@ -141,7 +141,7 @@ class MDUComponent(ConfigComponent):
 
         # not enough details in python recursion
         errors.update(**_check_equal(self.data, other_config.data, "mdu"))
-        return len(errors) == 0, {"mdu": errors}
+        return len(errors) == 0, errors
 
 
 def _check_equal(a, b, name="") -> dict[str, str]:
