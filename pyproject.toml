@@ -117,8 +117,8 @@ test = { cmd = ["pytest"] }
 hydromt_delft3dfm = { path = ".", editable = true }
 
 # Define features for different Python versions and Hydromt versions
-#[tool.pixi.feature.py311.dependencies]
-#python = "3.11.*"
+[tool.pixi.feature.py311.dependencies]
+python = "3.11.*"
 
 [tool.pixi.feature.py312.dependencies]
 python = "3.12.*"
@@ -135,22 +135,22 @@ hydromt = { git = "https://github.com/Deltares/hydromt.git", branch = "main" }
 
 [tool.pixi.feature.hydromt_latest.pypi-dependencies]
 # Replace with the actual stable version range you want to test against
-# hydromt = ">=1.0,<2.0"
+hydromt = ">=1.0,<2.0" # TODO: currently installs hydromt 1.4.0.dev0 for some reason
 # TODO: "failed to resolve pypi dependencies -> Because there is no version of hydromt==1.3.1 and you require hydromt==1.3.1, we can conclude that your requirements are unsatisfiable."
-# TODO: wait for hydrolib-core v1
-hydromt = "==1.3.1" # fails resolving
+# TODO: first migrate to hydrolib-core v1 to avoid dependency conflicts
+# hydromt = "==1.3.1" # fails resolving
 
 # Define environments to combine features
 [tool.pixi.environments]
 # TODO: temporarily restricting the default py to 312 until hydrolib-core is updated to v1 in https://github.com/Deltares/hydromt_delft3dfm/pull/226
 default = { features = ["py312", "dev", "docs", "test", "hydromt_latest"], solve-group = "py312" }
 
-#latest-311 = { features = ["py311", "dev", "test", "hydromt_latest"], solve-group = "py311" }
+latest-311 = { features = ["py311", "dev", "test", "hydromt_latest"], solve-group = "py311" }
 latest-312 = { features = ["py312", "dev", "test", "hydromt_latest"], solve-group = "py312" }
 latest-313 = { features = ["py313", "dev", "test", "hydromt_latest"], solve-group = "py313" }
 #latest-314 = { features = ["py314", "dev", "test", "hydromt_latest"], solve-group = "py314" }
 
-#dev-311 = { features = ["py311", "dev", "test", "hydromt_dev"], solve-group = "py311" }
+dev-311 = { features = ["py311", "dev", "test", "hydromt_dev"], solve-group = "py311" }
 dev-312 = { features = ["py312", "dev", "test", "hydromt_dev"], solve-group = "py312" }
 dev-313 = { features = ["py313", "dev", "test", "hydromt_dev"], solve-group = "py313" }
 #dev-314 = { features = ["py314", "dev", "test", "hydromt_dev"], solve-group = "py314" }
