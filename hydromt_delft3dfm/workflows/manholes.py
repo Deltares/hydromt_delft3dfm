@@ -1,13 +1,16 @@
-"""Workflows to prepare manholes for Delft3D-FM model."""
+"""Workflows to prepare manholes for Delft3D FM model."""
 
 import logging
 
 import geopandas as gpd
 import pandas as pd
-from hydromt import gis_utils
+
+# from hydromt.gis.vector_utils import nearest_merge
 from shapely.geometry import Point
 
-logger = logging.getLogger(__name__)
+from hydromt_delft3dfm.utils.gis_utils import nearest_merge
+
+logger = logging.getLogger(f"hydromt.{__name__}")
 
 
 __all__ = [
@@ -21,7 +24,6 @@ def generate_manholes_on_branches(
     bedlevel_shift: float = 0.0,
     id_prefix: str = "",
     id_suffix: str = "",
-    logger=logging,
 ):
     """Generate manhole location and bedlevel from branches.
 
@@ -141,10 +143,10 @@ def generate_manholes_on_branches(
     )
     if len(_nodes_channels) > 0:
         nodes_channels = gpd.GeoDataFrame(_nodes_channels, crs=branches.crs)
-        nodes_to_remove = gis_utils.nearest_merge(
+        nodes_to_remove = nearest_merge(
             nodes_pipes, nodes_channels, max_dist=0.001, overwrite=True
         )
-        nodes_pipes = nodes_pipes.loc[nodes_to_remove.index_right == -1]
+        nodes_pipes = nodes_pipes.loc[nodes_to_remove.index_right.isna()]
 
     # manhole generated
     manholes_generated = gpd.GeoDataFrame(

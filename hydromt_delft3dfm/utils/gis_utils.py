@@ -1,17 +1,18 @@
-"""Utilities GIS functions for Delft3D-FM model."""
+"""Utilities GIS functions for Delft3D FM model."""
 
 import logging
 
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+from hydromt.gis.vector_utils import nearest
 from shapely.geometry import (
     LineString,
     Point,
 )
 from shapely.ops import snap, split
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(f"hydromt.{__name__}")
 
 
 __all__ = [
@@ -224,3 +225,62 @@ def get_gdf_from_branches(
         df.loc[i, "geometry"] = new_point_geometry
 
     return gpd.GeoDataFrame(df, crs=branches.crs)
+
+
+# TODO: temporary until hydromt fixes crs bug issue #1413
+def nearest_merge(
+    gdf1: gpd.GeoDataFrame,
+    gdf2: gpd.GeoDataFrame,
+    *,
+    columns: list | None = None,
+    max_dist: float | None = None,
+    overwrite: bool = False,
+    inplace: bool = False,
+) -> gpd.GeoDataFrame:
+    """Merge attributes of gdf2 with the nearest feature of gdf1.
+
+    Output is optionally bounded by a maximum distance `max_dist`.
+    Unless `overwrite = True`, gdf2 values are only
+    merged where gdf1 has missing values.
+
+    Parameters
+    ----------
+    gdf1, gdf2: geopandas.GeoDataFrame
+        Source `gdf1` and destination `gdf2` geometries.
+    columns : list of str, optional
+        Names of columns in `gdf2` to merge, by default None
+    max_dist : float, optional
+        Maximum distance threshold for merge, by default None, i.e.: no threshold.
+    overwrite : bool, optional
+        If False (default) gdf2 values are only merged where gdf1 has missing values,
+        i.e. NaN values for existing columns or missing columns.
+    inplace : bool,
+        If True, apply the merge to gdf1, otherwise return a new object.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        Merged GeoDataFrames
+    """
+    idx_nn, dst = nearest(gdf1, gdf2)
+    if not inplace:
+        gdf1 = gdf1.copy()
+    valid = dst < max_dist if max_dist is not None else np.ones_like(idx_nn, dtype=bool)
+    columns = gdf2.columns if columns is None else columns
+    gdf1["distance_right"] = dst
+    gdf1["index_right"] = None
+    gdf1.loc[valid, "index_right"] = idx_nn[valid]
+    skip = ["geometry"]
+    for col in columns:
+        if col in skip or col not in gdf2:
+            if col not in gdf2:
+                logger.warning(f"Column {col} not found in gdf2 and skipped.")
+            continue
+        new_vals = gdf2.loc[idx_nn[valid], col].values
+        if col in gdf1 and not overwrite:
+            old_vals = gdf1.loc[valid, col]
+            replace = np.logical_or(old_vals.isnull(), old_vals.eq(""))
+            new_vals = np.where(replace, new_vals, old_vals)
+        gdf1.loc[valid, col] = new_vals
+
+    return gdf1

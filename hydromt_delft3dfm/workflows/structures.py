@@ -1,4 +1,4 @@
-"""Workflows to prepare 1D structures for Delft3D-FM model."""
+"""Workflows to prepare 1D structures for Delft3D FM model."""
 
 import logging
 from typing import Literal
@@ -7,11 +7,13 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 
-from ..gis_utils import update_data_columns_attributes_based_on_filter
-from .branches import find_nearest_branch
-from .crosssections import set_point_crosssections
+from hydromt_delft3dfm.utils.gis_utils import (
+    update_data_columns_attributes_based_on_filter,
+)
+from hydromt_delft3dfm.workflows.branches import find_nearest_branch
+from hydromt_delft3dfm.workflows.crosssections import set_point_crosssections
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(f"hydromt.{__name__}")
 
 
 __all__ = [
@@ -27,7 +29,6 @@ def prepare_1dstructures(
     id_start: int = 1,
     filter: str = None,
     snap_offset: float = 0.0,
-    logger: logging.Logger = logger,
 ) -> gpd.GeoDataFrame:
     """Prepare 1D structures from geodataframe.
 
@@ -56,8 +57,6 @@ def prepare_1dstructures(
     snap_offset: float, optional
         Snapping tolerance to automatically snapping to branch.
         By default 0.0, no snapping is applied.
-    logger: logging.Logger, optional
-        Logger.
 
     Returns
     -------
@@ -145,14 +144,13 @@ def prepare_1dstructures(
         ]
     )
     # add to structures
-    gdf_st = gdf_st.merge(
-        gdf_st_crsdefs.drop(columns="geometry"), left_index=True, right_index=True
-    )
+    gdf_st = gdf_st.sjoin(gdf_st_crsdefs, how="left")
 
     # 6. replace np.nan as None
     gdf_st = gdf_st.replace(np.nan, None)
 
     # 7. remove index and add name
     gdf_st = gdf_st.reset_index(names=id_col)  # force colname to index_col with names=
+    gdf_st = gdf_st.drop_duplicates(subset=id_col, keep="first")
     gdf_st["structure_name"] = gdf_st[id_col]
     return gdf_st

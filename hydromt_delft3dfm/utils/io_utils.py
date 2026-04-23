@@ -1,4 +1,4 @@
-"""Utilities read/write functions for Delft3D-FM model."""
+"""Utilities read/write functions for Delft3D FM model."""
 
 from os.path import join
 from pathlib import Path
@@ -25,8 +25,8 @@ from hydrolib.core.dflowfm import (
 )
 from shapely.geometry import Point, Polygon
 
-from . import gis_utils
-from .workflows import boundaries
+from hydromt_delft3dfm.utils import gis_utils
+from hydromt_delft3dfm.workflows import boundaries
 
 __all__ = [
     "read_branches_gui",
@@ -134,7 +134,7 @@ def write_branches_gui(
     #TODO: branches.gui has a column is custumised length written as bool, which is not
     recongnised by GUI. improvement of the hydrolib-core writer is needed.
     """
-    if not all([col in gdf.columns for col in ["manhole_up", "manhole_dn"]]):
+    if not set(["manhole_up", "manhole_dn"]).issubset(gdf.columns):
         gdf[["manhole_up", "manhole_dn"]] = ""
 
     branches = gdf[["branchid", "branchtype", "manhole_up", "manhole_dn"]]
@@ -178,9 +178,7 @@ def read_crosssections(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataF
     def _list2Str(lst):
         if isinstance(lst, list):
             # apply conversion to list columns
-            if isinstance(lst[0], float):
-                return " ".join(["{}".format(i) for i in lst])
-            elif isinstance(lst[0], str):
+            if isinstance(lst[0], (float, str)):
                 return " ".join(["{}".format(i) for i in lst])
         else:
             return lst
@@ -195,7 +193,7 @@ def read_crosssections(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataF
     df_crsdef["crs_id"] = df_crsdef["id"]  # column to merge
     # convertion needed  for xyz/zw crossections
     # convert list to str ()
-    df_crsdef = df_crsdef.applymap(lambda x: _list2Str(x))
+    df_crsdef = df_crsdef.map(lambda x: _list2Str(x))
     # except for frictionids
     if "frictionids" in df_crsdef.columns:
         df_crsdef["frictionids"] = df_crsdef["frictionids"].str.replace(
@@ -280,7 +278,6 @@ def write_crosssections(gdf: gpd.GeoDataFrame, savedir: str) -> Tuple[str, str]:
     gpd_crsdef = gpd_crsdef.drop_duplicates(subset="id")
     gpd_crsdef = gpd_crsdef.astype(object).replace(np.nan, None)
     crsdef = CrossDefModel(definition=gpd_crsdef.to_dict("records"))
-    # fm_model.geometry.crossdeffile = crsdef
 
     crsdef_fn = crsdef._filename() + ".ini"
     crsdef.save(
@@ -294,9 +291,8 @@ def write_crosssections(gdf: gpd.GeoDataFrame, savedir: str) -> Tuple[str, str]:
     gpd_crsloc = gpd_crsloc.rename(
         columns={c: c.removeprefix("crsloc_") for c in gpd_crsloc.columns}
     )
-    gpd_crsloc = gpd_crsloc.dropna(
-        subset="id"
-    )  # structures have crsdefs but no crslocs
+    # structures have crsdefs but no crslocs
+    gpd_crsloc = gpd_crsloc.dropna(subset="id")
 
     crsloc = CrossLocModel(crosssection=gpd_crsloc.to_dict("records"))
 
@@ -475,29 +471,27 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     """
     # Add compound structures
     cmp_structures = gdf.groupby(["chainage", "branchid"])["id"].apply(list)
+    list_df = []
     for cmp_count, cmp_st in enumerate(cmp_structures, start=1):
-        gdf = pd.concat(
-            [
-                gdf,
-                pd.DataFrame(
-                    index=[max(gdf.index) + 1],
-                    data={
-                        "id": [f"CompoundStructure_{cmp_count}"],
-                        "name": [f"CompoundStructure_{cmp_count}"],
-                        "type": ["compound"],
-                        "numStructures": [len(cmp_st)],
-                        "structureIds": [";".join(cmp_st)],
-                    },
-                ),
-            ],
-            axis=0,
-        )
-
+        data = {
+            "id": [f"CompoundStructure_{cmp_count}"],
+            "name": [f"CompoundStructure_{cmp_count}"],
+            "type": ["compound"],
+            "numStructures": [len(cmp_st)],
+            "structureIds": [";".join(cmp_st)],
+        }
+        list_df.append(pd.DataFrame(data))
+    if len(list_df) == 0:
+        gdf_cmp = gdf_cmp = pd.DataFrame()
+    else:
+        gdf_cmp = pd.concat(list_df, axis=0)
     # replace nan with None
     gdf = gdf.replace(np.nan, None)
 
     # Write structures
-    structures = StructureModel(structure=gdf.to_dict("records"))
+    structures = StructureModel(
+        structure=gdf.to_dict("records") + gdf_cmp.to_dict("records")
+    )
 
     structures_fn = structures._filename() + ".ini"
     structures.save(
@@ -690,7 +684,7 @@ def read_1dboundary(
     """
     nodeids = df.nodeid.values
     nodeids = nodeids[nodeids != "nan"]
-    # Assume one forcing file (hydromt writer) and read
+    # Assume one forcing file (HydroMT writer) and read
     forcing = df.forcingfile.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
     # Filter for the current nodes, remove nans
@@ -851,7 +845,7 @@ def read_1dlateral(
     da_out: xr.DataArray
         External and focing values combined into a DataArray for variable quantity.
     """
-    # Assume one discharge (lateral specific) file (hydromt writer) and read
+    # Assume one discharge (lateral specific) file (HydroMT writer) and read
     forcing = df.discharge.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
 
@@ -992,21 +986,14 @@ def write_1dlateral(
                     _d = da.sel(index=i).values
                     if len(_d.shape) == 1:
                         # point
-                        bc["datablock"] = [
-                            [t, x]
-                            for t, x in zip(da.time.values, da.sel(index=i).values)
-                        ]
+                        data_array = np.c_[da.time.values, da.sel(index=i).values]
                     else:
                         # polygon
-                        bc["datablock"] = [
-                            [t, x]
-                            for t, x in zip(
-                                da.time.values,
-                                np.unique(
-                                    da.sel(index=i).values, axis=1
-                                ),  # get the unique value to reduce polygon dimention
-                            )
+                        # get the unique value to reduce polygon dimention
+                        data_array = np.c_[
+                            da.time.values, np.unique(da.sel(index=i).values, axis=1)
                         ]
+                    bc["datablock"] = [x.tolist() for x in data_array]
                 bc.pop("quantity")
                 bc.pop("units")
                 bcdict.append(bc)
@@ -1049,12 +1036,12 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
         "boundary2d".
     """
     # location file
-    # assume one location file has only one location (hydromt writer) and read
+    # assume one location file has only one location (HydroMT writer) and read
     locationfile = PolyFile(workdir.joinpath(df.locationfile.filepath))
     boundary_name = locationfile.objects[0].metadata.name
     boundary_points = pd.DataFrame([f.__dict__ for f in locationfile.objects[0].points])
 
-    # Assume one forcing file (hydromt writer) and read
+    # Assume one forcing file (HydroMT writer) and read
     forcing = df.forcingfile
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
 
@@ -1191,7 +1178,7 @@ def read_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
     da_out: xr.DataArray
         External and focing values combined into a DataArray for variable quantity.
     """
-    # Assume one forcing file (hydromt writer) and read
+    # Assume one forcing file (HydroMT writer) and read
     forcing = df.forcingfile.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
     # Filter for the current nodes
@@ -1223,7 +1210,7 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     Write 2d meteo forcing from forcing dict.
 
     Note! only forcing file (.bc) is written in this function.
-    Use utils.write_ext() for writing external forcing (.ext) file.
+    Use io_utils.write_ext() for writing external forcing (.ext) file.
 
     Parameters
     ----------

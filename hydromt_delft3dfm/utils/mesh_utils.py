@@ -1,4 +1,4 @@
-"""Utilities mesh functions for Delft3D-FM model."""
+"""Utilities mesh functions for Delft3D FM model."""
 
 import logging
 from typing import Tuple
@@ -13,7 +13,7 @@ from shapely.geometry import LineString
 # TODO: maybe move this function here instead of under workflows?
 from hydromt_delft3dfm.workflows.mesh import _set_link1d2d
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(f"hydromt.{__name__}")
 
 
 __all__ = [
@@ -112,7 +112,6 @@ def mesh1d_network1d_from_hydrolib_network(
             fill_value=-1,
             edge_node_connectivity=mesh1d.mesh1d_edge_nodes,
             name="mesh1d",
-            projected=crs.is_projected,
             crs=crs,
         )
         grid_mesh1d.set_crs(crs)
@@ -144,7 +143,6 @@ def mesh1d_network1d_from_hydrolib_network(
             fill_value=-1,
             edge_node_connectivity=mesh1d.network1d_edge_nodes,
             name="network1d",
-            projected=crs.is_projected,
             crs=crs,
         )
         grid_network1d.set_crs(crs)
@@ -262,7 +260,6 @@ def mesh2d_from_hydrolib_network(
     uds_mesh2d = xu.Ugrid2d.from_meshkernel(
         mk_mesh2d,
         name="mesh2d",
-        projected=crs.is_projected,
         crs=crs,
     )
 
@@ -334,6 +331,8 @@ def mesh_from_hydrolib_network(
     if mesh is not None:
         for grid in mesh.ugrid.grids:
             grid.set_crs(crs)
+    else:
+        raise ValueError("The provided network does not contain mesh1d or mesh2d data.")
 
     return mesh
 
