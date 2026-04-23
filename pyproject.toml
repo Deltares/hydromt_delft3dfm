@@ -127,8 +127,8 @@ python = "3.12.*"
 [tool.pixi.feature.py313.dependencies]
 python = "3.13.*"
 
-#[tool.pixi.feature.py314.dependencies]
-#python = "3.14.*"
+[tool.pixi.feature.py314.dependencies]
+python = "3.14.*"
 
 [tool.pixi.feature.hydromt_dev.pypi-dependencies]
 # Get the latest version from main
@@ -142,9 +142,9 @@ default = { features = ["py312", "dev", "docs", "test"]}
 pypi-311 = { features = ["py311", "dev", "test"]}
 pypi-312 = { features = ["py312", "dev", "test"]}
 pypi-313 = { features = ["py313", "dev", "test"]}
-#pypi-314 = { features = ["py314", "dev", "test"]}
+pypi-314 = { features = ["py314", "dev", "test"]}
 
 dev-311 = { features = ["py311", "dev", "test", "hydromt_dev"]}
 dev-312 = { features = ["py312", "dev", "test", "hydromt_dev"]}
 dev-313 = { features = ["py313", "dev", "test", "hydromt_dev"]}
-#dev-314 = { features = ["py314", "dev", "test", "hydromt_dev"]}
+dev-314 = { features = ["py314", "dev", "test", "hydromt_dev"]}
