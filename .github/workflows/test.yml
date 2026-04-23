@@ -15,10 +15,10 @@ jobs:
       fail-fast: false
       matrix:
         hydromt-version: ['pypi', 'dev']
-        os: [ubuntu-latest, windows-latest]
         python-version: ['311', '312', '313'] # ,'314']
+        os: [ubuntu-latest, windows-latest]
 
-    name: hydromt-${{ matrix.hydromt-version }} ${{ matrix.os }} py-${{ matrix.python-version }}
+    name: hydromt-${{ matrix.hydromt-version }} py-${{ matrix.python-version }} ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     concurrency:
