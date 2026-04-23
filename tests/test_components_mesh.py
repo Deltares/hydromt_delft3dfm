@@ -47,3 +47,16 @@ def test_mesh_properties(tmpdir, crs):
     assert np.isclose(region_x.max(), xmax)
     assert np.isclose(region_y.min(), ymin)
     assert np.isclose(region_y.max(), ymax)
+
+def test_mesh_properties_none(tmpdir):
+    root = os.path.join(tmpdir, "dflowfm_example")
+    mod1 = DFlowFMModel(
+        root=root,
+        mode="w",
+        crs=3857,
+    )
+    
+    assert mod1.crs.to_epsg() == 3857
+    assert mod1.mesh.crs is None
+    assert mod1.mesh.bounds is None
+    assert mod1.mesh._region_data is None
