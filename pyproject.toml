@@ -138,6 +138,7 @@ hydromt = { git = "https://github.com/Deltares/hydromt.git", branch = "main" }
 [tool.pixi.environments]
 # TODO: temporarily restricting the default py to 312 until hydrolib-core is updated to v1 in https://github.com/Deltares/hydromt_delft3dfm/pull/226
 default = { features = ["py312", "dev", "docs", "test"]}
+docs = { features = ["py312", "docs", "examples"]}
 
 pypi-311 = { features = ["py311", "dev", "test"]}
 pypi-312 = { features = ["py312", "dev", "test"]}
