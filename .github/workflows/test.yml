@@ -16,7 +16,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: ['311', '312', '313'] # ,'314']
-        hydromt-version: ['stable', 'dev']
+        hydromt-version: ['pypi', 'dev']
 
     name: ${{ matrix.os }} py-${{ matrix.python-version }} hydromt-${{ matrix.hydromt-version }}
     runs-on: ${{ matrix.os }}
