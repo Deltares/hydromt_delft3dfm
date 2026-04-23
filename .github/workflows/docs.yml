@@ -21,10 +21,10 @@ jobs:
         uses: prefix-dev/setup-pixi@v0.9.4
         with:
           pixi-version: "v0.67.1"
-          environments: docs
+          environments: default
       - name: List env contents
         run: |
-          pixi list -e docs
+          pixi list -e default
       - name: Build docs
         run: |
           pixi run docs
