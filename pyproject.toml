@@ -117,20 +117,20 @@ test = { cmd = "pytest tests" }
 hydromt_delft3dfm = { path = ".", editable = true }
 
 # Define features for different Python versions and Hydromt versions
-[feature.py312.dependencies]
+[tool.pixi.feature.py312.dependencies]
 python = "3.12.*"
 
-[feature.py313.dependencies]
+[tool.pixi.feature.py313.dependencies]
 python = "3.13.*"
 
-[feature.py314.dependencies]
+[tool.pixi.feature.py314.dependencies]
 python = "3.14.*"
 
-[feature.hydromt_dev.pypi-dependencies]
+[tool.pixi.feature.hydromt_dev.pypi-dependencies]
 # Get the latest version from main
 hydromt = { git = "https://github.com/Deltares/hydromt.git", branch = "main" }
 
-[feature.hydromt_latest.pypi-dependencies]
+[tool.pixi.feature.hydromt_latest.pypi-dependencies]
 # Replace with the actual stable version range you want to test against
 hydromt = ">=1.0,<2.0"
 
@@ -138,10 +138,10 @@ hydromt = ">=1.0,<2.0"
 [tool.pixi.environments]
 default = { features = ["dev", "docs", "test"] }
 
-latest_312 = { features = ["py312", "hydromt_latest"], solve-group = "py312" }
-latest_313 = { features = ["py313", "hydromt_latest"], solve-group = "py313" }
-latest_314 = { features = ["py314", "hydromt_latest"], solve-group = "py314" }
+latest-312 = { features = ["py312", "hydromt_latest"], solve-group = "py312" }
+latest-313 = { features = ["py313", "hydromt_latest"], solve-group = "py313" }
+latest-314 = { features = ["py314", "hydromt_latest"], solve-group = "py314" }
 
-dev_312 = { features = ["py312", "hydromt_dev"], solve-group = "py312" }
-dev_313 = { features = ["py313", "hydromt_dev"], solve-group = "py313" }
-dev_314 = { features = ["py314", "hydromt_dev"], solve-group = "py314" }
+dev-312 = { features = ["py312", "hydromt_dev"], solve-group = "py312" }
+dev-313 = { features = ["py313", "hydromt_dev"], solve-group = "py313" }
+dev-314 = { features = ["py314", "hydromt_dev"], solve-group = "py314" }
