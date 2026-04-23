@@ -27,7 +27,7 @@ jobs:
           pixi list -e default
       - name: Build docs
         run: |
-          pixi run docs
+          pixi run docs-build
       - uses: actions/upload-pages-artifact@v4
         with:
           path: docs/_build/
