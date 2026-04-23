@@ -110,7 +110,7 @@ platforms = ["linux-64", "win-64"]
 
 [tool.pixi.feature.test.tasks]
 test = { cmd = ["pytest"] }
-test-cov = { cmd = ["pytest", "--cov=hydromt_delft3dfm --cov-report xml"] }
+test-cov = { cmd = ["pytest", "--cov=hydromt_delft3dfm", "--cov-report=xml", "--cov-report=term"] }
 
 # Install your code in editable mode, dependencies here are installed in all environments
 # Takes the dependencies from pyproject.toml, which will be overridden in the features below.
