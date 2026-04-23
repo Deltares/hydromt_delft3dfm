@@ -18,7 +18,7 @@ jobs:
         python-version: ['311', '312', '313'] # ,'314']
         hydromt-version: ['stable', 'dev']
 
-    name: py-${{ matrix.python-version }} hydromt-${{ matrix.hydromt-version }} (${{ matrix.os }})
+    name: ${{ matrix.os }} py-${{ matrix.python-version }} hydromt-${{ matrix.hydromt-version }}
     runs-on: ${{ matrix.os }}
 
     concurrency:
