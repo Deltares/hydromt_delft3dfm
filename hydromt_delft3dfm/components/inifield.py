@@ -191,7 +191,7 @@ class IniFieldComponent(SpatialDatasetsComponent):
     def write(self) -> None:
         """Write maps as tif files in maps folder and update initial fields."""
         self.root._assert_write_mode()
-        if len(self._data) == 0:
+        if len(self.data) == 0:
             logger.debug("No maps data found, skip writing.")
             return
 
