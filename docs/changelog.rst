@@ -28,7 +28,7 @@ Fixed
 
 
 v0.3.0 (18 October 2024)
-==========
+========================
 This version includes many code updates to accomodate for newer versions of dependencies.
 The only upper bound left is hydromt<1.
 
