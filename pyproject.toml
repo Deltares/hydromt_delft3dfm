@@ -117,14 +117,17 @@ test = { cmd = "pytest tests" }
 hydromt_delft3dfm = { path = ".", editable = true }
 
 # Define features for different Python versions and Hydromt versions
+[tool.pixi.feature.py311.dependencies]
+python = "3.11.*"
+
 [tool.pixi.feature.py312.dependencies]
 python = "3.12.*"
 
 [tool.pixi.feature.py313.dependencies]
 python = "3.13.*"
 
-[tool.pixi.feature.py314.dependencies]
-python = "3.14.*"
+#[tool.pixi.feature.py314.dependencies]
+#python = "3.14.*"
 
 [tool.pixi.feature.hydromt_dev.pypi-dependencies]
 # Get the latest version from main
@@ -138,10 +141,12 @@ hydromt = ">=1.0,<2.0"
 [tool.pixi.environments]
 default = { features = ["dev", "docs", "test"] }
 
+latest-311 = { features = ["py311", "hydromt_latest"], solve-group = "py311" }
 latest-312 = { features = ["py312", "hydromt_latest"], solve-group = "py312" }
 latest-313 = { features = ["py313", "hydromt_latest"], solve-group = "py313" }
-latest-314 = { features = ["py314", "hydromt_latest"], solve-group = "py314" }
+#latest-314 = { features = ["py314", "hydromt_latest"], solve-group = "py314" }
 
+dev-311 = { features = ["py311", "hydromt_dev"], solve-group = "py311" }
 dev-312 = { features = ["py312", "hydromt_dev"], solve-group = "py312" }
 dev-313 = { features = ["py313", "hydromt_dev"], solve-group = "py313" }
-dev-314 = { features = ["py314", "hydromt_dev"], solve-group = "py314" }
+#dev-314 = { features = ["py314", "hydromt_dev"], solve-group = "py314" }
