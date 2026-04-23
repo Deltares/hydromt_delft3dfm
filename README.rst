@@ -4,7 +4,7 @@
 HydroMT-Delft3D FM: Delft3D FM plugin for HydroMT
 =================================================
 
-|ci| |codecov| |black| |docs_latest|  |license| |sonarcloud| |pypi| |pyversions|
+|test| |codecov| |black| |docs_latest|  |license| |sonarcloud| |pypi| |pyversions|
 
 What is the HydroMT-Delft3D FM plugin
 -------------------------------------
@@ -48,9 +48,9 @@ happy to discuss how it can be implemented for your model.
 .. _Hydromt: https://deltares.github.io/hydromt/latest/
 .. _FM: https://oss.deltares.nl/web/delft3dfm
 
-.. |ci| image:: https://github.com/Deltares/hydromt_delft3dfm/actions/workflows/ci.yml/badge.svg?branch=main
-    :alt: ci
-    :target: https://github.com/Deltares/hydromt_delft3dfm/actions/workflows/ci.yml
+.. |test| image:: https://github.com/Deltares/hydromt_delft3dfm/actions/workflows/test.yml/badge.svg?branch=main
+    :alt: test
+    :target: https://github.com/Deltares/hydromt_delft3dfm/actions/workflows/test.yml
 
 .. |codecov| image:: https://codecov.io/gh/Deltares/hydromt_delft3dfm/branch/main/graph/badge.svg?token=ss3EgmwHhH
     :target: https://codecov.io/gh/Deltares/hydromt_delft3dfm?displayType=list
