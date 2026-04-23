@@ -59,18 +59,12 @@ def test_model_build(tmpdir, modelname):
     mod0.read()
     # check if equal
     equal, errors = mod0.test_equal(mod1)
-    
+
     # skip config.filepath (root is different)
     if "mdu" in errors and "mdu.filepath" in errors["mdu"]:
         errors["mdu"].pop("mdu.filepath", None)
         if len(errors["mdu"]) == 0:
             errors.pop("mdu", None)
-        if len(errors) == 0:
-            equal = True
-
-    # somehow a successful check still has {"geoms":{}), so this should be popped
-    if len(errors["geoms"]) == 0:
-        errors.pop("geoms", None)
         if len(errors) == 0:
             equal = True
 
