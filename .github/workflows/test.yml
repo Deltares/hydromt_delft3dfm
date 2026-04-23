@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ['312', '312', '313']
+        python-version: ['311', '312', '313']
         hydromt-version: ['latest', 'dev']
 
     name: pytest ${{ matrix.hydromt-version }}-${{ matrix.python-version }} (${{ matrix.os }})
