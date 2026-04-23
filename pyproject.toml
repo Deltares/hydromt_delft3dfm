@@ -62,6 +62,9 @@ docs = [
     "sphinx_design",
     "pydata-sphinx-theme",
     "sphinx_autosummary_accessors",
+	"ipython",
+	"ipykernel",
+	#"pandoc", # install via conda via features
 ]
 examples = [
     "jupyterlab",  # run examples in jupyter notebook
@@ -112,6 +115,9 @@ platforms = ["linux-64", "win-64"]
 test = { cmd = ["pytest"] }
 test-cov = { cmd = ["pytest", "--cov=hydromt_delft3dfm", "--cov-report=xml", "--cov-report=term"] }
 
+[tool.pixi.feature.docs.tasks]
+docs-build = { cmd = ["sphinx-build", "docs", "docs/_build"] }
+
 # Install your code in editable mode, dependencies here are installed in all environments
 # Takes the dependencies from pyproject.toml, which will be overridden in the features below.
 [tool.pixi.pypi-dependencies]
@@ -134,11 +140,13 @@ python = "3.13.*"
 # Get the latest version from main
 hydromt = { git = "https://github.com/Deltares/hydromt.git", branch = "main" }
 
+[tool.pixi.feature.docs.dependencies]
+pandoc = "*"
+
 # Define environments to combine features
 [tool.pixi.environments]
 # TODO: temporarily restricting the default py to 312 until hydrolib-core is updated to v1 in https://github.com/Deltares/hydromt_delft3dfm/pull/226
-default = { features = ["py312", "dev", "docs", "test"]}
-docs = { features = ["py312", "docs", "examples"]}
+default = { features = ["py312", "dev", "docs", "test", "examples"]}
 
 pypi-311 = { features = ["py311", "dev", "test"]}
 pypi-312 = { features = ["py312", "dev", "test"]}
