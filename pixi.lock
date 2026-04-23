@@ -1439,7 +1439,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/de/7c/ba8ca8cbe9dbef8e83a95fc208fed8e6686c98b4719aaa0aa7f3d31fe390/zarr-3.1.6-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/08/8a/0861bec20485572fbddf3dfba2910e38fe249796cb73ecdeb74e07eeb8d3/zipp-3.23.1-py3-none-any.whl
       - pypi: ./
-  latest-311:
+  stable-311:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
     indexes:
@@ -1783,7 +1783,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/de/7c/ba8ca8cbe9dbef8e83a95fc208fed8e6686c98b4719aaa0aa7f3d31fe390/zarr-3.1.6-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/08/8a/0861bec20485572fbddf3dfba2910e38fe249796cb73ecdeb74e07eeb8d3/zipp-3.23.1-py3-none-any.whl
       - pypi: ./
-  latest-312:
+  stable-312:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
     indexes:
@@ -2123,7 +2123,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/de/7c/ba8ca8cbe9dbef8e83a95fc208fed8e6686c98b4719aaa0aa7f3d31fe390/zarr-3.1.6-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/08/8a/0861bec20485572fbddf3dfba2910e38fe249796cb73ecdeb74e07eeb8d3/zipp-3.23.1-py3-none-any.whl
       - pypi: ./
-  latest-313:
+  stable-313:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
     indexes:
@@ -4100,7 +4100,7 @@ packages:
 - pypi: ./
   name: hydromt-delft3dfm
   version: 0.3.1.dev0
-  sha256: 4031a1edf0d10441354a0812510f00c489efe3e98b0b709b7e76609d65fcd523
+  sha256: 3ed6a4e0fd368c14a728c9b397d191e0d1cb9b94a7f5ba22a487a854d1568210
   requires_dist:
   - hydromt>=1.3.1
   - geopandas>=0.10,!=1.0.0
