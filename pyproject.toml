@@ -44,13 +44,14 @@ dynamic = ['version', 'description']
 
 [project.optional-dependencies]
 dev = [
-    "black",       # linting
-    "ruff",        # linting
-    "pre-commit",  # linting
-    "pip>=23.1.2", # needed for recursive dependencies
-    "flit>3.4",    # build
-    "twine",       # build
-    "wheel",       # build
+    "black",          # linting
+    "ruff",           # linting
+    "pre-commit",     # linting
+    "pip>=23.1.2",    # needed for recursive dependencies
+    "flit>3.4",       # build
+    "twine",          # build
+    "wheel",          # build
+	"spyder-kernels", # support for standalone spyder
 ]
 test = [
     "pytest>=2.7.3",
