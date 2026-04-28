@@ -20,7 +20,7 @@ logger = logging.getLogger(f"hydromt.{__name__}")
 
 class IniFieldComponent(SpatialDatasetsComponent):
     """
-    Manage the Delft3D-FM ini field files for model initial fields.
+    Manage the Delft3D FM ini field files for model initial fields.
 
     It extends the base SpatialDatasetsComponent from hydromt and consists of a
     dictionary of xarray Datasets.
