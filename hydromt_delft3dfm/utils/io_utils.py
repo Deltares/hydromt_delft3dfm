@@ -1231,6 +1231,7 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     extdicts = list()
     bcdict = list()
     # Loop over forcing dict
+    # TODO: probably da is actually a df
     for name, da in forcing.items():
         for i in da.index.values:
             bc = da.attrs.copy()
@@ -1268,6 +1269,56 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     # add forcingfile to ext
     ext["forcingfile"] = forcing_fn
     extdicts.append(ext)
+
+    # write external forcing file
+    if ext_fn is not None:
+        # write to external forcing file
+        write_ext(extdicts, savedir, ext_fn=ext_fn, block_name="meteo", mode="append")
+
+    return forcing_fn, ext_fn
+
+
+# TODO: update docstring (copy of write_meteo)
+def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
+    """
+    Write 2d meteo forcing from forcing dict.
+
+    Note! only forcing file (.bc) is written in this function.
+    Use io_utils.write_ext() for writing external forcing (.ext) file.
+
+    Parameters
+    ----------
+    forcing: dict of xarray DataArray
+        Dict of boundary DataArray.
+        Only forcing that startswith "meteo" will be recognised.
+    savedir: str, optional
+        path to the directory where to save the file.
+    ext_fn: str or Path, optional
+        Path of the external forcing file (.ext) in which this function will append to.
+
+    """
+    # filter for 2d meteo
+    forcing = {key: forcing[key] for key in forcing.keys() if key.startswith("spatial")}
+    if len(forcing) == 0:
+        return
+
+    extdicts = list()
+    # Loop over forcing dict
+    for name, da in forcing.items():
+        da_out = da.copy()
+        # TODO: get the quantity/variable name from the dataarray/self
+        quantity = "rainfall"
+        variable = "precip"
+        forcing_fn = f"meteo_{quantity}.nc"
+        da_out.to_netcdf(join(savedir, forcing_fn))
+
+        # add forcingfile to ext
+        ext = dict()
+        ext["quantity"] = quantity
+        ext["forcingVariableName"] = variable
+        ext["forcingfile"] = forcing_fn
+        ext["forcingFileType"] = "netcdf"
+        extdicts.append(ext)
 
     # write external forcing file
     if ext_fn is not None:

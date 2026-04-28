@@ -184,3 +184,39 @@ def test_inifield_add_raster_data_from_rasterdataset(tmpdir):
     roughness_values = np.unique(model.inifield.data[variable]).tolist()
     expected_values = [-999.0, 0.025, 0.044, 0.050, 0.055]
     assert np.allclose(roughness_values, expected_values, atol=TOLERANCE)
+
+
+def test_setup_precip_forcing(tmpdir):
+    # TODO: convert to dedicated test function without calling/writing the entire model?
+    from hydromt_delft3dfm import DFlowFMModel
+
+    root = join(tmpdir, "dflowfm_example")
+    mod1 = DFlowFMModel(
+        root=root,
+        mode="w",
+        data_libs=["artifact_data"],
+        crs=3857,
+    )
+
+    mod1.setup_config(**{
+        # TODO: update dflowfmmodel.get_model_time() to support startdatetime and stopdatetime
+        # "time.startdatetime": "2010-02-02",
+        # "time.stopdatetime": "2010-02-06",
+        # TODO: does not validate on initialisation (also not on casing, which is quite inconvenient, only on write)
+        # "time.refdatesdfsdf": "20100202",
+        "time.refdate": "20100202",
+        # TODO: dflowfmmodel.get_model_time() only supports seconds
+        # "time.Tunit": "s",
+        "time.tstart": 0,
+        "time.tstop": 345600,
+    })
+
+    mod1.setup_mesh2d(
+        region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
+        res=500,
+    )
+    mod1.setup_precip_forcing(
+        precip_fn="era5",  # source for precipitation.
+    )
+    # write calls the validators and writes all the delft3dfm files
+    mod1.write()

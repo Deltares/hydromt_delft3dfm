@@ -16,6 +16,7 @@ from hydrolib.core.dflowfm import FMModel
 from hydromt import hydromt_step
 from hydromt.model import Model
 from hydromt.model.processes.mesh import create_mesh2d_from_region
+from hydromt.model.processes.grid import create_grid_from_region
 from pyproj import CRS
 
 from hydromt_delft3dfm import DATADIR, workflows
@@ -2773,6 +2774,113 @@ class DFlowFMModel(Model):
 
         # 5. set meteo in mdu
         self.mdu.set("external_forcing.rainfall", 1)
+
+
+    # TODO: rename function (setup_spatial_forcing or so)
+    @hydromt_step
+    def setup_precip_forcing(
+        self,
+        precip_fn: str | xr.DataArray,
+        # precip_clim_fn: str | xr.DataArray | None = None,
+        chunksize: int | None = None,
+        **kwargs,
+    ) -> None:
+        """Generate gridded precipitation forcing at model resolution.
+
+        Adds model layer:
+
+        * **precip**: precipitation [mm]
+
+        Required setup methods:
+
+        * :py:meth:`~WflowSbmModel.setup_basemaps`
+
+        Parameters
+        ----------
+        precip_fn : str, xarray.DataArray
+            Precipitation RasterDataset source.
+
+            * Required variable: 'precip' [mm]
+
+            * Required dimension: 'time'  [timestamp]
+        precip_clim_fn : str, xarray.DataArray, optional
+            High resolution climatology precipitation RasterDataset source to correct
+            precipitation.
+
+            * Required variable: 'precip' [mm]
+
+            * Required dimension: 'time'  [cyclic month]
+        chunksize: int, optional
+            Chunksize on time dimension for processing data (not for saving to disk!).
+            If None the data chunksize is used, this can however be optimized for
+            large/small catchments. By default None.
+        **kwargs : dict, optional
+            Additional arguments passed to the forcing function.
+            See hydromt.model.processes.meteo.precip for more details.
+        """
+        # TODO: make this method loop over ERA5 variables or write dedicated methods that call a generic one?
+        # self.data_catalog.get_rasterdataset supports multiple variables, so a preprocessor would be useful, then pass
+        # it to dedicated hydromt temp/precip functions
+        # TODO: when adding dewpointtemperature/solarradiation, also change mdu.physics.temperature = 5
+
+        #TODO: still a copy from https://deltares.github.io/hydromt_wflow/stable/_modules/hydromt_wflow/wflow_sbm.html#WflowSbmModel.setup_precip_forcing
+        refdate, tstart, tstop = self.get_model_time()  # time slice
+        # freq = pd.to_timedelta(self.config.get_value("time.timestepsecs"), unit="s")
+        # probably by giving geom self.region, it automatically clips, so mask is not required
+        # mask = self.staticmaps.data[self._MAPS["basins"]].values > 0
+
+        # TODO: clipping should include outer bounds if not exact, test this
+        # TODO variables can also be more, should adhere to data conventions: https://deltares.github.io/hydromt/stable/user_guide/data_catalog/data_conventions.html#meteorology
+        precip = self.data_catalog.get_rasterdataset(
+            precip_fn,
+            geom=self.region,
+            buffer=2,
+            time_range=(tstart, tstop),
+            variables=["precip"],
+        )
+        # TODO: why would we need to convert?
+        precip = precip.astype("float32")
+
+        if chunksize is not None:
+            precip = precip.chunk({"time": chunksize})
+
+        # clim = None
+        # if precip_clim_fn is not None:
+        #     clim = self.data_catalog.get_rasterdataset(
+        #         precip_clim_fn,
+        #         geom=precip.raster.box,
+        #         buffer=2,
+        #         variables=["precip"],
+        #     )
+        #     clim = clim.astype("float32")
+
+        # TODO: region has to come from self
+        # TODO: res should come from ERA5 source res
+        da_like = create_grid_from_region(
+            region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]), #self.region,
+            res=self.mesh.res,
+            crs=self.crs,
+        )
+
+        # TODO: import is not necesary in hydromt_wlfow, but cannot be found otherwise
+        import hydromt.model.processes.meteo
+
+        precip_out = hydromt.model.processes.meteo.precip(
+            precip=precip,
+            da_like=da_like, #self.staticmaps.data[self._MAPS["elevtn"]],
+            # clim=clim,
+            # freq=freq,
+            # resample_kwargs=dict(label="right", closed="right"),
+        )
+
+        # Update meta attributes (used for default output filename later)
+        precip_out.attrs.update({"precip_fn": precip_fn})
+        # if precip_clim_fn is not None:
+        #     precip_out.attrs.update({"precip_clim_fn": precip_clim_fn})
+        # TODO: get name from ds
+        name = "precip"
+        self.forcing.set(precip_out, name=f"spatial_{name}")
+        # self._update_config_variable_name(self._MAPS["precip"], data_type="forcing")
 
     # ## I/O
     @hydromt_step
