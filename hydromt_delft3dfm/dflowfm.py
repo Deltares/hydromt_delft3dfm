@@ -35,7 +35,7 @@ logger = logging.getLogger(f"hydromt.{__name__}")
 
 
 class DFlowFMModel(Model):
-    """API for Delft3D-FM models in HydroMT."""
+    """API for Delft3D FM models in HydroMT."""
 
     name: str = "dflowfm"
     _DATADIR: Path = DATADIR

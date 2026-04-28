@@ -1,4 +1,4 @@
-"""Custom Delft3D-FM config component."""
+"""Custom Delft3D FM config component."""
 
 import logging
 from os.path import basename, isfile, join
