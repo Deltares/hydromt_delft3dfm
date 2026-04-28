@@ -33,7 +33,6 @@ def test_write_readonlymode(tmpdir, caplog):
     mod2 = DFlowFMModel(
         root=root,
         mode="r",
-        crs=3857,
     )
     mod2.write()
     assert "Cannot write in read-only mode" in caplog.text
