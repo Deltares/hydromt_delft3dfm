@@ -6,7 +6,7 @@ EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 
 
 def test_hydrolib_network_from_mesh(tmpdir):
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_piave"), mode="r")
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_piave"), crs=3857, mode="r")
     model.read()
     model.root.set(tmpdir, mode="w")
 
@@ -26,7 +26,7 @@ def test_hydrolib_network_from_mesh(tmpdir):
 
 def test_setup_links1d2d_add_links(tmpdir):
     # Instantiate an empty model
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), crs=3857, mode="r")
     model.read()
     model.root.set(tmpdir, mode="w")
     
