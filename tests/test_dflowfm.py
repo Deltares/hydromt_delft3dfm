@@ -66,7 +66,7 @@ def test_read_write_config_empty_paths(tmpdir):
 
 def test_setup_mesh2d_refine(tmpdir):
     # get dummy model
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_piave"), mode="r")
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_piave"), crs=3857, mode="r")
     mesh2d = model.mesh.get_mesh('mesh2d')
     assert mesh2d.face_coordinates.shape == (460, 2)
     assert mesh2d.edge_coordinates.shape == (963, 2)
@@ -84,7 +84,7 @@ def test_setup_mesh2d_refine(tmpdir):
 
 def test_setup_channels(tmpdir):
     # Instantiate a dummy model
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), crs=3857, mode="r")
     model.read()
     model.root.set(tmpdir, mode="w")
 
@@ -102,7 +102,7 @@ def test_setup_channels(tmpdir):
 
 def test_setup_retentions(tmpdir):
     # Instantiate a dummy model
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), crs=3857, mode="r")
     model.read()
     model.root.set(tmpdir, mode="w")
     
@@ -115,7 +115,7 @@ def test_setup_retentions(tmpdir):
 
 def test_setup_bridges(tmpdir):
     # Instantiate a dummy model
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), crs=3857, mode="r")
     model.read()
     model.root.set(tmpdir, mode="w")
     
@@ -138,7 +138,7 @@ def test_setup_bridges(tmpdir):
 
 def test_setup_culverts(tmpdir):
     # Instantiate a dummy model
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), crs=3857, mode="r")
     model.read()
     model.root.set(tmpdir, mode="w")
 
@@ -164,7 +164,7 @@ def test_write_structures(tmpdir):
     failed before for dflowfm_local model due to nan values in gdf
     https://github.com/Deltares/hydromt_delft3dfm/issues/150
     """
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), crs=3857, mode="r")
     model.read()
     model.root.set(tmpdir, mode="w")
     
@@ -173,7 +173,7 @@ def test_write_structures(tmpdir):
 
 
 def test_inifield_add_raster_data_from_rasterdataset(tmpdir):
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), crs=3857, mode="r")
     model.read()
     model.root.set(tmpdir, mode="w")
     raster_fn = join(TESTDATADIR, "local_data","frictioncoefficient.tif")
