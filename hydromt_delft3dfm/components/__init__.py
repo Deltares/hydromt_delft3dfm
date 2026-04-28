@@ -1,4 +1,4 @@
-"""Delft3D-FM components for HydroMT."""
+"""Delft3D FM components for HydroMT."""
 
 from hydromt_delft3dfm.components.dimr import DIMRComponent
 from hydromt_delft3dfm.components.forcing import DFlowFMForcingComponent
