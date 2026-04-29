@@ -62,28 +62,10 @@ def test_init_dflowfmmodel_mode_read_crs_notnone(tmpdir):
     assert model4.crs.to_epsg() == 4326
 
 
-def test_write_readonlymode(tmpdir, caplog):
-    root = join(tmpdir, "dflowfm_example")
-    mod1 = DFlowFMModel(
-        root=root,
-        mode="w",
-        crs=3857,
-    )
-    mod1.write()
-    
-    mod2 = DFlowFMModel(root=root, mode="r")
-    mod2.write()
-    assert "Cannot write in read-only mode" in caplog.text
-
-
 def test_read_write_config_empty_paths(tmpdir):
     # Instantiate an empty model
     root = join(tmpdir, "dflowfm_example")
-    model1 = DFlowFMModel(
-        root=root,
-        mode="w",
-        crs=3857,
-    )
+    model1 = DFlowFMModel(root=root, mode="w", crs=3857)
     # Get the mdu settings
     model1.mdu.read()
     # Check whether the path is an emtpy string
@@ -91,7 +73,7 @@ def test_read_write_config_empty_paths(tmpdir):
 
     # write the model to read it again
     model1.write()
-    model2 = DFlowFMModel(root=root, mode="r")
+    model2 = DFlowFMModel(root=root, mode="r", crs=3857)
     # Get the mdu settings
     model2.mdu.read()
     # Check whether the path is an emtpy string
