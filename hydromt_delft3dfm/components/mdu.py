@@ -64,12 +64,21 @@ class MDUComponent(ConfigComponent):
         It is parsed from model startdatetime/stopdatetime, or from the refdate/tunit/
         tstart/tstop if not available.
         """
-        startdatetime_str = self.get_value("time.startdatetime")
-        stopdatetime_str = self.get_value("time.stopdatetime")
-        refdate_str = str(self.get_value("time.refdate"))
-        refdate = dt.datetime.strptime(refdate_str, "%Y%m%d")
+
+        # TODO: create function for getting the datetime for a string, to avoid duplicated code 3x
+        startdatetime_str = self.get_value("time.startdatetime", "")
+        stopdatetime_str = self.get_value("time.stopdatetime", "")
         if startdatetime_str == "" or stopdatetime_str == "":
             logger.debug("get_model_time(): fallback to refdate/tstart/tstop")
+            refdate_str = str(self.get_value("time.refdate", ""))
+            refdate_str = validate_datetime_string(
+                refdate_str, "refdate"
+            )
+            # expected format is yyyymmddhhmmss, but hhmmss maybe omitted
+            # (default:000000).
+            if len(refdate_str) == 8:
+                refdate_str += "000000"
+            refdate = dt.datetime.strptime(refdate_str, "%Y%m%d%H%M%S")
             tunit = self.get_value("time.tunit")
             tstart = float(self.get_value("time.tstart"))
             tstop = float(self.get_value("time.tstop"))
@@ -105,7 +114,7 @@ class MDUComponent(ConfigComponent):
             tstart = dt.datetime.strptime(startdatetime_str, "%Y%m%d%H%M%S")
             tstop = dt.datetime.strptime(stopdatetime_str, "%Y%m%d%H%M%S")
 
-        return refdate, tstart, tstop
+        return tstart, tstop
 
     @hydromt_step
     def read(self) -> None:

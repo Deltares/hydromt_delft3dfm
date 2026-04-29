@@ -1726,7 +1726,7 @@ class DFlowFMModel(Model):
         region_buffer=0.0,
     ):
         """Read forcing geodataset."""
-        refdate, tstart, tstop = self.get_model_time()  # time slice
+        tstart, tstop = self.get_model_time()  # time slice
 
         if (
             forcing_geodataset_fn is not None
@@ -2559,7 +2559,7 @@ class DFlowFMModel(Model):
             crs=self.crs,
         )
 
-        refdate, tstart, tstop = self.get_model_time()  # time slice
+        tstart, tstop = self.get_model_time()  # time slice
 
         # 1. read boundary geometries
         if boundaries_fn is not None:
@@ -2659,7 +2659,7 @@ class DFlowFMModel(Model):
         """
         logger.info("Preparing rainfall meteo forcing from uniform timeseries.")
 
-        refdate, tstart, tstop = self.get_model_time()  # time slice
+        tstart, tstop = self.get_model_time()  # time slice
         meteo_location = (
             self.region.centroid.x,
             self.region.centroid.y,
@@ -2732,7 +2732,7 @@ class DFlowFMModel(Model):
         """
         logger.info("Preparing rainfall meteo forcing from uniform timeseries.")
 
-        refdate, tstart, tstop = self.get_model_time()  # time slice
+        tstart, tstop = self.get_model_time()  # time slice
         meteo_location = (
             self.region.centroid.x,
             self.region.centroid.y,
@@ -2948,8 +2948,8 @@ class DFlowFMModel(Model):
         It is parsed from model startdatetime/stopdatetime, or from the refdate/tunit/
         tstart/tstop if not available.
         """
-        refdate, tstart, tstop = self.mdu.get_model_time()
-        return refdate, tstart, tstop
+        tstart, tstop = self.mdu.get_model_time()
+        return tstart, tstop
 
     def _model_has_2d(self):
         """Check if model has 2D mesh part."""

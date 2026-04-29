@@ -26,19 +26,19 @@ def test_get_model_time_from_refdate_tunit_start_tstop():
     assert "tunit='X' not supported by get_model_time()" in str(e.value)
 
     mdu.update(data={"time.tunit": "D"})
-    refdate, tstart, tstop = mdu.get_model_time()
+    tstart, tstop = mdu.get_model_time()
     assert tstop == dt.datetime(2010, 2, 26, 0, 0, 0)
 
     mdu.update(data={"time.tunit": "H"})
-    refdate, tstart, tstop = mdu.get_model_time()
+    tstart, tstop = mdu.get_model_time()
     assert tstop == dt.datetime(2010, 2, 3, 0, 0, 0)
 
     mdu.update(data={"time.tunit": "M"})
-    refdate, tstart, tstop = mdu.get_model_time()
+    tstart, tstop = mdu.get_model_time()
     assert tstop == dt.datetime(2010, 2, 2, 0, 24, 0)
 
     mdu.update(data={"time.tunit": "S"})
-    refdate, tstart, tstop = mdu.get_model_time()
+    tstart, tstop = mdu.get_model_time()
     assert tstop == dt.datetime(2010, 2, 2, 0, 0, 24)
 
 
@@ -59,7 +59,7 @@ def test_get_model_time_from_startdatetime_stopdatetime():
     }
     # model.setup_config(**data)
     mdu.update(data)
-    refdate, tstart, tstop = mdu.get_model_time()
+    tstart, tstop = mdu.get_model_time()
     assert tstart == dt.datetime(2010, 2, 2, 12, 0, 0)
     assert tstop == dt.datetime(2010, 2, 3, 12, 0, 0)
 
@@ -70,6 +70,6 @@ def test_get_model_time_from_startdatetime_stopdatetime():
     }
     # model.setup_config(**data)
     mdu.update(data)
-    refdate, tstart, tstop = mdu.get_model_time()
+    tstart, tstop = mdu.get_model_time()
     assert tstart == dt.datetime(2010, 2, 2, 0, 0, 0)
     assert tstop == dt.datetime(2010, 2, 3, 0, 0, 0)
