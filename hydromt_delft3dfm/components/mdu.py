@@ -68,7 +68,7 @@ class MDUComponent(ConfigComponent):
         stopdatetime_str = self.get_value("time.stopdatetime")
         refdate_str = str(self.get_value("time.refdate"))
         refdate = dt.datetime.strptime(refdate_str, "%Y%m%d")
-        if (startdatetime_str == "" or stopdatetime_str == ""):
+        if startdatetime_str == "" or stopdatetime_str == "":
             logger.debug("get_model_time(): fallback to refdate/tstart/tstop")
             tunit = self.get_value("time.tunit")
             tstart = float(self.get_value("time.tstart"))
@@ -91,9 +91,11 @@ class MDUComponent(ConfigComponent):
             logger.debug("get_model_time(): from startdatetime/stopdatetime")
             # validate datetime strings
             startdatetime_str = validate_datetime_string(
-                startdatetime_str,"startdatetime")
+                startdatetime_str, "startdatetime"
+            )
             stopdatetime_str = validate_datetime_string(
-                stopdatetime_str,"stopdatetime")
+                stopdatetime_str, "stopdatetime"
+            )
             # expected format is yyyymmddhhmmss, but hhmmss maybe omitted
             # (default:000000).
             if len(startdatetime_str) == 8:
