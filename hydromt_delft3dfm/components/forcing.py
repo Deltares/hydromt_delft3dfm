@@ -19,7 +19,7 @@ logger = logging.getLogger(f"hydromt.{__name__}")
 
 class DFlowFMForcingComponent(SpatialDatasetsComponent):
     """
-    Manage the Delft3D-FM forcing files for model forcings.
+    Manage the Delft3D FM forcing files for model forcings.
 
     This class is used to manage spatial datasets related to model forcings.
     The forcing component data stored in the ``data`` property is a dictionary of

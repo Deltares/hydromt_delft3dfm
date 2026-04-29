@@ -25,7 +25,7 @@ logger = logging.getLogger(f"hydromt.{__name__}")
 
 class DFlowFMMeshComponent(MeshComponent):
     """
-    Manage the Delft3D-FM mesh files for model meshes.
+    Manage the Delft3D FM mesh files for model meshes.
 
     This class is used to manage unstructured mesh data in a model. The mesh component
     data stored in the ``data`` property is a xugrid.UgridDataset object.
