@@ -1,7 +1,6 @@
 """Implement Delft3D FM 1D2D HydroMT plugin model class."""
 
 import logging
-from datetime import datetime, timedelta
 from os.path import isfile, join
 from pathlib import Path
 from typing import Any
@@ -2946,7 +2945,8 @@ class DFlowFMModel(Model):
         """
         Return (refdate, tstart, tstop) tuple.
 
-        It is parsed from model startdatetime/stopdatetime, or from the refdate/tunit/tstart/tstop if not available.
+        It is parsed from model startdatetime/stopdatetime, or from the refdate/tunit/
+        tstart/tstop if not available.
         """
         refdate, tstart, tstop = self.mdu.get_model_time()
         return refdate, tstart, tstop

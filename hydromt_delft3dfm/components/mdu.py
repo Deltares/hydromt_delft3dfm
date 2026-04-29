@@ -61,34 +61,41 @@ class MDUComponent(ConfigComponent):
         """
         Return (refdate, tstart, tstop) tuple.
 
-        It is parsed from model startdatetime/stopdatetime, or from the refdate/tunit/tstart/tstop if not available.
+        It is parsed from model startdatetime/stopdatetime, or from the refdate/tunit/
+        tstart/tstop if not available.
         """
         startdatetime_str = self.get_value("time.startdatetime")
         stopdatetime_str = self.get_value("time.stopdatetime")
-        refdate = dt.datetime.strptime(str(self.get_value("time.refdate")), "%Y%m%d")
+        refdate_str = str(self.get_value("time.refdate"))
+        refdate = dt.datetime.strptime(refdate_str, "%Y%m%d")
         if (startdatetime_str == "" or stopdatetime_str == ""):
             logger.debug("get_model_time(): fallback to refdate/tstart/tstop")
             tunit = self.get_value("time.tunit")
+            tstart = float(self.get_value("time.tstart"))
+            tstop = float(self.get_value("time.tstop"))
             if tunit.lower() == "s":
-                tstart = refdate + dt.timedelta(seconds=float(self.get_value("time.tstart")))
-                tstop = refdate + dt.timedelta(seconds=float(self.get_value("time.tstop")))
+                tstart = refdate + dt.timedelta(seconds=tstart)
+                tstop = refdate + dt.timedelta(seconds=tstop)
             elif tunit.lower() == "m":
-                tstart = refdate + dt.timedelta(minutes=float(self.get_value("time.tstart")))
-                tstop = refdate + dt.timedelta(minutes=float(self.get_value("time.tstop")))
+                tstart = refdate + dt.timedelta(minutes=tstart)
+                tstop = refdate + dt.timedelta(minutes=tstop)
             elif tunit.lower() == "h":
-                tstart = refdate + dt.timedelta(hours=float(self.get_value("time.tstart")))
-                tstop = refdate + dt.timedelta(hours=float(self.get_value("time.tstop")))
+                tstart = refdate + dt.timedelta(hours=tstart)
+                tstop = refdate + dt.timedelta(hours=tstop)
             elif tunit.lower() == "d":
-                tstart = refdate + dt.timedelta(days=float(self.get_value("time.tstart")))
-                tstop = refdate + dt.timedelta(days=float(self.get_value("time.tstop")))
+                tstart = refdate + dt.timedelta(days=tstart)
+                tstop = refdate + dt.timedelta(days=tstop)
             else:
                 raise ValueError(f"tunit='{tunit}' not supported by get_model_time()")
         else:
             logger.debug("get_model_time(): from startdatetime/stopdatetime")
             # validate datetime strings
-            startdatetime_str = validate_datetime_string(startdatetime_str,"startdatetime")
-            stopdatetime_str = validate_datetime_string(stopdatetime_str,"stopdatetime")
-            # expected format is yyyymmddhhmmss, but hhmmss maybe omitted (default:000000).
+            startdatetime_str = validate_datetime_string(
+                startdatetime_str,"startdatetime")
+            stopdatetime_str = validate_datetime_string(
+                stopdatetime_str,"stopdatetime")
+            # expected format is yyyymmddhhmmss, but hhmmss maybe omitted
+            # (default:000000).
             if len(startdatetime_str) == 8:
                 startdatetime_str += "000000"
             if len(stopdatetime_str) == 8:
