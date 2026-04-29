@@ -4,13 +4,13 @@ from hydromt_delft3dfm.components.mdu import MDUComponent
 import datetime as dt
 
 def test_get_model_time_from_refdate_tunit_start_tstop():
+    # it is required to pass a DFlowFMModel to MDUComponent, so initialize an empty one
     root = "./dflowfm_example"
     model = DFlowFMModel(
         root=root,
         mode="w",
         crs=3857,
     )
-    # TODO: why do we need to pass model? If so, we could maybe better avoid initiating a mducomponent in a test?
     mdu = MDUComponent(model=model)
     data = {
         "time.refdate": "20100202",
@@ -22,23 +22,23 @@ def test_get_model_time_from_refdate_tunit_start_tstop():
     mdu.update(data)
 
     with pytest.raises(ValueError) as e:
-        refdate, tstart, tstop = mdu.get_model_time()
+        _ = mdu.get_model_time()
     assert "tunit='X' not supported by get_model_time()" in str(e.value)
 
     mdu.update(data={"time.tunit": "D"})
-    tstart, tstop = mdu.get_model_time()
+    _, tstop = mdu.get_model_time()
     assert tstop == dt.datetime(2010, 2, 26, 0, 0, 0)
 
     mdu.update(data={"time.tunit": "H"})
-    tstart, tstop = mdu.get_model_time()
+    _, tstop = mdu.get_model_time()
     assert tstop == dt.datetime(2010, 2, 3, 0, 0, 0)
 
     mdu.update(data={"time.tunit": "M"})
-    tstart, tstop = mdu.get_model_time()
+    _, tstop = mdu.get_model_time()
     assert tstop == dt.datetime(2010, 2, 2, 0, 24, 0)
 
     mdu.update(data={"time.tunit": "S"})
-    tstart, tstop = mdu.get_model_time()
+    _, tstop = mdu.get_model_time()
     assert tstop == dt.datetime(2010, 2, 2, 0, 0, 24)
 
 
