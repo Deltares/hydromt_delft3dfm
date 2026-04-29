@@ -43,13 +43,13 @@ def test_get_model_time_from_refdate_tunit_start_tstop():
 
 
 def test_get_model_time_from_startdatetime_stopdatetime():
+    # it is required to pass a DFlowFMModel to MDUComponent, so initialize an empty one
     root = "./dflowfm_example"
     model = DFlowFMModel(
         root=root,
         mode="w",
         crs=3857,
     )
-    # TODO: why do we need to pass model? If so, we could maybe better avoid initiating a mducomponent in a test?
     mdu = MDUComponent(model=model)
 
     # passing complete datetime string
