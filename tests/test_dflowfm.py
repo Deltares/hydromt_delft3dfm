@@ -206,7 +206,8 @@ def test_setup_precip_forcing(tmpdir):
         # "time.refdatesdfsdf": "20100202",
         "time.refdate": "20100202",
         # TODO: dflowfmmodel.get_model_time() only supports seconds
-        # "time.Tunit": "s",
+        "time.tunit": "H",
+        # TODO: the returned era5 dataset is too short when not exactly slicing to its time axis, this should be buffered
         "time.tstart": 0,
         "time.tstop": 345600,
     })
