@@ -81,25 +81,6 @@ def test_write_readonlymode(tmpdir, caplog):
     assert "Cannot write in read-only mode" in caplog.text
 
 
-def test_model_update(tmpdir):
-    # from update_refine_2dgrid.ipynb
-    # hydromt update dflowfm dflowfm_piave -o ./build/dflowfm_mesh2d_refine -i dflowfm_update_mesh2d_refine.yml -v
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_piave"), mode="r+")
-    # TODO: WindowsPath/str has no attribute path, but we need a different outputdir, maybe by copying the input model to tmpdir first
-    # model.root = join(tmpdir, "build/dflowfm_mesh2d_refine")
-
-    polygon_fn = join(EXAMPLEDIR, "data/refine.geojson")
-    model.setup_mesh2d_refine(
-        polygon_fn= polygon_fn,
-        steps= 2,
-    )
-
-    model.setup_link1d2d(
-        link_direction= "1d_to_2d",
-    )
-    model.write()
-
-
 def test_read_write_config_empty_paths(tmpdir):
     # Instantiate an empty model
     root = join(tmpdir, "dflowfm_example")

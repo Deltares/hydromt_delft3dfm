@@ -43,10 +43,10 @@ class DFlowFMModel(Model):
     def __init__(
         self,
         root: str | Path,
-        crs: int | str | None = None,
         mode: str = "w",
         mdu_filename: str | None = None,
         data_libs: list[str] = [],  # yml
+        crs: int | str | None = None,
         dimr_filename: str | None = None,
         network_snap_offset: float = 25,
         snap_newbranches_to_branches_at_snapnodes: bool = True,
@@ -58,8 +58,6 @@ class DFlowFMModel(Model):
         ----------
         root : str or Path
             The model root location.
-        crs : EPSG code, int
-            EPSG code of the model. Required with mode="w". The default is None.
         mode : {'w','r','r+'}
             Write/read/append mode.
             Default is "w".
@@ -70,6 +68,8 @@ class DFlowFMModel(Model):
         data_libs : list of str, optional
             List of data catalog yaml files.
             Default is None.
+        crs : EPSG code, int
+            EPSG code of the model. Required with mode="w". The default is None.
         dimr_filename: str, optional
             Path to the dimr configuration file.
             If None, default dimr configuration file is used.
