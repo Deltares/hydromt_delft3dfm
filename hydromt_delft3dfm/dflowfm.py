@@ -1,7 +1,6 @@
 """Implement Delft3D FM 1D2D HydroMT plugin model class."""
 
 import logging
-from datetime import datetime, timedelta
 from os.path import isfile, join
 from pathlib import Path
 from typing import Any
@@ -69,7 +68,8 @@ class DFlowFMModel(Model):
             List of data catalog yaml files.
             Default is None.
         crs : EPSG code, int
-            EPSG code of the model.
+            EPSG code of the model. Required with mode="w". Optional with mode="r".
+            The default is None.
         dimr_filename: str, optional
             Path to the dimr configuration file.
             If None, default dimr configuration file is used.
@@ -134,7 +134,16 @@ class DFlowFMModel(Model):
         self._openwater_computation_node_distance = openwater_computation_node_distance
 
         # crs
-        self._crs = CRS.from_user_input(crs) if crs else None
+        if mode.startswith("r"):
+            # TODO: setting crs should not be allowed in read/append mode, but
+            # currently crs is not stored in the netfile so this would prevent
+            # properly reading a model without geoms folder.
+            # https://github.com/Deltares/hydromt_delft3dfm/issues/119
+            self._crs = CRS.from_user_input(crs) if crs else None
+        else:
+            if crs is None:
+                raise ValueError(f"crs argument cannot be None with mode='{mode}'")
+            self._crs = CRS.from_user_input(crs)
         self._check_crs()
 
         # other
@@ -1727,7 +1736,7 @@ class DFlowFMModel(Model):
         region_buffer=0.0,
     ):
         """Read forcing geodataset."""
-        refdate, tstart, tstop = self.get_model_time()  # time slice
+        tstart, tstop = self.get_model_time()  # time slice
 
         if (
             forcing_geodataset_fn is not None
@@ -2560,7 +2569,7 @@ class DFlowFMModel(Model):
             crs=self.crs,
         )
 
-        refdate, tstart, tstop = self.get_model_time()  # time slice
+        tstart, tstop = self.get_model_time()  # time slice
 
         # 1. read boundary geometries
         if boundaries_fn is not None:
@@ -2660,7 +2669,7 @@ class DFlowFMModel(Model):
         """
         logger.info("Preparing rainfall meteo forcing from uniform timeseries.")
 
-        refdate, tstart, tstop = self.get_model_time()  # time slice
+        tstart, tstop = self.get_model_time()  # time slice
         meteo_location = (
             self.region.centroid.x,
             self.region.centroid.y,
@@ -2733,7 +2742,7 @@ class DFlowFMModel(Model):
         """
         logger.info("Preparing rainfall meteo forcing from uniform timeseries.")
 
-        refdate, tstart, tstop = self.get_model_time()  # time slice
+        tstart, tstop = self.get_model_time()  # time slice
         meteo_location = (
             self.region.centroid.x,
             self.region.centroid.y,
@@ -2946,12 +2955,11 @@ class DFlowFMModel(Model):
         """
         Return (refdate, tstart, tstop) tuple.
 
-        It is parsed from model reference datem start and end time.
+        It is parsed from model startdatetime/stopdatetime, or from the refdate/tunit/
+        tstart/tstop if not available.
         """
-        refdate = datetime.strptime(str(self.mdu.get_value("time.refdate")), "%Y%m%d")
-        tstart = refdate + timedelta(seconds=float(self.mdu.get_value("time.tstart")))
-        tstop = refdate + timedelta(seconds=float(self.mdu.get_value("time.tstop")))
-        return refdate, tstart, tstop
+        tstart, tstop = self.mdu.get_model_time()
+        return tstart, tstop
 
     def _model_has_2d(self):
         """Check if model has 2D mesh part."""
