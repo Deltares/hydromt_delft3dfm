@@ -72,15 +72,16 @@ def test_model_build(tmpdir, modelname):
     # different:  https://github.com/Deltares/hydromt_delft3dfm/issues/253. Rather than
     # specifying linux-specific reference files, this error is ignored instead.
     if platform == "linux":
-        if "inifield" in errors and "elevtn" in errors["inifield"]:
-            value = errors["inifield"]["elevtn"]
-            expected_value = (
-                "Not equal: {'dims': 'dim y not identical', '3 invalid coords': "
-                "{'x': 'not identical', 'y': 'not identical', 'spatial_ref': 'not"
-                " identical'}}"
-            )
-            if value == expected_value:
-                errors["inifield"].pop("elevtn", None)
+        if "inifield" in errors:
+            if "elevtn" in errors["inifield"]:
+                value = errors["inifield"]["elevtn"]
+                expected_value = (
+                    "Not equal: {'dims': 'dim y not identical', '3 invalid coords': "
+                    "{'x': 'not identical', 'y': 'not identical', 'spatial_ref': 'not"
+                    " identical'}}"
+                )
+                if value == expected_value:
+                    errors["inifield"].pop("elevtn", None)
         if len(errors["inifield"]) == 0:
             errors.pop("inifield", None)
         if len(errors) == 0:
