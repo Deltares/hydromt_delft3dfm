@@ -2946,7 +2946,7 @@ class DFlowFMModel(Model):
         """
         Return (refdate, tstart, tstop) tuple.
 
-        It is parsed from model reference datem start and end time.
+        It is parsed from model startdatetime/stopdatetime, or from the refdate/tunit/tstart/tstop if not available.
         """
         refdate, tstart, tstop = self.mdu.get_model_time()
         return refdate, tstart, tstop
