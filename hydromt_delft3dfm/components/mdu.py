@@ -64,6 +64,18 @@ class MDUComponent(ConfigComponent):
         It is parsed from model startdatetime/stopdatetime, or from the refdate/tunit/
         tstart/tstop if not available.
         """
+
+        def parse_time_to_datetime(key: str) -> dt.datetime:
+            date_str = self.get_value(key)
+            # validate datetime strings (from hydrolib.core)
+            date_str = validate_datetime_string(field_value=date_str, field=key)
+            # expected format is yyyymmddhhmmss, but hhmmss may be omitted
+            # (default:000000).
+            if len(date_str) == 8:
+                date_str += "000000"
+            date_dt = dt.datetime.strptime(date_str, "%Y%m%d%H%M%S")
+            return date_dt
+
         startdatetime_str = self.get_value("time.startdatetime", "")
         stopdatetime_str = self.get_value("time.stopdatetime", "")
         if startdatetime_str == "" or stopdatetime_str == "":
