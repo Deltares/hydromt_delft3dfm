@@ -2,6 +2,7 @@ from os.path import abspath, dirname, join
 from hydromt_delft3dfm import DFlowFMModel
 import numpy as np
 from pathlib import Path
+import pytest
 
 TESTDATADIR = join(dirname(abspath(__file__)), "data")
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
@@ -21,6 +22,46 @@ def test_write_empty_model(tmpdir):
     mod1.write()
 
 
+def test_init_dflowfmmodel_mode_write_crs_none(tmpdir):
+    """
+    tests whether the crs is parsed properly
+    https://github.com/Deltares/hydromt_delft3dfm/issues/247
+    """
+    root = join(tmpdir, "dflowfm_example")
+    with pytest.raises(ValueError) as e:
+        _ = DFlowFMModel(root=root, mode="w")
+    assert "crs argument cannot be None with mode" in str(e.value)
+    with pytest.raises(ValueError) as e:
+        _ = DFlowFMModel(root=root, mode="w+")
+    assert "crs argument cannot be None with mode" in str(e.value)
+
+
+def test_init_dflowfmmodel_mode_read_crs_none():
+    """
+    tests whether the crs is parsed properly
+    https://github.com/Deltares/hydromt_delft3dfm/issues/247
+    """
+    root = join(EXAMPLEDIR, "dflowfm_local")
+    model1 = DFlowFMModel(root=root, mode="r")
+    model2 = DFlowFMModel(root=root, mode="r+")
+    assert model1.crs.to_epsg() == 32647
+    assert model2.crs.to_epsg() == 32647
+
+
+def test_init_dflowfmmodel_mode_read_crs_notnone(tmpdir):
+    """
+    tests whether the crs is parsed properly
+    https://github.com/Deltares/hydromt_delft3dfm/issues/247
+    """
+    root = join(EXAMPLEDIR, "dflowfm_local")
+    with pytest.raises(ValueError) as e:
+        _ = DFlowFMModel(root=root, mode="r", crs=4326)
+    assert "crs argument should be None with mode" in str(e.value)
+    with pytest.raises(ValueError) as e:
+        _ = DFlowFMModel(root=root, mode="r+", crs=4326)
+    assert "crs argument should be None with mode" in str(e.value)
+
+
 def test_write_readonlymode(tmpdir, caplog):
     root = join(tmpdir, "dflowfm_example")
     mod1 = DFlowFMModel(
@@ -28,15 +69,35 @@ def test_write_readonlymode(tmpdir, caplog):
         mode="w",
         crs=3857,
     )
+    # TODO: cannot read the crs of a model if no mesh was included
+    mod1.setup_mesh2d(
+        region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
+        res=500,
+    )
     mod1.write()
     
-    mod2 = DFlowFMModel(
-        root=root,
-        mode="r",
-        crs=3857,
-    )
+    mod2 = DFlowFMModel(root=root, mode="r")
     mod2.write()
     assert "Cannot write in read-only mode" in caplog.text
+
+
+def test_model_update(tmpdir):
+    # from update_refine_2dgrid.ipynb
+    # hydromt update dflowfm dflowfm_piave -o ./build/dflowfm_mesh2d_refine -i dflowfm_update_mesh2d_refine.yml -v
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_piave"), mode="r+")
+    # TODO: WindowsPath/str has no attribute path, but we need a different outputdir, maybe by copying the input model to tmpdir first
+    # model.root = join(tmpdir, "build/dflowfm_mesh2d_refine")
+
+    polygon_fn = join(EXAMPLEDIR, "data/refine.geojson")
+    model.setup_mesh2d_refine(
+        polygon_fn= polygon_fn,
+        steps= 2,
+    )
+
+    model.setup_link1d2d(
+        link_direction= "1d_to_2d",
+    )
+    model.write()
 
 
 def test_read_write_config_empty_paths(tmpdir):
@@ -51,10 +112,16 @@ def test_read_write_config_empty_paths(tmpdir):
     model1.mdu.read()
     # Check whether the path is an emtpy string
     assert model1.mdu.data["output"]["outputdir"] == ""
-    
+
+    # TODO: cannot read the crs of a model if no mesh was included
+    model1.setup_mesh2d(
+        region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
+        res=500,
+    )
+
     # write the model to read it again
     model1.write()
-    model2 = DFlowFMModel(root=root, mode="r", crs=3857)
+    model2 = DFlowFMModel(root=root, mode="r")
     # Get the mdu settings
     model2.mdu.read()
     # Check whether the path is an emtpy string
