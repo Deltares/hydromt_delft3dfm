@@ -64,17 +64,22 @@ class MDUComponent(ConfigComponent):
         It is parsed from model startdatetime/stopdatetime, or from the refdate/tunit/
         tstart/tstop if not available.
         """
+        def parse_time_to_datetime(key: str) -> dt.datetime:
+            date_str = self.get_value(key)
+            # validate datetime strings (from hydrolib.core)
+            date_str = validate_datetime_string(field_value=date_str, field=key)
+            # expected format is yyyymmddhhmmss, but hhmmss may be omitted
+            # (default:000000).
+            if len(date_str) == 8:
+                date_str += "000000"
+            date_dt = dt.datetime.strptime(date_str, "%Y%m%d%H%M%S")
+            return date_dt
+
         startdatetime_str = self.get_value("time.startdatetime", "")
         stopdatetime_str = self.get_value("time.stopdatetime", "")
         if startdatetime_str == "" or stopdatetime_str == "":
             logger.debug("get_model_time(): fallback to refdate/tstart/tstop")
-            refdate_str = str(self.get_value("time.refdate", ""))
-            refdate_str = validate_datetime_string(refdate_str, "refdate")
-            # expected format is yyyymmddhhmmss, but hhmmss maybe omitted
-            # (default:000000).
-            if len(refdate_str) == 8:
-                refdate_str += "000000"
-            refdate = dt.datetime.strptime(refdate_str, "%Y%m%d%H%M%S")
+            refdate = parse_time_to_datetime(key="time.refdate")
             tunit = self.get_value("time.tunit")
             tstart = float(self.get_value("time.tstart"))
             tstop = float(self.get_value("time.tstop"))
@@ -94,21 +99,8 @@ class MDUComponent(ConfigComponent):
                 raise ValueError(f"tunit='{tunit}' not supported by get_model_time()")
         else:
             logger.debug("get_model_time(): from startdatetime/stopdatetime")
-            # validate datetime strings
-            startdatetime_str = validate_datetime_string(
-                startdatetime_str, "startdatetime"
-            )
-            stopdatetime_str = validate_datetime_string(
-                stopdatetime_str, "stopdatetime"
-            )
-            # expected format is yyyymmddhhmmss, but hhmmss maybe omitted
-            # (default:000000).
-            if len(startdatetime_str) == 8:
-                startdatetime_str += "000000"
-            if len(stopdatetime_str) == 8:
-                stopdatetime_str += "000000"
-            tstart = dt.datetime.strptime(startdatetime_str, "%Y%m%d%H%M%S")
-            tstop = dt.datetime.strptime(stopdatetime_str, "%Y%m%d%H%M%S")
+            tstart = parse_time_to_datetime(key="time.startdatetime")
+            tstop = parse_time_to_datetime(key="time.stopdatetime")
 
         return tstart, tstop
 
