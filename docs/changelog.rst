@@ -25,6 +25,7 @@ Fixed
 - Write geoms only once (PR #224)
 - support for writing models without mesh/inifield/forcing (PR #248)
 - fixed crs/bounds/region properties of DFlowFMMeshComponent (PR #251)
+- crs cannot be None in writing mode (PR #264)
 - properly parsing tunit/startdatetime/stopdatetime (PR #267)
 
 
