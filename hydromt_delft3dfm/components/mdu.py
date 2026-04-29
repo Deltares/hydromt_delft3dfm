@@ -64,11 +64,10 @@ class MDUComponent(ConfigComponent):
         It is parsed from model startdatetime/stopdatetime, or from the refdate/tunit/
         tstart/tstop if not available.
         """
-
-        # TODO: create function for getting the datetime for a string, to avoid
-        # duplicated code 3x
-        startdatetime_str = self.get_value("time.startdatetime", "")
-        stopdatetime_str = self.get_value("time.stopdatetime", "")
+        startdatetime_str = self.get_value("time.startdatetime")
+        stopdatetime_str = self.get_value("time.stopdatetime")
+        refdate_str = str(self.get_value("time.refdate"))
+        refdate = dt.datetime.strptime(refdate_str, "%Y%m%d")
         if startdatetime_str == "" or stopdatetime_str == "":
             logger.debug("get_model_time(): fallback to refdate/tstart/tstop")
             refdate_str = str(self.get_value("time.refdate", ""))
