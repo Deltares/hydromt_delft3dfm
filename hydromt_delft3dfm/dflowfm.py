@@ -69,7 +69,8 @@ class DFlowFMModel(Model):
             List of data catalog yaml files.
             Default is None.
         crs : EPSG code, int
-            EPSG code of the model.
+            EPSG code of the model. Required with mode="w". Optional with mode="r".
+            The default is None.
         dimr_filename: str, optional
             Path to the dimr configuration file.
             If None, default dimr configuration file is used.
@@ -134,7 +135,16 @@ class DFlowFMModel(Model):
         self._openwater_computation_node_distance = openwater_computation_node_distance
 
         # crs
-        self._crs = CRS.from_user_input(crs) if crs else None
+        if mode.startswith("r"):
+            # TODO: setting crs should not be allowed in read/append mode, but
+            # currently crs is not stored in the netfile so this would prevent
+            # properly reading a model without geoms folder.
+            # https://github.com/Deltares/hydromt_delft3dfm/issues/119
+            self._crs = CRS.from_user_input(crs) if crs else None
+        else:
+            if crs is None:
+                raise ValueError(f"crs argument cannot be None with mode='{mode}'")
+            self._crs = CRS.from_user_input(crs)
         self._check_crs()
 
         # other
