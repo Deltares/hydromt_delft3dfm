@@ -1317,7 +1317,11 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
         ext["quantity"] = quantity
         ext["forcingVariableName"] = variable
         ext["forcingfile"] = forcing_fn
-        ext["forcingFileType"] = "netcdf"
+        ext["forcingfiletype"] = "netcdf"
+        # TODO: invalid input is not raised, is it with hydrolib-core v1?
+        #  ext["interp"] = "InterpolateTimeAndSpaceSaveWeights"
+        ext["interpolationmethod"] = "linearSpaceTime"
+        ext["operand"] = "O"
         extdicts.append(ext)
 
     # write external forcing file
