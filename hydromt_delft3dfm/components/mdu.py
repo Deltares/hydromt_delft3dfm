@@ -1,5 +1,6 @@
 """Custom Delft3D FM config component."""
 
+import datetime as dt
 import logging
 import os
 from os.path import dirname, join
@@ -7,6 +8,7 @@ from pathlib import Path
 from typing import cast
 
 from hydrolib.core.dflowfm import FMModel
+from hydrolib.core.dflowfm.ini.util import validate_datetime_string
 from hydromt import hydromt_step
 from hydromt.model import Model
 from hydromt.model.components import ConfigComponent
@@ -54,6 +56,47 @@ class MDUComponent(ConfigComponent):
                 # model config is read if in read-mode and it exists
                 # default config if in write-mode
                 self.read()
+
+    def get_model_time(self):
+        """
+        Return (refdate, tstart, tstop) tuple.
+
+        It is parsed from model startdatetime/stopdatetime, or from the refdate/tunit/tstart/tstop if not available.
+        """
+        startdatetime_str = self.get_value("time.startdatetime")
+        stopdatetime_str = self.get_value("time.stopdatetime")
+        refdate = dt.datetime.strptime(str(self.get_value("time.refdate")), "%Y%m%d")
+        if (startdatetime_str == "" or stopdatetime_str == ""):
+            logger.debug("get_model_time(): fallback to refdate/tstart/tstop")
+            tunit = self.get_value("time.tunit")
+            if tunit.lower() == "s":
+                tstart = refdate + dt.timedelta(seconds=float(self.get_value("time.tstart")))
+                tstop = refdate + dt.timedelta(seconds=float(self.get_value("time.tstop")))
+            elif tunit.lower() == "m":
+                tstart = refdate + dt.timedelta(minutes=float(self.get_value("time.tstart")))
+                tstop = refdate + dt.timedelta(minutes=float(self.get_value("time.tstop")))
+            elif tunit.lower() == "h":
+                tstart = refdate + dt.timedelta(hours=float(self.get_value("time.tstart")))
+                tstop = refdate + dt.timedelta(hours=float(self.get_value("time.tstop")))
+            elif tunit.lower() == "d":
+                tstart = refdate + dt.timedelta(days=float(self.get_value("time.tstart")))
+                tstop = refdate + dt.timedelta(days=float(self.get_value("time.tstop")))
+            else:
+                raise ValueError(f"tunit='{tunit}' not supported by get_model_time()")
+        else:
+            logger.debug("get_model_time(): from startdatetime/stopdatetime")
+            # validate datetime strings
+            startdatetime_str = validate_datetime_string(startdatetime_str,"startdatetime")
+            stopdatetime_str = validate_datetime_string(stopdatetime_str,"stopdatetime")
+            # expected format is yyyymmddhhmmss, but hhmmss maybe omitted (default:000000).
+            if len(startdatetime_str) == 8:
+                startdatetime_str += "000000"
+            if len(stopdatetime_str) == 8:
+                stopdatetime_str += "000000"
+            tstart = dt.datetime.strptime(startdatetime_str, "%Y%m%d%H%M%S")
+            tstop = dt.datetime.strptime(stopdatetime_str, "%Y%m%d%H%M%S")
+
+        return refdate, tstart, tstop
 
     @hydromt_step
     def read(self) -> None:
