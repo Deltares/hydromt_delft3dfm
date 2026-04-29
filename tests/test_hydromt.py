@@ -66,26 +66,26 @@ def test_model_build(tmpdir, modelname):
         errors["mdu"].pop("mdu.filepath", None)
         if len(errors["mdu"]) == 0:
             errors.pop("mdu", None)
-        if len(errors) == 0:
-            equal = True
+
     # the reference files are generated on windows and the elevtn values are slightly
     # different:  https://github.com/Deltares/hydromt_delft3dfm/issues/253. Rather than
     # specifying linux-specific reference files, this error is ignored instead.
-    if platform == "linux":
-        if "inifield" in errors:
-            if "elevtn" in errors["inifield"]:
-                value = errors["inifield"]["elevtn"]
-                expected_value = (
-                    "Not equal: {'dims': 'dim y not identical', '3 invalid coords': "
-                    "{'x': 'not identical', 'y': 'not identical', 'spatial_ref': 'not"
-                    " identical'}}"
-                )
-                if value == expected_value:
-                    errors["inifield"].pop("elevtn", None)
+    if platform == "linux" and "inifield" in errors:
+        if "elevtn" in errors["inifield"]:
+            value = errors["inifield"]["elevtn"]
+            expected_value = (
+                "Not equal: {'dims': 'dim y not identical', '3 invalid coords': "
+                "{'x': 'not identical', 'y': 'not identical', 'spatial_ref': 'not"
+                " identical'}}"
+            )
+            if value == expected_value:
+                errors["inifield"].pop("elevtn", None)
         if len(errors["inifield"]) == 0:
             errors.pop("inifield", None)
-        if len(errors) == 0:
-            equal = True
+
+    # after popping accepted errors, set equal=True if errors={}
+    if len(errors) == 0:
+        equal = True
     assert equal, errors
 
 
