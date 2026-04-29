@@ -6,6 +6,7 @@ import pytest
 
 from hydromt.readers import read_workflow_yaml
 from hydromt_delft3dfm import DFlowFMModel
+from sys import platform
 
 TESTDATADIR = join(dirname(abspath(__file__)), "data")
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
@@ -67,7 +68,10 @@ def test_model_build(tmpdir, modelname):
             errors.pop("mdu", None)
         if len(errors) == 0:
             equal = True
-
+    if platform == "linux":
+        raise ValueError("linux")
+    #    {'inifield': {
+    #    'elevtn': "Not equal: {'dims': 'dim y not identical', '3 invalid coords': {'x': 'not identical', 'y': 'not identical', 'spatial_ref': 'not identical'}}"}}
     assert equal, errors
 
 
