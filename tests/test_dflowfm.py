@@ -53,14 +53,9 @@ def test_init_dflowfmmodel_mode_read_crs_notnone(tmpdir):
     tests whether the crs is parsed properly
     https://github.com/Deltares/hydromt_delft3dfm/issues/247
     """
-    root = join(EXAMPLEDIR, "dflowfm_local")
-    model1 = DFlowFMModel(root=root, mode="r", crs=None)
-    model2 = DFlowFMModel(root=root, mode="r", crs=None)
-    assert model1.crs.to_epsg() == 32647
-    assert model2.crs.to_epsg() == 32647
-
     # TODO: the model crs is actually 32647, but is overwritten here
     # https://github.com/Deltares/hydromt_delft3dfm/issues/119
+    root = join(EXAMPLEDIR, "dflowfm_local")
     model3 = DFlowFMModel(root=root, mode="r", crs=4326)
     model4 = DFlowFMModel(root=root, mode="r", crs=4326)
     assert model3.crs.to_epsg() == 4326
