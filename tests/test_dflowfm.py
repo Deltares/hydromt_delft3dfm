@@ -69,11 +69,6 @@ def test_write_readonlymode(tmpdir, caplog):
         mode="w",
         crs=3857,
     )
-    # TODO: cannot read the crs of a model if no mesh was included
-    mod1.setup_mesh2d(
-        region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
-        res=500,
-    )
     mod1.write()
     
     mod2 = DFlowFMModel(root=root, mode="r")
@@ -93,12 +88,6 @@ def test_read_write_config_empty_paths(tmpdir):
     model1.mdu.read()
     # Check whether the path is an emtpy string
     assert model1.mdu.data["output"]["outputdir"] == ""
-
-    # TODO: cannot read the crs of a model if no mesh was included
-    model1.setup_mesh2d(
-        region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
-        res=500,
-    )
 
     # write the model to read it again
     model1.write()
