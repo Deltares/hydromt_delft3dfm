@@ -1,3 +1,6 @@
+global:
+  crs: 3857
+
 steps:
   - setup_mesh2d_refine:
       polygon_fn: ./data/refine.geojson
