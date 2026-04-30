@@ -138,7 +138,7 @@ def test_init_dflowfmmodel_mode_read_crs_notnone(tmpdir):
     # https://github.com/Deltares/hydromt_delft3dfm/issues/119
     root = join(EXAMPLEDIR, "dflowfm_local")
     model3 = DFlowFMModel(root=root, mode="r", crs=4326)
-    model4 = DFlowFMModel(root=root, mode="r", crs=4326)
+    model4 = DFlowFMModel(root=root, mode="r+", crs=4326)
     assert model3.crs.to_epsg() == 4326
     assert model4.crs.to_epsg() == 4326
 
