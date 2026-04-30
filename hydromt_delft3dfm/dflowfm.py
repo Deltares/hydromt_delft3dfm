@@ -88,14 +88,14 @@ class DFlowFMModel(Model):
         if not isinstance(root, (str, Path)):
             raise ValueError("The 'root' parameter should be a of str or Path.")
 
+        dimr_filename = "dimr_config.xml" if dimr_filename is None else dimr_filename
         # FIXME mdu needs to be derived from dimr_filename if dimr_filename exists
         if mdu_filename is None:
             mdu_filename = "dflowfm/DFlowFM.mdu"
-        dimr_filename = "dimr_config.xml" if dimr_filename is None else dimr_filename
 
         components = {
-            "mdu": MDUComponent(self, filename=str(mdu_filename)),
             "dimr": DIMRComponent(self, filename=str(dimr_filename)),
+            "mdu": MDUComponent(self, filename=str(mdu_filename)),
             "mesh": DFlowFMMeshComponent(self, filename="dflowfm/fm_net.nc"),
             "geoms": Delft3DFMGeomsComponent(
                 self,
@@ -140,6 +140,7 @@ class DFlowFMModel(Model):
             # properly reading a model without geoms folder.
             # https://github.com/Deltares/hydromt_delft3dfm/issues/119
             self._crs = CRS.from_user_input(crs) if crs else None
+            self.dimr.read()
         else:
             if crs is None:
                 raise ValueError(f"crs argument cannot be None with mode='{mode}'")

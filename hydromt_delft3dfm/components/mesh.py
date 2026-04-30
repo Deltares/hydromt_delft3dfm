@@ -106,7 +106,7 @@ class DFlowFMMeshComponent(MeshComponent):
         # Cannot use geoms.read yet because for some some geoms
         # (crosssections, manholes) mesh needs to be read first...
         geoms_fns = glob.glob(join(self.root.path, "geoms", "*.geojson"))
-        if (not self.model._crs) and isfile(geoms_fns[0]):
+        if (not self.model._crs) and len(geoms_fns) > 0:
             crs = gpd.read_file(geoms_fns[0]).crs
             self.model._crs = crs
 

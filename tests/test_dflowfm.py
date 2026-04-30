@@ -3,23 +3,78 @@ from hydromt_delft3dfm import DFlowFMModel
 import numpy as np
 from pathlib import Path
 import pytest
+import shutil
 
 TESTDATADIR = join(dirname(abspath(__file__)), "data")
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 TOLERANCE = 1e-6
 
 
-def test_write_empty_model(tmpdir):
+def test_write_read_empty_model(tmpdir):
     """
-    failed before: https://github.com/Deltares/hydromt_delft3dfm/issues/246
+    write failed before: https://github.com/Deltares/hydromt_delft3dfm/issues/246
+    read failed before: https://github.com/Deltares/hydromt_delft3dfm/issues/270
     """
+    crs = 3857
     root = join(tmpdir, "dflowfm_example")
-    mod1 = DFlowFMModel(
-        root=root,
-        mode="w",
-        crs=3857,
+    mod1 = DFlowFMModel(root=root, mode="w", crs=crs)
+    mod1.write()
+
+    # the model has no geoms/crs so reading the model without providing a crs will fail
+    # TODO: cannot read model without geoms without providing a crs
+    # since the crs is not read from the netfile at the moment
+    with pytest.raises(KeyError) as e:
+        _ = DFlowFMModel(root=root, mode="r")
+    assert "crs" in str(e.value)
+
+    # reading the empty model does work when providing a crs
+    mod2 = DFlowFMModel(root=root, mode="r", crs=crs)
+    assert mod1.crs.to_epsg() == crs
+    assert mod2.crs.to_epsg() == crs
+
+
+def test_write_read_empty_model_different_mdu_path(tmpdir):
+    crs = 3857
+    root = join(tmpdir, "dflowfm_example")
+    mod1 = DFlowFMModel(root=root, mode="w", crs=crs, mdu_filename="folder/nonstandard.mdu")
+    mod1.setup_config(**{"geometry.bedlevuni":-983})
+    mod1.write()
+    # components are only available after write
+    assert str(mod1.dimr.data.component[0].workingDir) == 'folder'
+    assert str(mod1.dimr.data.component[0].inputFile) == 'nonstandard.mdu'
+
+    # reading the empty model does work when providing a crs
+    mod2 = DFlowFMModel(root=root, mode="r", crs=crs)
+    # TODO: mod2.read() fails because there is no network, create separate test
+    assert mod1.crs.to_epsg() == crs
+    assert mod2.crs.to_epsg() == crs
+
+    # check if the updated mdu was read and not a new mdu initialized
+    assert mod2.mdu.data["geometry"]["bedlevuni"] == -983
+
+
+def test_write_read_model_without_geoms(tmpdir):
+    crs = 3857
+    root = join(tmpdir, "dflowfm_example")
+    mod1 = DFlowFMModel(root=root, mode="w", crs=crs)
+    mod1.setup_mesh2d(
+        region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
+        res=500,
     )
     mod1.write()
+
+    # read again, crs now comes from geoms
+    mod2 = DFlowFMModel(root=root, mode="r")
+    assert mod1.crs.to_epsg() == crs
+    assert mod2.crs.to_epsg() == crs
+
+    # remove geoms and read again
+    # TODO: this currently fails, but should work if the network has a crs
+    shutil.rmtree(join(root, "geoms"))
+    # mod3 = DFlowFMModel(root=root, mode="r")
+    with pytest.raises(KeyError) as e:
+        _ = DFlowFMModel(root=root, mode="r")
+    assert "crs" in str(e.value)
 
 
 def test_init_dflowfmmodel_mode_write_crs_none(tmpdir):
