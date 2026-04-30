@@ -122,13 +122,16 @@ class DFlowFMMeshComponent(MeshComponent):
         else:
             crs_geoms = None
 
-        # set the model crs, prefer the CRS from the network, then the geoms,
-        # then the provided model crs.
+        # set the model crs, prefer the CRS from the network, then from the geoms.
+        # If both are not found, self.model._crs is not overwritten so the value
+        # provided to DFlowFMModel() is used (None per default).
         if crs_network:
             self.model._crs = crs_network
         elif crs_geoms:
             self.model._crs = crs_geoms
 
+        # raise an error if the crs was not found in the mesh, nor in the geoms, nor
+        # was provided to DFlowFMModel().
         if not self.model._crs:
             raise ValueError(
                 "CRS was not found in the mesh or the geoms of the model, please pass "
