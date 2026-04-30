@@ -61,9 +61,9 @@ class DFlowFMModel(Model):
             Write/read/append mode.
             Default is "w".
         mdu_filename : str, optional
-            The D-Flow FM model configuration file (.mdu).
-            If None, default mdu file is used.
-            Default is None.
+            The D-Flow FM model configuration file (.mdu). If None, the default mdu
+            filepath is used. If a dimr file is present, the mdu_filename argument
+            is ignored and it is read from that file instead. Default is None.
         data_libs : list of str, optional
             List of data catalog yaml files.
             Default is None.
@@ -89,7 +89,8 @@ class DFlowFMModel(Model):
             raise ValueError("The 'root' parameter should be a of str or Path.")
 
         dimr_filename = "dimr_config.xml" if dimr_filename is None else dimr_filename
-        # FIXME mdu needs to be derived from dimr_filename if dimr_filename exists
+        # upon dimr.read(), the mdu_filename is overwritten by the mdu_filename from
+        # dimr_filename if dimr_filename exists
         if mdu_filename is None:
             mdu_filename = "dflowfm/DFlowFM.mdu"
 
