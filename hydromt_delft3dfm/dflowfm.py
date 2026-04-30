@@ -2990,7 +2990,7 @@ class DFlowFMModel(Model):
         """Check if model crs is defined."""
         if self.crs is None:
             if self.mode.is_reading_mode():
-                raise logger.warning(
+                logger.warning(
                     "Could not derive CRS from reading the mesh file."
                     "Please define the CRS in the [global] init attributes before"
                     "setting up the model."
