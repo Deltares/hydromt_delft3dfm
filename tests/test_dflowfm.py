@@ -87,7 +87,6 @@ def test_write_read_mesh_model_different_mdu_mesh_path(tmpdir):
 
     # read in the model to see if all changes are preserved
     mod2 = DFlowFMModel(root=root, mode="r")
-    # TODO: mod2.read() fails because there is no network, create separate test
     assert mod1.crs.to_epsg() == crs
     assert mod2.crs.to_epsg() == crs
 
