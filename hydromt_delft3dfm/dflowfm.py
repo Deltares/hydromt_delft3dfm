@@ -91,14 +91,12 @@ class DFlowFMModel(Model):
 
         dimr_filename = "dimr_config.xml" if dimr_filename is None else dimr_filename
         dimr_filepath = join(root, dimr_filename)
+        # if a dimr file exists, overwrite mdu_filename with the value from the dimr file.
         if mode.startswith("r") and exists(dimr_filepath):
-            # read the dimr, this is important to update the mdu filename from the
-            # default to the value in the dimr file.
             dimr, dimr_mdu_filepath = read_dimr(dimr_fn=dimr_filepath)
             mdu_filename = dimr_mdu_filepath
 
-        # upon dimr.read(), the mdu_filename is overwritten by the mdu_filename from
-        # dimr_filename if dimr_filename exists
+        # if mdu_filename is still None, set mdu_filename to the default.
         if mdu_filename is None:
             mdu_filename = "dflowfm/DFlowFM.mdu"
 
