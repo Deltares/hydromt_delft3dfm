@@ -1,7 +1,7 @@
 """Implement Delft3D FM 1D2D HydroMT plugin model class."""
 
 import logging
-from os.path import isfile, join
+from os.path import isfile, join, exists
 from pathlib import Path
 from typing import Any
 
@@ -27,6 +27,7 @@ from hydromt_delft3dfm.components import (
     MDUComponent,
 )
 from hydromt_delft3dfm.utils import gis_utils, mesh_utils
+from hydromt_delft3dfm.utils.io_utils import read_dimr
 
 __all__ = ["DFlowFMModel"]
 __hydromt_eps__ = ["DFlowFMModel"]  # core entrypoints
@@ -89,6 +90,13 @@ class DFlowFMModel(Model):
             raise ValueError("The 'root' parameter should be a of str or Path.")
 
         dimr_filename = "dimr_config.xml" if dimr_filename is None else dimr_filename
+        dimr_filepath = join(root, dimr_filename)
+        if mode.startswith("r") and exists(dimr_filepath):
+            # read the dimr, this is important to update the mdu filename from the
+            # default to the value in the dimr file.
+            dimr, dimr_mdu_filepath = read_dimr(dimr_fn=dimr_filepath)
+            mdu_filename = dimr_mdu_filepath
+
         # upon dimr.read(), the mdu_filename is overwritten by the mdu_filename from
         # dimr_filename if dimr_filename exists
         if mdu_filename is None:
@@ -146,11 +154,6 @@ class DFlowFMModel(Model):
                 raise ValueError(f"crs argument cannot be None with mode='{mode}'")
             self._crs = CRS.from_user_input(crs)
         self._check_crs()
-
-        if mode.startswith("r"):
-            # read the dimr, this is important to update the mdu filename from the
-            # default to the value in the dimr file.
-            self.dimr.read()
 
         # other
         self._MAPS = self.inifield._MAPS

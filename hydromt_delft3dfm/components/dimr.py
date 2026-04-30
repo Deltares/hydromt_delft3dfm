@@ -9,6 +9,8 @@ from hydromt import hydromt_step
 from hydromt.model import Model
 from hydromt.model.components import ModelComponent
 
+from hydromt_delft3dfm.utils.io_utils import read_dimr
+
 __all__ = ["DIMRComponent"]
 
 logger = logging.getLogger(f"hydromt.{__name__}")
@@ -76,17 +78,10 @@ class DIMRComponent(ModelComponent):
         dimr_fn = join(self.root.path, self._filename)
         # if file exist, read
         if isfile(dimr_fn) and self.root.is_reading_mode():
-            logger.info(f"Reading dimr file at {dimr_fn}")
-            dimr = DIMR(filepath=Path(dimr_fn))
-            # get the mdu filename from the fmcomponent from the dimrfile
-            fmcomponents = [comp for comp in dimr.component if comp.name == "dflowfm"]
-            if len(fmcomponents) != 1:
-                raise ValueError("no or multiple dflowfm components found in dimr file")
-            fmcomponent = fmcomponents[0]
-            mdu_filename_new = fmcomponent.workingDir / fmcomponent.inputFile
-            mdu_filepath_new = self.root.path / mdu_filename_new
-            if isfile(mdu_filepath_new):
-                self.model.mdu._filename = mdu_filename_new
+            dimr, dimr_mdu_filepath = read_dimr(dimr_fn)
+            full_mdu_filepath = self.root.path / dimr_mdu_filepath
+            if isfile(full_mdu_filepath):
+                self.model.mdu._filename = dimr_mdu_filepath
         # else initialise
         else:
             self.root.is_writing_mode()
