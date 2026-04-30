@@ -101,28 +101,39 @@ class DFlowFMMeshComponent(MeshComponent):
 
         # Read mesh
         # hydrolib-core convention
-        filepath = self.model.dfmmodel.geometry.netfile.filepath
-        if filepath is None:
+        fn_network = self.model.dfmmodel.geometry.netfile.filepath
+        if fn_network is None:
             raise ValueError(
                 "hydromt_delft3dfm cannot read a model without a mesh/network."
             )
         network = self.model.dfmmodel.geometry.netfile.network
 
-        # FIXME: crs info is not available in the dflowfmmodel.
-        # it is also not written to the network, so get it from one of the geoms.
-        # Cannot use geoms.read yet because for some some geoms
-        # (crosssections, manholes) mesh needs to be read first...
+        # read the crs from the network with xugrid
+        mdu_folder = self.model.dfmmodel.filepath.parents[0]
+        fp_network = join(mdu_folder, fn_network)
+        uds = xu.open_dataset(fp_network)
+        crs_network = next(iter(uds.ugrid.crs.values()))
+
+        # as a fallback, get it from one of the geoms. Cannot use geoms.read() yet
+        # because for some geoms (crosssections, manholes) mesh needs to be read first.
         geoms_fns = glob.glob(join(self.root.path, "geoms", "*.geojson"))
+        if len(geoms_fns) > 0:
+            crs_geoms = gpd.read_file(geoms_fns[0]).crs
+        else:
+            crs_geoms = None
+
+        # set the model crs, prefer the CRS from the network, then the geoms,
+        # then the provided model crs.
+        if crs_network:
+            self.model._crs = crs_network
+        elif crs_geoms:
+            self.model._crs = crs_geoms
+
         if not self.model._crs:
-            if len(geoms_fns) > 0:
-                crs = gpd.read_file(geoms_fns[0]).crs
-                self.model._crs = crs
-            else:
-                raise AttributeError(
-                    "crs argument is not provided and cannot be derived from geoms. "
-                    "The CRS should eventually be written to and read from the "
-                    "network. For now, provide a crs when reading the model instead."
-                )
+            raise ValueError(
+                "CRS was not found in the mesh or the geoms of the model, please pass "
+                "it to DFlowFMModel()."
+            )
 
         crs = self.model.crs
 

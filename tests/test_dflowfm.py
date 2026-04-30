@@ -1,10 +1,11 @@
 from os.path import abspath, dirname, join
-from os import makedirs
+from os import makedirs, rename
 from hydromt_delft3dfm import DFlowFMModel
 import numpy as np
 from pathlib import Path
 import pytest
 import shutil
+import xugrid as xu
 
 TESTDATADIR = join(dirname(abspath(__file__)), "data")
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
@@ -117,7 +118,7 @@ def test_write_read_model_without_dimr(tmpdir):
     assert mod2.mdu.data["geometry"]["bedlevuni"] == -983
 
 
-def test_write_read_model_without_geoms(tmpdir):
+def test_write_read_model_without_geoms_crs(tmpdir):
     crs = 3857
     root = join(tmpdir, "dflowfm_example")
     mod1 = DFlowFMModel(root=root, mode="w", crs=crs)
@@ -127,22 +128,46 @@ def test_write_read_model_without_geoms(tmpdir):
     )
     mod1.write()
 
-    # read again, crs now comes from geoms
+    # read again, crs now comes from geoms since it is missing in the mesh
     mod2 = DFlowFMModel(root=root, mode="r")
     assert mod1.crs.to_epsg() == crs
     assert mod2.crs.to_epsg() == crs
+    # if the user provides a different crs, the correct crs still comes from the geoms
+    # but only after reading the mesh/model
+    mod3 = DFlowFMModel(root=root, mode="r", crs=4326)
+    assert mod3.crs.to_epsg() == 4326
+    mod3.read()
+    assert mod3.crs.to_epsg() == crs
 
-    # remove geoms and read again
+    # remove geoms and read again, it fails since the mesh does not have a crs
     shutil.rmtree(join(root, "geoms"))
-    # TODO: this currently fails, but should work if the network has a crs
-    # TODO: furthermore this should raise ValueError, but it raises a KeyError instead.
-    # when debugging, it does go to the ValueError
-    # with pytest.raises(ValueError) as e:
-    #     _ = DFlowFMModel(root=root, mode="r")
-    # assert "hydromt_delft3dfm cannot read a model without a network." in str(e.value)
-    with pytest.raises(KeyError) as e:
+    with pytest.raises(ValueError) as e:
         _ = DFlowFMModel(root=root, mode="r")
-    assert "region" in str(e.value)
+    assert "CRS was not found in the mesh or the geoms of the model" in str(e.value)
+
+    # if the CRS cannot be found in the geoms/mesh, the user provided crs is set
+    # this might be wrong like in this example.
+    mod4 = DFlowFMModel(root=root, mode="r", crs=4326)
+    assert mod4.crs.to_epsg() == 4326
+
+    # copy the entire model to avoid renaming conflicts
+    # add a crs to the mesh and read the model again
+    root_new = join(tmpdir, "dflowfm_example_copy")
+    shutil.copytree(root, root_new)
+    netfile = join(root, "dflowfm/fm_net.nc")
+    netfile_new = join(root_new, "dflowfm/fm_net.nc")
+    uds = xu.open_dataset(netfile)
+    uds.ugrid.set_crs(crs)
+    uds.ugrid.to_netcdf(netfile_new)
+    uds.close()
+    mod5 = DFlowFMModel(root=root_new, mode="r")
+    assert mod5.crs.to_epsg() == crs
+    # if the user provides a different crs, the correct crs still comes from the mesh
+    # but only after reading the mesh/model
+    mod6 = DFlowFMModel(root=root_new, mode="r", crs=4326)
+    assert mod6.crs.to_epsg() == 4326
+    mod6.read()
+    assert mod6.crs.to_epsg() == crs
 
 
 def test_init_dflowfmmodel_mode_write_crs_none(tmpdir):
