@@ -14,6 +14,9 @@ Added
 -----
 - Included new example notebook for basic HydroMT use through CLI. (PR #202)
 - New method **setup_retentions**. (PR #170)
+- support for non-default paths for mdu/network and missing geoms (PR #271)
+- when reading a model prefer crs from network, then geoms, then userdefined (PR #271)
+- prevent reading/writing a model without a mesh (PR #271)
 
 Changed
 -------
