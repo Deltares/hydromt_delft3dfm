@@ -1340,9 +1340,11 @@ def write_ext(
 
 def get_fm_paths_from_dimr(dimr):
     # get the mdu filename from the fmcomponent from the dimrfile
-    fmcomponents = [comp for comp in dimr.component if comp.name == "dflowfm"]
-    if len(fmcomponents) != 1:
-        raise ValueError("no or multiple dflowfm components found in dimr file")
+    fmcomponents = [comp for comp in dimr.component if comp.library == "dflowfm"]
+    if len(fmcomponents) == 0:
+        raise ValueError("no dflowfm components found in dimr file")
+    elif len(fmcomponents) > 1:
+        raise ValueError("multiple dflowfm components found in dimr file")
     fmcomponent = fmcomponents[0]
     dimr_fm_workingdir = fmcomponent.workingDir
     dimr_fm_mdufile = fmcomponent.inputFile
