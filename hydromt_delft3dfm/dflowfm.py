@@ -1,7 +1,7 @@
 """Implement Delft3D FM 1D2D HydroMT plugin model class."""
 
 import logging
-from os.path import isfile, join, exists
+from os.path import exists, isfile, join
 from pathlib import Path
 from typing import Any
 
@@ -91,7 +91,7 @@ class DFlowFMModel(Model):
 
         dimr_filename = "dimr_config.xml" if dimr_filename is None else dimr_filename
         dimr_filepath = join(root, dimr_filename)
-        # if a dimr file exists, overwrite mdu_filename with the value from the dimr file.
+        # if a dimr file exists, overwrite mdu_filename with the value from the dimr.
         if mode.startswith("r") and exists(dimr_filepath):
             dimr, dimr_mdu_filepath = read_dimr(dimr_fn=dimr_filepath)
             mdu_filename = dimr_mdu_filepath

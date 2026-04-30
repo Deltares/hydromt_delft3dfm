@@ -2,7 +2,6 @@
 
 import logging
 from os.path import basename, dirname, isfile, join
-from pathlib import Path
 
 from hydrolib.core.dimr import DIMR, FMComponent, Start
 from hydromt import hydromt_step

@@ -1,11 +1,11 @@
 """Utilities read/write functions for Delft3D FM model."""
 
+import logging
 from os.path import join
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
 
 import geopandas as gpd
-import logging
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -33,7 +33,6 @@ from hydromt_delft3dfm.workflows import boundaries
 __all__ = [
     "read_branches_gui",
     "write_branches_gui",
-    "read_dimr",
     "read_crosssections",
     "write_crosssections",
     "read_friction",
