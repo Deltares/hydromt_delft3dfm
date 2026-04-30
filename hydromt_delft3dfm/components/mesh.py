@@ -2,7 +2,7 @@
 
 import glob
 import logging
-from os.path import join, dirname
+from os.path import dirname, join
 from pathlib import Path
 
 import geopandas as gpd

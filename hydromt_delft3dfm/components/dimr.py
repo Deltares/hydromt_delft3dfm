@@ -2,12 +2,12 @@
 
 import logging
 from os.path import basename, dirname, isfile, join
+from pathlib import Path
 
 from hydrolib.core.dimr import DIMR, FMComponent, Start
 from hydromt import hydromt_step
 from hydromt.model import Model
 from hydromt.model.components import ModelComponent
-from pathlib import Path
 
 __all__ = ["DIMRComponent"]
 
