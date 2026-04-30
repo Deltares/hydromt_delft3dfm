@@ -28,6 +28,8 @@ def test_write_read_empty_model(tmpdir):
     assert "hydromt_delft3dfm cannot read a model without a network." in str(e.value)
 
     # reading the empty model does work when providing a crs
+    # TODO: since the crs is provided, dflowfmmodel._check_crs() does not initialize the network
+    # (which is not present), but actually this should fail (or maybe the writing should)
     mod2 = DFlowFMModel(root=root, mode="r", crs=crs)
     assert mod1.crs.to_epsg() == crs
     assert mod2.crs.to_epsg() == crs
