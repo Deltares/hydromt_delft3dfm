@@ -7,8 +7,7 @@ from hydrolib.core.dimr import DIMR, FMComponent, Start
 from hydromt import hydromt_step
 from hydromt.model import Model
 from hydromt.model.components import ModelComponent
-
-from hydromt_delft3dfm.utils.io_utils import read_dimr
+from pathlib import Path
 
 __all__ = ["DIMRComponent"]
 
@@ -77,10 +76,8 @@ class DIMRComponent(ModelComponent):
         dimr_fn = join(self.root.path, self._filename)
         # if file exist, read
         if isfile(dimr_fn) and self.root.is_reading_mode():
-            dimr, dimr_mdu_filepath = read_dimr(dimr_fn)
-            full_mdu_filepath = self.root.path / dimr_mdu_filepath
-            if isfile(full_mdu_filepath):
-                self.model.mdu._filename = dimr_mdu_filepath
+            logger.info(f"Reading dimr file at {dimr_fn}")
+            dimr = DIMR(filepath=Path(dimr_fn))
         # else initialise
         else:
             self.root.is_writing_mode()

@@ -24,7 +24,6 @@ from hydrolib.core.dflowfm import (
     StorageNodeModel,
     StructureModel,
 )
-from hydrolib.core.dimr import DIMR
 from shapely.geometry import Point, Polygon
 
 from hydromt_delft3dfm.utils import gis_utils
@@ -158,18 +157,6 @@ def write_branches_gui(
     branchgui_model.save()
 
     return branchgui_fn
-
-
-def read_dimr(dimr_fn):
-    logger.info(f"Reading dimr file at {dimr_fn}")
-    dimr = DIMR(filepath=Path(dimr_fn))
-    # get the mdu filename from the fmcomponent from the dimrfile
-    fmcomponents = [comp for comp in dimr.component if comp.name == "dflowfm"]
-    if len(fmcomponents) != 1:
-        raise ValueError("no or multiple dflowfm components found in dimr file")
-    fmcomponent = fmcomponents[0]
-    dimr_mdu_filename = fmcomponent.workingDir / fmcomponent.inputFile
-    return dimr, dimr_mdu_filename
 
 
 def read_crosssections(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
@@ -1349,3 +1336,14 @@ def write_ext(
     os.chdir(cwd)
 
     return ext_fn
+
+
+def get_fm_paths_from_dimr(dimr):
+    # get the mdu filename from the fmcomponent from the dimrfile
+    fmcomponents = [comp for comp in dimr.component if comp.name == "dflowfm"]
+    if len(fmcomponents) != 1:
+        raise ValueError("no or multiple dflowfm components found in dimr file")
+    fmcomponent = fmcomponents[0]
+    dimr_fm_workingdir = fmcomponent.workingDir
+    dimr_fm_mdufile = fmcomponent.inputFile
+    return dimr_fm_workingdir, dimr_fm_mdufile

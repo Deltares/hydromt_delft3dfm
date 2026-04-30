@@ -12,6 +12,7 @@ import pandas as pd
 import xarray as xr
 import xugrid as xu
 from hydrolib.core.dflowfm import FMModel
+from hydrolib.core.dimr import DIMR
 from hydromt import hydromt_step
 from hydromt.model import Model
 from hydromt.model.processes.mesh import create_mesh2d_from_region
@@ -27,7 +28,7 @@ from hydromt_delft3dfm.components import (
     MDUComponent,
 )
 from hydromt_delft3dfm.utils import gis_utils, mesh_utils
-from hydromt_delft3dfm.utils.io_utils import read_dimr
+from hydromt_delft3dfm.utils.io_utils import get_fm_paths_from_dimr
 
 __all__ = ["DFlowFMModel"]
 __hydromt_eps__ = ["DFlowFMModel"]  # core entrypoints
@@ -89,12 +90,16 @@ class DFlowFMModel(Model):
         if not isinstance(root, (str, Path)):
             raise ValueError("The 'root' parameter should be a of str or Path.")
 
+        # get the dimr filepath and extract the mdu filepath if the dimr file exists.
         dimr_filename = "dimr_config.xml" if dimr_filename is None else dimr_filename
         dimr_filepath = join(root, dimr_filename)
         # if a dimr file exists, overwrite mdu_filename with the value from the dimr.
+        # need to read the dimr file externally since the model is not initialized yet.
         if mode.startswith("r") and exists(dimr_filepath):
-            dimr, dimr_mdu_filepath = read_dimr(dimr_fn=dimr_filepath)
-            mdu_filename = dimr_mdu_filepath
+            logger.info(f"Reading dimr file at {dimr_filepath}")
+            dimr = DIMR(filepath=Path(dimr_filepath))
+            dimr_fm_workingdir, dimr_fm_mdufile = get_fm_paths_from_dimr(dimr=dimr)
+            mdu_filename = join(dimr_fm_workingdir, dimr_fm_mdufile)
 
         # if mdu_filename is still None, set mdu_filename to the default.
         if mdu_filename is None:
@@ -2818,8 +2823,7 @@ class DFlowFMModel(Model):
         self.write_data_catalog()
         self.inifield.write()
         self.geoms.write()
-        if not self.mesh.is_empty or not self.branches.empty:
-            self.mesh.write()
+        self.mesh.write()
         self.forcing.write()
         self.mdu.write()
         if self.dimr:  # dimr config, should always be last after dflowfm config!

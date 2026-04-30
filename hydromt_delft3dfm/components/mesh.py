@@ -2,7 +2,7 @@
 
 import glob
 import logging
-from os.path import join
+from os.path import join, dirname
 from pathlib import Path
 
 import geopandas as gpd
@@ -103,7 +103,9 @@ class DFlowFMMeshComponent(MeshComponent):
         # hydrolib-core convention
         filepath = self.model.dfmmodel.geometry.netfile.filepath
         if filepath is None:
-            raise ValueError("hydromt_delft3dfm cannot read a model without a network.")
+            raise ValueError(
+                "hydromt_delft3dfm cannot read a model without a mesh/network."
+            )
         network = self.model.dfmmodel.geometry.netfile.network
 
         # FIXME: crs info is not available in the dflowfmmodel.
@@ -155,14 +157,25 @@ class DFlowFMMeshComponent(MeshComponent):
     def write(self, write_gui: bool = True) -> None:
         """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc>."""
         self.root.is_writing_mode()
+        if self.is_empty:
+            raise RuntimeError(
+                "hydromt_delft3dfm cannot write a model without a mesh/network."
+            )
         logger.info("Writing mesh file.")
-        savedir = join(self.root.path, "dflowfm")
+
+        # get mesh savedir from dimr (same as mdu path)
+        mdu_filename = self.model.mdu._filename
+        fm_workingdir = dirname(mdu_filename)
+        savedir = join(self.root.path, fm_workingdir)
         Path(savedir).mkdir(parents=True, exist_ok=True)
-        mesh_filename = "fm_net.nc"
+        mesh_filename = self.model.mdu.get_value(key="geometry.netfile")
+        # fallback argument does not work, so repace None with default value manually
+        if mesh_filename is None:
+            mesh_filename = "fm_net.nc"
 
         # write mesh
-        # HydroMT convention - FIXME hydrolib does not seem to read the 1D and links
-        # part of the mesh
+        # HydroMT convention - FIXME hydromt-core does not seem to read the 1D and
+        # links part of the mesh
         # super().write_mesh(fn=join(savedir, mesh_filename))
 
         # write with hydrolib-core
@@ -178,7 +191,7 @@ class DFlowFMMeshComponent(MeshComponent):
         self.model.mdu.set("geometry.netfile", mesh_filename)
 
         # other mesh1d related geometry TODO update
-        if "mesh1d" in self.mesh_names and write_gui:
+        if "mesh1d" in self.mesh_names and write_gui and not self.model.branches.empty:
             logger.info("Writing branches.gui file")
             if "manholes" in self.model.geoms.data:
                 io_utils.write_branches_gui(self.model.branches, savedir)
