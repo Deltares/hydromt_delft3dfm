@@ -101,14 +101,26 @@ class DFlowFMMeshComponent(MeshComponent):
 
         # Read mesh
         # hydrolib-core convention
+        filepath = self.model.dfmmodel.geometry.netfile.filepath
+        if filepath is None:
+            raise ValueError("hydromt_delft3dfm cannot read a model without a network.")
         network = self.model.dfmmodel.geometry.netfile.network
-        # FIXME: crs info is not available in dfmmodel, so get it from one of the geoms
+
+        # FIXME: crs info is not available in the dflowfmmodel.
+        # it is also not written to the network, so get it from one of the geoms.
         # Cannot use geoms.read yet because for some some geoms
         # (crosssections, manholes) mesh needs to be read first...
         geoms_fns = glob.glob(join(self.root.path, "geoms", "*.geojson"))
-        if (not self.model._crs) and len(geoms_fns) > 0:
-            crs = gpd.read_file(geoms_fns[0]).crs
-            self.model._crs = crs
+        if not self.model._crs:
+            if len(geoms_fns) > 0:
+                crs = gpd.read_file(geoms_fns[0]).crs
+                self.model._crs = crs
+            else:
+                raise AttributeError(
+                    "crs argument is not provided and cannot be derived from geoms. "
+                    "The CRS should eventually be written to and read from the "
+                    "network. For now, provide a crs when reading the model instead."
+                )
 
         crs = self.model.crs
 

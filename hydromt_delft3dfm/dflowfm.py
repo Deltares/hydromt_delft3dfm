@@ -140,12 +140,16 @@ class DFlowFMModel(Model):
             # properly reading a model without geoms folder.
             # https://github.com/Deltares/hydromt_delft3dfm/issues/119
             self._crs = CRS.from_user_input(crs) if crs else None
-            self.dimr.read()
         else:
             if crs is None:
                 raise ValueError(f"crs argument cannot be None with mode='{mode}'")
             self._crs = CRS.from_user_input(crs)
         self._check_crs()
+
+        if mode.startswith("r"):
+            # read the dimr, this is important to update the mdu filename from the
+            # default to the value in the dimr file.
+            self.dimr.read()
 
         # other
         self._MAPS = self.inifield._MAPS
@@ -2980,7 +2984,7 @@ class DFlowFMModel(Model):
         """Check if model crs is defined."""
         if self.crs is None:
             if self.mode.is_reading_mode():
-                logger.warning(
+                raise ValueError(
                     "Could not derive CRS from reading the mesh file."
                     "Please define the CRS in the [global] init attributes before"
                     "setting up the model."

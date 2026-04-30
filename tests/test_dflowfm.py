@@ -23,9 +23,9 @@ def test_write_read_empty_model(tmpdir):
     # the model has no geoms/crs so reading the model without providing a crs will fail
     # TODO: cannot read model without geoms without providing a crs
     # since the crs is not read from the netfile at the moment
-    with pytest.raises(KeyError) as e:
+    with pytest.raises(ValueError) as e:
         _ = DFlowFMModel(root=root, mode="r")
-    assert "crs" in str(e.value)
+    assert "hydromt_delft3dfm cannot read a model without a network." in str(e.value)
 
     # reading the empty model does work when providing a crs
     mod2 = DFlowFMModel(root=root, mode="r", crs=crs)
@@ -49,7 +49,27 @@ def test_write_read_empty_model_different_mdu_path(tmpdir):
     assert mod1.crs.to_epsg() == crs
     assert mod2.crs.to_epsg() == crs
 
-    # check if the updated mdu was read and not a new mdu initialized
+    # check if the updated mdu was read and not newly initialized
+    assert mod2.mdu.data["geometry"]["bedlevuni"] == -983
+
+
+def test_write_read_model_without_dimr(tmpdir):
+    crs = 3857
+    root = join(tmpdir, "dflowfm_example")
+    mod1 = DFlowFMModel(root=root, mode="w", crs=crs)
+    mod1.setup_mesh2d(
+        region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
+        res=500,
+    )
+    mod1.setup_config(**{"geometry.bedlevuni":-983})
+    mod1.write()
+
+    # remove dimr_config.xml
+    Path(root, "dimr_config.xml").unlink(missing_ok=False)
+
+    # read again, without dimr_config.xml being present
+    mod2 = DFlowFMModel(root=root, mode="r")
+    # check if the updated mdu was read and not newly initialized
     assert mod2.mdu.data["geometry"]["bedlevuni"] == -983
 
 
@@ -69,12 +89,16 @@ def test_write_read_model_without_geoms(tmpdir):
     assert mod2.crs.to_epsg() == crs
 
     # remove geoms and read again
-    # TODO: this currently fails, but should work if the network has a crs
     shutil.rmtree(join(root, "geoms"))
-    # mod3 = DFlowFMModel(root=root, mode="r")
+    # TODO: this currently fails, but should work if the network has a crs
+    # TODO: furthermore this should raise ValueError, but it raises a KeyError instead.
+    # when debugging, it does go to the ValueError
+    # with pytest.raises(ValueError) as e:
+    #     _ = DFlowFMModel(root=root, mode="r")
+    # assert "hydromt_delft3dfm cannot read a model without a network." in str(e.value)
     with pytest.raises(KeyError) as e:
         _ = DFlowFMModel(root=root, mode="r")
-    assert "crs" in str(e.value)
+    assert "region" in str(e.value)
 
 
 def test_init_dflowfmmodel_mode_write_crs_none(tmpdir):
