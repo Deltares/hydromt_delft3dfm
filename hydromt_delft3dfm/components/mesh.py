@@ -131,14 +131,14 @@ class DFlowFMMeshComponent(MeshComponent):
             if self.model._crs:
                 logger.debug(
                     "CRS is provided, but it is overwritten by the CRS from the mesh."
-            )
+                )
             self.model._crs = crs_network
         elif crs_geoms:
             logger.debug("found CRS in the geoms")
             if self.model._crs:
                 logger.debug(
                     "CRS is provided, but it is overwritten by the CRS from the geoms."
-            )
+                )
             self.model._crs = crs_geoms
 
         # raise an error if the crs was not found in the mesh, nor in the geoms, nor
