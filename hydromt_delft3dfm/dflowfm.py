@@ -137,7 +137,8 @@ class DFlowFMModel(Model):
         mdu_filepath = join(root, mdu_filename)
         if mode.startswith("r") and not exists(mdu_filepath):
             raise FileNotFoundError(
-                f"hydromt_delft3dfm requires an mdu file in read mode, file not found: {mdu_filepath}."
+                "hydromt_delft3dfm requires an mdu file in read mode, "
+                f"file not found: {mdu_filepath}."
             )
 
         # model specific
