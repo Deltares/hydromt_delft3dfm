@@ -133,6 +133,13 @@ class DFlowFMModel(Model):
             region_component="mesh",
         )
 
+        # raise an error if the mdu file was not found in read mode
+        mdu_filepath = join(root, mdu_filename)
+        if mode.startswith("r") and not exists(mdu_filepath):
+            raise FileNotFoundError(
+                f"hydromt_delft3dfm requires an mdu file in read mode, file not found: {mdu_filepath}."
+            )
+
         # model specific
         self._branches = None
         self._dfmmodel = None

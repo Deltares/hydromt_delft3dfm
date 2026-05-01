@@ -108,7 +108,8 @@ class DFlowFMMeshComponent(MeshComponent):
             )
         network = self.model.dfmmodel.geometry.netfile.network
 
-        # read the crs from the network with xugrid
+        # read the crs from the network with xugrid. TODO: this should be done by
+        # hydrolib-core instead https://github.com/Deltares/HYDROLIB-core/issues/1047
         mdu_folder = self.model.dfmmodel.filepath.parents[0]
         fp_network = join(mdu_folder, fn_network)
         uds = xu.open_dataset(fp_network)
@@ -126,8 +127,18 @@ class DFlowFMMeshComponent(MeshComponent):
         # If both are not found, self.model._crs is not overwritten so the value
         # provided to DFlowFMModel() is used (None per default).
         if crs_network:
+            logger.debug("found CRS in the mesh")
+            if self.model._crs:
+                logger.debug(
+                    "CRS is provided, but it is overwritten by the CRS from the mesh."
+            )
             self.model._crs = crs_network
         elif crs_geoms:
+            logger.debug("found CRS in the geoms")
+            if self.model._crs:
+                logger.debug(
+                    "CRS is provided, but it is overwritten by the CRS from the geoms."
+            )
             self.model._crs = crs_geoms
 
         # raise an error if the crs was not found in the mesh, nor in the geoms, nor

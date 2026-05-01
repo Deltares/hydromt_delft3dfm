@@ -41,17 +41,27 @@ def test_read_empty_root_folder(tmpdir):
 
     # create the root directory
     makedirs(root, exist_ok=False)
-    # point to an empty folder fails because the network file cannot be found.
-    # This only happens because crs=None, so DFlowFMModel._check_crs() activates the
-    # reading of the mesh during the initialisation of the DFlowFMModel.
+    # point to an empty folder fails because the mdu file cannot be found.
+    with pytest.raises(FileNotFoundError) as e:
+        _ = DFlowFMModel(root=root, mode="r")
+    assert "hydromt_delft3dfm requires an mdu file in read mode" in str(e.value)
+
+    # create a dummy mdu file to move to the next error
+    mdu_filename = "dflowfm/DFlowFM.mdu"
+    mdu_filepath = join(root, mdu_filename)
+    makedirs(dirname(mdu_filepath), exist_ok=False)
+    with open(mdu_filepath, "w") as f:
+        f.write("")
+    # point to an empty folder with only an mdu file fails because the network file
+    # cannot be found. This only happens because crs=None, so DFlowFMModel._check_crs()
+    # activates the reading of the mesh during the initialisation of the DFlowFMModel.
     with pytest.raises(ValueError) as e:
         _ = DFlowFMModel(root=root, mode="r")
-    assert "hydromt_delft3dfm cannot read a model without a mesh/network." in str(e.value)
+    assert "hydromt_delft3dfm cannot read a model without a mesh/network" in str(e.value)
 
     # when providing a crs, DFlowFMModel._check_crs() does not activate the reading the
     # mesh during initialisation of the DFlowFMModel, but then the reading fails later
     # when calling something that tries to read the mesh.
-    # TODO: it might be better to also fail on a missing mdu file immediately.
     mod3 = DFlowFMModel(root=root, mode="r", crs=4326)
     with pytest.raises(ValueError) as e:
         mod3.read()
@@ -79,25 +89,32 @@ def test_write_read_mesh_model_different_mdu_mesh_path(tmpdir):
         res=500,
     )
     mod1.write()
-    assert mod1.mdu.data["geometry"]["bedlevuni"] == geom_bedlevuni
-    assert str(mod1.mdu.data["geometry"]["netfile"]) == geom_netfile
+    # check if the dimr file has the correct fm paths
     # components are only available after write
     assert str(mod1.dimr.data.component[0].workingDir) == 'folder'
     assert str(mod1.dimr.data.component[0].inputFile) == 'nonstandard.mdu'
+    # check if the mdu keywords were indeed updated
+    assert mod1.mdu.data["geometry"]["bedlevuni"] == geom_bedlevuni
+    assert str(mod1.mdu.data["geometry"]["netfile"]) == geom_netfile
+    # check if the network with the non-default path was found
+    assert mod1.mesh.is_empty is False
 
     # read in the model to see if all changes are preserved
     mod2 = DFlowFMModel(root=root, mode="r")
     assert mod1.crs.to_epsg() == crs
     assert mod2.crs.to_epsg() == crs
 
+    # check if the dimr file has the correct fm paths
+    assert str(mod2.dimr.data.component[0].workingDir) == 'folder'
+    assert str(mod2.dimr.data.component[0].inputFile) == 'nonstandard.mdu'
     # check if the updated mdu was read and not newly initialized
     assert mod2.mdu.data["geometry"]["bedlevuni"] == geom_bedlevuni
     assert str(mod2.mdu.data["geometry"]["netfile"]) == geom_netfile
-    assert str(mod2.dimr.data.component[0].workingDir) == 'folder'
-    assert str(mod2.dimr.data.component[0].inputFile) == 'nonstandard.mdu'
+    # check if the network with the non-default path was found
+    assert mod2.mesh.is_empty is False
 
 
-def test_write_read_model_without_dimr(tmpdir):
+def test_write_read_model_without_dimr_mdu(tmpdir):
     crs = 3857
     root = join(tmpdir, "dflowfm_example")
     mod1 = DFlowFMModel(root=root, mode="w", crs=crs)
@@ -115,6 +132,14 @@ def test_write_read_model_without_dimr(tmpdir):
     mod2 = DFlowFMModel(root=root, mode="r")
     # check if the updated mdu was read and not newly initialized
     assert mod2.mdu.data["geometry"]["bedlevuni"] == -983
+
+    # remove mdu file
+    Path(root, "dflowfm/DFlowFM.mdu").unlink(missing_ok=False)
+
+    # read again, this fails without dimr_config.xml and mdu
+    with pytest.raises(FileNotFoundError) as e:
+        _ = DFlowFMModel(root=root, mode="r")
+    assert "hydromt_delft3dfm requires an mdu file in read mode" in str(e.value)
 
 
 def test_write_read_model_without_geoms_crs(tmpdir):
