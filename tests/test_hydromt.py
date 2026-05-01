@@ -23,6 +23,7 @@ _models = {
 
 
 @pytest.mark.timeout(300)  # max 5 min
+@pytest.mark.slow
 @pytest.mark.parametrize("modelname", list(_models.keys()))
 def test_model_build(tmpdir, modelname):
     model_dict = _models[modelname]
@@ -77,10 +78,12 @@ def test_model_build(tmpdir, modelname):
     assert equal, errors
 
 
+@pytest.mark.timeout(300)  # max 5 min
+@pytest.mark.slow
 def test_model_update(tmp_path):
     # Build method options
     config = join(EXAMPLEDIR, "dflowfm_update_mesh2d_refine.yml")
-    _, global_sect, steps = read_workflow_yaml(config)
+    _, _, steps = read_workflow_yaml(config)
 
     # test update method, compare network size before and after refinement
     root = join(EXAMPLEDIR, f"dflowfm_piave")
@@ -113,3 +116,20 @@ def test_model_update(tmp_path):
     assert len(netw2.link1d2d_id) == 1710
 
     model.write()
+
+
+@pytest.mark.parametrize("modelname", list(_models.keys()))
+def test_compare_yml(modelname):
+    # TODO: instead of comparing this, maybe just put all yml files and data in examples folder
+    config_test = join(TESTDATADIR, f"dflowfm_build_{modelname}.yml")
+    config_examples = join(EXAMPLEDIR, f"dflowfm_build_{modelname}.yml")
+
+    with open(config_test, "r") as f:
+        contents_test = f.read()
+    with open(config_examples, "r") as f:
+        contents_examples = f.read()
+    if contents_test != contents_examples:
+        raise ValueError(
+            f"yml contents between examples and test folders are different for "
+            f"'{modelname}' model"
+        )
