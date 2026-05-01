@@ -133,7 +133,7 @@ def test_write_read_model_without_dimr_mdu(tmpdir):
     # check if the updated mdu was read and not newly initialized
     assert mod2.mdu.data["geometry"]["bedlevuni"] == -983
 
-    # remove mdu file
+    # also remove the mdu file
     Path(root, "dflowfm/DFlowFM.mdu").unlink(missing_ok=False)
 
     # read again, this fails without dimr_config.xml and mdu
