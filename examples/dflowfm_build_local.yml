@@ -1,3 +1,5 @@
+modeltype: dflowfm
+
 global:
   crs: 32647
   network_snap_offset: 25
@@ -6,7 +8,7 @@ global:
 steps:
   - setup_rivers:
       region:
-        geom: "local_data/1D_extent.geojson"
+        geom: "data/local_data/1D_extent.geojson"
       rivers_fn: 1D_branches
       river_filter: river
       friction_type: Manning
@@ -17,13 +19,13 @@ steps:
 
   - setup_rivers: 
       region:
-        geom: "local_data/1D_extent.geojson"
+        geom: "data/local_data/1D_extent.geojson"
       rivers_fn: 1D_branches
       river_filter: channel
 
   - setup_pipes:
       region:
-        geom: "local_data/1D_extent.geojson"
+        geom: "data/local_data/1D_extent.geojson"
       pipes_fn: 1D_branches
       pipe_filter: pipe
       friction_type: WhiteColeBrook
@@ -61,7 +63,7 @@ steps:
 
   - setup_mesh2d:
       region:
-        geom: "local_data/1D_extent.geojson"
+        geom: "data/local_data/1D_extent.geojson"
       res: 100
 
   # - setup_mesh2d_refine:

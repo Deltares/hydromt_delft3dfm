@@ -78,8 +78,6 @@ target/
 # Jupyter Notebook
 .ipynb_checkpoints
 examples/build
-examples/data/*
-!examples/data/refine.geojson
 
 # IPython
 profile_default/

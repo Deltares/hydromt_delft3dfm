@@ -1,8 +1,7 @@
 """Implement Delft3D FM 1D2D HydroMT plugin model class."""
 
 import logging
-from datetime import datetime, timedelta
-from os.path import isfile, join
+from os.path import exists, isfile, join
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +12,7 @@ import pandas as pd
 import xarray as xr
 import xugrid as xu
 from hydrolib.core.dflowfm import FMModel
+from hydrolib.core.dimr import DIMR
 from hydromt import hydromt_step
 from hydromt.model import Model
 from hydromt.model.processes.mesh import create_mesh2d_from_region
@@ -28,6 +28,7 @@ from hydromt_delft3dfm.components import (
     MDUComponent,
 )
 from hydromt_delft3dfm.utils import gis_utils, mesh_utils
+from hydromt_delft3dfm.utils.io_utils import get_fm_paths_from_dimr
 
 __all__ = ["DFlowFMModel"]
 __hydromt_eps__ = ["DFlowFMModel"]  # core entrypoints
@@ -35,7 +36,7 @@ logger = logging.getLogger(f"hydromt.{__name__}")
 
 
 class DFlowFMModel(Model):
-    """API for Delft3D-FM models in HydroMT."""
+    """API for Delft3D FM models in HydroMT."""
 
     name: str = "dflowfm"
     _DATADIR: Path = DATADIR
@@ -62,14 +63,15 @@ class DFlowFMModel(Model):
             Write/read/append mode.
             Default is "w".
         mdu_filename : str, optional
-            The D-Flow FM model configuration file (.mdu).
-            If None, default mdu file is used.
-            Default is None.
+            The D-Flow FM model configuration file (.mdu). If None, the default mdu
+            filepath is used. If a dimr file is present, the mdu_filename argument
+            is ignored and it is read from that file instead. Default is None.
         data_libs : list of str, optional
             List of data catalog yaml files.
             Default is None.
         crs : EPSG code, int
-            EPSG code of the model.
+            EPSG code of the model. Required with mode="w". Optional with mode="r".
+            The default is None.
         dimr_filename: str, optional
             Path to the dimr configuration file.
             If None, default dimr configuration file is used.
@@ -88,14 +90,24 @@ class DFlowFMModel(Model):
         if not isinstance(root, (str, Path)):
             raise ValueError("The 'root' parameter should be a of str or Path.")
 
-        # FIXME mdu needs to be derived from dimr_filename if dimr_filename exists
+        # get the dimr filepath and extract the mdu filepath if the dimr file exists.
+        dimr_filename = "dimr_config.xml" if dimr_filename is None else dimr_filename
+        dimr_filepath = join(root, dimr_filename)
+        # if a dimr file exists, overwrite mdu_filename with the value from the dimr.
+        # need to read the dimr file externally since the model is not initialized yet.
+        if mode.startswith("r") and exists(dimr_filepath):
+            logger.info(f"Reading dimr file at {dimr_filepath}")
+            dimr = DIMR(filepath=Path(dimr_filepath))
+            dimr_fm_workingdir, dimr_fm_mdufile = get_fm_paths_from_dimr(dimr=dimr)
+            mdu_filename = join(dimr_fm_workingdir, dimr_fm_mdufile)
+
+        # if mdu_filename is still None, set mdu_filename to the default.
         if mdu_filename is None:
             mdu_filename = "dflowfm/DFlowFM.mdu"
-        dimr_filename = "dimr_config.xml" if dimr_filename is None else dimr_filename
 
         components = {
-            "mdu": MDUComponent(self, filename=str(mdu_filename)),
             "dimr": DIMRComponent(self, filename=str(dimr_filename)),
+            "mdu": MDUComponent(self, filename=str(mdu_filename)),
             "mesh": DFlowFMMeshComponent(self, filename="dflowfm/fm_net.nc"),
             "geoms": Delft3DFMGeomsComponent(
                 self,
@@ -121,6 +133,14 @@ class DFlowFMModel(Model):
             region_component="mesh",
         )
 
+        # raise an error if the mdu file was not found in read mode
+        mdu_filepath = join(root, mdu_filename)
+        if mode.startswith("r") and not exists(mdu_filepath):
+            raise FileNotFoundError(
+                "hydromt_delft3dfm requires an mdu file in read mode, "
+                f"file not found: {mdu_filepath}."
+            )
+
         # model specific
         self._branches = None
         self._dfmmodel = None
@@ -134,7 +154,16 @@ class DFlowFMModel(Model):
         self._openwater_computation_node_distance = openwater_computation_node_distance
 
         # crs
-        self._crs = CRS.from_user_input(crs) if crs else None
+        if mode.startswith("r"):
+            # TODO: setting crs should not be allowed in read/append mode, but
+            # currently crs is not stored in the netfile so this would prevent
+            # properly reading a model without geoms folder.
+            # https://github.com/Deltares/hydromt_delft3dfm/issues/119
+            self._crs = CRS.from_user_input(crs) if crs else None
+        else:
+            if crs is None:
+                raise ValueError(f"crs argument cannot be None with mode='{mode}'")
+            self._crs = CRS.from_user_input(crs)
         self._check_crs()
 
         # other
@@ -1727,7 +1756,7 @@ class DFlowFMModel(Model):
         region_buffer=0.0,
     ):
         """Read forcing geodataset."""
-        refdate, tstart, tstop = self.get_model_time()  # time slice
+        tstart, tstop = self.get_model_time()  # time slice
 
         if (
             forcing_geodataset_fn is not None
@@ -2560,7 +2589,7 @@ class DFlowFMModel(Model):
             crs=self.crs,
         )
 
-        refdate, tstart, tstop = self.get_model_time()  # time slice
+        tstart, tstop = self.get_model_time()  # time slice
 
         # 1. read boundary geometries
         if boundaries_fn is not None:
@@ -2660,7 +2689,7 @@ class DFlowFMModel(Model):
         """
         logger.info("Preparing rainfall meteo forcing from uniform timeseries.")
 
-        refdate, tstart, tstop = self.get_model_time()  # time slice
+        tstart, tstop = self.get_model_time()  # time slice
         meteo_location = (
             self.region.centroid.x,
             self.region.centroid.y,
@@ -2733,7 +2762,7 @@ class DFlowFMModel(Model):
         """
         logger.info("Preparing rainfall meteo forcing from uniform timeseries.")
 
-        refdate, tstart, tstop = self.get_model_time()  # time slice
+        tstart, tstop = self.get_model_time()  # time slice
         meteo_location = (
             self.region.centroid.x,
             self.region.centroid.y,
@@ -2802,8 +2831,7 @@ class DFlowFMModel(Model):
         self.write_data_catalog()
         self.inifield.write()
         self.geoms.write()
-        if not self.mesh.is_empty or not self.branches.empty:
-            self.mesh.write()
+        self.mesh.write()
         self.forcing.write()
         self.mdu.write()
         if self.dimr:  # dimr config, should always be last after dflowfm config!
@@ -2946,12 +2974,11 @@ class DFlowFMModel(Model):
         """
         Return (refdate, tstart, tstop) tuple.
 
-        It is parsed from model reference datem start and end time.
+        It is parsed from model startdatetime/stopdatetime, or from the refdate/tunit/
+        tstart/tstop if not available.
         """
-        refdate = datetime.strptime(str(self.mdu.get_value("time.refdate")), "%Y%m%d")
-        tstart = refdate + timedelta(seconds=float(self.mdu.get_value("time.tstart")))
-        tstop = refdate + timedelta(seconds=float(self.mdu.get_value("time.tstop")))
-        return refdate, tstart, tstop
+        tstart, tstop = self.mdu.get_model_time()
+        return tstart, tstop
 
     def _model_has_2d(self):
         """Check if model has 2D mesh part."""

@@ -1,5 +1,6 @@
 """Utilities read/write functions for Delft3D FM model."""
 
+import logging
 from os.path import join
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
@@ -46,6 +47,8 @@ __all__ = [
     "read_meteo",
     "write_meteo",
 ]
+
+logger = logging.getLogger(f"hydromt.{__name__}")
 
 
 def read_branches_gui(
@@ -1344,3 +1347,16 @@ def write_ext(
     os.chdir(cwd)
 
     return ext_fn
+
+
+def get_fm_paths_from_dimr(dimr):
+    # get the mdu filename from the fmcomponent from the dimrfile
+    fmcomponents = [comp for comp in dimr.component if comp.library == "dflowfm"]
+    if len(fmcomponents) == 0:
+        raise ValueError("no dflowfm components found in dimr file")
+    elif len(fmcomponents) > 1:
+        raise ValueError("multiple dflowfm components found in dimr file")
+    fmcomponent = fmcomponents[0]
+    dimr_fm_workingdir = fmcomponent.workingDir
+    dimr_fm_mdufile = fmcomponent.inputFile
+    return dimr_fm_workingdir, dimr_fm_mdufile

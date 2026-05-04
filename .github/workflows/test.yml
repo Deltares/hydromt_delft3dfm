@@ -38,7 +38,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pixi run --locked -e ${{ matrix.hydromt-version }}-${{ matrix.python-version }} test-cov
+          pixi run --locked -e ${{ matrix.hydromt-version }}-${{ matrix.python-version }} test
 
       - uses: codecov/codecov-action@v4
         env:
