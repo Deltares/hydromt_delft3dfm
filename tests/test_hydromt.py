@@ -7,17 +7,16 @@ import pytest
 from hydromt.readers import read_workflow_yaml
 from hydromt_delft3dfm import DFlowFMModel
 
-TESTDATADIR = join(dirname(abspath(__file__)), "data")
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 
 _models = {
     "piave": {
-        "ini": join(TESTDATADIR, "dflowfm_build_piave.yml"),
+        "ini": join(EXAMPLEDIR, "dflowfm_build_piave.yml"),
         "data": "artifact_data",
     },
     "local": {
-        "ini": join(TESTDATADIR, "dflowfm_build_local.yml"),
-        "data": join(TESTDATADIR, "data_catalog_local.yaml"),
+        "ini": join(EXAMPLEDIR, "dflowfm_build_local.yml"),
+        "data": join(EXAMPLEDIR, "data", "data_catalog_local.yaml"),
     },
 }
 
@@ -78,7 +77,7 @@ def test_model_build(tmpdir, modelname):
     assert equal, errors
 
 
-@pytest.mark.timeout(300)  # max 5 min
+@pytest.mark.timeout(120)  # max 2 min
 @pytest.mark.slow
 def test_model_update(tmp_path):
     # Build method options
@@ -116,20 +115,3 @@ def test_model_update(tmp_path):
     assert len(netw2.link1d2d_id) == 1710
 
     model.write()
-
-
-@pytest.mark.parametrize("modelname", list(_models.keys()))
-def test_compare_yml(modelname):
-    # TODO: instead of comparing this, maybe just put all yml files and data in examples folder
-    config_test = join(TESTDATADIR, f"dflowfm_build_{modelname}.yml")
-    config_examples = join(EXAMPLEDIR, f"dflowfm_build_{modelname}.yml")
-
-    with open(config_test, "r") as f:
-        contents_test = f.read()
-    with open(config_examples, "r") as f:
-        contents_examples = f.read()
-    if contents_test != contents_examples:
-        raise ValueError(
-            f"yml contents between examples and test folders are different for "
-            f"'{modelname}' model"
-        )
