@@ -14,11 +14,13 @@ Added
 -----
 - Included new example notebook for basic HydroMT use through CLI. (PR #202)
 - New method **setup_retentions**. (PR #170)
+- support for user-specified paths for mdu/network and models without geoms folder (PR #271)
 
 Changed
 -------
 - Dropped support for Python 3.9. (PR #214)
 - Updated to hydromt v1 API and dropped support for Python 3.10. (PR #162)
+- when reading a model prefer crs from mesh/network file, then geoms, then userdefined (PR #271)
 
 Fixed
 -----
@@ -27,6 +29,7 @@ Fixed
 - fixed crs/bounds/region properties of DFlowFMMeshComponent (PR #251)
 - crs cannot be None in writing mode (PR #264)
 - properly parsing tunit/startdatetime/stopdatetime (PR #267)
+- prevent reading/writing a model without a mesh/network file and prevent reading a model without an mdu file (PR #271)
 
 
 v0.3.0 (18 October 2024)
