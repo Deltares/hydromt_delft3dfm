@@ -1,4 +1,4 @@
-from os.path import abspath, dirname, join
+from os.path import abspath, basename, dirname, join
 from os import makedirs, rename
 from hydromt_delft3dfm import DFlowFMModel
 import numpy as np
@@ -36,7 +36,7 @@ def test_read_empty_root_folder(tmpdir):
     root = join(tmpdir, "dflowfm_example")
     with pytest.raises(OSError) as e:
         _ = DFlowFMModel(root=root, mode="r")
-    assert "model root not found at" in str(e.value)
+    assert f"{basename(root)} does not exist" in str(e.value)
 
     # create the root directory
     makedirs(root, exist_ok=False)
