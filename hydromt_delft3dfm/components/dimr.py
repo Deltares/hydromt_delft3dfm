@@ -1,7 +1,7 @@
 """Custom Delft3D FM config component."""
 
 import logging
-from os.path import basename, isfile, join
+from os.path import basename, dirname, isfile, join
 from pathlib import Path
 
 from hydrolib.core.dimr import DIMR, FMComponent, Start
@@ -105,7 +105,7 @@ class DIMRComponent(ModelComponent):
                 components = []
             fmcomponent = FMComponent(
                 name="dflowfm",
-                workingdir="dflowfm",
+                workingdir=dirname(self.model.mdu._filename),
                 inputfile=basename(self.model.mdu._filename),
                 model=self.model.dfmmodel,
             )
