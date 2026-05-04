@@ -1,7 +1,7 @@
 """Implement Delft3D FM 1D2D HydroMT plugin model class."""
 
 import logging
-from os.path import isfile, join
+from os.path import exists, isfile, join
 from pathlib import Path
 from typing import Any
 
@@ -12,6 +12,7 @@ import pandas as pd
 import xarray as xr
 import xugrid as xu
 from hydrolib.core.dflowfm import FMModel
+from hydrolib.core.dimr import DIMR
 from hydromt import hydromt_step
 from hydromt.model import Model
 from hydromt.model.processes.mesh import create_mesh2d_from_region
@@ -28,6 +29,7 @@ from hydromt_delft3dfm.components import (
     MDUComponent,
 )
 from hydromt_delft3dfm.utils import gis_utils, mesh_utils
+from hydromt_delft3dfm.utils.io_utils import get_fm_paths_from_dimr
 
 __all__ = ["DFlowFMModel"]
 __hydromt_eps__ = ["DFlowFMModel"]  # core entrypoints
@@ -62,9 +64,9 @@ class DFlowFMModel(Model):
             Write/read/append mode.
             Default is "w".
         mdu_filename : str, optional
-            The D-Flow FM model configuration file (.mdu).
-            If None, default mdu file is used.
-            Default is None.
+            The D-Flow FM model configuration file (.mdu). If None, the default mdu
+            filepath is used. If a dimr file is present, the mdu_filename argument
+            is ignored and it is read from that file instead. Default is None.
         data_libs : list of str, optional
             List of data catalog yaml files.
             Default is None.
@@ -89,14 +91,24 @@ class DFlowFMModel(Model):
         if not isinstance(root, (str, Path)):
             raise ValueError("The 'root' parameter should be a of str or Path.")
 
-        # FIXME mdu needs to be derived from dimr_filename if dimr_filename exists
+        # get the dimr filepath and extract the mdu filepath if the dimr file exists.
+        dimr_filename = "dimr_config.xml" if dimr_filename is None else dimr_filename
+        dimr_filepath = join(root, dimr_filename)
+        # if a dimr file exists, overwrite mdu_filename with the value from the dimr.
+        # need to read the dimr file externally since the model is not initialized yet.
+        if mode.startswith("r") and exists(dimr_filepath):
+            logger.info(f"Reading dimr file at {dimr_filepath}")
+            dimr = DIMR(filepath=Path(dimr_filepath))
+            dimr_fm_workingdir, dimr_fm_mdufile = get_fm_paths_from_dimr(dimr=dimr)
+            mdu_filename = join(dimr_fm_workingdir, dimr_fm_mdufile)
+
+        # if mdu_filename is still None, set mdu_filename to the default.
         if mdu_filename is None:
             mdu_filename = "dflowfm/DFlowFM.mdu"
-        dimr_filename = "dimr_config.xml" if dimr_filename is None else dimr_filename
 
         components = {
-            "mdu": MDUComponent(self, filename=str(mdu_filename)),
             "dimr": DIMRComponent(self, filename=str(dimr_filename)),
+            "mdu": MDUComponent(self, filename=str(mdu_filename)),
             "mesh": DFlowFMMeshComponent(self, filename="dflowfm/fm_net.nc"),
             "geoms": Delft3DFMGeomsComponent(
                 self,
@@ -121,6 +133,14 @@ class DFlowFMModel(Model):
             data_libs=data_libs,
             region_component="mesh",
         )
+
+        # raise an error if the mdu file was not found in read mode
+        mdu_filepath = join(root, mdu_filename)
+        if mode.startswith("r") and not exists(mdu_filepath):
+            raise FileNotFoundError(
+                "hydromt_delft3dfm requires an mdu file in read mode, "
+                f"file not found: {mdu_filepath}."
+            )
 
         # model specific
         self._branches = None
@@ -2919,8 +2939,7 @@ class DFlowFMModel(Model):
         self.write_data_catalog()
         self.inifield.write()
         self.geoms.write()
-        if not self.mesh.is_empty or not self.branches.empty:
-            self.mesh.write()
+        self.mesh.write()
         self.forcing.write()
         self.mdu.write()
         if self.dimr:  # dimr config, should always be last after dflowfm config!

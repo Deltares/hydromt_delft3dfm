@@ -7,22 +7,22 @@ import pytest
 from hydromt.readers import read_workflow_yaml
 from hydromt_delft3dfm import DFlowFMModel
 
-TESTDATADIR = join(dirname(abspath(__file__)), "data")
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 
 _models = {
     "piave": {
-        "ini": join(TESTDATADIR, "dflowfm_build_piave.yml"),
+        "ini": join(EXAMPLEDIR, "dflowfm_build_piave.yml"),
         "data": "artifact_data",
     },
     "local": {
-        "ini": join(TESTDATADIR, "dflowfm_build_local.yml"),
-        "data": join(TESTDATADIR, "data_catalog_local.yaml"),
+        "ini": join(EXAMPLEDIR, "dflowfm_build_local.yml"),
+        "data": join(EXAMPLEDIR, "data", "data_catalog_local.yaml"),
     },
 }
 
 
 @pytest.mark.timeout(300)  # max 5 min
+@pytest.mark.slow
 @pytest.mark.parametrize("modelname", list(_models.keys()))
 def test_model_build(tmpdir, modelname):
     model_dict = _models[modelname]
@@ -77,6 +77,41 @@ def test_model_build(tmpdir, modelname):
     assert equal, errors
 
 
-# for debugging in IDE
-if __name__ == "__main__":
-    test_model_build(tmpdir=".", modelname="local")
+@pytest.mark.timeout(120)  # max 2 min
+@pytest.mark.slow
+def test_model_update(tmp_path):
+    # Build method options
+    config = join(EXAMPLEDIR, "dflowfm_update_mesh2d_refine.yml")
+    _, _, steps = read_workflow_yaml(config)
+
+    # test update method, compare network size before and after refinement
+    root = join(EXAMPLEDIR, f"dflowfm_piave")
+    logger = logging.getLogger("hydromt")
+    logger.setLevel(logging.DEBUG)
+    model = DFlowFMModel(
+        root=root,
+        mode="r+",
+    )
+    model.read()
+    netw1 = model.mesh.data.copy()
+    assert len(netw1.mesh2d_node_x) == 504
+    assert len(netw1.link1d2d_id) == 1734
+
+    # set new outputdir and write mode
+    outputdir = tmp_path / "dflowfm_mesh2d_refine"
+    model.root.set(path=outputdir, mode="w")
+
+    # call update() only after setting mode=w
+    model.update(steps=steps)
+    # alternatively call the steps from the workflow yml in Python code
+    # then the data_catalog is not automatically exported on write, so do this manually
+    # polygon_fn = join(EXAMPLEDIR, "data/refine.geojson")
+    # model.setup_mesh2d_refine(polygon_fn=polygon_fn, steps=2)
+    # model.setup_link1d2d(link_direction="1d_to_2d")
+    # model.data_catalog.export_data(outputdir)
+
+    netw2 = model.mesh.data.copy()
+    assert len(netw2.mesh2d_node_x) == 767
+    assert len(netw2.link1d2d_id) == 1710
+
+    model.write()
