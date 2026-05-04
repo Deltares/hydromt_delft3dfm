@@ -4,7 +4,6 @@ import numpy as np
 from pathlib import Path
 import pytest
 
-TESTDATADIR = join(dirname(abspath(__file__)), "data")
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 TOLERANCE = 1e-6
 
@@ -108,9 +107,9 @@ def test_setup_channels(tmpdir):
     model.root.set(tmpdir, mode="w")
 
     # setup_channels
-    region = {'geom': join(TESTDATADIR, "local_data","1D_extent.geojson")}
-    channels_fn = join(TESTDATADIR, "local_data","1D_rivers.geojson")
-    crosssections_fn = join(TESTDATADIR, "local_data","1D_rivers_pointcrosssections.geojson")
+    region = {'geom': join(EXAMPLEDIR, "data", "local_data","1D_extent.geojson")}
+    channels_fn = join(EXAMPLEDIR, "data", "local_data","1D_rivers.geojson")
+    crosssections_fn = join(EXAMPLEDIR, "data", "local_data","1D_rivers_pointcrosssections.geojson")
     model.setup_channels(
         region=region,
         channels_fn=channels_fn,
@@ -126,7 +125,7 @@ def test_setup_retentions(tmpdir):
     model.root.set(tmpdir, mode="w")
     
     # setup_retentions
-    retentions_fn = join(TESTDATADIR, "local_data","retention_ponds.geojson")
+    retentions_fn = join(EXAMPLEDIR, "data", "local_data","retention_ponds.geojson")
     # Add 1 retention pond, should be included with snap_offset = 200
     model.setup_retentions(retentions_fn=retentions_fn, snap_offset=200)
     assert len(model.geoms.data["retentions"]) == 1
@@ -140,9 +139,9 @@ def test_setup_bridges(tmpdir):
     
     # first add channels to obtain friction values for branches
     # see also https://github.com/Deltares/hydromt_delft3dfm/issues/168
-    region = {'geom': join(TESTDATADIR, "local_data","1D_extent.geojson")}
-    channels_fn = join(TESTDATADIR, "local_data","1D_rivers.geojson")
-    crosssections_fn = join(TESTDATADIR, "local_data","1D_rivers_pointcrosssections.geojson")
+    region = {'geom': join(EXAMPLEDIR, "data", "local_data","1D_extent.geojson")}
+    channels_fn = join(EXAMPLEDIR, "data", "local_data","1D_rivers.geojson")
+    crosssections_fn = join(EXAMPLEDIR, "data", "local_data","1D_rivers_pointcrosssections.geojson")
     model.setup_channels(
         region=region, channels_fn=channels_fn,
         crosssections_fn=crosssections_fn,
@@ -150,7 +149,7 @@ def test_setup_bridges(tmpdir):
     )
 
     # setup bridges (total of 2 bridges)
-    bridges_fn = join(TESTDATADIR, "local_data","bridges.geojson")
+    bridges_fn = join(EXAMPLEDIR, "data", "local_data","bridges.geojson")
     model.setup_bridges(bridges_fn=bridges_fn)
     assert len(model.geoms.data['bridges']) == 2 
 
@@ -163,9 +162,9 @@ def test_setup_culverts(tmpdir):
 
     # first add channels to obtain friction values for branches
     # see also https://github.com/Deltares/hydromt_delft3dfm/issues/168
-    region = {'geom': join(TESTDATADIR, "local_data","1D_extent.geojson")}
-    channels_fn = join(TESTDATADIR, "local_data","1D_rivers.geojson")
-    crosssections_fn = join(TESTDATADIR, "local_data","1D_rivers_pointcrosssections.geojson")
+    region = {'geom': join(EXAMPLEDIR, "data", "local_data","1D_extent.geojson")}
+    channels_fn = join(EXAMPLEDIR, "data", "local_data","1D_rivers.geojson")
+    crosssections_fn = join(EXAMPLEDIR, "data", "local_data","1D_rivers_pointcrosssections.geojson")
     model.setup_channels(
         region=region, channels_fn=channels_fn,
         crosssections_fn=crosssections_fn,
@@ -173,7 +172,7 @@ def test_setup_culverts(tmpdir):
     )
 
     # setup culverts (total of 1 culvert)
-    culverts_fn = join(TESTDATADIR, "local_data","culverts.geojson")
+    culverts_fn = join(EXAMPLEDIR, "data", "local_data","culverts.geojson")
     model.setup_culverts(culverts_fn=culverts_fn)
     assert len(model.geoms.data['culverts']) == 1
 
@@ -195,7 +194,7 @@ def test_inifield_add_raster_data_from_rasterdataset(tmpdir):
     model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
     model.read()
     model.root.set(tmpdir, mode="w")
-    raster_fn = join(TESTDATADIR, "local_data","frictioncoefficient.tif")
+    raster_fn = join(EXAMPLEDIR, "data", "local_data","frictioncoefficient.tif")
     variable = 'roughness_manning'
     variables = [variable]
     model.inifield.add_raster_data_from_rasterdataset(raster_fn, variables)
