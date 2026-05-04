@@ -130,7 +130,8 @@ class DFlowFMMeshComponent(MeshComponent):
             logger.debug("found CRS in the mesh")
             if self.model._crs:
                 logger.debug(
-                    "CRS is provided, but it is overwritten by the CRS from the mesh."
+                    "CRS is provided, but it is overwritten by the CRS from the "
+                    "mesh/network file."
                 )
             self.model._crs = crs_network
         elif crs_geoms:
@@ -146,7 +147,8 @@ class DFlowFMMeshComponent(MeshComponent):
         if not self.model._crs:
             raise ValueError(
                 "CRS was not found in the mesh or the geoms of the model, please pass "
-                "it to DFlowFMModel()."
+                "it as an argument to DFlowFMModel() or as global property in your "
+                "workflow yml file."
             )
 
         crs = self.model.crs

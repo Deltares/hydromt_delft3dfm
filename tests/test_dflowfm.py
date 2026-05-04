@@ -67,7 +67,7 @@ def test_read_empty_root_folder(tmpdir):
     assert "hydromt_delft3dfm cannot read a model without a mesh/network." in str(e.value)
 
 
-def test_write_read_mesh_model_different_mdu_mesh_path(tmpdir):
+def test_write_read_mesh_model_different_dimr_mdu_mesh_path(tmpdir):
     """
     A model consists of at least a dimr (optional on read), a mdu and a network.
     However, the paths can be different for each model, so check if write/read
@@ -75,8 +75,15 @@ def test_write_read_mesh_model_different_mdu_mesh_path(tmpdir):
     And check if the crs is preserved with write/read.
     """
     crs = 3857
+    fn_dimr = "dimr.xml"
     root = join(tmpdir, "dflowfm_example")
-    mod1 = DFlowFMModel(root=root, mode="w", crs=crs, mdu_filename="folder/nonstandard.mdu")
+    mod1 = DFlowFMModel(
+        root=root,
+        mode="w",
+        crs=crs,
+        mdu_filename="folder/nonstandard.mdu",
+        dimr_filename=fn_dimr,
+    )
     geom_bedlevuni = -983
     geom_netfile = "network_file_net.nc"
     mod1.setup_config(**{
@@ -99,7 +106,7 @@ def test_write_read_mesh_model_different_mdu_mesh_path(tmpdir):
     assert mod1.mesh.is_empty is False
 
     # read in the model to see if all changes are preserved
-    mod2 = DFlowFMModel(root=root, mode="r")
+    mod2 = DFlowFMModel(root=root, mode="r", dimr_filename=fn_dimr)
     assert mod1.crs.to_epsg() == crs
     assert mod2.crs.to_epsg() == crs
 
