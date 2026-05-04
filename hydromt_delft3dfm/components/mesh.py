@@ -2,7 +2,7 @@
 
 import glob
 import logging
-from os.path import isfile, join
+from os.path import dirname, join
 from pathlib import Path
 
 import geopandas as gpd
@@ -25,7 +25,7 @@ logger = logging.getLogger(f"hydromt.{__name__}")
 
 class DFlowFMMeshComponent(MeshComponent):
     """
-    Manage the Delft3D-FM mesh files for model meshes.
+    Manage the Delft3D FM mesh files for model meshes.
 
     This class is used to manage unstructured mesh data in a model. The mesh component
     data stored in the ``data`` property is a xugrid.UgridDataset object.
@@ -101,14 +101,55 @@ class DFlowFMMeshComponent(MeshComponent):
 
         # Read mesh
         # hydrolib-core convention
+        fn_network = self.model.dfmmodel.geometry.netfile.filepath
+        if fn_network is None:
+            raise ValueError(
+                "hydromt_delft3dfm cannot read a model without a mesh/network."
+            )
         network = self.model.dfmmodel.geometry.netfile.network
-        # FIXME: crs info is not available in dfmmodel, so get it from one of the geoms
-        # Cannot use geoms.read yet because for some some geoms
-        # (crosssections, manholes) mesh needs to be read first...
+
+        # read the crs from the network with xugrid. TODO: this should be done by
+        # hydrolib-core instead https://github.com/Deltares/HYDROLIB-core/issues/1047
+        mdu_folder = self.model.dfmmodel.filepath.parents[0]
+        fp_network = join(mdu_folder, fn_network)
+        uds = xu.open_dataset(fp_network)
+        crs_network = next(iter(uds.ugrid.crs.values()))
+
+        # as a fallback, get it from one of the geoms. Cannot use geoms.read() yet
+        # because for some geoms (crosssections, manholes) mesh needs to be read first.
         geoms_fns = glob.glob(join(self.root.path, "geoms", "*.geojson"))
-        if (not self.model._crs) and isfile(geoms_fns[0]):
-            crs = gpd.read_file(geoms_fns[0]).crs
-            self.model._crs = crs
+        if len(geoms_fns) > 0:
+            crs_geoms = gpd.read_file(geoms_fns[0]).crs
+        else:
+            crs_geoms = None
+
+        # set the model crs, prefer the CRS from the network, then from the geoms.
+        # If both are not found, self.model._crs is not overwritten so the value
+        # provided to DFlowFMModel() is used (None per default).
+        if crs_network:
+            logger.debug("found CRS in the mesh")
+            if self.model._crs:
+                logger.debug(
+                    "CRS is provided, but it is overwritten by the CRS from the "
+                    "mesh/network file."
+                )
+            self.model._crs = crs_network
+        elif crs_geoms:
+            logger.debug("found CRS in the geoms")
+            if self.model._crs:
+                logger.debug(
+                    "CRS is provided, but it is overwritten by the CRS from the geoms."
+                )
+            self.model._crs = crs_geoms
+
+        # raise an error if the crs was not found in the mesh, nor in the geoms, nor
+        # was provided to DFlowFMModel().
+        if not self.model._crs:
+            raise ValueError(
+                "CRS was not found in the mesh or the geoms of the model, please pass "
+                "it as an argument to DFlowFMModel() or as global property in your "
+                "workflow yml file."
+            )
 
         crs = self.model.crs
 
@@ -143,14 +184,25 @@ class DFlowFMMeshComponent(MeshComponent):
     def write(self, write_gui: bool = True) -> None:
         """Write 1D branches and 2D mesh at <root/dflowfm/fm_net.nc>."""
         self.root.is_writing_mode()
+        if self.is_empty:
+            raise RuntimeError(
+                "hydromt_delft3dfm cannot write a model without a mesh/network."
+            )
         logger.info("Writing mesh file.")
-        savedir = join(self.root.path, "dflowfm")
+
+        # get mesh savedir from dimr (same as mdu path)
+        mdu_filename = self.model.mdu._filename
+        fm_workingdir = dirname(mdu_filename)
+        savedir = join(self.root.path, fm_workingdir)
         Path(savedir).mkdir(parents=True, exist_ok=True)
-        mesh_filename = "fm_net.nc"
+        mesh_filename = self.model.mdu.get_value(key="geometry.netfile")
+        # fallback argument does not work, so repace None with default value manually
+        if mesh_filename is None:
+            mesh_filename = "fm_net.nc"
 
         # write mesh
-        # HydroMT convention - FIXME hydrolib does not seem to read the 1D and links
-        # part of the mesh
+        # HydroMT convention - FIXME hydromt-core does not seem to read the 1D and
+        # links part of the mesh
         # super().write_mesh(fn=join(savedir, mesh_filename))
 
         # write with hydrolib-core
@@ -166,7 +218,7 @@ class DFlowFMMeshComponent(MeshComponent):
         self.model.mdu.set("geometry.netfile", mesh_filename)
 
         # other mesh1d related geometry TODO update
-        if "mesh1d" in self.mesh_names and write_gui:
+        if "mesh1d" in self.mesh_names and write_gui and not self.model.branches.empty:
             logger.info("Writing branches.gui file")
             if "manholes" in self.model.geoms.data:
                 io_utils.write_branches_gui(self.model.branches, savedir)

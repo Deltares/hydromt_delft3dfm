@@ -1,4 +1,4 @@
-"""Custom Delft3D-FM geoms component."""
+"""Custom Delft3D FM geoms component."""
 
 # TODO: channels, manholes etc should become their own components
 import itertools
@@ -20,7 +20,7 @@ logger = logging.getLogger(f"hydromt.{__name__}")
 
 class Delft3DFMGeomsComponent(GeomsComponent):
     """
-    Manage the Delft3D-FM geoms files for model geometries.
+    Manage the Delft3D FM geoms files for model geometries.
 
     It extends the base GeomsComponent from hydromt and consists of a dictionary of
     geopandas GeoDataFrames.

@@ -1,3 +1,5 @@
+modeltype: dflowfm
+
 global:
   crs: 3857
 
