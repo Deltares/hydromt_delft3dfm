@@ -54,4 +54,4 @@ Generating the docs is added as a pixi task, which executes sphinx-build:
     $ pixi run docs-build
 
 
-If any developer's information is missing, it might be documented in the `hydromt developer's guide <https://deltares.github.io/hydromt/stable/dev/core_dev/index.html>`_
+If any developer's information is missing, it might be documented in the `hydromt developer's guide <https://deltares.github.io/hydromt/stable/dev/core_dev/index.html>`_.
