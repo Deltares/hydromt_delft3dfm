@@ -2853,7 +2853,7 @@ class DFlowFMModel(Model):
         # TODO: when adding dewpointtemperature/solarradiation, also change mdu.physics.temperature = 5
 
         #TODO: still a copy from https://deltares.github.io/hydromt_wflow/stable/_modules/hydromt_wflow/wflow_sbm.html#WflowSbmModel.setup_precip_forcing
-        refdate, tstart, tstop = self.get_model_time()  # time slice
+        tstart, tstop = self.get_model_time()  # time slice
         # freq = pd.to_timedelta(self.config.get_value("time.timestepsecs"), unit="s")
         # probably by giving geom self.region, it automatically clips, so mask is not required
         # mask = self.staticmaps.data[self._MAPS["basins"]].values > 0
