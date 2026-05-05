@@ -10,7 +10,6 @@ Furthermore it informs you on planned developments and new features.
 
    ../changelog.rst
    roadmap.rst
-   Developer's guide <https://deltares.github.io/hydromt/latest/dev/contributing>
-   dev_install.rst
+   dev_guide.rst
    contributors.rst
    release.rst
