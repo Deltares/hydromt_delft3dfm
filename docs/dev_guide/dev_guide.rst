@@ -19,6 +19,8 @@ the code folder (where the pyproject.toml is located):
     $ git clone https://github.com/Deltares/hydromt_delft3dfm.git
     $ cd hydromt_delft3dfm
 
+If git is not recognized as a command, first install Git from `<https://git-scm.com/install>`_. VSCode and PyCharm should be bundled with a git extension so a manual installation is not always necessary.
+
 Then, create and activate a new pixi environment. This  includes a developers installation of hydromt_delft3dfm and several environments as specified in pyproject.toml:
 
 .. code-block:: console
