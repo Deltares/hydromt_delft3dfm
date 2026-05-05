@@ -1,7 +1,7 @@
 .. _dev_env:
 
-Developer's environment
-=======================
+Developer's guide
+=================
 If you want to download the HydroMT-Delft3DFM plugin directly from git to easily have access to the latest developments or
 make changes to the code you can use the following steps.
 
