@@ -28,7 +28,7 @@ Then, create and activate a new pixi environment. This  includes a developers in
 Test
 ----
 
-Running the tests can be done within any of the environment specified in the pyproject.toml (defaults to default):
+Running the tests can be done within any of the environment specified in the pyproject.toml (defaults to `default`):
 
 .. code-block:: console
 
