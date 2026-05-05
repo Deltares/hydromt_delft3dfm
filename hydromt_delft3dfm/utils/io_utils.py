@@ -1313,7 +1313,12 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
         quantity = "rainfall"
         variable = "precip"
         forcing_fn = f"meteo_{quantity}.nc"
-        da_out.to_netcdf(join(savedir, forcing_fn))
+        forcing_fp = Path(join(savedir, forcing_fn))
+        da_out["x"] = da_out["x"].assign_attrs(dict(standard_name="projection_x_coordinate", units="m"))
+        da_out["y"] = da_out["y"].assign_attrs(dict(standard_name="projection_y_coordinate", units="m"))
+        da_out.to_netcdf(forcing_fp)
+        # from hydromt.writers import write_nc
+        # write_nc(da_out, forcing_fp, gdal_compliant=True, rename_dims=True)
 
         # add forcingfile to ext
         ext = dict()
