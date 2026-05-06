@@ -1189,7 +1189,7 @@ def read_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
 
     data, dims, coords, bc = _read_forcing_dataframe(
         df_forcing,
-        index_values="global",
+        index_values=["global"],
         quantity=quantity,
     )
     # Do not apply to "global" meteo

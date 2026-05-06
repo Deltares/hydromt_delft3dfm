@@ -6,6 +6,7 @@ import pytest
 
 from hydromt.readers import read_workflow_yaml
 from hydromt_delft3dfm import DFlowFMModel
+from sys import platform
 
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 
@@ -59,21 +60,32 @@ def test_model_build(tmpdir, modelname):
     mod0.read()
     # check if equal
     equal, errors = mod0.test_equal(mod1)
-    
+
     # skip config.filepath (root is different)
     if "mdu" in errors and "mdu.filepath" in errors["mdu"]:
         errors["mdu"].pop("mdu.filepath", None)
         if len(errors["mdu"]) == 0:
             errors.pop("mdu", None)
-        if len(errors) == 0:
-            equal = True
 
-    # somehow a successful check still has {"geoms":{}), so this should be popped
-    if len(errors["geoms"]) == 0:
-        errors.pop("geoms", None)
-        if len(errors) == 0:
-            equal = True
+    # the reference files are generated on windows and the elevtn values are slightly
+    # different:  https://github.com/Deltares/hydromt_delft3dfm/issues/253. Rather than
+    # specifying linux-specific reference files, this error is ignored instead.
+    if platform == "linux" and "inifield" in errors:
+        if "elevtn" in errors["inifield"]:
+            value = errors["inifield"]["elevtn"]
+            expected_value = (
+                "Not equal: {'dims': 'dim y not identical', '3 invalid coords': "
+                "{'x': 'not identical', 'y': 'not identical', 'spatial_ref': 'not"
+                " identical'}}"
+            )
+            if value == expected_value:
+                errors["inifield"].pop("elevtn", None)
+        if len(errors["inifield"]) == 0:
+            errors.pop("inifield", None)
 
+    # after popping accepted errors, set equal=True if errors={}
+    if len(errors) == 0:
+        equal = True
     assert equal, errors
 
 
