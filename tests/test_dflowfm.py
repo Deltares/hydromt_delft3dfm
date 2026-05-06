@@ -401,16 +401,9 @@ def test_setup_precip_forcing(tmpdir):
 
     mod1.setup_config(**{
         # TODO: update dflowfmmodel.get_model_time() to support startdatetime and stopdatetime
-        # "time.startdatetime": "2010-02-02",
-        # "time.stopdatetime": "2010-02-06",
-        # TODO: does not validate on initialisation (also not on casing, which is quite inconvenient, only on write)
-        # "time.refdatesdfsdf": "20100202",
-        "time.refdate": "20100202",
-        # TODO: dflowfmmodel.get_model_time() only supports seconds
-        "time.tunit": "H",
+        "time.startdatetime": "20100202",
         # TODO: the returned era5 dataset is too short when not exactly slicing to its time axis, this should be buffered
-        "time.tstart": 0,
-        "time.tstop": 345600,
+        "time.stopdatetime": "20100206",
     })
 
     mod1.setup_mesh2d(
