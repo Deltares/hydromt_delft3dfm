@@ -387,10 +387,8 @@ def test_inifield_add_raster_data_from_rasterdataset(tmpdir):
     assert np.allclose(roughness_values, expected_values, atol=TOLERANCE)
 
 
-def test_setup_precip_forcing(tmpdir):
+def test_setup_spatial_forcing(tmpdir):
     # TODO: convert to dedicated test function without calling/writing the entire model?
-    from hydromt_delft3dfm import DFlowFMModel
-
     root = join(tmpdir, "dflowfm_example")
     mod1 = DFlowFMModel(
         root=root,
@@ -399,10 +397,11 @@ def test_setup_precip_forcing(tmpdir):
         crs=3857,
     )
 
+    # change the start/stop times to be in the period of the artifact_data
+    # TODO: the returned era5 dataset is too short when not exactly slicing to its time axis, this should be buffered
+    # this does not result in a crashing delft3dfm simulation somehow, does it with other quantities?
     mod1.setup_config(**{
-        # TODO: update dflowfmmodel.get_model_time() to support startdatetime and stopdatetime
         "time.startdatetime": "20100202",
-        # TODO: the returned era5 dataset is too short when not exactly slicing to its time axis, this should be buffered
         "time.stopdatetime": "20100206",
     })
 
@@ -410,7 +409,7 @@ def test_setup_precip_forcing(tmpdir):
         region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
         res=500,
     )
-    mod1.setup_precip_forcing(
+    mod1.setup_spatial_forcing(
         precip_fn="era5",  # source for precipitation.
     )
     # write calls the validators and writes all the delft3dfm files

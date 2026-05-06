@@ -2804,10 +2804,8 @@ class DFlowFMModel(Model):
         # 5. set meteo in mdu
         self.mdu.set("external_forcing.rainfall", 1)
 
-
-    # TODO: rename function (setup_spatial_forcing or so)
     @hydromt_step
-    def setup_precip_forcing(
+    def setup_spatial_forcing(
         self,
         precip_fn: str | xr.DataArray,
         # precip_clim_fn: str | xr.DataArray | None = None,
@@ -2851,6 +2849,8 @@ class DFlowFMModel(Model):
         # self.data_catalog.get_rasterdataset supports multiple variables, so a preprocessor would be useful, then pass
         # it to dedicated hydromt temp/precip functions
         # TODO: when adding dewpointtemperature/solarradiation, also change mdu.physics.temperature = 5
+        # TODO: update docstring
+        # TODO: maybe move to components.forcing (including the test)
 
         #TODO: still a copy from https://deltares.github.io/hydromt_wflow/stable/_modules/hydromt_wflow/wflow_sbm.html#WflowSbmModel.setup_precip_forcing
         tstart, tstop = self.get_model_time()  # time slice
@@ -2868,7 +2868,7 @@ class DFlowFMModel(Model):
             variables=["precip"],
         )
         # TODO: why would we need to convert?
-        precip = precip.astype("float32")
+        # precip = precip.astype("float32")
 
         if chunksize is not None:
             precip = precip.chunk({"time": chunksize})
@@ -2892,15 +2892,21 @@ class DFlowFMModel(Model):
         )
 
         # TODO: import is not necesary in hydromt_wlfow, but cannot be found otherwise
-        import hydromt.model.processes.meteo
+        # TODO: this method is fairly complex but probably not required by dflowfm
+        # import hydromt.model.processes.meteo
+        # precip_out = hydromt.model.processes.meteo.precip(
+        #     precip=precip,
+        #     da_like=da_like, #self.staticmaps.data[self._MAPS["elevtn"]],
+        #     # clim=clim,
+        #     # freq=freq,
+        #     # resample_kwargs=dict(label="right", closed="right"),
+        # )
 
-        precip_out = hydromt.model.processes.meteo.precip(
-            precip=precip,
-            da_like=da_like, #self.staticmaps.data[self._MAPS["elevtn"]],
-            # clim=clim,
-            # freq=freq,
-            # resample_kwargs=dict(label="right", closed="right"),
-        )
+        # reproj_method default from hydromt.model.processes.meteo.precip
+        # precip also uses np.fmax(precip, 0), consider using that also or increasing the buffer
+        # TODO: consider proper interpolation instead
+        reproj_method = "nearest_index"
+        precip_out = precip.raster.reproject_like(da_like, method=reproj_method)
 
         # Update meta attributes (used for default output filename later)
         precip_out.attrs.update({"precip_fn": precip_fn})
