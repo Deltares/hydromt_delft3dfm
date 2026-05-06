@@ -2,6 +2,7 @@ import pytest
 from hydromt_delft3dfm import DFlowFMModel
 from hydromt_delft3dfm.components.mdu import MDUComponent
 import datetime as dt
+from os.path import join
 
 def test_get_model_time_from_refdate_tunit_start_tstop():
     # it is required to pass a DFlowFMModel to MDUComponent, so initialize an empty one
@@ -73,3 +74,50 @@ def test_get_model_time_from_startdatetime_stopdatetime():
     tstart, tstop = mdu.get_model_time()
     assert tstart == dt.datetime(2010, 2, 2, 0, 0, 0)
     assert tstop == dt.datetime(2010, 2, 3, 0, 0, 0)
+
+
+def test_get_model_time_invalid_timeformat():
+    # it is required to pass a DFlowFMModel to MDUComponent, so initialize an empty one
+    root = "./dflowfm_example"
+    model = DFlowFMModel(
+        root=root,
+        mode="w",
+        crs=3857,
+    )
+    mdu = MDUComponent(model=model)
+
+    # invalid formats, should be %Y%m%d or %Y%m%d%H%M%S
+    data = {
+        "time.refdate": "2010-02-02",
+        "time.startdatetime": "2010-02-02",
+        "time.stopdatetime": "2010-02-06",
+    }
+    mdu.update(data)
+    with pytest.raises(ValueError) as e:
+        _, _ = mdu.get_model_time()
+    assert "does not match format '%Y%m%d%H%M%S'" in str(e.value)
+
+
+def test_mdu_write_invalid_timeformat(tmpdir):
+    # it is required to pass a DFlowFMModel to MDUComponent, so initialize an empty one
+    root = join(tmpdir, "dflowfm_example")
+    model = DFlowFMModel(
+        root=root,
+        mode="w",
+        crs=3857,
+    )
+    mdu = MDUComponent(model=model)
+
+    # invalid formats, should be %Y%m%d or %Y%m%d%H%M%S
+    data = {
+        "time.refdate": "2010-02-02",
+        "time.startdatetime": "2010-02-02",
+        "time.stopdatetime": "2010-02-06",
+    }
+    mdu.update(data)
+    from pydantic.v1.error_wrappers import ValidationError
+    with pytest.raises(ValidationError) as e:
+        mdu.write()
+    assert "value is not a valid integer" in str(e.value)
+    assert "Invalid datetime string for startDateTime" in str(e.value)
+    assert "Invalid datetime string for stopDateTime" in str(e.value)
