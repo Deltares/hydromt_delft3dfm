@@ -2676,47 +2676,17 @@ class DFlowFMModel(Model):
         constant_value: float,
     ):
         """
-        Prepare constant 2D daily rainfall_rate timeseries based on ``constant_value``.
-
-        Adds/Updates model layers:
-
-        * **meteo_{meteo_type}** forcing: DataArray
-
-        Parameters
-        ----------
-        constant_value: float
-            Constant value for the rainfall_rate timeseries in mm/day.
+        Deprecated. Use ``setup_meteo(constant_value=...)`` instead.
         """
-        logger.info("Preparing rainfall meteo forcing from uniform timeseries.")
-
-        tstart, tstop = self.get_model_time()  # time slice
-        meteo_location = (
-            self.region.centroid.x,
-            self.region.centroid.y,
-        )  # global station location
-
-        df_meteo = pd.DataFrame(
-            {
-                "time": pd.date_range(
-                    start=pd.to_datetime(tstart), end=pd.to_datetime(tstop), freq="D"
-                ),
-                "precip": constant_value,
-            }
+        logger.warning(
+            "setup_rainfall_from_constant is deprecated. "
+            "Use setup_meteo(constant_value=...) instead."
+        )
+        self.setup_meteo(
+            meteo_type="rainfall_rate",
+            constant_value=constant_value,
         )
 
-        # 3. Derive DataArray with meteo values
-        da_out = workflows.compute_meteo_forcings(
-            df_meteo=df_meteo,
-            fill_value=constant_value,
-            is_rate=True,
-            meteo_location=meteo_location,
-        )
-
-        # 4. set meteo forcing
-        self.forcing.set(da_out, name=f"meteo_{da_out.name}")
-
-        # 5. set meteo in mdu
-        self.mdu.set("external_forcing.rainfall", 1)
 
     @hydromt_step
     def setup_rainfall_from_uniform_timeseries(
@@ -2726,83 +2696,156 @@ class DFlowFMModel(Model):
         is_rate: bool = True,
     ):
         """
-        Prepare spatially uniform 2D rainfall forcings from ``meteo_timeseries_fn``.
+        Deprecated. Use ``setup_meteo(meteo_timeseries_fn=...)`` instead.
+        """
+        logger.warning(
+            "setup_rainfall_from_uniform_timeseries is deprecated. "
+            "Use setup_meteo(meteo_timeseries_fn=...) instead."
+        )
+        self.setup_meteo(
+            meteo_type="rainfall_rate" if is_rate else "rainfall",
+            meteo_timeseries_fn=meteo_timeseries_fn,
+            fill_value=fill_value,
+        )
 
-        For now only support global  (spatially uniform) timeseries.
 
-        If ``meteo_timeseries_fn`` has missing values or shorter than model simulation
-        time, the constant ``fill_value`` will be used, e.g. 0.
+    @hydromt_step
+    def setup_meteo(
+        self,
+        meteo_type: str = "rainfall_rate",
+        meteo_timeseries_fn: str | Path | None = None,
+        constant_value: float | None = None,
+        fill_value: float = 0.0,
+    ):
+        """
+        Prepare spatially uniform 2D rainfall meteorological forcing.
 
-        The dataset/timeseries are clipped to the model time based on the model config
-        tstart and tstop entries.
+        This method merges the previous behavior of:
+
+        * ``setup_rainfall_from_constant``
+        * ``setup_rainfall_from_uniform_timeseries``
+
+        The forcing can be created either from a constant value or from a tabulated
+        time series. For now only spatially uniform rainfall / rainfall_rate forcing
+        is supported.
+
+        If ``meteo_timeseries_fn`` has missing values or is shorter than the model
+        simulation time, ``fill_value`` is used to fill missing values.
+
+        The dataset / time series is clipped to the model time based on the model
+        config ``tstart`` and ``tstop`` entries.
 
         Adds/Updates model layers:
-            * **meteo_{meteo_type}** forcing: DataArray
+
+        * **meteo_{meteo_type}** forcing: DataArray
 
         Parameters
         ----------
-        meteo_timeseries_fn: str, Path
-            Path or data source name to tabulated timeseries csv file with time index
-            in first column.
+        meteo_type : {"rainfall_rate", "rainfall"}, optional
+            Type of meteo forcing to prepare. By default ``"rainfall_rate"``.
 
-            * Required variables : ['precip']
+            If ``"rainfall_rate"``, values are expected in mm/day.
+            If ``"rainfall"``, values are expected in mm.
 
-            see :py:meth:`hydromt.get_dataframe`, for details.
-            NOTE:
-            Require equidistant time series
-            If ``is_rate`` = True, unit is expected to be in mm/day and else mm.
+        meteo_timeseries_fn : str, Path, optional
+            Path or data source name to a tabulated time series file.
+
+            The source should contain a column matching ``meteo_type`` and a
+            datetime index configured through the data catalog.
+
+        constant_value : float, optional
+            Constant meteo value for the full model simulation period.
+
         fill_value : float, optional
-            Constant value to use to fill in missing data. By default 0.
-        is_rate : bool, optional
-            Specify if the type of meteo data is direct "rainfall" (False) or
-            "rainfall_rate" (True).
-            By default True for "rainfall_rate".
-            Note that Delft3DFM 1D2D Suite 2022.04 supports only "rainfall_rate".
-
+            Value used to fill missing values or missing time steps when reading
+            from ``meteo_timeseries_fn``. By default 0.0.
         """
-        logger.info("Preparing rainfall meteo forcing from uniform timeseries.")
+        allowed_meteo_types = {"rainfall_rate", "rainfall"}
 
-        tstart, tstop = self.get_model_time()  # time slice
+        if meteo_type not in allowed_meteo_types:
+            raise ValueError(
+                f"Unsupported meteo_type '{meteo_type}'. "
+                f"Supported values are: {sorted(allowed_meteo_types)}."
+            )
+
+        if (meteo_timeseries_fn is None) == (constant_value is None):
+            raise ValueError(
+                "Provide exactly one of 'meteo_timeseries_fn' or 'constant_value'."
+            )
+
+        if constant_value is not None:
+            logger.info("Preparing %s meteo forcing from constant value.", meteo_type)
+        else:
+            logger.info("Preparing %s meteo forcing from uniform timeseries.", meteo_type)
+
+        tstart, tstop = self.get_model_time()
+
         meteo_location = (
             self.region.centroid.x,
             self.region.centroid.y,
-        )  # global station location
-
-        # get meteo timeseries
-        df_meteo = self.data_catalog.get_dataframe(
-            meteo_timeseries_fn, variables=["precip"], time_range=(tstart, tstop)
         )
-        # error if time mismatch or wrong parsing of dates
-        if np.dtype(df_meteo.index).type != np.datetime64:
-            raise ValueError(
-                "Dates in meteo_timeseries_fn were not parsed correctly. "
-                "Update the source kwargs in the DataCatalog based on the driver"
-                "function arguments (eg pandas.read_csv for csv driver)."
-            )
-        if (df_meteo.index[-1] - df_meteo.index[0]) < (tstop - tstart):
-            logger.warning(
-                "Time in meteo_timeseries_fn were shorter than model simulation time. "
-                "Will fill in using fill_value."
-            )
-            dt = df_meteo.index[1] - df_meteo.index[0]
-            t_index = pd.DatetimeIndex(pd.date_range(start=tstart, end=tstop, freq=dt))
-            df_meteo = df_meteo.reindex(t_index).fillna(fill_value)
-        df_meteo["time"] = df_meteo.index
 
-        # 3. Derive DataArray with meteo values
+        if constant_value is not None:
+            df_meteo = pd.DataFrame(
+                {
+                    "time": pd.date_range(
+                        start=pd.to_datetime(tstart),
+                        end=pd.to_datetime(tstop),
+                        freq="D",
+                    ),
+                    meteo_type: constant_value,
+                }
+            )
+
+            fill_value_for_compute = constant_value
+
+        else:
+
+            df_meteo = self.data_catalog.get_dataframe(
+                meteo_timeseries_fn,
+                variables=[meteo_type],
+                time_range=(tstart, tstop),
+            )
+
+            if not np.issubdtype(df_meteo.index.dtype, np.datetime64):
+                raise ValueError(
+                    "Dates in meteo_timeseries_fn were not parsed correctly. "
+                    "Update the source kwargs in the DataCatalog based on the driver "
+                    "function arguments, e.g. pandas.read_csv for the csv driver."
+                )
+
+            if len(df_meteo.index) < 2:
+                raise ValueError(
+                    "meteo_timeseries_fn must contain at least two timesteps to infer "
+                    "the time frequency."
+                )
+
+            if (df_meteo.index[-1] - df_meteo.index[0]) < (tstop - tstart):
+                logger.warning(
+                    "Time in meteo_timeseries_fn is shorter than the model simulation "
+                    "time. Missing values will be filled using fill_value."
+                )
+                dt = df_meteo.index[1] - df_meteo.index[0]
+                t_index = pd.DatetimeIndex(
+                    pd.date_range(start=tstart, end=tstop, freq=dt)
+                )
+                df_meteo = df_meteo.reindex(t_index).fillna(fill_value)
+
+            df_meteo["time"] = df_meteo.index
+
+            fill_value_for_compute = fill_value
+
         da_out = workflows.compute_meteo_forcings(
             df_meteo=df_meteo,
-            fill_value=fill_value,
-            is_rate=is_rate,
+            meteo_type=meteo_type,
+            fill_value=fill_value_for_compute,
             meteo_location=meteo_location,
         )
 
-        # 4. set meteo forcing
         self.forcing.set(da_out, name=f"meteo_{da_out.name}")
 
-        # 5. set meteo in mdu
         self.mdu.set("external_forcing.rainfall", 1)
-
+    
     # ## I/O
     @hydromt_step
     def read(self):

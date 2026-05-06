@@ -11,6 +11,7 @@ EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 TOLERANCE = 1e-6
 
 
+
 def test_write_read_empty_model(tmpdir):
     """
     writing a model without a mesh is prohibited since
@@ -385,3 +386,65 @@ def test_inifield_add_raster_data_from_rasterdataset(tmpdir):
     roughness_values = np.unique(model.inifield.data[variable]).tolist()
     expected_values = [-999.0, 0.025, 0.044, 0.050, 0.055]
     assert np.allclose(roughness_values, expected_values, atol=TOLERANCE)
+
+def test_setup_meteo_constant_rainfall_rate(tmpdir):
+    model = DFlowFMModel(str(tmpdir), 
+                         data_libs=join(EXAMPLEDIR, "data", "data_catalog_local.yaml"),
+                         crs=3857,
+                          mode="w")
+    
+    # set a small default mesh to speed up the test, since we only want to test the setup_meteo and not the mesh setup here
+    model.setup_mesh2d(region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]), res=5000)
+
+    model.setup_meteo(
+        meteo_type="rainfall_rate",
+        constant_value=5.0,
+    )
+    assert "meteo_rainfall_rate" in model.forcing.data
+
+def test_setup_meteo_constant_rainfall(tmpdir):
+    model = DFlowFMModel(str(tmpdir), 
+                         data_libs=join(EXAMPLEDIR, "data", "data_catalog_local.yaml"),
+                         crs=3857,
+                          mode="w")
+    
+    # set a small default mesh to speed up the test, since we only want to test the setup_meteo and not the mesh setup here
+    model.setup_mesh2d(region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]), res=5000)
+
+    model.setup_meteo(
+        meteo_type="rainfall",
+        constant_value=5.0,
+    )
+    assert "meteo_rainfall" in model.forcing.data
+
+def test_setup_meteo_timeseries_rainfall_rate(tmpdir):
+    model = DFlowFMModel(str(tmpdir), 
+                         data_libs=join(EXAMPLEDIR, "data", "data_catalog_local.yaml"),
+                         crs=3857,
+                          mode="w")
+    
+    # set a small default mesh to speed up the test, since we only want to test the setup_meteo and not the mesh setup here
+    model.setup_mesh2d(region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]), res=5000)
+
+    model.setup_meteo(
+        meteo_type="rainfall_rate",
+        meteo_timeseries_fn="meteo_timeseries_T2",
+    )
+    assert "meteo_rainfall_rate" in model.forcing.data
+
+def test_setup_meteo_rejects_unknown_type(tmpdir):
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model.read()
+    model.root.set(tmpdir, mode="w")
+    with pytest.raises(ValueError, match="Unsupported meteo_type"):
+        model.setup_meteo(
+            meteo_type="evapotranspiration",
+            constant_value=1.0,
+        )
+
+def test_setup_meteo_requires_one_source(tmpdir):
+    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
+    model.read()
+    model.root.set(tmpdir, mode="w")
+    with pytest.raises(ValueError, match="Provide exactly one"):
+        model.setup_meteo()

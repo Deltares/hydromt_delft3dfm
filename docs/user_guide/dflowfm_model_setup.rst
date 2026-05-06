@@ -65,6 +65,8 @@ a specific method see its documentation.
       -  Setup a constant precipitation forcing to the 2D mesh.
     * - :py:func:`~DFlowFMModel.setup_rainfall_from_uniform_timeseries`
       -  Setup a spatial uniform precipitation forcing to the 2D mesh.
+    * - :py:func:`~DFlowFMModel.setup_meteo`
+      -  Setup a meteorological forcing to the 2D mesh.
 
 
 .. _model_components:

@@ -459,75 +459,127 @@ def df_to_bc(
 
 
 def compute_meteo_forcings(
-    df_meteo: pd.DataFrame = None,
+    df_meteo: pd.DataFrame,
+    meteo_type: str = "rainfall_rate",
     fill_value: float = 0.0,
-    is_rate: bool = True,
     meteo_location: tuple = None,
 ) -> xr.DataArray:
     """
-    Compute meteo forcings.
+    Compute spatially uniform meteo forcings.
 
     Parameters
     ----------
-    df_meteo : pd.DataFrame, optional
-        pd.DataFrame containing the meteo timeseries values.
-        If None, uses ``fill_value``.
+    df_meteo : pd.DataFrame
+        DataFrame containing the meteo time series values.
 
-        * Required variables: ["precip"]
-    meteo_value : float, optional
-        Constant value to use for global meteo if ``df_meteo`` is None and to
-        fill in missing data in ``df_meteo``. By default 0.0 mm/day.
-    is_rate : bool, optional
-        Specify if the type of meteo data is direct "rainfall" (False)
-        or "rainfall_rate" (True). By default True for "rainfall_rate".
-        Note that Delft3DFM 1D2D Suite 2022.04 supports only "rainfall_rate".
-        If rate, unit is expected to be in mm/day and else mm.
+        Required columns:
+
+        * ``time``
+        * one column matching ``meteo_type``
+
+        For example:
+
+        * ``rainfall_rate``
+        * ``rainfall``
+
+    meteo_type : str, optional
+        Type of meteo forcing to prepare.
+
+        Supported values:
+
+        * ``rainfall_rate``
+        * ``rainfall``
+
+        By default ``rainfall_rate``.
+
+        Notes
+        -----
+        Delft3D FM 1D2D Suite 2022.04 supports only ``rainfall_rate``.
+
+    fill_value : float, optional
+        Constant value used to fill missing values. By default 0.0.
+
     meteo_location : tuple
-        Global location for meteo timeseries
+        Global location for meteo time series.
 
     Returns
     -------
     da_meteo : xr.DataArray
-        xr.DataArray containing the meteo timeseries values. If None, uses ``df_meteo``.
-
-        * Required variables if netcdf: [``precip``]
+        DataArray containing the meteo time series values.
     """
-    # Set units and type
-    if is_rate:
-        meteo_type = "rainfall_rate"
-        meteo_unit = "mm/day"
-    else:
-        meteo_type = "rainfall"
-        meteo_unit = "mm"
+    allowed_meteo_types = {
+        "rainfall_rate": "mm/day",
+        "rainfall": "mm",
+    }
 
-    # Timeseries boundary values
+    if meteo_type not in allowed_meteo_types:
+        raise ValueError(
+            f"Unsupported meteo_type '{meteo_type}'. "
+            f"Supported values are: {sorted(allowed_meteo_types)}."
+        )
 
-    logger.info("Preparing global (spatially uniform) timeseries.")
-    # get data freq in seconds
+    if df_meteo is None:
+        raise ValueError("df_meteo is required.")
+
+    if "time" not in df_meteo.columns:
+        raise ValueError("df_meteo must contain a 'time' column.")
+
+    if meteo_type not in df_meteo.columns:
+        raise ValueError(
+            f"df_meteo must contain a '{meteo_type}' column."
+        )
+
+    if len(df_meteo.index) < 2:
+        raise ValueError(
+            "df_meteo must contain at least two timesteps to infer "
+            "the time frequency."
+        )
+
+    if meteo_location is None:
+        raise ValueError("meteo_location is required.")
+
+    meteo_unit = allowed_meteo_types[meteo_type]
+
+    logger.info("Preparing global spatially uniform %s timeseries.", meteo_type)
+
+    # Get data frequency.
     dt = df_meteo.time.iloc[1] - df_meteo.time.iloc[0]
     freq = dt.resolution_string
+
     multiplier = 1
+
     if freq == "D":
         logger.warning(
-            "time unit days is not supported by the current GUI version: 2022.04"
-        )  # converting to hours as temporary solution
-        # FIXME: day is converted to hours temporarily
+            "Time unit days is not supported by the current GUI version: 2022.04. "
+            "Converting days to hours as a temporary solution."
+        )
         multiplier = 24
-    if len(
-        pd.date_range(df_meteo.iloc[0, :].time, df_meteo.iloc[-1, :].time, freq=dt)
-    ) != len(df_meteo.time):
-        logger.error("does not support non-equidistant time-series.")
+
+    expected_time_index = pd.date_range(
+        df_meteo.time.iloc[0],
+        df_meteo.time.iloc[-1],
+        freq=dt,
+    )
+
+    if len(expected_time_index) != len(df_meteo.time):
+        raise ValueError("Non-equidistant time series are not supported.")
+
     freq_name = _TIMESTR[freq]
     freq_step = getattr(dt.components, freq_name)
-    meteo_times = np.array([(i * freq_step) for i in range(len(df_meteo.time))])
+
+    meteo_times = np.array(
+        [(i * freq_step * multiplier) for i in range(len(df_meteo.time))]
+    )
+
     if multiplier == 24:
-        meteo_times = np.array(
-            [(i * freq_step * multiplier) for i in range(len(df_meteo.time))]
-        )
         freq_name = "hours"
-    # instantiate xr.DataArray for global time series
+
     da_out = xr.DataArray(
-        data=np.full((1, len(df_meteo)), df_meteo["precip"].values, dtype=np.float32),
+        data=np.full(
+            (1, len(df_meteo)),
+            df_meteo[meteo_type].values,
+            dtype=np.float32,
+        ),
         dims=["index", "time"],
         coords=dict(
             index=["global"],
@@ -538,19 +590,16 @@ def compute_meteo_forcings(
         attrs=dict(
             function="TimeSeries",
             timeInterpolation="Linear",
-            quantity=f"{meteo_type}",
-            units=f"{meteo_unit}",
+            quantity=meteo_type,
+            units=meteo_unit,
             time_unit=f"{freq_name} since {pd.to_datetime(df_meteo.time.iloc[0])}",
-            # support only yyyy-mm-dd HH:MM:SS
         ),
     )
-    # fill in na using default
+
     da_out = da_out.fillna(fill_value)
-    da_out.name = f"{meteo_type}"
-    da_out.dropna(dim="time")
+    da_out.name = meteo_type
 
-    return da_out
-
+    return da_out.dropna(dim="time")
 
 def _standardize_forcing_timeindexes(da):
     """Standardize timeindexes frequency based on forcing DataArray."""

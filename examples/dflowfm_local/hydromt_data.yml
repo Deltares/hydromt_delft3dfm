@@ -148,7 +148,7 @@ meteo_timeseries_T2:
     index_col: 0
     parse_dates: true
   rename:
-    T2_mm/day: precip
+    T2_mm/day: rainfall_rate
   meta:
     unit: mm day-1
 pipes_defaults:
