@@ -67,8 +67,6 @@ class MDUComponent(ConfigComponent):
 
         def parse_time_to_datetime(key: str) -> dt.datetime:
             date_str = str(self.get_value(key))
-            # validate datetime strings (from hydrolib.core)
-            date_str = validate_datetime_string(field_value=date_str, field=key)
             # expected format is yyyymmddhhmmss, but hhmmss may be omitted
             # (default:000000).
             if len(date_str) == 8:
