@@ -196,6 +196,8 @@ def _check_equal(a, b, name="") -> dict[str, str]:
 
     Returns dict with component name and associated error message.
     """
+    from hydrolib.core.dflowfm import StructureModel
+
     errors = {}
     try:
         assert isinstance(b, type(a)), "property types do not match"
@@ -203,6 +205,18 @@ def _check_equal(a, b, name="") -> dict[str, str]:
             for key in a:
                 assert key in b, f"{key} missing"
                 errors.update(**_check_equal(a[key], b[key], f"{name}.{key}"))
+        elif isinstance(a, list):
+            # required for mdu.geometry.structurefile, which is a list of StructureModel
+            # these lists cannot be compared directly, so we have to loop over the items
+            # and in the next isinstance compare equality on the dict representations
+            for i in range(len(a)):
+                assert isinstance(
+                    b[i], type(a[i])
+                ), "property types of items do not match"
+                errors.update(**_check_equal(a[i], b[i], f"{name}[{i}]"))
+        elif isinstance(a, StructureModel):
+            # TODO: StructureModel()!=StructureModel(), so we have to compare the dicts
+            errors.update(**_check_equal(a.dict(), b.dict(), name))
         else:
             assert a == b, "values not equal"
     except AssertionError as e:

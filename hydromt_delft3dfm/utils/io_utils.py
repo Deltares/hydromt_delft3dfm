@@ -151,6 +151,7 @@ def write_branches_gui(
     branches["branchtype"] = branches["branchtype"].replace(
         {"river": 0, "pipe": 2, "sewerconnection": 1}
     )
+    branches = branches.replace(np.nan, None)
     branchgui_model = BranchModel(branch=branches.to_dict("records"))
     branchgui_fn = branchgui_model._filename() + branchgui_model._ext()
     branchgui_model.filepath = join(savedir, branchgui_fn)
@@ -394,11 +395,12 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
         ["frictionid", "frictionvalue", "frictiontype"]
     ]
     frictions = frictions.drop_duplicates().dropna(how="all")
+    frictions = frictions.replace(np.nan, None)
 
     friction_fns = []
     # create a new friction
     for i, row in frictions.iterrows():
-        if isinstance(row.frictionvalue, float) and not np.isnan(row.frictionvalue):
+        if row.frictionid is not None and row.frictionvalue is not None:
             fric_model = FrictionModel(global_=row.to_dict())
             fric_name = f"{row.frictionid}"
             fric_filename = f"{fric_model._filename()}_{fric_name}" + fric_model._ext()
@@ -686,10 +688,17 @@ def read_1dboundary(
         External and focing values combined into a DataArray for variable quantity.
     """
     nodeids = df.nodeid.values
+    # TODO: the comparison to nan below might have become invalid since the nan-to-None
+    # change in https://github.com/Deltares/hydromt_delft3dfm/pull/226 when updating
+    # to hydrolib-core v1. There is no test in the testbank that contains nodeid=nan
+    # so this cannot be checked. If this method fails on nan/None, fix this and add a
+    # test.
     nodeids = nodeids[nodeids != "nan"]
     # Assume one forcing file (HydroMT writer) and read
     forcing = df.forcingfile.iloc[0]
-    df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
+    df_forcing = pd.DataFrame(
+        [f.__dict__ for forcingfile in forcing for f in forcingfile.forcing]
+    )
     # Filter for the current nodes, remove nans
     df_forcing = df_forcing[np.isin(df_forcing.name, nodeids)]
 
@@ -1046,7 +1055,9 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
 
     # Assume one forcing file (HydroMT writer) and read
     forcing = df.forcingfile
-    df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
+    df_forcing = pd.DataFrame(
+        [f.__dict__ for forcingfile in forcing for f in forcingfile.forcing]
+    )
 
     data, dims, coords, bc = _read_forcing_dataframe(
         df_forcing,

@@ -1109,9 +1109,9 @@ def find_nearest_branch(
 
     # For rows where distance is greater than maxdist, set branch_id
     # to empty and branch_offset to NaN
-    result.loc[~valid_rows, "branch_id"] = ""
-    result.loc[~valid_rows, "branch_offset"] = np.nan
-    result.loc[~valid_rows, "branch_distance"] = np.nan
+    result.loc[~valid_rows, "branch_id"] = None
+    result.loc[~valid_rows, "branch_offset"] = None
+    result.loc[~valid_rows, "branch_distance"] = None
 
     return result
 
