@@ -1320,7 +1320,7 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
         "ssr": "solarradiation",
         "tcc": "cloudiness",
         "precip": "rainfall", # ERA5 tp
-        # TODO: hydromt deltares_catalog does not contain these variables from ERA5
+        # TODO: hydromt data_catalog deltares_data does not contain these variables from ERA5
         # 'sst':'sea_surface_temperature',
         # 'strd': 'longwaveradiation', (ssrd and tisr are supported)
         # 'chnk':'charnock',
