@@ -2864,6 +2864,10 @@ class DFlowFMModel(Model):
             time_range=(tstart, tstop),
             variables=variables,
         )
+        # make sure that we always have a Dataset, also when variables is only a
+        # (list of a) single variable
+        if isinstance(meteo_data, xr.DataArray):
+            meteo_data = meteo_data.to_dataset()
 
         if chunksize is not None:
             meteo_data = meteo_data.chunk({"time": chunksize})
@@ -2883,11 +2887,16 @@ class DFlowFMModel(Model):
             # TODO: precip also uses np.fmax(precip, 0), consider using that also (or increasing the buffer?)
             meteo_data = meteo_data.raster.reproject_like(da_like, method=reproj_method)
 
-        # Update meta attributes (used for default output filename later)
-        meteo_data.attrs.update({"meteo_fn": meteo_fn})
         for variable in variables:
             da = meteo_data[variable]
-            self.forcing.set(da, name=f"spatial_{variable}")
+            # Update meta attributes (used for default output filename later)
+            da.attrs.update({"meteo_fn": meteo_fn})
+            # TODO: when adding the same variable again, make sure to not overwrite it
+            # by checking if it already exists in self.forcing.data.keys()
+            # even if we add a unique identifier, the netcdf is probably still overwritten
+            # this also requires operand="+" in the ext file
+            name = f"spatial_{variable}"
+            self.forcing.set(da, name=name)
         # self._update_config_variable_name(self._MAPS["precip"], data_type="forcing")
 
     # ## I/O
