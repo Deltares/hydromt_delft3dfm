@@ -2892,10 +2892,15 @@ class DFlowFMModel(Model):
             # Update meta attributes (used for default output filename later)
             da.attrs.update({"meteo_fn": meteo_fn})
             # TODO: when adding the same variable again, make sure to not overwrite it
-            # by checking if it already exists in self.forcing.data.keys()
-            # even if we add a unique identifier, the netcdf is probably still overwritten
-            # this also requires operand="+" in the ext file
+            # even if we create a unique name, the netcdf will still be overwritten
+            # since it uses the dflowfm quantity name. Support for duplicated variables
+            # also requires operand="+" in the ext file.
             name = f"spatial_{variable}"
+            if name in self.forcing.data.keys():
+                raise NotImplementedError(
+                    f"forcing '{name}' is already present and it is not yet supported "
+                    f"to add multiple forcings for the same variable/quantity."
+                )
             self.forcing.set(da, name=name)
         # self._update_config_variable_name(self._MAPS["precip"], data_type="forcing")
 
