@@ -2891,8 +2891,8 @@ class DFlowFMModel(Model):
             da = meteo_data[variable]
             # Update meta attributes (used for default output filename later)
             da.attrs.update({"meteo_fn": meteo_fn})
-            # TODO: when adding the same variable again, make sure to not overwrite it
-            # even if we create a unique name, the netcdf will still be overwritten
+            # prevent overwriting a name/forcing that already exists.
+            # TODO: even if we create a unique name, the netcdf will still be overwritten
             # since it uses the dflowfm quantity name. Support for duplicated variables
             # also requires operand="+" in the ext file.
             name = f"spatial_{variable}"

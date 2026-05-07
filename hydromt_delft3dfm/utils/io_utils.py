@@ -24,6 +24,7 @@ from hydrolib.core.dflowfm import (
     StorageNodeModel,
     StructureModel,
 )
+from hydromt.writers import write_nc
 from shapely.geometry import Point, Polygon
 
 from hydromt_delft3dfm.utils import gis_utils
@@ -1343,12 +1344,12 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
         if "x" in da_out.coords:
             da_out["x"] = da_out["x"].assign_attrs(dict(standard_name="projection_x_coordinate", units="m"))
             da_out["y"] = da_out["y"].assign_attrs(dict(standard_name="projection_y_coordinate", units="m"))
-        # else:
-        #     da_out["longitude"] = da_out["longitude"].assign_attrs(dict(standard_name="longitude", units="degrees_east"))
-        #     da_out["latitude"] = da_out["latitude"].assign_attrs(dict(standard_name="latitude", units="degrees_north"))
-        da_out.to_netcdf(forcing_fp)
-        # from hydromt.writers import write_nc
-        # write_nc(da_out, forcing_fp, gdal_compliant=True, rename_dims=True)
+        else:
+            da_out["longitude"] = da_out["longitude"].assign_attrs(dict(standard_name="longitude", units="degrees_east"))
+            da_out["latitude"] = da_out["latitude"].assign_attrs(dict(standard_name="latitude", units="degrees_north"))
+        # TODO: gdal_compliant=True drops the assigned attributes again
+        # which are required from dflowfm to read the netcdf files properly
+        write_nc(da_out, forcing_fp, gdal_compliant=False, rename_dims=False, progressbar=True)
 
         # add forcingfile to ext
         ext = dict()
