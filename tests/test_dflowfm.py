@@ -414,6 +414,7 @@ def test_setup_spatial_forcing(tmpdir):
     # https://deltares.github.io/hydromt/stable/user_guide/data_catalog/data_conventions.html
     # TODO: missing in conventions: neutral wind, charnock, airdensity and more
     # TODO: beware the multiplications in hydromt: https://github.com/Deltares/hydromt/blob/385399dd0cbc8a1c1833dd5400080da70d542cd9/data/catalogs/deltares_data/v1.1.1/data_catalog.yml#L495-L500
+    # TODO: consider passing dflowfm quantities instead, but also keep supporting artifact_data/deltares_data
     mod1.setup_spatial_forcing(
         meteo_fn="era5_hourly",  # source for precipitation.
         variables=["precip", "press_msl", "temp_dew", "wind10_u", "wind10_v"],
