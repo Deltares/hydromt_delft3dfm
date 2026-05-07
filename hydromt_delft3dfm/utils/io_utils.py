@@ -1339,6 +1339,8 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
         quantity = dict_hydromt_dflowfm[variable]
         forcing_fn = f"meteo_{quantity}.nc"
         forcing_fp = Path(join(savedir, forcing_fn))
+        # TODO: maybe rename variables from hydromt_convention to dflowfm convention
+        # da_out = da_out.rename_vars(dict_hydromt_dflowfm, errors="ignore")
         # TODO: neater support of latlon vs xy, maybe in setup_spatial_forcing() method or in hydromt
         # https://github.com/Deltares/hydromt/issues/1457
         # TODO: latlon cannot currently be tested in delft3dfm since networkfile cannot be written with crs yet

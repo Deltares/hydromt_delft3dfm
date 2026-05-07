@@ -2845,12 +2845,10 @@ class DFlowFMModel(Model):
             Additional arguments passed to the forcing function.
             See hydromt.model.processes.meteo.precip for more details.
         """
-        # TODO: self.data_catalog.get_rasterdataset does not support all desired variables
-        # TODO: when adding dewpointtemperature/solarradiation, also change mdu.physics.temperature = 5
         # TODO: update docstring
-        # TODO: maybe move to components.forcing (including the test)
+        # TODO: when adding dewpointtemperature/solarradiation/others, also change mdu.physics.temperature = 5
+        # TODO: maybe move to components.forcing (also the test)
 
-        #TODO: still a copy from https://deltares.github.io/hydromt_wflow/stable/_modules/hydromt_wflow/wflow_sbm.html#WflowSbmModel.setup_precip_forcing
         tstart, tstop = self.get_model_time()  # time slice
         # probably by giving geom self.region, it automatically clips, so mask is not required
         # mask = self.staticmaps.data[self._MAPS["basins"]].values > 0
@@ -2873,16 +2871,17 @@ class DFlowFMModel(Model):
             meteo_data = meteo_data.chunk({"time": chunksize})
 
         if self.crs != meteo_data.raster.crs:
-            # TODO: region has to come from self
-            # TODO: res should come from ERA5 source res
             da_like = create_grid_from_region(
-                region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]), #self.region,
-                res=self.mesh.res,
+                region=dict(bbox=list(self.region.total_bounds)),
+                region_crs=self.crs,
                 crs=self.crs,
+                # TODO: res should come from ERA5 source resolution,
+                #  e.g. meteo_data.raster.res but converted to meters if self.crs is cartesian
+                res=self.mesh.res,
             )
-
-            # reproj_method default from hydromt.model.processes.meteo.precip
-            # TODO: consider proper interpolation instead
+            # TODO: reproj_method default from hydromt.model.processes.meteo.precip
+            #  consider more accurate interpolation like bilinear
+            #  https://rasterio.readthedocs.io/en/stable/api/rasterio.enums.html#rasterio.enums.Resampling
             reproj_method = "nearest_index"
             # TODO: precip also uses np.fmax(precip, 0), consider using that also (or increasing the buffer?)
             meteo_data = meteo_data.raster.reproject_like(da_like, method=reproj_method)
@@ -2893,8 +2892,8 @@ class DFlowFMModel(Model):
             da.attrs.update({"meteo_fn": meteo_fn})
             # prevent overwriting a name/forcing that already exists.
             # TODO: even if we create a unique name, the netcdf will still be overwritten
-            # since it uses the dflowfm quantity name. Support for duplicated variables
-            # also requires operand="+" in the ext file.
+            #  since it uses the dflowfm quantity name. Support for duplicated variables
+            #  also requires operand="+" in the ext file.
             name = f"spatial_{variable}"
             if name in self.forcing.data.keys():
                 raise NotImplementedError(
