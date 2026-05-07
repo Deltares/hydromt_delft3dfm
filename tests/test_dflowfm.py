@@ -393,7 +393,8 @@ def test_setup_spatial_forcing(tmpdir):
     mod1 = DFlowFMModel(
         root=root,
         mode="w",
-        data_libs=["artifact_data"],
+        # data_libs=["artifact_data"],
+        data_libs=["deltares_data"], # has also wind10_u/wind10_v/temp_dew
         crs=3857,
     )
 
@@ -402,15 +403,20 @@ def test_setup_spatial_forcing(tmpdir):
     # this does not result in a crashing delft3dfm simulation somehow, does it with other quantities?
     mod1.setup_config(**{
         "time.startdatetime": "20100202",
-        "time.stopdatetime": "20100206",
+        "time.stopdatetime": "20100203",
     })
 
     mod1.setup_mesh2d(
         region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
         res=500,
     )
+    # variable conventions can be found in the hydromt docs
+    # https://deltares.github.io/hydromt/stable/user_guide/data_catalog/data_conventions.html
+    # TODO: missing in conventions: neutral wind, charnock, airdensity and more
+    # TODO: beware the multiplications in hydromt: https://github.com/Deltares/hydromt/blob/385399dd0cbc8a1c1833dd5400080da70d542cd9/data/catalogs/deltares_data/v1.1.1/data_catalog.yml#L495-L500
     mod1.setup_spatial_forcing(
-        precip_fn="era5",  # source for precipitation.
+        meteo_fn="era5_hourly",  # source for precipitation.
+        variables=["precip", "press_msl", "temp_dew", "wind10_u", "wind10_v"],
     )
     # write calls the validators and writes all the delft3dfm files
     mod1.write()

@@ -1305,17 +1305,47 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
     if len(forcing) == 0:
         return
 
+    # dict to translate hydromt names to dflowfm names
+    # sourced from rename table in the data_catalog: https://github.com/Deltares/hydromt/blob/385399dd0cbc8a1c1833dd5400080da70d542cd9/data/catalogs/deltares_data/v1.1.1/data_catalog.yml#L502-L509
+    # TODO: consider setting it as an attribute in setup_precip_forcing instead
+    # TODO: extend with quantities in https://github.com/Deltares/dfm_tools/blob/05528077d0d6b517e92f5a3ad54b40c3dc5761cc/dfm_tools/modelbuilder.py#L263-L282
+    # TODO: extend with quantities in https://github.com/Deltares/dfm_tools/blob/05528077d0d6b517e92f5a3ad54b40c3dc5761cc/dfm_tools/download.py#L55-L76
+    dict_hydromt_dflowfm = {
+        "wind10_u": "windx", # ERA5 u10
+        "wind10_v": "windy", # ERA5 v10
+        "press_msl": "airpressure", # ERA5 msl
+        "temp": "airtemperature", # ERA5 t2m
+        "temp_dew": "dewpoint", # ERA5 d2m
+        "ssr": "solarradiation",
+        "tcc": "cloudiness",
+        "precip": "rainfall", # ERA5 tp
+        # TODO: not yet supported from ERA5
+        # 'sst':'sea_surface_temperature',
+        # 'strd': 'longwaveradiation',
+        # 'chnk':'charnock',
+        # 'u10n': 'windx',
+        # 'v10n': 'windy',
+        # 'mer':'rainfall_rate'
+        # 'mtpr':'rainfall_rate',
+        # 'rhoao':'airdensity',
+
+    }
     extdicts = list()
     # Loop over forcing dict
     for name, da in forcing.items():
         da_out = da.copy()
-        # TODO: get the quantity/variable name from the dataarray/self
-        quantity = "rainfall"
-        variable = "precip"
+        variable = da.name
+        quantity = dict_hydromt_dflowfm[variable]
         forcing_fn = f"meteo_{quantity}.nc"
         forcing_fp = Path(join(savedir, forcing_fn))
-        da_out["x"] = da_out["x"].assign_attrs(dict(standard_name="projection_x_coordinate", units="m"))
-        da_out["y"] = da_out["y"].assign_attrs(dict(standard_name="projection_y_coordinate", units="m"))
+        # TODO: neater support of latlon vs xy, maybe in setup_spatial_forcing() method or in hydromt
+        # TODO: latlon cannot currently be tested in delft3dfm since networkfile cannot be written with crs yet
+        if "x" in da_out.coords:
+            da_out["x"] = da_out["x"].assign_attrs(dict(standard_name="projection_x_coordinate", units="m"))
+            da_out["y"] = da_out["y"].assign_attrs(dict(standard_name="projection_y_coordinate", units="m"))
+        # else:
+        #     da_out["longitude"] = da_out["longitude"].assign_attrs(dict(standard_name="longitude", units="degrees_east"))
+        #     da_out["latitude"] = da_out["latitude"].assign_attrs(dict(standard_name="latitude", units="degrees_north"))
         da_out.to_netcdf(forcing_fp)
         # from hydromt.writers import write_nc
         # write_nc(da_out, forcing_fp, gdal_compliant=True, rename_dims=True)
@@ -1326,9 +1356,10 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
         ext["forcingVariableName"] = variable
         ext["forcingfile"] = forcing_fn
         ext["forcingfiletype"] = "netcdf"
-        # TODO: invalid input is not raised, is it with hydrolib-core v1?
-        #  ext["interp"] = "InterpolateTimeAndSpaceSaveWeights"
+        # TODO: invalid input is not raised on .write(), is it with hydrolib-core v1?
+        # ext["interp"] = "InterpolateTimeAndSpaceSaveWeights"
         ext["interpolationmethod"] = "linearSpaceTime"
+        # TODO: also support operand=+
         ext["operand"] = "O"
         extdicts.append(ext)
 

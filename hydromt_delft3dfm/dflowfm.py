@@ -3,7 +3,7 @@
 import logging
 from os.path import exists, isfile, join
 from pathlib import Path
-from typing import Any
+from typing import Any, List
 
 import geopandas as gpd
 import hydromt
@@ -2807,8 +2807,8 @@ class DFlowFMModel(Model):
     @hydromt_step
     def setup_spatial_forcing(
         self,
-        precip_fn: str | xr.DataArray,
-        # precip_clim_fn: str | xr.DataArray | None = None,
+        meteo_fn: str | xr.DataArray,
+        variables: List[str],
         chunksize: int | None = None,
         **kwargs,
     ) -> None:
@@ -2845,76 +2845,49 @@ class DFlowFMModel(Model):
             Additional arguments passed to the forcing function.
             See hydromt.model.processes.meteo.precip for more details.
         """
-        # TODO: make this method loop over ERA5 variables or write dedicated methods that call a generic one?
-        # self.data_catalog.get_rasterdataset supports multiple variables, so a preprocessor would be useful, then pass
-        # it to dedicated hydromt temp/precip functions
+        # TODO: self.data_catalog.get_rasterdataset does not support all desired variables
         # TODO: when adding dewpointtemperature/solarradiation, also change mdu.physics.temperature = 5
         # TODO: update docstring
         # TODO: maybe move to components.forcing (including the test)
 
         #TODO: still a copy from https://deltares.github.io/hydromt_wflow/stable/_modules/hydromt_wflow/wflow_sbm.html#WflowSbmModel.setup_precip_forcing
         tstart, tstop = self.get_model_time()  # time slice
-        # freq = pd.to_timedelta(self.config.get_value("time.timestepsecs"), unit="s")
         # probably by giving geom self.region, it automatically clips, so mask is not required
         # mask = self.staticmaps.data[self._MAPS["basins"]].values > 0
 
         # TODO: clipping should include outer bounds if not exact, test this
         # TODO variables can also be more, should adhere to data conventions: https://deltares.github.io/hydromt/stable/user_guide/data_catalog/data_conventions.html#meteorology
-        precip = self.data_catalog.get_rasterdataset(
-            precip_fn,
+        meteo_data = self.data_catalog.get_rasterdataset(
+            meteo_fn,
             geom=self.region,
             buffer=2,
             time_range=(tstart, tstop),
-            variables=["precip"],
+            variables=variables,
         )
-        # TODO: why would we need to convert?
-        # precip = precip.astype("float32")
 
         if chunksize is not None:
-            precip = precip.chunk({"time": chunksize})
+            meteo_data = meteo_data.chunk({"time": chunksize})
 
-        # clim = None
-        # if precip_clim_fn is not None:
-        #     clim = self.data_catalog.get_rasterdataset(
-        #         precip_clim_fn,
-        #         geom=precip.raster.box,
-        #         buffer=2,
-        #         variables=["precip"],
-        #     )
-        #     clim = clim.astype("float32")
+        if self.crs != meteo_data.raster.crs:
+            # TODO: region has to come from self
+            # TODO: res should come from ERA5 source res
+            da_like = create_grid_from_region(
+                region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]), #self.region,
+                res=self.mesh.res,
+                crs=self.crs,
+            )
 
-        # TODO: region has to come from self
-        # TODO: res should come from ERA5 source res
-        da_like = create_grid_from_region(
-            region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]), #self.region,
-            res=self.mesh.res,
-            crs=self.crs,
-        )
-
-        # TODO: import is not necesary in hydromt_wlfow, but cannot be found otherwise
-        # TODO: this method is fairly complex but probably not required by dflowfm
-        # import hydromt.model.processes.meteo
-        # precip_out = hydromt.model.processes.meteo.precip(
-        #     precip=precip,
-        #     da_like=da_like, #self.staticmaps.data[self._MAPS["elevtn"]],
-        #     # clim=clim,
-        #     # freq=freq,
-        #     # resample_kwargs=dict(label="right", closed="right"),
-        # )
-
-        # reproj_method default from hydromt.model.processes.meteo.precip
-        # precip also uses np.fmax(precip, 0), consider using that also or increasing the buffer
-        # TODO: consider proper interpolation instead
-        reproj_method = "nearest_index"
-        precip_out = precip.raster.reproject_like(da_like, method=reproj_method)
+            # reproj_method default from hydromt.model.processes.meteo.precip
+            # TODO: consider proper interpolation instead
+            reproj_method = "nearest_index"
+            # TODO: precip also uses np.fmax(precip, 0), consider using that also (or increasing the buffer?)
+            meteo_data = meteo_data.raster.reproject_like(da_like, method=reproj_method)
 
         # Update meta attributes (used for default output filename later)
-        precip_out.attrs.update({"precip_fn": precip_fn})
-        # if precip_clim_fn is not None:
-        #     precip_out.attrs.update({"precip_clim_fn": precip_clim_fn})
-        # TODO: get name from ds
-        name = "precip"
-        self.forcing.set(precip_out, name=f"spatial_{name}")
+        meteo_data.attrs.update({"meteo_fn": meteo_fn})
+        for variable in variables:
+            da = meteo_data[variable]
+            self.forcing.set(da, name=f"spatial_{variable}")
         # self._update_config_variable_name(self._MAPS["precip"], data_type="forcing")
 
     # ## I/O
