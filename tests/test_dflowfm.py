@@ -261,15 +261,13 @@ def test_read_write_config_empty_paths(tmpdir):
     model2 = DFlowFMModel(root=root, mode="r", crs=3857)
     # Get the mdu settings
     model2.mdu.read()
-    # Check whether the path is an emtpy string
-    # TODO: should be an empty string: https://github.com/Deltares/HYDROLIB-core/issues/703
-    # follow-up: https://github.com/Deltares/HYDROLIB-core/issues/1053
-    # then update this test: https://github.com/Deltares/hydromt_delft3dfm/issues/148
-    # and update the reference mdu files for piave and local
+    # Check whether the path is an emtpy string (was Path("") before)
+    # was fixed in https://github.com/Deltares/HYDROLIB-core/issues/703
+    # and https://github.com/Deltares/HYDROLIB-core/issues/1053
     assert model2.mdu.data["output"]["outputdir"] == ""
-    assert model2.mdu.data["output"]["waqoutputdir"] == Path(".")
-    assert model2.mdu.data["trachytopes"]["trtdef"] == Path(".")
-    assert model2.mdu.data["trachytopes"]["trtl"] == Path(".")
+    assert model2.mdu.data["output"]["waqoutputdir"] == ""
+    assert model2.mdu.data["trachytopes"]["trtdef"] == ""
+    assert model2.mdu.data["trachytopes"]["trtl"] == ""
 
 
 def test_setup_mesh2d_refine(tmpdir):
