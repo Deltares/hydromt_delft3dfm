@@ -1,5 +1,5 @@
 ---
-name: test-hydromt-dev
+name: test-hydrolibcore-dev
 
 on:
   push:
