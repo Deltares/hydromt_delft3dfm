@@ -140,6 +140,10 @@ python = "3.14.*"
 # Get the latest version from main
 hydromt = { git = "https://github.com/Deltares/hydromt.git", branch = "main" }
 
+[tool.pixi.feature.hydrolibcore_dev.pypi-dependencies]
+# Get the latest version from main
+hydrolib-core = { git = "https://github.com/Deltares/hydrolib-core.git", branch = "main" }
+
 [tool.pixi.feature.docs.dependencies]
 pandoc = "*"
 
@@ -153,7 +157,6 @@ pypi-312 = { features = ["py312", "dev", "test"]}
 pypi-313 = { features = ["py313", "dev", "test"]}
 pypi-314 = { features = ["py314", "dev", "test"]}
 
-dev-311 = { features = ["py311", "dev", "test", "hydromt_dev"]}
-dev-312 = { features = ["py312", "dev", "test", "hydromt_dev"]}
-dev-313 = { features = ["py313", "dev", "test", "hydromt_dev"]}
 dev-314 = { features = ["py314", "dev", "test", "hydromt_dev"]}
+
+hcdev-314= { features = ["py314", "dev", "test", "hydrolibcore_dev"]}
