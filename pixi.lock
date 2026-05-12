@@ -92,7 +92,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/04/4b/29cac41a4d98d144bf5f6d33995617b185d14b22401f75ca86f384e87ff1/h11-0.16.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/7e/f5/f66802a942d491edb555dd61e3a9961140fd64c90bce1eafd741609d334d/httpcore-1.0.9-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/2a/39/e50c7c3a983047577ee07d2a9e53faf5a69493943ec3f6a384bdc792deb2/httpx-0.28.1-py3-none-any.whl
-      - pypi: git+https://github.com/deltares/hydrolib-core#03992586db7291eb4f2b6eeaacfe1419ff3abbcc
+      - pypi: https://files.pythonhosted.org/packages/6a/d9/2db05b9af0faad00c5b7550d86d1f99e52c8c492c96ba67db4b6acf7b249/hydrolib_core-1.0.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/6a/49/00378d7932905c039677f65aff29da061550be5e223bb6aad500ae840377/hydromt-1.3.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/42/77/de194443bf38daed9452139e960c632b0ef9f9a5dd9ce605fdf18ca9f1b1/id-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -346,7 +346,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/04/4b/29cac41a4d98d144bf5f6d33995617b185d14b22401f75ca86f384e87ff1/h11-0.16.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/7e/f5/f66802a942d491edb555dd61e3a9961140fd64c90bce1eafd741609d334d/httpcore-1.0.9-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/2a/39/e50c7c3a983047577ee07d2a9e53faf5a69493943ec3f6a384bdc792deb2/httpx-0.28.1-py3-none-any.whl
-      - pypi: git+https://github.com/deltares/hydrolib-core#03992586db7291eb4f2b6eeaacfe1419ff3abbcc
+      - pypi: https://files.pythonhosted.org/packages/6a/d9/2db05b9af0faad00c5b7550d86d1f99e52c8c492c96ba67db4b6acf7b249/hydrolib_core-1.0.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/6a/49/00378d7932905c039677f65aff29da061550be5e223bb6aad500ae840377/hydromt-1.3.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/42/77/de194443bf38daed9452139e960c632b0ef9f9a5dd9ce605fdf18ca9f1b1/id-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -590,7 +590,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e5/15/cf2a69ade4b194aa524ac75112d5caac37414b20a3a03e6865dfe0bd1539/geopy-2.4.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/56/15/c25671c7aad70f8179d858c55a6ae8404902abe0cdcf32a29d581792b491/google_crc32c-1.8.0-cp314-cp314-manylinux1_x86_64.manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_5_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/a3/59/1bd6d7428d6ed9106efbb8c52310c60fd04f6672490f452aeaa3829aa436/greenlet-3.5.0-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
-      - pypi: git+https://github.com/deltares/hydrolib-core#03992586db7291eb4f2b6eeaacfe1419ff3abbcc
+      - pypi: https://files.pythonhosted.org/packages/6a/d9/2db05b9af0faad00c5b7550d86d1f99e52c8c492c96ba67db4b6acf7b249/hydrolib_core-1.0.0-py3-none-any.whl
       - pypi: git+https://github.com/Deltares/hydromt.git?branch=main#b238d0086b02502cb648e2a24e45ce305ff44e1c
       - pypi: https://files.pythonhosted.org/packages/42/77/de194443bf38daed9452139e960c632b0ef9f9a5dd9ce605fdf18ca9f1b1/id-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -755,7 +755,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e5/15/cf2a69ade4b194aa524ac75112d5caac37414b20a3a03e6865dfe0bd1539/geopy-2.4.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/08/a5/7b059810934a09fb3ccb657e0843813c1fee1183d3bc2c8041800374aa2c/google_crc32c-1.8.0-cp314-cp314-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/91/20/6b165108058767ee643c55c5c4904d591a830ee2b3c7dbd359828fbc829f/greenlet-3.5.0-cp314-cp314-win_amd64.whl
-      - pypi: git+https://github.com/deltares/hydrolib-core#03992586db7291eb4f2b6eeaacfe1419ff3abbcc
+      - pypi: https://files.pythonhosted.org/packages/6a/d9/2db05b9af0faad00c5b7550d86d1f99e52c8c492c96ba67db4b6acf7b249/hydrolib_core-1.0.0-py3-none-any.whl
       - pypi: git+https://github.com/Deltares/hydromt.git?branch=main#b238d0086b02502cb648e2a24e45ce305ff44e1c
       - pypi: https://files.pythonhosted.org/packages/42/77/de194443bf38daed9452139e960c632b0ef9f9a5dd9ce605fdf18ca9f1b1/id-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -930,7 +930,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e5/15/cf2a69ade4b194aa524ac75112d5caac37414b20a3a03e6865dfe0bd1539/geopy-2.4.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/56/15/c25671c7aad70f8179d858c55a6ae8404902abe0cdcf32a29d581792b491/google_crc32c-1.8.0-cp314-cp314-manylinux1_x86_64.manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_5_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/a3/59/1bd6d7428d6ed9106efbb8c52310c60fd04f6672490f452aeaa3829aa436/greenlet-3.5.0-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
-      - pypi: git+https://github.com/deltares/hydrolib-core?branch=main#03992586db7291eb4f2b6eeaacfe1419ff3abbcc
+      - pypi: git+https://github.com/Deltares/hydrolib-core.git?branch=main#03992586db7291eb4f2b6eeaacfe1419ff3abbcc
       - pypi: https://files.pythonhosted.org/packages/6a/49/00378d7932905c039677f65aff29da061550be5e223bb6aad500ae840377/hydromt-1.3.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/42/77/de194443bf38daed9452139e960c632b0ef9f9a5dd9ce605fdf18ca9f1b1/id-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -1095,7 +1095,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e5/15/cf2a69ade4b194aa524ac75112d5caac37414b20a3a03e6865dfe0bd1539/geopy-2.4.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/08/a5/7b059810934a09fb3ccb657e0843813c1fee1183d3bc2c8041800374aa2c/google_crc32c-1.8.0-cp314-cp314-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/91/20/6b165108058767ee643c55c5c4904d591a830ee2b3c7dbd359828fbc829f/greenlet-3.5.0-cp314-cp314-win_amd64.whl
-      - pypi: git+https://github.com/deltares/hydrolib-core?branch=main#03992586db7291eb4f2b6eeaacfe1419ff3abbcc
+      - pypi: git+https://github.com/Deltares/hydrolib-core.git?branch=main#03992586db7291eb4f2b6eeaacfe1419ff3abbcc
       - pypi: https://files.pythonhosted.org/packages/6a/49/00378d7932905c039677f65aff29da061550be5e223bb6aad500ae840377/hydromt-1.3.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/42/77/de194443bf38daed9452139e960c632b0ef9f9a5dd9ce605fdf18ca9f1b1/id-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -1273,7 +1273,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e5/15/cf2a69ade4b194aa524ac75112d5caac37414b20a3a03e6865dfe0bd1539/geopy-2.4.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f6/fd/33aa4ec62b290477181c55bb1c9302c9698c58c0ce9a6ab4874abc8b0d60/google_crc32c-1.8.0-cp311-cp311-manylinux1_x86_64.manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_5_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/ff/b0/815bece7399e01cadb69014219eebd0042339875c59a59b0820a46ece356/greenlet-3.5.0-cp311-cp311-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
-      - pypi: git+https://github.com/deltares/hydrolib-core#03992586db7291eb4f2b6eeaacfe1419ff3abbcc
+      - pypi: https://files.pythonhosted.org/packages/6a/d9/2db05b9af0faad00c5b7550d86d1f99e52c8c492c96ba67db4b6acf7b249/hydrolib_core-1.0.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/6a/49/00378d7932905c039677f65aff29da061550be5e223bb6aad500ae840377/hydromt-1.3.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/42/77/de194443bf38daed9452139e960c632b0ef9f9a5dd9ce605fdf18ca9f1b1/id-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -1437,7 +1437,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e5/15/cf2a69ade4b194aa524ac75112d5caac37414b20a3a03e6865dfe0bd1539/geopy-2.4.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/7c/43/acf61476a11437bf9733fb2f70599b1ced11ec7ed9ea760fdd9a77d0c619/google_crc32c-1.8.0-cp311-cp311-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/fa/6a/87f38255201e993a1915265ebb80cd7c2c78b04a45744995abbf6b259fd8/greenlet-3.5.0-cp311-cp311-win_amd64.whl
-      - pypi: git+https://github.com/deltares/hydrolib-core#03992586db7291eb4f2b6eeaacfe1419ff3abbcc
+      - pypi: https://files.pythonhosted.org/packages/6a/d9/2db05b9af0faad00c5b7550d86d1f99e52c8c492c96ba67db4b6acf7b249/hydrolib_core-1.0.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/6a/49/00378d7932905c039677f65aff29da061550be5e223bb6aad500ae840377/hydromt-1.3.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/42/77/de194443bf38daed9452139e960c632b0ef9f9a5dd9ce605fdf18ca9f1b1/id-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -1613,7 +1613,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e5/15/cf2a69ade4b194aa524ac75112d5caac37414b20a3a03e6865dfe0bd1539/geopy-2.4.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ce/a9/a780cc66f86335a6019f557a8aaca8fbb970728f0efd2430d15ff1beae0e/google_crc32c-1.8.0-cp312-cp312-manylinux1_x86_64.manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_5_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/2b/e0/2e13df68f367e2f9960616927d60857dd7e56aaadd59a47c644216b2f920/greenlet-3.5.0-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
-      - pypi: git+https://github.com/deltares/hydrolib-core#03992586db7291eb4f2b6eeaacfe1419ff3abbcc
+      - pypi: https://files.pythonhosted.org/packages/6a/d9/2db05b9af0faad00c5b7550d86d1f99e52c8c492c96ba67db4b6acf7b249/hydrolib_core-1.0.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/6a/49/00378d7932905c039677f65aff29da061550be5e223bb6aad500ae840377/hydromt-1.3.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/42/77/de194443bf38daed9452139e960c632b0ef9f9a5dd9ce605fdf18ca9f1b1/id-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -1775,7 +1775,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e5/15/cf2a69ade4b194aa524ac75112d5caac37414b20a3a03e6865dfe0bd1539/geopy-2.4.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/df/c0/87c2073e0c72515bb8733d4eef7b21548e8d189f094b5dad20b0ecaf64f6/google_crc32c-1.8.0-cp312-cp312-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/4c/fe/4fb3a0805bd5165da5ebf858da7cc01cce8061674106d2cf5bdab32cbfde/greenlet-3.5.0-cp312-cp312-win_amd64.whl
-      - pypi: git+https://github.com/deltares/hydrolib-core#03992586db7291eb4f2b6eeaacfe1419ff3abbcc
+      - pypi: https://files.pythonhosted.org/packages/6a/d9/2db05b9af0faad00c5b7550d86d1f99e52c8c492c96ba67db4b6acf7b249/hydrolib_core-1.0.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/6a/49/00378d7932905c039677f65aff29da061550be5e223bb6aad500ae840377/hydromt-1.3.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/42/77/de194443bf38daed9452139e960c632b0ef9f9a5dd9ce605fdf18ca9f1b1/id-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -1950,7 +1950,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e5/15/cf2a69ade4b194aa524ac75112d5caac37414b20a3a03e6865dfe0bd1539/geopy-2.4.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ce/42/b468aec74a0354b34c8cbf748db20d6e350a68a2b0912e128cabee49806c/google_crc32c-1.8.0-cp313-cp313-manylinux1_x86_64.manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_5_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/8a/17/a3918541fd0ddefe024a69de6d16aa7b46d36ac19562adaa63c7fa180eff/greenlet-3.5.0-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
-      - pypi: git+https://github.com/deltares/hydrolib-core#03992586db7291eb4f2b6eeaacfe1419ff3abbcc
+      - pypi: https://files.pythonhosted.org/packages/6a/d9/2db05b9af0faad00c5b7550d86d1f99e52c8c492c96ba67db4b6acf7b249/hydrolib_core-1.0.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/6a/49/00378d7932905c039677f65aff29da061550be5e223bb6aad500ae840377/hydromt-1.3.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/42/77/de194443bf38daed9452139e960c632b0ef9f9a5dd9ce605fdf18ca9f1b1/id-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -2114,7 +2114,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e5/15/cf2a69ade4b194aa524ac75112d5caac37414b20a3a03e6865dfe0bd1539/geopy-2.4.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/92/b1/d3cbd4d988afb3d8e4db94ca953df429ed6db7282ed0e700d25e6c7bfc8d/google_crc32c-1.8.0-cp313-cp313-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/b2/8f/22bf9df92bbff0eb07842b60f7e63bf7675a9742df628437a9f02d09137f/greenlet-3.5.0-cp313-cp313-win_amd64.whl
-      - pypi: git+https://github.com/deltares/hydrolib-core#03992586db7291eb4f2b6eeaacfe1419ff3abbcc
+      - pypi: https://files.pythonhosted.org/packages/6a/d9/2db05b9af0faad00c5b7550d86d1f99e52c8c492c96ba67db4b6acf7b249/hydrolib_core-1.0.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/6a/49/00378d7932905c039677f65aff29da061550be5e223bb6aad500ae840377/hydromt-1.3.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/42/77/de194443bf38daed9452139e960c632b0ef9f9a5dd9ce605fdf18ca9f1b1/id-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -2289,7 +2289,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e5/15/cf2a69ade4b194aa524ac75112d5caac37414b20a3a03e6865dfe0bd1539/geopy-2.4.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/56/15/c25671c7aad70f8179d858c55a6ae8404902abe0cdcf32a29d581792b491/google_crc32c-1.8.0-cp314-cp314-manylinux1_x86_64.manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_5_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/a3/59/1bd6d7428d6ed9106efbb8c52310c60fd04f6672490f452aeaa3829aa436/greenlet-3.5.0-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
-      - pypi: git+https://github.com/deltares/hydrolib-core#03992586db7291eb4f2b6eeaacfe1419ff3abbcc
+      - pypi: https://files.pythonhosted.org/packages/6a/d9/2db05b9af0faad00c5b7550d86d1f99e52c8c492c96ba67db4b6acf7b249/hydrolib_core-1.0.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/6a/49/00378d7932905c039677f65aff29da061550be5e223bb6aad500ae840377/hydromt-1.3.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/42/77/de194443bf38daed9452139e960c632b0ef9f9a5dd9ce605fdf18ca9f1b1/id-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -2454,7 +2454,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e5/15/cf2a69ade4b194aa524ac75112d5caac37414b20a3a03e6865dfe0bd1539/geopy-2.4.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/08/a5/7b059810934a09fb3ccb657e0843813c1fee1183d3bc2c8041800374aa2c/google_crc32c-1.8.0-cp314-cp314-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/91/20/6b165108058767ee643c55c5c4904d591a830ee2b3c7dbd359828fbc829f/greenlet-3.5.0-cp314-cp314-win_amd64.whl
-      - pypi: git+https://github.com/deltares/hydrolib-core#03992586db7291eb4f2b6eeaacfe1419ff3abbcc
+      - pypi: https://files.pythonhosted.org/packages/6a/d9/2db05b9af0faad00c5b7550d86d1f99e52c8c492c96ba67db4b6acf7b249/hydrolib_core-1.0.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/6a/49/00378d7932905c039677f65aff29da061550be5e223bb6aad500ae840377/hydromt-1.3.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/42/77/de194443bf38daed9452139e960c632b0ef9f9a5dd9ce605fdf18ca9f1b1/id-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -4507,7 +4507,7 @@ packages:
   - socksio==1.* ; extra == 'socks'
   - zstandard>=0.18.0 ; extra == 'zstd'
   requires_python: '>=3.8'
-- pypi: git+https://github.com/deltares/hydrolib-core#03992586db7291eb4f2b6eeaacfe1419ff3abbcc
+- pypi: git+https://github.com/Deltares/hydrolib-core.git?branch=main#03992586db7291eb4f2b6eeaacfe1419ff3abbcc
   name: hydrolib-core
   version: 1.0.0
   requires_dist:
@@ -4528,26 +4528,27 @@ packages:
   - ipykernel>=7.0,<8 ; extra == 'examples'
   - matplotlib>=3.8,<4 ; extra == 'plot'
   requires_python: '>=3.10,<4'
-- pypi: git+https://github.com/deltares/hydrolib-core?branch=main#03992586db7291eb4f2b6eeaacfe1419ff3abbcc
+- pypi: https://files.pythonhosted.org/packages/6a/d9/2db05b9af0faad00c5b7550d86d1f99e52c8c492c96ba67db4b6acf7b249/hydrolib_core-1.0.0-py3-none-any.whl
   name: hydrolib-core
   version: 1.0.0
+  sha256: b909dedede2ad7386395d21c4d22a02a2cac4a73e272bffa1cc060904e0870f6
   requires_dist:
+  - geopandas>=1.0.0,<2 ; extra == 'examples'
+  - ipykernel>=7.0,<8 ; extra == 'examples'
+  - jupyter>=1.0.0,<2 ; extra == 'examples'
+  - lxml>=6.0,<7
+  - matplotlib>=3.8,<4 ; extra == 'plot'
+  - meshkernel>=8.1.3,<9
   - netcdf4>=1.5,!=1.7.0,!=1.7.1,<2
   - numpy>=1.25,<3 ; python_full_version < '3.13'
   - numpy>=2.1,<3 ; python_full_version >= '3.13'
+  - openpyxl>=3.1.5,<4 ; extra == 'examples'
+  - pandas>=2.0.0
   - pydantic>=2.5,<3
-  - lxml>=6.0,<7
-  - meshkernel>=8.1.3,<9
+  - pydantic-settings>=2.11.0,<3
+  - pyyaml>=6.0.2,<7
   - strenum>=0,<1
   - tqdm>=4.67.1,<5
-  - pandas>=2.0.0
-  - pyyaml>=6.0.2,<7
-  - pydantic-settings>=2.11.0,<3
-  - geopandas>=1.0.0,<2 ; extra == 'examples'
-  - openpyxl>=3.1.5,<4 ; extra == 'examples'
-  - jupyter>=1.0.0,<2 ; extra == 'examples'
-  - ipykernel>=7.0,<8 ; extra == 'examples'
-  - matplotlib>=3.8,<4 ; extra == 'plot'
   requires_python: '>=3.10,<4'
 - pypi: https://files.pythonhosted.org/packages/6a/49/00378d7932905c039677f65aff29da061550be5e223bb6aad500ae840377/hydromt-1.3.1-py3-none-any.whl
   name: hydromt
@@ -4707,14 +4708,14 @@ packages:
 - pypi: ./
   name: hydromt-delft3dfm
   version: 0.3.1.dev0
-  sha256: f8aaabed7c6800746c6c0d19c50b25129e2db386245a8738c7e515fdf2b6a9c8
+  sha256: e0033a7d88177bedcb6fe37ea8254efc5e07e4dd1115c08e635c5e97b18a1e5f
   requires_dist:
   - hydromt>=1.3.1
   - geopandas>=0.10,!=1.0.0
   - numpy>=2.0.0
   - pandas>=2.0.0,<3
   - xarray
-  - hydrolib-core @ git+https://github.com/deltares/hydrolib-core
+  - hydrolib-core>=1.0.0
   - xugrid>=0.15.2
   - meshkernel>=6.0.0
   - pyproj
