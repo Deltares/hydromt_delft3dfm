@@ -393,8 +393,8 @@ def test_setup_spatial_forcing(tmpdir):
     mod1 = DFlowFMModel(
         root=root,
         mode="w",
-        # data_libs=["artifact_data"],
-        data_libs=["deltares_data"], # has also wind10_u/wind10_v/temp_dew
+        data_libs=["artifact_data"],
+        # data_libs=["deltares_data"], # has also wind10_u/wind10_v/temp_dew
         crs=3857,
     )
 
@@ -422,7 +422,30 @@ def test_setup_spatial_forcing(tmpdir):
     # TODO probably precip and press_msl are also converted (mult), but maybe they should not be for dflowfm
     mod1.setup_spatial_forcing(
         meteo_fn="era5_hourly",  # source for precipitation.
-        variables=["precip", "press_msl", "temp_dew", "wind10_u", "wind10_v"],
+        variables=[
+            "precip", "press_msl",
+            # "temp_dew", "wind10_u", "wind10_v",
+        ],
     )
+
+    # TODO: temporarily also add rainfal as bc so we have a reference for how the data
+    #  returned by the read_spatial() method should look like
+    mod1.setup_rainfall_from_constant(
+        constant_value=150,
+    )
+
     # write calls the validators and writes all the delft3dfm files
     mod1.write()
+
+
+    # def test_spatial_forcing_read():
+    # check if the created model with netcdf forcing can also be read properly
+    # TODO: remove hard-coding of filepath
+    # root = r"c:\Users\veenstra\AppData\Local\Temp\pytest-of-veenstra\pytest-876\test_setup_spatial_forcing0\dflowfm_example"
+    mod2 = DFlowFMModel(
+        root=root,
+        mode="r",
+    )
+    mod2.read()
+    expected_keys = set(['press_msl', 'precip', 'rainfall_rate'])
+    assert set(mod2.forcing.data.keys()) == expected_keys

@@ -47,10 +47,36 @@ __all__ = [
     "write_2dboundary",
     "read_meteo",
     "write_meteo",
+    "read_spatial",
+    "write_spatial",
 ]
 
 logger = logging.getLogger(f"hydromt.{__name__}")
 
+# dict to translate hydromt names to dflowfm names
+# sourced from rename table in the data_catalog: https://github.com/Deltares/hydromt/blob/385399dd0cbc8a1c1833dd5400080da70d542cd9/data/catalogs/deltares_data/v1.1.1/data_catalog.yml#L502-L509
+# TODO: consider setting it as an attribute in setup_precip_forcing instead
+# TODO: extend with quantities in https://github.com/Deltares/dfm_tools/blob/05528077d0d6b517e92f5a3ad54b40c3dc5761cc/dfm_tools/modelbuilder.py#L263-L282
+# TODO: extend with quantities in https://github.com/Deltares/dfm_tools/blob/05528077d0d6b517e92f5a3ad54b40c3dc5761cc/dfm_tools/download.py#L55-L76
+DICT_HYDROMT_DFLOWFM = {
+    "wind10_u": "windx",  # ERA5 u10
+    "wind10_v": "windy",  # ERA5 v10
+    "press_msl": "airpressure",  # ERA5 msl
+    "temp": "airtemperature",  # ERA5 t2m
+    "temp_dew": "dewpoint",  # ERA5 d2m
+    "ssr": "solarradiation",
+    "tcc": "cloudiness",
+    "precip": "rainfall",  # ERA5 tp
+    # TODO: hydromt data_catalog deltares_data does not contain these variables from ERA5
+    # 'sst':'sea_surface_temperature',
+    # 'strd': 'longwaveradiation', (ssrd and tisr are supported)
+    # 'chnk':'charnock',
+    # 'u10n': 'windx',
+    # 'v10n': 'windy',
+    # 'mer':'rainfall_rate'
+    # 'mtpr':'rainfall_rate',
+    # 'rhoao':'airdensity',
+}
 
 def read_branches_gui(
     gdf: gpd.GeoDataFrame,
@@ -1282,6 +1308,18 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     return forcing_fn, ext_fn
 
 
+def read_spatial(file_nc: str, quantity: str):
+    # TODO: add docstring
+    import xarray as xr
+    ds_out = xr.open_dataset(file_nc)
+    # reverse dictionary
+    dict_dflowfm_hydromt = {v: k for k, v in DICT_HYDROMT_DFLOWFM.items()}
+    hydromt_name = dict_dflowfm_hydromt[quantity]
+    da_out = ds_out[hydromt_name]
+    # da_out = forcingfile
+    return da_out
+
+
 # TODO: update docstring (copy of write_meteo)
 def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     """
@@ -1306,41 +1344,16 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
     if len(forcing) == 0:
         return
 
-    # dict to translate hydromt names to dflowfm names
-    # sourced from rename table in the data_catalog: https://github.com/Deltares/hydromt/blob/385399dd0cbc8a1c1833dd5400080da70d542cd9/data/catalogs/deltares_data/v1.1.1/data_catalog.yml#L502-L509
-    # TODO: consider setting it as an attribute in setup_precip_forcing instead
-    # TODO: extend with quantities in https://github.com/Deltares/dfm_tools/blob/05528077d0d6b517e92f5a3ad54b40c3dc5761cc/dfm_tools/modelbuilder.py#L263-L282
-    # TODO: extend with quantities in https://github.com/Deltares/dfm_tools/blob/05528077d0d6b517e92f5a3ad54b40c3dc5761cc/dfm_tools/download.py#L55-L76
-    dict_hydromt_dflowfm = {
-        "wind10_u": "windx", # ERA5 u10
-        "wind10_v": "windy", # ERA5 v10
-        "press_msl": "airpressure", # ERA5 msl
-        "temp": "airtemperature", # ERA5 t2m
-        "temp_dew": "dewpoint", # ERA5 d2m
-        "ssr": "solarradiation",
-        "tcc": "cloudiness",
-        "precip": "rainfall", # ERA5 tp
-        # TODO: hydromt data_catalog deltares_data does not contain these variables from ERA5
-        # 'sst':'sea_surface_temperature',
-        # 'strd': 'longwaveradiation', (ssrd and tisr are supported)
-        # 'chnk':'charnock',
-        # 'u10n': 'windx',
-        # 'v10n': 'windy',
-        # 'mer':'rainfall_rate'
-        # 'mtpr':'rainfall_rate',
-        # 'rhoao':'airdensity',
-
-    }
     extdicts = list()
     # Loop over forcing dict
     for name, da in forcing.items():
         da_out = da.copy()
         variable = da.name
-        quantity = dict_hydromt_dflowfm[variable]
+        quantity = DICT_HYDROMT_DFLOWFM[variable]
         forcing_fn = f"meteo_{quantity}.nc"
         forcing_fp = Path(join(savedir, forcing_fn))
         # TODO: maybe rename variables from hydromt_convention to dflowfm convention
-        # da_out = da_out.rename_vars(dict_hydromt_dflowfm, errors="ignore")
+        # da_out = da_out.rename_vars(DICT_HYDROMT_DFLOWFM, errors="ignore")
         # TODO: neater support of latlon vs xy, maybe in setup_spatial_forcing() method or in hydromt
         # https://github.com/Deltares/hydromt/issues/1457
         # TODO: latlon cannot currently be tested in delft3dfm since networkfile cannot be written with crs yet

@@ -115,7 +115,19 @@ class DFlowFMForcingComponent(SpatialDatasetsComponent):
             for name in forcing_names:
                 # Get the dataframe corresponding to the current variable
                 df = df_ext[df_ext.quantity == name]
-                da_out = io_utils.read_meteo(df, quantity=name)
+                # TODO: currently no support for multiple forcings for the same
+                #  quantities (would be overwritten), so make sure there is only one
+                assert len(df) == 1
+                if df.forcingfiletype.iloc[0] == "netcdf":
+                    # TODO: assuming lenght 1, enforce this by passing iloc[0] instead
+                    forcingfile = df.forcingfile.iloc[0]
+                    # TODO: should actually get the extfile
+                    mdu_dirname = dirname(self.model.mdu._filename)
+                    file_nc = join(self.model.root.path, mdu_dirname, forcingfile.filepath)
+                    da_out = io_utils.read_spatial(file_nc, quantity=name)
+                else:
+                    # TODO: assuming lenght 1, enforce this by passing iloc[0] instead
+                    da_out = io_utils.read_meteo(df, quantity=name)
                 # Add to forcing
                 self.set(da_out)
         # TODO: add spatial (meteo netcdfs)
