@@ -30,6 +30,7 @@ Fixed
 - crs cannot be None in writing mode (PR #264)
 - properly parsing tunit/startdatetime/stopdatetime (PR #267)
 - prevent reading/writing a model without a mesh/network file and prevent reading a model without an mdu file (PR #271)
+- improved error messages in case of incorrect time formats for mdu/config keys (PR #278)
 
 
 v0.3.0 (18 October 2024)
