@@ -4707,7 +4707,7 @@ packages:
 - pypi: ./
   name: hydromt-delft3dfm
   version: 0.3.1.dev0
-  sha256: f8aaabed7c6800746c6c0d19c50b25129e2db386245a8738c7e515fdf2b6a9c8
+  sha256: 240e1b260feddd51662c3af746a16b312501c06ed430d60138b3fd87475d7283
   requires_dist:
   - hydromt>=1.3.1
   - geopandas>=0.10,!=1.0.0
@@ -4716,7 +4716,7 @@ packages:
   - xarray
   - hydrolib-core @ git+https://github.com/deltares/hydrolib-core
   - xugrid>=0.15.2
-  - meshkernel>=6.0.0
+  - meshkernel>=8.2.1
   - pyproj
   - shapely>=2.0.0
   - scipy
