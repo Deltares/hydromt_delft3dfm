@@ -20,10 +20,8 @@ dependencies = [
     #"hydrolib-core>=1.0.0", # hydrolib-core>=1.0.0 has new Pydantic API, support for pandas 3 and support for Python 3.14
     "hydrolib-core @ git+https://github.com/deltares/hydrolib-core", # TODO: convert to 1.0.1 after release
     "xugrid>=0.15.2", # consistent projected/geographic properties and crs attributes in the resulting datasets
-    # meshkernel>=8.2.1 supports illegalcells via the face-node-connectivity
-    "meshkernel>=8.2.1",
-    # meshkernel>=8.3.0 supports interpolation of arbitrary properties like bathymetry (not on PyPI yet)
-#    "meshkernel>=8.3.0",
+    # meshkernel>=8.3.0 supports interpolation of arbitrary properties like bathymetry
+    "meshkernel>=8.3.0",
     "pyproj",
     "shapely>=2.0.0",
     "scipy",
