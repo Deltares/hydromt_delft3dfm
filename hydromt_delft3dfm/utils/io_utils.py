@@ -1370,6 +1370,8 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
         # add forcingfile to ext
         ext = dict()
         ext["quantity"] = quantity
+        # TODO: key will be all-lowercase after fixing https://github.com/Deltares/HYDROLIB-core/issues/1061 (hydrolib-core v1.0.1)
+        # so adjust this after merging https://github.com/Deltares/hydromt_delft3dfm/pull/226
         ext["forcingVariableName"] = variable
         ext["forcingfile"] = forcing_fn
         ext["forcingfiletype"] = "netcdf"
