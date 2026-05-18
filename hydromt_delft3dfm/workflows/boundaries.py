@@ -490,10 +490,7 @@ def compute_meteo_forcings(
         * ``rainfall_rate``
         * ``rainfall``
 
-        By default ``rainfall_rate``.
-
-        Notes
-        -----
+        By default ``rainfall_rate``. Note that
         Delft3D FM 1D2D Suite 2022.04 supports only ``rainfall_rate``.
 
     fill_value : float, optional
