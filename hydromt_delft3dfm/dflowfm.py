@@ -2675,7 +2675,11 @@ class DFlowFMModel(Model):
         self,
         constant_value: float,
     ):
-        """Deprecated. Use ``setup_meteo(constant_value=...)`` instead."""
+        """
+        Use the method``setup_meteo(constant_value=...)`` instead.
+
+        This method is deprecated.
+        """
         logger.warning(
             "setup_rainfall_from_constant is deprecated. "
             "Use setup_meteo(constant_value=...) instead."
@@ -2692,7 +2696,11 @@ class DFlowFMModel(Model):
         fill_value: float = 0.0,
         is_rate: bool = True,
     ):
-        """Deprecated. Use ``setup_meteo(meteo_timeseries_fn=...)`` instead."""
+        """
+        Use ``setup_meteo(meteo_timeseries_fn=...)`` instead.
+
+        This method is deprecated.
+        """
         logger.warning(
             "setup_rainfall_from_uniform_timeseries is deprecated. "
             "Use setup_meteo(meteo_timeseries_fn=...) instead."
@@ -2796,7 +2804,6 @@ class DFlowFMModel(Model):
             fill_value_for_compute = constant_value
 
         else:
-
             df_meteo = self.data_catalog.get_dataframe(
                 meteo_timeseries_fn,
                 variables=[meteo_type],
