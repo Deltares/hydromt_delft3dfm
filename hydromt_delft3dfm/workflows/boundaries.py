@@ -522,9 +522,7 @@ def compute_meteo_forcings(
         raise ValueError("df_meteo must contain a 'time' column.")
 
     if meteo_type not in df_meteo.columns:
-        raise ValueError(
-            f"df_meteo must contain a '{meteo_type}' column."
-        )
+        raise ValueError(f"df_meteo must contain a '{meteo_type}' column.")
 
     if len(df_meteo.index) < 2:
         raise ValueError(
@@ -597,6 +595,7 @@ def compute_meteo_forcings(
     da_out.name = meteo_type
 
     return da_out.dropna(dim="time")
+
 
 def _standardize_forcing_timeindexes(da):
     """Standardize timeindexes frequency based on forcing DataArray."""

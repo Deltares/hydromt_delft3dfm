@@ -2685,7 +2685,6 @@ class DFlowFMModel(Model):
             constant_value=constant_value,
         )
 
-
     @hydromt_step
     def setup_rainfall_from_uniform_timeseries(
         self,
@@ -2703,7 +2702,6 @@ class DFlowFMModel(Model):
             meteo_timeseries_fn=meteo_timeseries_fn,
             fill_value=fill_value,
         )
-
 
     @hydromt_step
     def setup_meteo(
@@ -2772,7 +2770,9 @@ class DFlowFMModel(Model):
         if constant_value is not None:
             logger.info("Preparing %s meteo forcing from constant value.", meteo_type)
         else:
-            logger.info("Preparing %s meteo forcing from uniform timeseries.", meteo_type)
+            logger.info(
+                "Preparing %s meteo forcing from uniform timeseries.", meteo_type
+            )
 
         tstart, tstop = self.get_model_time()
 
@@ -2841,7 +2841,7 @@ class DFlowFMModel(Model):
         self.forcing.set(da_out, name=f"meteo_{da_out.name}")
 
         self.mdu.set("external_forcing.rainfall", 1)
-    
+
     # ## I/O
     @hydromt_step
     def read(self):
