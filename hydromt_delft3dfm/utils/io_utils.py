@@ -116,7 +116,7 @@ def write_branches_gui(
     savedir: str,
 ) -> str:
     """
-    write branches.gui file from branches geodataframe.
+    Write branches.gui file from branches geodataframe.
 
     Parameters
     ----------
@@ -365,7 +365,7 @@ def read_friction(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
 
 def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
     """
-    write friction files from crosssections geodataframe.
+    Write friction files from crosssections geodataframe.
 
     Parameters
     ----------
@@ -456,7 +456,7 @@ def read_structures(branches: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDat
 
 def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     """
-    write structures into hydrolib-core structures objects.
+    Write structures into hydrolib-core structures objects.
 
     Will add compound structures.
 
@@ -560,7 +560,7 @@ def read_manholes(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
 
 def write_manholes(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     """
-    write manholes into hydrolib-core storage nodes objects.
+    Write manholes into hydrolib-core storage nodes objects.
 
     Parameters
     ----------
@@ -1288,7 +1288,7 @@ def write_ext(
     mode="append",
 ) -> str:
     """
-    write external forcing file (.ext) from dictionary.
+    Write external forcing file (.ext) from dictionary.
 
     Parameters
     ----------
