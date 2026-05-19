@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         hydromt-version: ['hcdev'] # hydrolib-core from main branch
-        python-version: ['311', '314'] # TODO: only test on py314
+        python-version: ['314']
         os: [ubuntu-latest]
 
     name: hydromt-${{ matrix.hydromt-version }} py-${{ matrix.python-version }} ${{ matrix.os }}
