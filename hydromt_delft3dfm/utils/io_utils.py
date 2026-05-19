@@ -148,9 +148,13 @@ def write_branches_gui(
             "manhole_dn": "targetCompartmentName",
         }
     )
-    branches["branchtype"] = branches["branchtype"].replace(
-        {"river": 0, "pipe": 2, "sewerconnection": 1}
-    )
+    with pd.option_context('future.no_silent_downcasting', True):
+        # avoid pandas FutureWarning: "Downcasting behavior in `replace` is deprecated
+        # and will be removed in a future version" by silencing it and converting the
+        # dtype manually.
+        branches["branchtype"] = branches["branchtype"].replace(
+            {"river": 0, "pipe": 2, "sewerconnection": 1}
+        ).astype(int)
     branches = branches.replace(np.nan, None)
     branchgui_model = BranchModel(branch=branches.to_dict("records"))
     branchgui_fn = branchgui_model._filename() + branchgui_model._ext()

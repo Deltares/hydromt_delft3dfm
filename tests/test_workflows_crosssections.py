@@ -9,7 +9,11 @@ EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 
 def test_set_xyz_crosssections():
     # test on a single branch with 3 cross-sections (id = 1 .. 3)
-    branches = gpd.GeoDataFrame(data={"frictionid": ["Manning_0.023"], "frictiontype": ["Manning"], "frictionvalue": [0.023]}, geometry=[LineString([[0, 0], [1000, 1000]])], crs=28992)
+    branches = gpd.GeoDataFrame(
+        data={"frictionid": ["Manning_0.023"], "frictiontype": ["Manning"], "frictionvalue": [0.023]},
+        geometry=[LineString([[0, 0], [1000, 1000]])],
+        crs=28992,
+    )
     
     xyz_crosssections_1 = gpd.GeoDataFrame(
         geometry=[Point(-10, 1), Point(0, 1), Point(10, 2), Point(20, 2)],
@@ -24,6 +28,6 @@ def test_set_xyz_crosssections():
     
     xyz_crosssections = pd.concat([xyz_crosssections_1, xyz_crosssections_2, xyz_crosssections_3]).reset_index(drop=True)
     crosssections = xsec.set_xyz_crosssections(branches=branches, crosssections=xyz_crosssections)
-
+    print(crosssections.T)
     assert len(crosssections) == 2 # check if the cross-section containing only 2 points is dropped
     #TODO more checks can be added 
