@@ -616,7 +616,6 @@ def _read_forcing_dataframe(
     bc: dict
         Attributes of the forcing.
     """
-
     # TODO: this method flattens all input data to the same factor/offset and
     #  assumes equal timestamps. This has to be more generic.
     # Initialise dataarray attributes bc
