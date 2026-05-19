@@ -145,10 +145,10 @@ def add_crosssections(
         # and definitions (used by branches and structures)
         _crosssections_locations = new_crosssections[
             ~new_crosssections.crsloc_id.isna()
-        ]
+        ].copy()
         _crosssections_definitions = new_crosssections[
             new_crosssections.crsloc_id.isna()
-        ]
+        ].copy()
         # remove duplicated locations based on branchid_chainage (not on xy)
         _crosssections_locations["temp_id"] = _crosssections_locations.apply(
             lambda x: f'{x["crsloc_branchid"]}_{x["crsloc_chainage"]:.2f}', axis=1
