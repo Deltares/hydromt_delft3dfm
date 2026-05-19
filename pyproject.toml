@@ -17,8 +17,9 @@ dependencies = [
     "numpy>=2.0.0", # latest <2 version is already EOL
     "pandas>=2.0.0, <3", # TODO: remove temporary upper limit: https://github.com/Deltares/hydromt_delft3dfm/issues/229
     "xarray",
-    #"hydrolib-core>=1.0.0", # hydrolib-core>=1.0.0 has new Pydantic API, support for pandas 3 and support for Python 3.14
-    "hydrolib-core>=1.0.0", # TODO: convert to 1.0.1 after release
+    # hydrolib-core>=1.0.0 has new Pydantic API, support for pandas 3 and support for Python 3.14
+    # hydrolib-core>=1.0.1 reverts some incompatibilties introduced in v1
+    "hydrolib-core>=1.0.1",
     "xugrid>=0.15.2", # consistent projected/geographic properties and crs attributes in the resulting datasets
     # meshkernel>=8.3.0 supports interpolation of arbitrary properties like bathymetry
     "meshkernel>=8.3.0",
@@ -157,13 +158,11 @@ pandoc = "*"
 #  with with either python 'cpython-314' or the platform 'win32'"
 default = { features = ["py312", "dev", "docs", "test", "examples"] }
 
-pypi-311 = { features = ["py311", "dev", "test"] }
+pypi-311 = { features = ["py311", "dev", "test"]}
 pypi-312 = { features = ["py312", "dev", "test"]}
 pypi-313 = { features = ["py313", "dev", "test"]}
 pypi-314 = { features = ["py314", "dev", "test"]}
 
 dev-314 = { features = ["py314", "dev", "test", "hydromt_dev"]}
 
-# TODO: remove 311, only test with 314
-hcdev-311= { features = ["py311", "dev", "test", "hydrolibcore_dev"]}
 hcdev-314= { features = ["py314", "dev", "test", "hydrolibcore_dev"]}
