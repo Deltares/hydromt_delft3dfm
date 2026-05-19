@@ -108,6 +108,7 @@ class DIMRComponent(ModelComponent):
                 workingdir=dirname(self.model.mdu._filename),
                 inputfile=basename(self.model.mdu._filename),
                 model=self.model.dfmmodel,
+                process=1,
             )
             components.append(fmcomponent)
             self._data.component = components

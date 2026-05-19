@@ -14,15 +14,14 @@ Added
 -----
 - Included new example notebook for basic HydroMT use through CLI. (PR #202)
 - New method **setup_retentions**. (PR #170)
-- support for user-specified paths for mdu/network and models without geoms folder (PR #271)
-- New method **setup_meteo**. (PR #276)
+- Support for user-specified paths for mdu/network and models without geoms folder (PR #271)
+- Updated to hydrolib-core v1 (pydantic V2 API) (PR #226)
 
 Changed
 -------
 - Dropped support for Python 3.9. (PR #214)
 - Updated to hydromt v1 API and dropped support for Python 3.10. (PR #162)
 - when reading a model prefer crs from mesh/network file, then geoms, then userdefined (PR #271)
-- Dropped support for setup_rainfall_from_uniform_timeseries with variable name "precip". (PR #276)
 
 Fixed
 -----

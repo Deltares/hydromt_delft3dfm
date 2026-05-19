@@ -1,5 +1,5 @@
 ---
-name: test
+name: test-hydrolibcore-dev
 
 on:
   push:
@@ -14,9 +14,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        hydromt-version: ['pypi']
-        python-version: ['311', '312', '313', '314']
-        os: [ubuntu-latest, windows-latest]
+        hydromt-version: ['hcdev'] # hydrolib-core from main branch
+        python-version: ['314']
+        os: [ubuntu-latest]
 
     name: hydromt-${{ matrix.hydromt-version }} py-${{ matrix.python-version }} ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -39,7 +39,3 @@ jobs:
       - name: Run tests
         run: |
           pixi run --locked -e ${{ matrix.hydromt-version }}-${{ matrix.python-version }} test
-
-      - uses: codecov/codecov-action@v4
-        env:
-          CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
