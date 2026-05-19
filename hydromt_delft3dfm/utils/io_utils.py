@@ -618,6 +618,8 @@ def _read_forcing_dataframe(
     bc: dict
         Attributes of the forcing.
     """
+    # TODO: this method flattens all input data to the same factor/offset and
+    #  assumes equal timestamps. This has to be more generic.
     # Initialise dataarray attributes bc
     bc = {"quantity": quantity}
 
@@ -659,7 +661,7 @@ def _read_forcing_dataframe(
     # Else not implemented yet
     else:
         raise NotImplementedError(
-            "ForcingFile with several function for a single variable not implemented."
+            "ForcingFile with several functions for a single variable not implemented."
             f"Skipping reading forcing for variable {quantity}."
         )
     return data, dims, coords, bc
@@ -694,7 +696,13 @@ def read_1dboundary(
     # so this cannot be checked. If this method fails on nan/None, fix this and add a
     # test.
     nodeids = nodeids[nodeids != "nan"]
-    # Assume one forcing file (HydroMT writer) and read
+    # Assume one unique forcing filename (HydroMT writer) and read
+    forcingfile_uniq = df.forcingfile.astype(str).unique()
+    if len(forcingfile_uniq) > 1:
+        raise NotImplementedError(
+            "read_1dboundary() does not support more than 1 forcing filename, found: "
+            f"{forcingfile_uniq}."
+        )
     forcing = df.forcingfile.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
     # Filter for the current nodes, remove nans
@@ -855,7 +863,13 @@ def read_1dlateral(
     da_out: xr.DataArray
         External and focing values combined into a DataArray for variable quantity.
     """
-    # Assume one discharge (lateral specific) file (HydroMT writer) and read
+    # Assume one unique discharge filename (lateral specific) (HydroMT writer) and read
+    dischargefile_uniq = df.discharge.astype(str).unique()
+    if len(dischargefile_uniq) > 1:
+        raise NotImplementedError(
+            "read_1dlateral() does not support more than 1 forcing filename, found: "
+            f"{dischargefile_uniq}."
+        )
     forcing = df.discharge.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
 
@@ -1046,8 +1060,12 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
         "boundary2d".
     """
     # location file
-    # assume one location file has only one location (HydroMT writer) and read
+    # Assume location file has only one location (HydroMT writer) and read
     locationfile = PolyFile(workdir.joinpath(df.locationfile.filepath))
+    if len(locationfile.objects) > 1:
+        raise NotImplementedError(
+            "read_2dboundary() does not support polyfiles with multiple polylines."
+        )
     boundary_name = locationfile.objects[0].metadata.name
     boundary_points = pd.DataFrame([f.__dict__ for f in locationfile.objects[0].points])
 
@@ -1188,7 +1206,13 @@ def read_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
     da_out: xr.DataArray
         External and focing values combined into a DataArray for variable quantity.
     """
-    # Assume one forcing file (HydroMT writer) and read
+    # Assume one unique forcing filename (HydroMT writer) and read
+    forcingfile_uniq = df.forcingfile.astype(str).unique()
+    if len(forcingfile_uniq) > 1:
+        raise NotImplementedError(
+            "read_meteo() does not support more than 1 forcing filename, found: "
+            f"{forcingfile_uniq}."
+        )
     forcing = df.forcingfile.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
     # Filter for the current nodes
