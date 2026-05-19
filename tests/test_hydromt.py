@@ -74,9 +74,8 @@ def test_model_build(tmpdir, modelname):
         if "elevtn" in errors["inifield"]:
             value = errors["inifield"]["elevtn"]
             expected_value = (
-                "Not equal: {'dims': 'dim y not identical', '3 invalid coords': "
-                "{'x': 'not identical', 'y': 'not identical', 'spatial_ref': 'not"
-                " identical'}}"
+                "Not equal: {'dims': 'dim x not identical', "
+                "'1 invalid coords': {'x': 'not identical'}}"
             )
             if value == expected_value:
                 errors["inifield"].pop("elevtn", None)
