@@ -28,6 +28,6 @@ def test_set_xyz_crosssections():
     
     xyz_crosssections = pd.concat([xyz_crosssections_1, xyz_crosssections_2, xyz_crosssections_3]).reset_index(drop=True)
     crosssections = xsec.set_xyz_crosssections(branches=branches, crosssections=xyz_crosssections)
-    print(crosssections.T)
+
     assert len(crosssections) == 2 # check if the cross-section containing only 2 points is dropped
     #TODO more checks can be added 
