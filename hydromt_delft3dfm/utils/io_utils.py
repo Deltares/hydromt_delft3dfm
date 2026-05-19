@@ -1053,7 +1053,7 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
         "boundary2d".
     """
     # location file
-    # Assume one location file has only one location (HydroMT writer) and read
+    # Assume location file has only one location (HydroMT writer) and read
     locationfile = PolyFile(workdir.joinpath(df.locationfile.filepath))
     if len(locationfile.objects) > 1:
         raise NotImplementedError(
