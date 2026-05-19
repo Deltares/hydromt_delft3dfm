@@ -359,8 +359,14 @@ def read_friction(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
         gdf_out.loc[~_do_not_support, "frictiontype"] = gdf_out.loc[
             ~_do_not_support, "frictiontype"
         ].combine_first(gdf_out.loc[~_do_not_support, "crsdef_frictionids"])
-    gdf_out["frictionvalue"] = gdf_out["frictionvalue"].replace(fricval)
-    gdf_out["frictiontype"] = gdf_out["frictiontype"].replace(frictype)
+    with pd.option_context('future.no_silent_downcasting', True):
+        # avoid pandas FutureWarning: "Downcasting behavior in `replace` is deprecated
+        # and will be removed in a future version" by silencing it and converting the
+        # dtype manually.
+        updated_vals = gdf_out["frictionvalue"].replace(fricval).astype(float)
+    gdf_out["frictionvalue"] = updated_vals
+    updated_vals = gdf_out["frictiontype"].replace(frictype)
+    gdf_out["frictiontype"] = updated_vals
     return gdf_out
 
 
@@ -882,8 +888,8 @@ def read_1dlateral(
     # Get lateral locations and update dimentions and coordinates
     if any(df.numcoordinates.values):
         # polygons
-        _df = df[~df.numcoordinates.isna()]
-        _data = data[~df.numcoordinates.isna()]
+        _df = df[~df.numcoordinates.isna()].copy()
+        _data = data[~df.numcoordinates.isna()].copy()
         # Update coords
         _df["geometry"] = _df.apply(
             lambda row: Polygon(zip(row["xcoordinates"], row["ycoordinates"])), axis=1

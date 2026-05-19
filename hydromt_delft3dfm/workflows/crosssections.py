@@ -378,7 +378,13 @@ def set_branch_crosssections(
 
     # support both string and boolean for closed column
     if "crsdef_closed" in crosssections_:
-        crosssections_["crsdef_closed"].replace({"yes": 1, "no": 0}, inplace=True)
+        with pd.option_context('future.no_silent_downcasting', True):
+            # avoid pandas FutureWarning: "Downcasting behavior in `replace` is deprecated
+            # and will be removed in a future version" by silencing it and converting the
+            # dtype manually.
+            updated_vals = crosssections_["crsdef_closed"].replace({"yes": 1, "no": 0})
+            updated_vals = updated_vals.astype(int)
+        crosssections_["crsdef_closed"] = updated_vals
 
     crosssections_ = gpd.GeoDataFrame(crosssections_, crs=branches.crs)
 
@@ -612,7 +618,12 @@ def set_point_crosssections(
     )
 
     # get "closed" in the correct format
-    crosssections["closed"].replace({1: "yes", 0: "no"}, inplace=True)
+    with pd.option_context('future.no_silent_downcasting', True):
+        # avoid pandas FutureWarning: "Downcasting behavior in `replace` is deprecated
+        # and will be removed in a future version" by silencing it and converting the
+        # dtype manually.
+        updated_vals = crosssections["closed"].replace({1: "yes", 0: "no"}).astype(str)
+    crosssections["closed"] = updated_vals
 
     # NOTE: below is removed because in case of multiple structures
     # at the same location,
@@ -756,7 +767,13 @@ def set_point_crosssections(
 
     # support both string and boolean for closed column
     if "crsdef_closed" in crosssections_.columns:
-        crosssections_["crsdef_closed"].replace({"yes": 1, "no": 0}, inplace=True)
+        with pd.option_context('future.no_silent_downcasting', True):
+            # avoid pandas FutureWarning: "Downcasting behavior in `replace` is deprecated
+            # and will be removed in a future version" by silencing it and converting the
+            # dtype manually.
+            updated_vals = crosssections_["crsdef_closed"].replace({"yes": 1, "no": 0})
+            updated_vals = updated_vals.astype(int)
+        crosssections_["crsdef_closed"] = updated_vals
 
     crosssections_ = gpd.GeoDataFrame(crosssections_, crs=branches.crs)
 
