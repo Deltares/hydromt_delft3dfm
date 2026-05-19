@@ -23,7 +23,7 @@ _models = {
 
 @pytest.mark.timeout(300)  # max 5 min
 @pytest.mark.slow
-@pytest.mark.parametrize("modelname", ["local"]) # list(_models.keys()))
+@pytest.mark.parametrize("modelname", list(_models.keys()))
 def test_model_build(tmpdir, modelname):
     model_dict = _models[modelname]
 
