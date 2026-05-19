@@ -115,6 +115,11 @@ filterwarnings = [
 	'''ignore:No standard_name of \('projection_x_coordinate':UserWarning''',
     # TODO: ignore xugrid crs UserWarning until https://github.com/Deltares/hydromt_delft3dfm/issues/119 is fixed
 	"ignore:No CRS or recognizable standard_name found for topology:UserWarning",
+    # ignore "Geometry is in a geographic CRS. Results from interpolate/length are likely incorrect"
+    # since length>0 is still valid and midpoint interpolation (0.5 normalized) is also still valid
+    "ignore:Geometry is in a geographic CRS:UserWarning",
+    # ignore DeprecationWarning originating from pyflwdir
+    "ignore:Bitwise inversion '~' on bool is deprecated and will be removed in Python 3.16:DeprecationWarning",
 	]
 
 ## Pixi related entries

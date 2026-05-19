@@ -439,7 +439,9 @@ def set_xyz_crosssections(
         )
 
     # convert xyz crosssection into yz profile
-    crosssections = crosssections.groupby("crsid").apply(xyzp2xyzl, (["order"]))
+    crosssections = crosssections.groupby("crsid").apply(
+        xyzp2xyzl, (["order"]), include_groups=False,
+    )
     crosssections.crs = branches.crs
 
     # snap to branch
