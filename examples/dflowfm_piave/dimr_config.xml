@@ -2,8 +2,8 @@
 <dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.3.xsd">
   <documentation>
     <fileVersion>1.3</fileVersion>
-    <createdBy>hydrolib-core 1.0.0</createdBy>
-    <creationDate>2026-05-12T05:49:24.801084</creationDate>
+    <createdBy>hydrolib-core 1.0.1</createdBy>
+    <creationDate>2026-05-19T11:57:08.566536</creationDate>
   </documentation>
   <control>
     <start name="dflowfm"/>
