@@ -422,10 +422,10 @@ def set_xyz_crosssections(
         )
 
     # apply data type
-    crosssections.loc[:, "x"] = crosssections.geometry.x
-    crosssections.loc[:, "y"] = crosssections.geometry.y
-    crosssections.loc[:, "z"] = crosssections.z
-    crosssections.loc[:, "order"] = crosssections.loc[:, "order"].astype("int")
+    crosssections["x"] = crosssections.geometry.x
+    crosssections["y"] = crosssections.geometry.y
+    crosssections["z"] = crosssections.z
+    crosssections["order"] = crosssections["order"].astype("int")
 
     # count number of points per cross-section id
     crosssections = crosssections.reset_index(drop=True)
