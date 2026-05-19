@@ -15,8 +15,8 @@ jobs:
       fail-fast: false
       matrix:
         hydromt-version: ['dev']
-        python-version: ['313'] # ,'314']
-        os: [ubuntu-latest, windows-latest]
+        python-version: ['314']
+        os: [ubuntu-latest]
 
     name: hydromt-${{ matrix.hydromt-version }} py-${{ matrix.python-version }} ${{ matrix.os }}
     runs-on: ${{ matrix.os }}

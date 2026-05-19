@@ -115,9 +115,9 @@ def test_mdu_write_invalid_timeformat(tmpdir):
         "time.stopdatetime": "2010-02-06",
     }
     mdu.update(data)
-    from pydantic.v1.error_wrappers import ValidationError
+    from pydantic_core import ValidationError
     with pytest.raises(ValidationError) as e:
         mdu.write()
-    assert "value is not a valid integer" in str(e.value)
-    assert "Invalid datetime string for startDateTime" in str(e.value)
-    assert "Invalid datetime string for stopDateTime" in str(e.value)
+    assert "Input should be a valid integer" in str(e.value)
+    assert "Invalid datetime string for startdatetime" in str(e.value)
+    assert "Invalid datetime string for stopdatetime" in str(e.value)
