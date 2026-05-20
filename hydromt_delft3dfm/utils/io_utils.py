@@ -148,9 +148,9 @@ def write_branches_gui(
             "manhole_dn": "targetCompartmentName",
         }
     )
-    branches["branchtype"] = branches["branchtype"].replace(
-        {"river": 0, "pipe": 2, "sewerconnection": 1}
-    )
+    # replace from/to have different dtypes, so explicitly change it
+    branchtp = {"river": 0, "pipe": 2, "sewerconnection": 1}
+    branches["branchtype"] = branches["branchtype"].replace(branchtp).astype(int)
     branches = branches.replace(np.nan, None)
     branchgui_model = BranchModel(branch=branches.to_dict("records"))
     branchgui_fn = branchgui_model._filename() + branchgui_model._ext()
@@ -359,7 +359,8 @@ def read_friction(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
         gdf_out.loc[~_do_not_support, "frictiontype"] = gdf_out.loc[
             ~_do_not_support, "frictiontype"
         ].combine_first(gdf_out.loc[~_do_not_support, "crsdef_frictionids"])
-    gdf_out["frictionvalue"] = gdf_out["frictionvalue"].replace(fricval)
+    # replace from/to have different dtypes, so explicitly change it
+    gdf_out["frictionvalue"] = gdf_out["frictionvalue"].replace(fricval).astype(float)
     gdf_out["frictiontype"] = gdf_out["frictiontype"].replace(frictype)
     return gdf_out
 
@@ -882,8 +883,8 @@ def read_1dlateral(
     # Get lateral locations and update dimentions and coordinates
     if any(df.numcoordinates.values):
         # polygons
-        _df = df[~df.numcoordinates.isna()]
-        _data = data[~df.numcoordinates.isna()]
+        _df = df[~df.numcoordinates.isna()].copy()
+        _data = data[~df.numcoordinates.isna()].copy()
         # Update coords
         _df["geometry"] = _df.apply(
             lambda row: Polygon(zip(row["xcoordinates"], row["ycoordinates"])), axis=1
