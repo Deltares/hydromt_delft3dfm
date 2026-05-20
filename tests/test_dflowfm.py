@@ -288,6 +288,23 @@ def test_setup_mesh2d_refine(tmpdir):
     assert mesh1d.edge_coordinates.shape == (1732, 2)
 
 
+def test_setup_rivers_from_dem(tmpdir):
+    """
+    based on test_model_build[piave]
+    should also raise NumbaTypeSafetyWarning to be resolved in
+    https://github.com/Deltares/hydromt_delft3dfm/issues/289
+    """
+    root = join(tmpdir, "dflowfm_example")
+    model = DFlowFMModel(
+        root=root, mode="w", crs=3857, data_libs=["artifact_data"],
+    )
+    model.setup_rivers_from_dem(
+        region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
+        hydrography_fn="merit_hydro",
+        river_geom_fn="hydro_rivers_lin",
+    )
+
+
 def test_setup_channels(tmpdir):
     # Instantiate a dummy model
     model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
