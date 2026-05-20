@@ -1,7 +1,8 @@
 """hydroMT plugin for Delft3D FM models."""
 
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
 
 __version__ = "0.3.1.dev"
 DATADIR = Path(__file__).parent / "data"
@@ -17,4 +18,4 @@ __all__ = ["DFlowFMModel"]
 #  "Pandas4Warning: future.no_silent_downcasting' is deprecated"
 #  so be sure to remove it or silence it when supporting pandas 3 in
 #  https://github.com/Deltares/hydromt_delft3dfm/issues/229
-pd.set_option('future.no_silent_downcasting', True)
+pd.set_option("future.no_silent_downcasting", True)
