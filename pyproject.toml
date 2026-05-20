@@ -109,7 +109,9 @@ exclude = ["docs", "examples", "envs", "tests", ".github"]
 [tool.pytest.ini_options]
 addopts = "--durations=0"
 filterwarnings = [
-	"error",
+    # TODO: cannot raise warnings as errors since NumbaTypeSafetyWarning is not properly filtered on windows github runner
+    #  to be resolved in https://github.com/Deltares/hydromt_delft3dfm/issues/289
+#	"error",
 	# temporarily ignore numpy incompatibility, more info in https://github.com/Deltares/dfm_tools/issues/1243
 	"ignore:numpy.ndarray size changed:RuntimeWarning",
     # filter until fix of https://github.com/Deltares/HYDROLIB-core/issues/1098
@@ -128,10 +130,8 @@ filterwarnings = [
     # ignore NumbaTypeSafetyWarning originating from pyflwdir, to be fixed in https://github.com/Deltares/hydromt_delft3dfm/issues/289
     # note: the warning starts with a space somehow
     # note: on GitHub the warning is with int64 for `test_model_build[piave]`
-    "ignore: unsafe cast from int32 to undefined:numba.core.errors.NumbaTypeSafetyWarning", # local windows and github ubuntu
-    "ignore: unsafe cast from int64 to undefined:numba.core.errors.NumbaTypeSafetyWarning", # local windows and github ubuntu
-    "ignore:unsafe cast from int32 to undefined:numba.core.errors.NumbaTypeSafetyWarning", # github windows
-    "ignore:unsafe cast from int64 to undefined:numba.core.errors.NumbaTypeSafetyWarning", # github windows
+#    "ignore: unsafe cast from int32 to undefined:numba.core.errors.NumbaTypeSafetyWarning",
+#    "ignore: unsafe cast from int64 to undefined:numba.core.errors.NumbaTypeSafetyWarning",
 	]
 markers = [
 	"slow: slow tests",
