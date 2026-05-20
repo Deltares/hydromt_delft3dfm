@@ -766,8 +766,7 @@ def set_point_crosssections(
     if "crsdef_closed" in crosssections_.columns:
         # replace from/to have different dtypes, so explicitly change it
         updated_vals = crosssections_["crsdef_closed"].replace({"yes": 1, "no": 0})
-        updated_vals = updated_vals.astype(int)
-        crosssections_["crsdef_closed"] = updated_vals
+        crosssections_["crsdef_closed"] = updated_vals.astype(int)
 
     crosssections_ = gpd.GeoDataFrame(crosssections_, crs=branches.crs)
 
