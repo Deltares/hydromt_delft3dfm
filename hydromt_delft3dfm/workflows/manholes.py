@@ -73,10 +73,10 @@ def generate_manholes_on_branches(
         branches.index.name = "_index"
     pipes = branches.query(
         'branchtype == "pipe" | branchtype == "tunnel"'
-    )  # include both pipes and tunnels
+    ).copy()  # include both pipes and tunnels
     channels = branches.query(
         'branchtype == "river" | branchtype == "Channel"'
-    )  # include both channels and rivers
+    ).copy()  # include both channels and rivers
 
     # generate nodes upstream and downstream for every pipe
     _nodes_pipes_up = pd.DataFrame(
@@ -154,7 +154,7 @@ def generate_manholes_on_branches(
     )
 
     # add manholeid
-    manholes_generated.loc[:, "manholeid"] = [
+    manholes_generated["manholeid"] = [
         f"{id_prefix}{x}{id_suffix}" for x in range(len(manholes_generated))
     ]
     manholes_generated.set_index("manholeid")
