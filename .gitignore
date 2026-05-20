@@ -1,11 +1,3 @@
-# Pixi environments
-.pixi/
-
-# Generated documentation
-docs/_generated/
-docs/_build/
-docs/_examples/
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
