@@ -252,17 +252,22 @@ def test_read_write_config_empty_paths(tmpdir):
     model1.mdu.read()
     # Check whether the path is an emtpy string
     assert model1.mdu.data["output"]["outputdir"] == ""
+    assert model1.mdu.data["output"]["waqoutputdir"] == ""
+    assert model1.mdu.data["trachytopes"]["trtdef"] == ""
+    assert model1.mdu.data["trachytopes"]["trtl"] == ""
 
     # write the model to read it again
     model1.write()
     model2 = DFlowFMModel(root=root, mode="r", crs=3857)
     # Get the mdu settings
     model2.mdu.read()
-    # Check whether the path is an emtpy string
-    # TODO: should be an empty string: https://github.com/Deltares/HYDROLIB-core/issues/703
-    # then update this test: https://github.com/Deltares/hydromt_delft3dfm/issues/148
-    # and update the reference mdu files for piave and local
-    assert model2.mdu.data["output"]["outputdir"] == Path(".")
+    # Check whether the path is an emtpy string (was Path("") before)
+    # was fixed in https://github.com/Deltares/HYDROLIB-core/issues/703
+    # and https://github.com/Deltares/HYDROLIB-core/issues/1053
+    assert model2.mdu.data["output"]["outputdir"] == ""
+    assert model2.mdu.data["output"]["waqoutputdir"] == ""
+    assert model2.mdu.data["trachytopes"]["trtdef"] == ""
+    assert model2.mdu.data["trachytopes"]["trtl"] == ""
 
 
 def test_setup_mesh2d_refine(tmpdir):
@@ -281,6 +286,23 @@ def test_setup_mesh2d_refine(tmpdir):
     assert mesh2d.edge_coordinates.shape == (1306, 2)
     mesh1d = model.mesh.get_mesh('mesh1d')
     assert mesh1d.edge_coordinates.shape == (1732, 2)
+
+
+def test_setup_rivers_from_dem(tmpdir):
+    """
+    based on test_model_build[piave]
+    also raises the NumbaTypeSafetyWarning to be resolved in
+    https://github.com/Deltares/hydromt_delft3dfm/issues/289
+    """
+    root = join(tmpdir, "dflowfm_example")
+    model = DFlowFMModel(
+        root=root, mode="w", crs=3857, data_libs=["artifact_data"],
+    )
+    model.setup_rivers_from_dem(
+        region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
+        hydrography_fn="merit_hydro",
+        river_geom_fn="hydro_rivers_lin",
+    )
 
 
 def test_setup_channels(tmpdir):

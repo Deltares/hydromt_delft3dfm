@@ -81,8 +81,8 @@ def read_branches_gui(
         df_gui = pd.DataFrame()
         df_gui["branchid"] = [b.branchid for b in gdf.itertuples()]
         df_gui["branchtype"] = "river"
-        df_gui["manhole_up"] = ""
-        df_gui["manhole_dn"] = ""
+        df_gui["manhole_up"] = None
+        df_gui["manhole_dn"] = None
 
     else:
         # Create df with all attributes from gui
@@ -116,7 +116,7 @@ def write_branches_gui(
     savedir: str,
 ) -> str:
     """
-    write branches.gui file from branches geodataframe.
+    Write branches.gui file from branches geodataframe.
 
     Parameters
     ----------
@@ -138,7 +138,7 @@ def write_branches_gui(
     recongnised by GUI. improvement of the hydrolib-core writer is needed.
     """
     if not set(["manhole_up", "manhole_dn"]).issubset(gdf.columns):
-        gdf[["manhole_up", "manhole_dn"]] = ""
+        gdf[["manhole_up", "manhole_dn"]] = None
 
     branches = gdf[["branchid", "branchtype", "manhole_up", "manhole_dn"]]
     branches = branches.rename(
@@ -148,9 +148,10 @@ def write_branches_gui(
             "manhole_dn": "targetCompartmentName",
         }
     )
-    branches["branchtype"] = branches["branchtype"].replace(
-        {"river": 0, "pipe": 2, "sewerconnection": 1}
-    )
+    # replace from/to have different dtypes, so explicitly change it
+    branchtp = {"river": 0, "pipe": 2, "sewerconnection": 1}
+    branches["branchtype"] = branches["branchtype"].replace(branchtp).astype(int)
+    branches = branches.replace(np.nan, None)
     branchgui_model = BranchModel(branch=branches.to_dict("records"))
     branchgui_fn = branchgui_model._filename() + branchgui_model._ext()
     branchgui_model.filepath = join(savedir, branchgui_fn)
@@ -358,14 +359,15 @@ def read_friction(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
         gdf_out.loc[~_do_not_support, "frictiontype"] = gdf_out.loc[
             ~_do_not_support, "frictiontype"
         ].combine_first(gdf_out.loc[~_do_not_support, "crsdef_frictionids"])
-    gdf_out["frictionvalue"] = gdf_out["frictionvalue"].replace(fricval)
+    # replace from/to have different dtypes, so explicitly change it
+    gdf_out["frictionvalue"] = gdf_out["frictionvalue"].replace(fricval).astype(float)
     gdf_out["frictiontype"] = gdf_out["frictiontype"].replace(frictype)
     return gdf_out
 
 
 def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
     """
-    write friction files from crosssections geodataframe.
+    Write friction files from crosssections geodataframe.
 
     Parameters
     ----------
@@ -394,11 +396,12 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
         ["frictionid", "frictionvalue", "frictiontype"]
     ]
     frictions = frictions.drop_duplicates().dropna(how="all")
+    frictions = frictions.replace(np.nan, None)
 
     friction_fns = []
     # create a new friction
     for i, row in frictions.iterrows():
-        if isinstance(row.frictionvalue, float) and not np.isnan(row.frictionvalue):
+        if row.frictionid is not None and row.frictionvalue is not None:
             fric_model = FrictionModel(global_=row.to_dict())
             fric_name = f"{row.frictionid}"
             fric_filename = f"{fric_model._filename()}_{fric_name}" + fric_model._ext()
@@ -456,7 +459,7 @@ def read_structures(branches: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDat
 
 def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     """
-    write structures into hydrolib-core structures objects.
+    Write structures into hydrolib-core structures objects.
 
     Will add compound structures.
 
@@ -560,7 +563,7 @@ def read_manholes(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
 
 def write_manholes(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     """
-    write manholes into hydrolib-core storage nodes objects.
+    Write manholes into hydrolib-core storage nodes objects.
 
     Parameters
     ----------
@@ -616,6 +619,8 @@ def _read_forcing_dataframe(
     bc: dict
         Attributes of the forcing.
     """
+    # TODO: this method flattens all input data to the same factor/offset and
+    #  assumes equal timestamps. This has to be more generic.
     # Initialise dataarray attributes bc
     bc = {"quantity": quantity}
 
@@ -657,7 +662,7 @@ def _read_forcing_dataframe(
     # Else not implemented yet
     else:
         raise NotImplementedError(
-            "ForcingFile with several function for a single variable not implemented."
+            "ForcingFile with several functions for a single variable not implemented."
             f"Skipping reading forcing for variable {quantity}."
         )
     return data, dims, coords, bc
@@ -686,8 +691,19 @@ def read_1dboundary(
         External and focing values combined into a DataArray for variable quantity.
     """
     nodeids = df.nodeid.values
+    # TODO: the comparison to nan below might have become invalid since the nan-to-None
+    # change in https://github.com/Deltares/hydromt_delft3dfm/pull/226 when updating
+    # to hydrolib-core v1. There is no test in the testbank that contains nodeid=nan
+    # so this cannot be checked. If this method fails on nan/None, fix this and add a
+    # test.
     nodeids = nodeids[nodeids != "nan"]
-    # Assume one forcing file (HydroMT writer) and read
+    # Assume one unique forcing filename (HydroMT writer) and read
+    forcingfile_uniq = df.forcingfile.astype(str).unique()
+    if len(forcingfile_uniq) > 1:
+        raise NotImplementedError(
+            "read_1dboundary() does not support more than 1 forcing filename, found: "
+            f"{forcingfile_uniq}."
+        )
     forcing = df.forcingfile.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
     # Filter for the current nodes, remove nans
@@ -848,7 +864,13 @@ def read_1dlateral(
     da_out: xr.DataArray
         External and focing values combined into a DataArray for variable quantity.
     """
-    # Assume one discharge (lateral specific) file (HydroMT writer) and read
+    # Assume one unique discharge filename (lateral specific) (HydroMT writer) and read
+    dischargefile_uniq = df.discharge.astype(str).unique()
+    if len(dischargefile_uniq) > 1:
+        raise NotImplementedError(
+            "read_1dlateral() does not support more than 1 forcing filename, found: "
+            f"{dischargefile_uniq}."
+        )
     forcing = df.discharge.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
 
@@ -861,8 +883,8 @@ def read_1dlateral(
     # Get lateral locations and update dimentions and coordinates
     if any(df.numcoordinates.values):
         # polygons
-        _df = df[~df.numcoordinates.isna()]
-        _data = data[~df.numcoordinates.isna()]
+        _df = df[~df.numcoordinates.isna()].copy()
+        _data = data[~df.numcoordinates.isna()].copy()
         # Update coords
         _df["geometry"] = _df.apply(
             lambda row: Polygon(zip(row["xcoordinates"], row["ycoordinates"])), axis=1
@@ -1039,8 +1061,12 @@ def read_2dboundary(df: pd.DataFrame, workdir: Path = Path.cwd()) -> xr.DataArra
         "boundary2d".
     """
     # location file
-    # assume one location file has only one location (HydroMT writer) and read
+    # Assume location file has only one location (HydroMT writer) and read
     locationfile = PolyFile(workdir.joinpath(df.locationfile.filepath))
+    if len(locationfile.objects) > 1:
+        raise NotImplementedError(
+            "read_2dboundary() does not support polyfiles with multiple polylines."
+        )
     boundary_name = locationfile.objects[0].metadata.name
     boundary_points = pd.DataFrame([f.__dict__ for f in locationfile.objects[0].points])
 
@@ -1181,7 +1207,13 @@ def read_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
     da_out: xr.DataArray
         External and focing values combined into a DataArray for variable quantity.
     """
-    # Assume one forcing file (HydroMT writer) and read
+    # Assume one unique forcing filename (HydroMT writer) and read
+    forcingfile_uniq = df.forcingfile.astype(str).unique()
+    if len(forcingfile_uniq) > 1:
+        raise NotImplementedError(
+            "read_meteo() does not support more than 1 forcing filename, found: "
+            f"{forcingfile_uniq}."
+        )
     forcing = df.forcingfile.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
     # Filter for the current nodes
@@ -1288,7 +1320,7 @@ def write_ext(
     mode="append",
 ) -> str:
     """
-    write external forcing file (.ext) from dictionary.
+    Write external forcing file (.ext) from dictionary.
 
     Parameters
     ----------

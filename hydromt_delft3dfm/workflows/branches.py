@@ -89,7 +89,7 @@ def prepare_branches(
     """
     # 1. Filter features based on filter
     if filter is not None and "branchtype" in gdf_br.columns:
-        gdf_br = gdf_br[gdf_br["branchtype"].str.lower() == filter.lower()]
+        gdf_br = gdf_br[gdf_br["branchtype"].str.lower() == filter.lower()].copy()
         logger.info(f"Set {filter} locations filtered from branches as {br_type} .")
     # Check if features are present
     if len(gdf_br) == 0:
@@ -1109,9 +1109,9 @@ def find_nearest_branch(
 
     # For rows where distance is greater than maxdist, set branch_id
     # to empty and branch_offset to NaN
-    result.loc[~valid_rows, "branch_id"] = ""
-    result.loc[~valid_rows, "branch_offset"] = np.nan
-    result.loc[~valid_rows, "branch_distance"] = np.nan
+    result.loc[~valid_rows, "branch_id"] = None
+    result.loc[~valid_rows, "branch_offset"] = None
+    result.loc[~valid_rows, "branch_distance"] = None
 
     return result
 
