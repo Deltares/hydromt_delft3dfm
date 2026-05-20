@@ -32,6 +32,8 @@ Fixed
 - properly parsing tunit/startdatetime/stopdatetime (PR #267)
 - prevent reading/writing a model without a mesh/network file and prevent reading a model without an mdu file (PR #271)
 - improved error messages in case of incorrect time formats for mdu/config keys (PR #278)
+- consistently initialize manhole_up/manhole_dn as None instead of empty string (PR #287)
+- fixed warnings emmitted by hydromt_delft3dfm (PR #288)
 
 
 v0.3.0 (18 October 2024)
