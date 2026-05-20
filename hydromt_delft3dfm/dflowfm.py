@@ -2036,7 +2036,7 @@ class DFlowFMModel(MeshModel):
                     "Reprojecting with nearest but some information might be lost."
                 )
                 da = da.raster.reproject(self.crs, method="nearest")
-        
+
         # refine
         mesh2d, res = workflows.mesh2d_refine(
             mesh2d=self.get_mesh("mesh2d"),
