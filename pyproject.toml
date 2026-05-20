@@ -128,8 +128,9 @@ filterwarnings = [
     # ignore NumbaTypeSafetyWarning originating from pyflwdir, to be fixed in https://github.com/Deltares/hydromt_delft3dfm/issues/289
     # note: the warning starts with a space somehow
     # note: on GitHub the warning is with int64 for `test_model_build[piave]`
-#    "ignore: unsafe cast from int32 to undefined:numba.core.errors.NumbaTypeSafetyWarning",
-#    "ignore: unsafe cast from int64 to undefined:numba.core.errors.NumbaTypeSafetyWarning",
+    "ignore: unsafe cast from int32 to undefined:numba.core.errors.NumbaTypeSafetyWarning",
+    "ignore: unsafe cast from int64 to undefined:numba.core.errors.NumbaTypeSafetyWarning",
+    "ignore: unsafe cast from:numba.core.errors.NumbaTypeSafetyWarning",
 	]
 markers = [
 	"slow: slow tests",
