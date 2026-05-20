@@ -148,11 +148,8 @@ def write_branches_gui(
             "manhole_dn": "targetCompartmentName",
         }
     )
-    with pd.option_context('future.no_silent_downcasting', True):
-        # avoid pandas FutureWarning: "Downcasting behavior in `replace` is deprecated
-        # and will be removed in a future version" by silencing it and converting the
-        # dtype manually.
-        branches["branchtype"] = branches["branchtype"].replace(
+    # replace from/to have different dtypes, so explicitly change it
+    branches["branchtype"] = branches["branchtype"].replace(
             {"river": 0, "pipe": 2, "sewerconnection": 1}
         ).astype(int)
     branches = branches.replace(np.nan, None)
@@ -363,11 +360,8 @@ def read_friction(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
         gdf_out.loc[~_do_not_support, "frictiontype"] = gdf_out.loc[
             ~_do_not_support, "frictiontype"
         ].combine_first(gdf_out.loc[~_do_not_support, "crsdef_frictionids"])
-    with pd.option_context('future.no_silent_downcasting', True):
-        # avoid pandas FutureWarning: "Downcasting behavior in `replace` is deprecated
-        # and will be removed in a future version" by silencing it and converting the
-        # dtype manually.
-        updated_vals = gdf_out["frictionvalue"].replace(fricval).astype(float)
+    # replace from/to have different dtypes, so explicitly change it
+    updated_vals = gdf_out["frictionvalue"].replace(fricval).astype(float)
     gdf_out["frictionvalue"] = updated_vals
     updated_vals = gdf_out["frictiontype"].replace(frictype)
     gdf_out["frictiontype"] = updated_vals
