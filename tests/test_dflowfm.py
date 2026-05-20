@@ -291,7 +291,7 @@ def test_setup_mesh2d_refine(tmpdir):
 def test_setup_rivers_from_dem(tmpdir):
     """
     based on test_model_build[piave]
-    should also raise NumbaTypeSafetyWarning to be resolved in
+    also raises the NumbaTypeSafetyWarning to be resolved in
     https://github.com/Deltares/hydromt_delft3dfm/issues/289
     """
     root = join(tmpdir, "dflowfm_example")
