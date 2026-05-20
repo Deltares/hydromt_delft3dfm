@@ -125,6 +125,11 @@ filterwarnings = [
     "ignore:Geometry is in a geographic CRS:UserWarning",
     # ignore DeprecationWarning originating from pyflwdir
     "ignore:Bitwise inversion '~' on bool is deprecated and will be removed in Python 3.16:DeprecationWarning",
+    # ignore NumbaTypeSafetyWarning originating from pyflwdir, to be fixed in https://github.com/Deltares/hydromt_delft3dfm/issues/289
+    # note: the warning starts with a space somehow
+    # note: on GitHub the warning is with int64 for `test_model_build[piave]` somehow
+    "ignore: unsafe cast from int32 to undefined:numba.core.errors.NumbaTypeSafetyWarning",
+    "ignore: unsafe cast from int64 to undefined:numba.core.errors.NumbaTypeSafetyWarning",
 	]
 markers = [
 	"slow: slow tests",
