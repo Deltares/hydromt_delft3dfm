@@ -380,8 +380,7 @@ def set_branch_crosssections(
     if "crsdef_closed" in crosssections_:
         # replace from/to have different dtypes, so explicitly change it
         updated_vals = crosssections_["crsdef_closed"].replace({"yes": 1, "no": 0})
-        updated_vals = updated_vals.astype(int)
-        crosssections_["crsdef_closed"] = updated_vals
+        crosssections_["crsdef_closed"] = updated_vals.astype(int)
 
     crosssections_ = gpd.GeoDataFrame(crosssections_, crs=branches.crs)
 
@@ -620,8 +619,8 @@ def set_point_crosssections(
 
     # get "closed" in the correct format
     # replace from/to have different dtypes, so explicitly change it
-    updated_vals = crosssections["closed"].replace({1: "yes", 0: "no"}).astype(str)
-    crosssections["closed"] = updated_vals
+    updated_vals = crosssections["closed"].replace({1: "yes", 0: "no"})
+    crosssections["closed"] = updated_vals.astype(str)
 
     # NOTE: below is removed because in case of multiple structures
     # at the same location,
