@@ -149,9 +149,8 @@ def write_branches_gui(
         }
     )
     # replace from/to have different dtypes, so explicitly change it
-    replace_dict = {"river": 0, "pipe": 2, "sewerconnection": 1}
-    branches["branchtype"] = branches["branchtype"].replace(replace_dict)
-    branches["branchtype"] = branches["branchtype"].astype(int)
+    branchtp = {"river": 0, "pipe": 2, "sewerconnection": 1}
+    branches["branchtype"] = branches["branchtype"].replace(branchtp).astype(int)
     branches = branches.replace(np.nan, None)
     branchgui_model = BranchModel(branch=branches.to_dict("records"))
     branchgui_fn = branchgui_model._filename() + branchgui_model._ext()
