@@ -361,10 +361,8 @@ def read_friction(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
             ~_do_not_support, "frictiontype"
         ].combine_first(gdf_out.loc[~_do_not_support, "crsdef_frictionids"])
     # replace from/to have different dtypes, so explicitly change it
-    updated_vals = gdf_out["frictionvalue"].replace(fricval).astype(float)
-    gdf_out["frictionvalue"] = updated_vals
-    updated_vals = gdf_out["frictiontype"].replace(frictype)
-    gdf_out["frictiontype"] = updated_vals
+    gdf_out["frictionvalue"] = gdf_out["frictionvalue"].replace(fricval).astype(float)
+    gdf_out["frictiontype"] = gdf_out["frictiontype"].replace(frictype)
     return gdf_out
 
 
