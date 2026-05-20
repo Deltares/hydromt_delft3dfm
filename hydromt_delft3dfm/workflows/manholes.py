@@ -184,13 +184,13 @@ def _update_pipes_from_manholes(manholes: gpd.GeoDataFrame, pipes: gpd.GeoDataFr
         pipes["manhole_up"] = None
         pipes["manhole_dn"] = None
     for pi, p in pipes.iterrows():
-        cs_x, xs_y = p.geometry.coords
-        if cs_x in manholes_dict:
-            pipes.at[pi, "manhole_up"] = manholes_dict[cs_x]
+        cs = p.geometry.coords
+        if cs[0] in manholes_dict:
+            pipes.at[pi, "manhole_up"] = manholes_dict[cs[0]]
         else:
             pipes.at[pi, "manhole_up"] = None  # empty if no manholes
-        if xs_y in manholes_dict:
-            pipes.at[pi, "manhole_dn"] = manholes_dict[xs_y]
+        if cs[-1] in manholes_dict:
+            pipes.at[pi, "manhole_dn"] = manholes_dict[cs[-1]]
         else:
             pipes.at[pi, "manhole_dn"] = None  # empty if no manholes
 

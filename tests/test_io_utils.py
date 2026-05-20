@@ -25,4 +25,8 @@ def test_write_branches_gui(tmpdir):
     """
     gdf = gpd.GeoDataFrame()
     gdf["branchid"] = [1, 2, 3]
+    # TODO: for some reason it is required to set these as strings
+    #  while in test_read_branches_gui() this was not required.
+    gdf["branchid"] = gdf["branchid"].astype(str)
+    gdf["branchtype"] = "river"
     write_branches_gui(gdf=gdf, savedir=tmpdir)
