@@ -145,10 +145,10 @@ def add_crosssections(
         # and definitions (used by branches and structures)
         _crosssections_locations = new_crosssections[
             ~new_crosssections.crsloc_id.isna()
-        ]
+        ].copy()
         _crosssections_definitions = new_crosssections[
             new_crosssections.crsloc_id.isna()
-        ]
+        ].copy()
         # remove duplicated locations based on branchid_chainage (not on xy)
         _crosssections_locations["temp_id"] = _crosssections_locations.apply(
             lambda x: f'{x["crsloc_branchid"]}_{x["crsloc_chainage"]:.2f}', axis=1
@@ -378,7 +378,9 @@ def set_branch_crosssections(
 
     # support both string and boolean for closed column
     if "crsdef_closed" in crosssections_:
-        crosssections_["crsdef_closed"].replace({"yes": 1, "no": 0}, inplace=True)
+        # replace from/to have different dtypes, so explicitly change it
+        updated_vals = crosssections_["crsdef_closed"].replace({"yes": 1, "no": 0})
+        crosssections_["crsdef_closed"] = updated_vals.astype(int)
 
     crosssections_ = gpd.GeoDataFrame(crosssections_, crs=branches.crs)
 
@@ -416,10 +418,10 @@ def set_xyz_crosssections(
         )
 
     # apply data type
-    crosssections.loc[:, "x"] = crosssections.geometry.x
-    crosssections.loc[:, "y"] = crosssections.geometry.y
-    crosssections.loc[:, "z"] = crosssections.z
-    crosssections.loc[:, "order"] = crosssections.loc[:, "order"].astype("int")
+    crosssections["x"] = crosssections.geometry.x
+    crosssections["y"] = crosssections.geometry.y
+    crosssections["z"] = crosssections.z
+    crosssections["order"] = crosssections["order"].astype("int")
 
     # count number of points per cross-section id
     crosssections = crosssections.reset_index(drop=True)
@@ -433,7 +435,11 @@ def set_xyz_crosssections(
         )
 
     # convert xyz crosssection into yz profile
-    crosssections = crosssections.groupby("crsid").apply(xyzp2xyzl, (["order"]))
+    crosssections = crosssections.groupby("crsid").apply(
+        xyzp2xyzl,
+        (["order"]),
+        include_groups=False,
+    )
     crosssections.crs = branches.crs
 
     # snap to branch
@@ -612,7 +618,9 @@ def set_point_crosssections(
     )
 
     # get "closed" in the correct format
-    crosssections["closed"].replace({1: "yes", 0: "no"}, inplace=True)
+    # replace from/to have different dtypes, so explicitly change it
+    updated_vals = crosssections["closed"].replace({1: "yes", 0: "no"})
+    crosssections["closed"] = updated_vals.astype(str)
 
     # NOTE: below is removed because in case of multiple structures
     # at the same location,
@@ -756,7 +764,9 @@ def set_point_crosssections(
 
     # support both string and boolean for closed column
     if "crsdef_closed" in crosssections_.columns:
-        crosssections_["crsdef_closed"].replace({"yes": 1, "no": 0}, inplace=True)
+        # replace from/to have different dtypes, so explicitly change it
+        updated_vals = crosssections_["crsdef_closed"].replace({"yes": 1, "no": 0})
+        crosssections_["crsdef_closed"] = updated_vals.astype(int)
 
     crosssections_ = gpd.GeoDataFrame(crosssections_, crs=branches.crs)
 

@@ -1485,7 +1485,9 @@ class DFlowFMModel(Model):
             )
             # reproject of manholes is done in sample method
             manholes["_streetlevel_dem"] = dem.raster.sample(manholes).values
-            manholes["_streetlevel_dem"].fillna(manholes["streetlevel"], inplace=True)
+            manholes["_streetlevel_dem"] = manholes["_streetlevel_dem"].fillna(
+                manholes["streetlevel"]
+            )
             manholes["streetlevel"] = manholes["_streetlevel_dem"]
             logger.debug(f'street level mean is {np.mean(manholes["streetlevel"])}')
 
@@ -2581,7 +2583,7 @@ class DFlowFMModel(Model):
         _mesh = self.mesh.mesh_grids["mesh2d"]
         _mesh_region = gpd.GeoDataFrame(
             geometry=_mesh.to_shapely(dim=_mesh.face_dimension)
-        ).unary_union
+        ).union_all()
         _boundary_region = _mesh_region.buffer(tolerance * self.mesh.res).difference(
             _mesh_region
         )  # region where 2d boundary is allowed

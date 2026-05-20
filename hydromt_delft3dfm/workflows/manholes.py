@@ -73,10 +73,10 @@ def generate_manholes_on_branches(
         branches.index.name = "_index"
     pipes = branches.query(
         'branchtype == "pipe" | branchtype == "tunnel"'
-    )  # include both pipes and tunnels
+    ).copy()  # include both pipes and tunnels
     channels = branches.query(
         'branchtype == "river" | branchtype == "Channel"'
-    )  # include both channels and rivers
+    ).copy()  # include both channels and rivers
 
     # generate nodes upstream and downstream for every pipe
     _nodes_pipes_up = pd.DataFrame(
@@ -154,7 +154,7 @@ def generate_manholes_on_branches(
     )
 
     # add manholeid
-    manholes_generated.loc[:, "manholeid"] = [
+    manholes_generated["manholeid"] = [
         f"{id_prefix}{x}{id_suffix}" for x in range(len(manholes_generated))
     ]
     manholes_generated.set_index("manholeid")
@@ -188,11 +188,11 @@ def _update_pipes_from_manholes(manholes: gpd.GeoDataFrame, pipes: gpd.GeoDataFr
         if cs[0] in manholes_dict:
             pipes.at[pi, "manhole_up"] = manholes_dict[cs[0]]
         else:
-            pipes.at[pi, "manhole_up"] = ""  # empty if no manholes
+            pipes.at[pi, "manhole_up"] = None  # empty if no manholes
         if cs[-1] in manholes_dict:
             pipes.at[pi, "manhole_dn"] = manholes_dict[cs[-1]]
         else:
-            pipes.at[pi, "manhole_dn"] = ""  # empty if no manholes
+            pipes.at[pi, "manhole_dn"] = None  # empty if no manholes
 
     return pipes
 
