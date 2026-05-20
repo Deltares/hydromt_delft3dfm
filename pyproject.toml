@@ -109,7 +109,12 @@ exclude = ["docs", "examples", "envs", "tests", ".github"]
 [tool.pytest.ini_options]
 addopts = "--durations=0"
 filterwarnings = [
-#	"error",
+	"error",
+	# temporarily ignore numpy incompatibility, more info in https://github.com/Deltares/dfm_tools/issues/1243
+	"ignore:numpy.ndarray size changed:RuntimeWarning",
+    # filter until fix of https://github.com/Deltares/HYDROLIB-core/issues/1098
+	# note the use of single quote below to denote "raw" strings in TOML
+	'ignore:datetime.datetime.utcnow\(\) is deprecated:DeprecationWarning',
     # TODO: ignore xugrid ugrid infer xy coords UserWarning until https://github.com/Deltares/HYDROLIB-core/issues/577 is fixed
 	# note the use of single quote below to denote "raw" strings in TOML
 	'''ignore:No standard_name of \('projection_x_coordinate':UserWarning''',
@@ -121,6 +126,10 @@ filterwarnings = [
     # ignore DeprecationWarning originating from pyflwdir
     "ignore:Bitwise inversion '~' on bool is deprecated and will be removed in Python 3.16:DeprecationWarning",
 	]
+markers = [
+	"slow: slow tests",
+	"timeout: tests are aborted if they take too much time",
+]
 
 ## Pixi related entries
 [tool.pixi.workspace]
