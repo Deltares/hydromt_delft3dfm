@@ -202,7 +202,7 @@ def compute_boundary_values(
 
         # snap user boundary to potential boundary locations to get nodeid
         gdf_bnd = da_bnd.vector.to_gdf()
-        gdf_bnd.crs = boundaries.crs
+        gdf_bnd.set_crs(boundaries.crs)
         gdf_bnd = nearest_merge(
             gdf_bnd,
             boundaries,

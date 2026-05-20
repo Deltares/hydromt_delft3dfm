@@ -89,7 +89,7 @@ def prepare_branches(
     """
     # 1. Filter features based on filter
     if filter is not None and "branchtype" in gdf_br.columns:
-        gdf_br = gdf_br[gdf_br["branchtype"].str.lower() == filter.lower()]
+        gdf_br = gdf_br[gdf_br["branchtype"].str.lower() == filter.lower()].copy()
         logger.info(f"Set {filter} locations filtered from branches as {br_type} .")
     # Check if features are present
     if len(gdf_br) == 0:
