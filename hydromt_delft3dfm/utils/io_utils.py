@@ -81,8 +81,8 @@ def read_branches_gui(
         df_gui = pd.DataFrame()
         df_gui["branchid"] = [b.branchid for b in gdf.itertuples()]
         df_gui["branchtype"] = "river"
-        df_gui["manhole_up"] = ""
-        df_gui["manhole_dn"] = ""
+        df_gui["manhole_up"] = None
+        df_gui["manhole_dn"] = None
 
     else:
         # Create df with all attributes from gui
@@ -138,7 +138,7 @@ def write_branches_gui(
     recongnised by GUI. improvement of the hydrolib-core writer is needed.
     """
     if not set(["manhole_up", "manhole_dn"]).issubset(gdf.columns):
-        gdf[["manhole_up", "manhole_dn"]] = ""
+        gdf[["manhole_up", "manhole_dn"]] = None
 
     branches = gdf[["branchid", "branchtype", "manhole_up", "manhole_dn"]]
     branches = branches.rename(
