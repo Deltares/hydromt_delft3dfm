@@ -1352,15 +1352,13 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
 
 
 def read_spatial(file_nc: str, quantity: str):
-    # TODO: instead read it as the delft3dfm variable name
+    # TODO: now reading the delft3dfm variable name, but if we would rename it to the
+    #  original variable name in `write_spatial()` we would need some sort of
+    #  translation dict
     # TODO: add docstring
     import xarray as xr
     ds_out = xr.open_dataset(file_nc)
-    # reverse dictionary
-    dict_dflowfm_hydromt = {v: k for k, v in DICT_HYDROMT_DFLOWFM.items()}
-    hydromt_name = dict_dflowfm_hydromt[quantity]
-    da_out = ds_out[hydromt_name]
-    # da_out = forcingfile
+    da_out = ds_out[quantity]
     return da_out
 
 
@@ -1392,12 +1390,12 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
     # Loop over forcing dict
     for name, da in forcing.items():
         da_out = da.copy()
+        # TODO: the netcdf variable name should actually be u10/rhoao instead of windx/
+        #  airdensity request this metadata in `hydromt.data_catalog.get_rasterdataset`
         variable = da.name
-        quantity = DICT_HYDROMT_DFLOWFM[variable]
+        quantity = da.name # windx/airdensity
         forcing_fn = f"meteo_{quantity}.nc"
         forcing_fp = Path(join(savedir, forcing_fn))
-        # TODO: maybe rename variables from hydromt_convention to dflowfm convention
-        # da_out = da_out.rename_vars(DICT_HYDROMT_DFLOWFM, errors="ignore")
         # TODO: neater support of latlon vs xy, maybe in setup_spatial_forcing() method or in hydromt
         # https://github.com/Deltares/hydromt/issues/1457
         # TODO: latlon cannot currently be tested in delft3dfm since networkfile cannot be written with crs yet
@@ -1414,12 +1412,10 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
         # add forcingfile to ext
         ext = dict()
         ext["quantity"] = quantity
-        # TODO: key will be all-lowercase after fixing https://github.com/Deltares/HYDROLIB-core/issues/1061 (hydrolib-core v1.0.1)
-        # so adjust this after merging https://github.com/Deltares/hydromt_delft3dfm/pull/226
-        ext["forcingVariableName"] = variable
+        ext["forcingvariablename"] = variable
         ext["forcingfile"] = forcing_fn
         ext["forcingfiletype"] = "netcdf"
-        # TODO: invalid input is not raised on .write(), is it with hydrolib-core v1?
+        # TODO: invalid input is not raised on .write(): https://github.com/Deltares/HYDROLIB-core/issues/1062
         # ext["interp"] = "InterpolateTimeAndSpaceSaveWeights"
         ext["interpolationmethod"] = "linearSpaceTime"
         # TODO: also support operand=+

@@ -470,5 +470,5 @@ def test_setup_spatial_forcing(tmpdir):
         mode="r",
     )
     mod2.read()
-    expected_keys = set(['press_msl', 'precip', 'rainfall_rate'])
+    expected_keys = set(['rainfall', 'rainfall_rate', 'airpressure'])
     assert set(mod2.forcing.data.keys()) == expected_keys

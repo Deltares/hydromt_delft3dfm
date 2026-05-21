@@ -112,9 +112,9 @@ class DFlowFMForcingComponent(SpatialDatasetsComponent):
             # Forcing dataarrays to prepare for each quantity
             forcing_names = np.unique(df_ext.quantity).tolist()
             # Loop over forcing names to build data arrays
-            for name in forcing_names:
+            for quantity in forcing_names:
                 # Get the dataframe corresponding to the current variable
-                df = df_ext[df_ext.quantity == name]
+                df = df_ext[df_ext.quantity == quantity]
                 # TODO: currently no support for multiple forcings for the same
                 #  quantities (would be overwritten), so make sure there is only one
                 assert len(df) == 1
@@ -124,10 +124,10 @@ class DFlowFMForcingComponent(SpatialDatasetsComponent):
                     # TODO: should actually get the extfile
                     mdu_dirname = dirname(self.model.mdu._filename)
                     file_nc = join(self.model.root.path, mdu_dirname, forcingfile.filepath)
-                    da_out = io_utils.read_spatial(file_nc, quantity=name)
+                    da_out = io_utils.read_spatial(file_nc, quantity=quantity)
                 else:
                     # TODO: assuming lenght 1, enforce this by passing iloc[0] instead
-                    da_out = io_utils.read_meteo(df, quantity=name)
+                    da_out = io_utils.read_meteo(df, quantity=quantity)
                 # Add to forcing
                 self.set(da_out)
         # TODO: add spatial (meteo netcdfs)

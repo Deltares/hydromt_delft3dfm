@@ -2856,7 +2856,13 @@ class DFlowFMModel(Model):
         # mask = self.staticmaps.data[self._MAPS["basins"]].values > 0
 
         # TODO: clipping should include outer bounds if not exact, test this
-        # TODO variables can also be more, should adhere to data conventions: https://deltares.github.io/hydromt/stable/user_guide/data_catalog/data_conventions.html#meteorology
+        # TODO add to docs: variables should adhere to data conventions:
+        #  https://deltares.github.io/hydromt/stable/user_guide/data_catalog/data_conventions.html#meteorology
+        #  or alternatively they can be (non-renamed) variable names in the original dataset
+        #  for instance the pre-defined earthdatahub_data catalog renames some era5 variables
+        #  to the hydromt conventions, but the other era5 variables can also be retrieved
+        #  since the zarr archive contains all era5 variables and not only the ones renamed
+        #  by the data catalog
         meteo_data = self.data_catalog.get_rasterdataset(
             meteo_fn,
             geom=self.region,
@@ -2864,10 +2870,21 @@ class DFlowFMModel(Model):
             time_range=(tstart, tstop),
             variables=variables,
         )
+
         # make sure that we always have a Dataset, also when variables is only a
-        # (list of a) single variable
+        # (list of a) single variable, which get_rasterdataset returns as a DataArray
         if isinstance(meteo_data, xr.DataArray):
             meteo_data = meteo_data.to_dataset()
+
+        # immediately convert all variable names from hydromt to dflowfm naming
+        # conventions, since we need to distuinguish between more variables than the
+        # hydromt conventions can do.
+        from hydromt_delft3dfm.utils.io_utils import DICT_HYDROMT_DFLOWFM
+        translate_dict = {}
+        for varname in meteo_data.data_vars:
+            if not varname in DICT_HYDROMT_DFLOWFM.values():
+                translate_dict[varname] = DICT_HYDROMT_DFLOWFM[varname]
+        meteo_data = meteo_data.rename_vars(translate_dict)
 
         if chunksize is not None:
             meteo_data = meteo_data.chunk({"time": chunksize})
@@ -2888,7 +2905,7 @@ class DFlowFMModel(Model):
             # TODO: precip also uses np.fmax(precip, 0), consider using that also (or increasing the buffer?)
             meteo_data = meteo_data.raster.reproject_like(da_like, method=reproj_method)
 
-        for variable in variables:
+        for variable in meteo_data.data_vars:
             da = meteo_data[variable]
             # Update meta attributes (used for default output filename later)
             da.attrs.update({"meteo_fn": meteo_fn})
