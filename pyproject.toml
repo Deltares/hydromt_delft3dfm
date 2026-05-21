@@ -130,6 +130,7 @@ filterwarnings = [
     # note: on GitHub the warning is with int64 for `test_model_build[piave]`
     "ignore: unsafe cast from int32 to undefined:numba.core.errors.NumbaTypeSafetyWarning",
     "ignore: unsafe cast from int64 to undefined:numba.core.errors.NumbaTypeSafetyWarning",
+    "ignore:.*:numba.core.errors.NumbaTypeSafetyWarning", # for github windows runners
 	]
 markers = [
 	"slow: slow tests",
