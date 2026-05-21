@@ -2350,8 +2350,6 @@ class DFlowFMModel(Model):
                 ds_path = bathy_fn
             self.logger.info(f"reading samples from file {ds_path}. ")
 
-        elif sample_fn is not None:
-            logger.info(f"reading samples from file {sample_fn}. ")
             # read
             da = self.data_catalog.get_rasterdataset(
                 ds_path,
