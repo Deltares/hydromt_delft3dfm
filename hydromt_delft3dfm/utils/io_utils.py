@@ -1316,11 +1316,29 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     return forcing_fn, ext_fn
 
 
-def read_spatial(file_nc: str, quantity: str):
+def read_spatial(file_nc: str, quantity: str) -> xr.DataArray:
+    """
+    Read spatial (netcdf) datasets with xarray.
+
+    The data is only opened, not read, which saves time and memory.
+
+    Parameters
+    ----------
+    file_nc: str, path
+        Filepath to the netcdf file to open.
+
+    quantity: str
+        Variable to select out of the netcdf file.
+
+    Returns
+    -------
+    da_out: xarray.DataArray
+        The opened data.
+
+    """
     # TODO: now reading the delft3dfm variable name, but if we would rename it to the
     #  original variable name in `write_spatial()` we would need some sort of
     #  translation dict
-    # TODO: add docstring
     import xarray as xr
 
     ds_out = xr.open_dataset(file_nc)
@@ -1352,6 +1370,11 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
     if len(forcing) == 0:
         return
 
+    logger.warning(
+        "You are writing netcdf forcing into the new ext file, this is supported "
+        "from delft3dfm 2026.01 onwards (DIMRset 2.29.28, 3 Oct 2025)."
+    )
+
     extdicts = list()
     # Loop over forcing dict
     for name, da in forcing.items():
@@ -1362,9 +1385,10 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
         quantity = da.name  # windx/airdensity
         forcing_fn = f"meteo_{quantity}.nc"
         forcing_fp = Path(join(savedir, forcing_fn))
-        # TODO: neater support of latlon vs xy, maybe in setup_spatial_forcing() method or in hydromt
-        # https://github.com/Deltares/hydromt/issues/1457
-        # TODO: latlon cannot currently be tested in delft3dfm since networkfile cannot be written with crs yet
+        # TODO: neater support of latlon vs xy, maybe in setup_spatial_forcing() method
+        #  or in hydromt https://github.com/Deltares/hydromt/issues/1457
+        # TODO: latlon cannot currently be tested in delft3dfm since networkfile cannot
+        #  be written with crs yet
         if "x" in da_out.coords:
             da_out["x"] = da_out["x"].assign_attrs(
                 dict(standard_name="projection_x_coordinate", units="m")

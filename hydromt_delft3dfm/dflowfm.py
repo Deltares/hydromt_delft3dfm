@@ -40,7 +40,8 @@ logger = logging.getLogger(f"hydromt.{__name__}")
 # TODO: consider moving this to a csv in hydromt_delft3dfm/data
 #  or json but then we lose the option to comment so that would also be in an attribute
 DICT_VARNAME_TO_DFLOWFM = {
-    # Hydromt to dflowfm (from hydromt deltares_data datacatalog era5_hourly.data_adapter.rename)
+    # Hydromt to dflowfm (from hydromt deltares_data datacatalog
+    #  era5_hourly.data_adapter.rename)
     "wind10_u": "windx",  # ERA5 u10
     "wind10_v": "windy",  # ERA5 v10
     "press_msl": "airpressure",  # ERA5 msl
@@ -50,10 +51,10 @@ DICT_VARNAME_TO_DFLOWFM = {
     # "kin": "", # ERA5 ssrd
     # "kout": "", # ERA5 tisr
     # ERA5 to dflowfm (from dfm_tools.modelbuilder.preprocess_merge_meteofiles_era5 and
-    # long names from dfm_tools.download.download_ERA5).
-    # These can be retrieved from the ERA5 data if they were not renamed in the data_catalog
-    #  for instance rhoao is not in the hydromt naming conventions but can this way be retrieved
-    #  from the pre-defined earthdatahub_data datacatalog.
+    #  long names from dfm_tools.download.download_ERA5).
+    # These can be retrieved from the ERA5 data if they were not renamed in the
+    #  data_catalog for instance rhoao is not in the hydromt naming conventions but
+    #  can this way be retrieved from the pre-defined earthdatahub_data datacatalog.
     "u10": "windx",  # ERA5 long: 10m_u_component_of_wind
     "u10n": "windx",  # ERA5 long: 10m_u_component_of_neutral_wind
     "v10": "windy",  # ERA5 long: 10m_v_component_of_wind
@@ -2892,21 +2893,24 @@ class DFlowFMModel(Model):
             See hydromt.model.processes.meteo.precip for more details.
         """
         # TODO: update docstring
-        # TODO: when adding dewpointtemperature/solarradiation/others, also change mdu.physics.temperature = 5
+        # TODO: when adding dewpointtemperature/solarradiation/others, also change
+        #  mdu.physics.temperature = 5
         # TODO: maybe move to components.forcing (also the test)
 
         tstart, tstop = self.get_model_time()  # time slice
-        # probably by giving geom self.region, it automatically clips, so mask is not required
+        # probably by giving geom self.region, it automatically clips,
+        # so mask is not required
         # mask = self.staticmaps.data[self._MAPS["basins"]].values > 0
 
         # TODO: clipping should include outer bounds if not exact, test this
         # TODO add to docs: variables should adhere to data conventions:
-        #  https://deltares.github.io/hydromt/stable/user_guide/data_catalog/data_conventions.html#meteorology
-        #  or alternatively they can be (non-renamed) variable names in the original dataset
-        #  for instance the pre-defined earthdatahub_data catalog renames some era5 variables
-        #  to the hydromt conventions, but the other era5 variables can also be retrieved
-        #  since the zarr archive contains all era5 variables and not only the ones renamed
-        #  by the data catalog
+        #  https://deltares.github.io/hydromt/stable/user_guide/data_catalog/
+        #  data_conventions.html#meteorology or alternatively they can be (non-renamed)
+        #  variable names in the original dataset for instance the pre-defined
+        #  earthdatahub_data catalog renames some era5 variables to the hydromt
+        #  conventions, but the other era5 variables can also be retrieved since the
+        #  zarr archive contains all era5 variables and not only the ones renamed by
+        #  the data catalog.
         meteo_data = self.data_catalog.get_rasterdataset(
             meteo_fn,
             geom=self.region,
@@ -2940,15 +2944,17 @@ class DFlowFMModel(Model):
                 region=dict(bbox=list(self.region.total_bounds)),
                 region_crs=self.crs,
                 crs=self.crs,
-                # TODO: res should come from ERA5 source resolution,
-                #  e.g. meteo_data.raster.res but converted to meters if self.crs is cartesian
+                # TODO: res should come from ERA5 source resolution, e.g.
+                #  meteo_data.raster.res but converted to meters if self.crs is
+                #  cartesian
                 res=self.mesh.res,
             )
             # TODO: reproj_method default from hydromt.model.processes.meteo.precip
             #  consider more accurate interpolation like bilinear
             #  https://rasterio.readthedocs.io/en/stable/api/rasterio.enums.html#rasterio.enums.Resampling
             reproj_method = "nearest_index"
-            # TODO: precip also uses np.fmax(precip, 0), consider using that also (or increasing the buffer?)
+            # TODO: precip also uses np.fmax(precip, 0), consider using that also
+            #  (or increasing the buffer?)
             meteo_data = meteo_data.raster.reproject_like(da_like, method=reproj_method)
 
         for variable in meteo_data.data_vars:
@@ -2956,9 +2962,9 @@ class DFlowFMModel(Model):
             # Update meta attributes (used for default output filename later)
             da.attrs.update({"meteo_fn": meteo_fn})
             # prevent overwriting a name/forcing that already exists.
-            # TODO: even if we create a unique name, the netcdf will still be overwritten
-            #  since it uses the dflowfm quantity name. Support for duplicated variables
-            #  also requires operand="+" in the ext file.
+            # TODO: even if we create a unique name, the netcdf will still be
+            #  overwritten since it uses the dflowfm quantity name. Support for
+            #  duplicated variables also requires operand="+" in the ext file.
             name = f"spatial_{variable}"
             if name in self.forcing.data.keys():
                 raise NotImplementedError(
