@@ -4,7 +4,7 @@
 HydroMT-Delft3D FM: Delft3D FM plugin for HydroMT
 =================================================
 
-|ci| |codecov| |black| |docs_latest|  |license| |sonarcloud|
+|test| |codecov| |black| |docs_latest|  |license| |sonarcloud| |pypi| |pyversions|
 
 What is the HydroMT-Delft3D FM plugin
 -------------------------------------
@@ -16,7 +16,7 @@ This plugin provides an implementation of the model API for the Delft3D FM_ mode
 
 Why HydroMT-Delft3D FM?
 -----------------------
-Setting up distributed hydrological models typically requires many (manual) steps
+Setting up distributed hydrological and hydrodynamic models typically requires many (manual) steps
 to process input data and might therefore be time consuming and hard to reproduce.
 Especially improving models based on global-local geospatial datasets, which are
 rapidly becoming available at increasingly high resolutions, might be challenging.
@@ -48,12 +48,12 @@ happy to discuss how it can be implemented for your model.
 .. _Hydromt: https://deltares.github.io/hydromt/latest/
 .. _FM: https://oss.deltares.nl/web/delft3dfm
 
-.. |ci| image:: https://github.com/Deltares/hydromt_delft3dfm/actions/workflows/ci.yml/badge.svg?branch=main
-    :alt: ci
-    :target: https://github.com/Deltares/hydromt_delft3dfm/actions/workflows/ci.yml
+.. |test| image:: https://github.com/Deltares/hydromt_delft3dfm/actions/workflows/test.yml/badge.svg?branch=main
+    :alt: test
+    :target: https://github.com/Deltares/hydromt_delft3dfm/actions/workflows/test.yml
 
 .. |codecov| image:: https://codecov.io/gh/Deltares/hydromt_delft3dfm/branch/main/graph/badge.svg?token=ss3EgmwHhH
-    :target: https://codecov.io/gh/Deltares/hydromt_delft3dfm
+    :target: https://codecov.io/gh/Deltares/hydromt_delft3dfm?displayType=list
 
 .. |black|  image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :alt: Formatter
@@ -70,3 +70,9 @@ happy to discuss how it can be implemented for your model.
 .. |sonarcloud| image:: https://sonarcloud.io/api/project_badges/measure?project=Deltares_hydromt_delft3dfm&metric=alert_status
     :alt: Quality Gate Status
     :target: https://sonarcloud.io/summary/new_code?id=Deltares_hydromt_delft3dfm
+
+.. |pypi| image:: https://img.shields.io/pypi/v/hydromt_delft3dfm.svg
+    :target: https://pypi.python.org/pypi/hydromt_delft3dfm
+
+.. |pyversions| image:: https://img.shields.io/pypi/pyversions/hydromt_delft3dfm.svg
+    :target: https://pypi.org/project/hydromt_delft3dfm

@@ -1,13 +1,16 @@
-"""Workflows to prepare manholes for Delft3D-FM model."""
+"""Workflows to prepare manholes for Delft3D FM model."""
 
 import logging
 
 import geopandas as gpd
 import pandas as pd
-from hydromt import gis_utils
+
+# from hydromt.gis.vector_utils import nearest_merge
 from shapely.geometry import Point
 
-logger = logging.getLogger(__name__)
+from hydromt_delft3dfm.utils.gis_utils import nearest_merge
+
+logger = logging.getLogger(f"hydromt.{__name__}")
 
 
 __all__ = [
@@ -21,7 +24,6 @@ def generate_manholes_on_branches(
     bedlevel_shift: float = 0.0,
     id_prefix: str = "",
     id_suffix: str = "",
-    logger=logging,
 ):
     """Generate manhole location and bedlevel from branches.
 
@@ -71,10 +73,10 @@ def generate_manholes_on_branches(
         branches.index.name = "_index"
     pipes = branches.query(
         'branchtype == "pipe" | branchtype == "tunnel"'
-    )  # include both pipes and tunnels
+    ).copy()  # include both pipes and tunnels
     channels = branches.query(
         'branchtype == "river" | branchtype == "Channel"'
-    )  # include both channels and rivers
+    ).copy()  # include both channels and rivers
 
     # generate nodes upstream and downstream for every pipe
     _nodes_pipes_up = pd.DataFrame(
@@ -141,10 +143,10 @@ def generate_manholes_on_branches(
     )
     if len(_nodes_channels) > 0:
         nodes_channels = gpd.GeoDataFrame(_nodes_channels, crs=branches.crs)
-        nodes_to_remove = gis_utils.nearest_merge(
+        nodes_to_remove = nearest_merge(
             nodes_pipes, nodes_channels, max_dist=0.001, overwrite=True
         )
-        nodes_pipes = nodes_pipes.loc[nodes_to_remove.index_right == -1]
+        nodes_pipes = nodes_pipes.loc[nodes_to_remove.index_right.isna()]
 
     # manhole generated
     manholes_generated = gpd.GeoDataFrame(
@@ -152,7 +154,7 @@ def generate_manholes_on_branches(
     )
 
     # add manholeid
-    manholes_generated.loc[:, "manholeid"] = [
+    manholes_generated["manholeid"] = [
         f"{id_prefix}{x}{id_suffix}" for x in range(len(manholes_generated))
     ]
     manholes_generated.set_index("manholeid")
@@ -186,11 +188,11 @@ def _update_pipes_from_manholes(manholes: gpd.GeoDataFrame, pipes: gpd.GeoDataFr
         if cs[0] in manholes_dict:
             pipes.at[pi, "manhole_up"] = manholes_dict[cs[0]]
         else:
-            pipes.at[pi, "manhole_up"] = ""  # empty if no manholes
+            pipes.at[pi, "manhole_up"] = None  # empty if no manholes
         if cs[-1] in manholes_dict:
             pipes.at[pi, "manhole_dn"] = manholes_dict[cs[-1]]
         else:
-            pipes.at[pi, "manhole_dn"] = ""  # empty if no manholes
+            pipes.at[pi, "manhole_dn"] = None  # empty if no manholes
 
     return pipes
 

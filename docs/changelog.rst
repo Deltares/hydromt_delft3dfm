@@ -6,17 +6,67 @@ All notable changes to this project will be documented in this page.
 The format is based on `Keep a Changelog`_, and this project adheres to
 `Semantic Versioning`_.
 
-Unreleased
+UNRELEASED
 ==========
+This release supports Python 3.11 and up.
 
 Added
 -----
+- Included new example notebook for basic HydroMT use through CLI. (PR #202)
+- New method **setup_retentions**. (PR #170)
+- Support for user-specified paths for mdu/network and models without geoms folder (PR #271)
+- Updated to hydrolib-core v1 (pydantic V2 API) (PR #226)
 
 Changed
 -------
+- Dropped support for Python 3.9. (PR #214)
+- Updated to hydromt v1 API and dropped support for Python 3.10. (PR #162)
+- when reading a model prefer crs from mesh/network file, then geoms, then userdefined (PR #271)
 
 Fixed
 -----
+- Write geoms only once (PR #224)
+- support for writing models without mesh/inifield/forcing (PR #248)
+- fixed crs/bounds/region properties of DFlowFMMeshComponent (PR #251)
+- crs cannot be None in writing mode (PR #264)
+- properly parsing tunit/startdatetime/stopdatetime (PR #267)
+- prevent reading/writing a model without a mesh/network file and prevent reading a model without an mdu file (PR #271)
+- improved error messages in case of incorrect time formats for mdu/config keys (PR #278)
+- consistently initialize manhole_up/manhole_dn as None instead of empty string (PR #287)
+- fixed warnings emmitted by hydromt_delft3dfm (PR #288)
+
+
+v0.3.0 (18 October 2024)
+========================
+This version includes many code updates to accomodate for newer versions of dependencies.
+The only upper bound left is hydromt<1.
+
+Added
+-----
+- Setup 1D laterals at branches from points and polygons. (PR #81)
+- Added tests for Mesh workflows. (PR #133)
+- Added tests for xyz cross-section workflows (PR #153).
+
+Changed
+-------
+- Change default spacing in setup_channels from ``None`` to ``np.inf``. (PR #133)
+- Added ``maxdist`` variable to setup_rivers and setup_channels. (PR #153)
+- Renamed ``manhole_defaults_fn`` to ``manholes_defaults_fn`` in ``setup_manholes`` for consistency. (PR #187)
+- No data values in maps from ``setup_maps_from_rasterdataset`` are now handled as -999.0. (PR #161)
+
+Fixed
+-----
+- Bugfixing of reading of frictions (global), crosssections and boundaries when update. (PR #81)
+- Support for xugrid>=0.9.0, meshkernel>=4.3.0, hydromt>=0.10,<1, pandas>=2. (PR #129)
+- Fixing setup_links1d2d for 2d to 1d direction. (PR #133)
+- Support for hydrolib-core>=0.8.0. (PR #139)
+- Add support for Python 3.12. (PR #149)
+- Fix writing of structures with newer (geo)pandas versions. (PR #151)
+- Several bugfixes related to processing of cross-sections (PR #153)
+- Support for geopandas v1 (PR #158)
+- Support for latest version HydroMT artifact data. (PR #160)
+- Avoid sediment section in mdu so generated models can run in Delft3D FM Suite 2024.03 1D2D. (PR #184)
+- fixed typo so ``setup_pipes()`` now allows field ``invlev_dn``. (PR #193)
 
 v0.2.0 (20 November 2023)
 =========================
@@ -43,7 +93,7 @@ Added
 
 Changed
 -------
-- Upgraded hydromt dependency to version 0.9.0. (PR#100)
+- Upgraded HydroMT dependency to version 0.9.0. (PR#100)
 - Updated documentation. (PR #97)
 
 v0.1.1 (13 October 2023)

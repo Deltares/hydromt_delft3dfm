@@ -1,5 +1,6 @@
 {
 "type": "FeatureCollection",
+"name": "network1d",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3857" } },
 "features": [
 { "type": "Feature", "properties": { "index": "0" }, "geometry": { "type": "LineString", "coordinates": [ [ 1393117.044157, 5866704.071639999747276 ], [ 1386994.472163, 5862120.19257 ] ] } },

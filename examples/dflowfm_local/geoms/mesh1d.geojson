@@ -1,5 +1,6 @@
 {
 "type": "FeatureCollection",
+"name": "mesh1d",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::32647" } },
 "features": [
 { "type": "Feature", "properties": { "index": "0" }, "geometry": { "type": "LineString", "coordinates": [ [ 664057.966296999948099, 1526147.834882 ], [ 664042.880630714935251, 1526110.574877512641251 ] ] } },

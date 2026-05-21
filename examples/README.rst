@@ -14,7 +14,7 @@ packages required to run the notebooks.
 
 The next step is to install all the python dependencies required to run the notebooks, including HydroMT and HydroMT-Delft3D FM.
 
-**If you do not have hydromt-delft3dfm yet installed**, first create a new empty environment with the base hydromt installation:
+**If you do not have hydromt-delft3dfm yet installed**, first create a new empty environment with the base HydroMT installation:
 
 .. code-block:: console
 
@@ -49,14 +49,14 @@ You have two options:
     $ hydromt --models
 
     model plugins:
-     - dflowfm (hydromt_delft3dfm 0.1.2)
-    generic models (hydromt 0.9.0)
+     - dflowfm (hydromt_delft3dfm 0.3.0)
+    generic models (hydromt 0.10.0)
      - grid_model
      - vector_model
      - mesh_model
      - network_model
 
-In the examples above, we see version 0.1.2 of hydromt_delft3dfm is installed and version 0.9.0 of hydromt.
+In the examples above, we see version 0.3.0 of hydromt_delft3dfm is installed and version 0.10.0 of hydromt.
 
 **Option 1: manual download and unzip**
 
@@ -64,9 +64,9 @@ To manually download the examples on Windows, do (!replace with your own hydromt
 
 .. code-block:: console
 
-  $ curl https://github.com/Deltares/hydromt_delft3dfm/archive/refs/tags/v0.1.2.zip -O -L
-  $ tar -xf v0.1.2.zip
-  $ ren hydromt_delft3dfm-0.1.2 hydromt_delft3dfm
+  $ curl https://github.com/Deltares/hydromt_delft3dfm/archive/refs/tags/v0.3.0.zip -O -L
+  $ tar -xf v0.3.0.zip
+  $ ren hydromt_delft3dfm-0.3.0 hydromt_delft3dfm
 
 You can also download, unzip and rename manually if you prefer, rather than using the windows command prompt.
 
@@ -78,7 +78,7 @@ you have installed:
 .. code-block:: console
 
   $ git clone https://github.com/Deltares/hydromt_delft3dfm.git
-  $ git checkout v0.1.2
+  $ git checkout v0.3.0
 
 3 - Running the examples
 ************************

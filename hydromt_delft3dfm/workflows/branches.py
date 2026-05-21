@@ -1,4 +1,4 @@
-"""Workflows to prepare branches for Delft3D-FM model."""
+"""Workflows to prepare branches for Delft3D FM model."""
 
 import logging
 from typing import List, Literal, Tuple
@@ -8,14 +8,15 @@ import numpy as np
 import pandas as pd
 import pyproj
 import shapely
-from hydromt import gis_utils
+
+# from hydromt.gis.vector_utils import nearest_merge
 from scipy.spatial import distance
-from shapely.geometry import LineString, MultiLineString, Point
+from shapely.geometry import LineString, MultiLineString, MultiPoint, Point
 
-from .. import graph_utils, mesh_utils
-from ..gis_utils import cut_pieces, split_lines
+from hydromt_delft3dfm.utils import graph_utils, mesh_utils
+from hydromt_delft3dfm.utils.gis_utils import cut_pieces, nearest_merge, split_lines
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(f"hydromt.{__name__}")
 
 
 __all__ = [
@@ -27,6 +28,7 @@ __all__ = [
     "update_data_columns_attributes",
     "update_data_columns_attribute_from_query",
     "snap_newbranches_to_branches_at_snappednodes",
+    "snap_geom_to_branches_and_drop_nonsnapped",
 ]
 
 
@@ -41,7 +43,6 @@ def prepare_branches(
     snap_offset: float = 0.0,
     allow_intersection_snapping: bool = False,
     allowed_columns: List[str] = [],
-    logger: logging.Logger = logger,
 ) -> Tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
     """
     Set all common steps to add branches type of objects.
@@ -78,8 +79,6 @@ def prepare_branches(
         By default True.
     allowed_columns: list, optional
         List of columns to filter in branches GeoDataFrame
-    logger: logging.Logger, optional
-        Logger.
 
     Returns
     -------
@@ -90,7 +89,7 @@ def prepare_branches(
     """
     # 1. Filter features based on filter
     if filter is not None and "branchtype" in gdf_br.columns:
-        gdf_br = gdf_br[gdf_br["branchtype"].str.lower() == filter.lower()]
+        gdf_br = gdf_br[gdf_br["branchtype"].str.lower() == filter.lower()].copy()
         logger.info(f"Set {filter} locations filtered from branches as {br_type} .")
     # Check if features are present
     if len(gdf_br) == 0:
@@ -129,7 +128,6 @@ def prepare_branches(
         snap_offset=snap_offset,
         allow_intersection_snapping=allow_intersection_snapping,
         smooth_branches=br_type == "pipe",
-        logger=logger,
     )
     logger.info("Validating branches")
     validate_branches(branches)
@@ -210,10 +208,11 @@ def _get_possible_unsnappednodes(newbranches):
 def _snap_unsnappednodes_to_nodes(
     unsnapped_nodes: gpd.GeoDataFrame, nodes: gpd.GeoDataFrame, snap_offset: float
 ) -> gpd.GeoDataFrame:
-    snapped_nodes = gis_utils.nearest_merge(
+    snapped_nodes = nearest_merge(
         unsnapped_nodes, nodes, max_dist=snap_offset, overwrite=False
     )
-    snapped_nodes = snapped_nodes[snapped_nodes.index_right != -1]  # drop not snapped
+    # drop not snapped
+    snapped_nodes = snapped_nodes[snapped_nodes.index_right.notna()]
     snapped_nodes["geometry_left"] = snapped_nodes["geometry"]
     snapped_nodes["geometry_right"] = [
         nodes.at[i, "geometry"] for i in snapped_nodes["index_right"]
@@ -276,7 +275,6 @@ def update_data_columns_attribute_from_query(
     branches: gpd.GeoDataFrame,
     attribute: pd.DataFrame,
     attribute_name: str,
-    logger=logger,
 ):
     """
     Update an attribute column of branches.
@@ -358,7 +356,6 @@ def process_branches(
     snap_offset: float = 0.01,
     allow_intersection_snapping: bool = True,
     smooth_branches: bool = False,
-    logger=logger,
 ):
     """Process the branches.
 
@@ -379,8 +376,6 @@ def process_branches(
     smooth_branches: bool, optional
         whether to return branches that are smoothed (straightend), needed for pipes
         Default to False.
-    logger
-        The logger to log messages with.
 
     Returns
     -------
@@ -398,16 +393,15 @@ def process_branches(
         id_col=id_col,
         snap_offset=snap_offset,
         allow_intersection_snapping=allow_intersection_snapping,
-        logger=logger,
     )
 
     logger.debug("Splitting branches based on spacing")
     # TODO: add check, if spacing is used,
     # then in branch cross section cannot be setup later
-    branches = space_branches(branches, smooth_branches=smooth_branches, logger=logger)
+    branches = space_branches(branches, smooth_branches=smooth_branches)
 
     logger.debug("Generating branchnodes")
-    branch_nodes = generate_branchnodes(branches, id_col, logger=logger)
+    branch_nodes = generate_branchnodes(branches, id_col)
 
     return branches, branch_nodes
 
@@ -417,7 +411,6 @@ def cleanup_branches(
     id_col: str = "branchid",
     snap_offset: float = 0.01,
     allow_intersection_snapping: bool = True,
-    logger=logger,
 ):
     """Clean up the branches.
 
@@ -443,8 +436,6 @@ def cleanup_branches(
     allow_intersection_snapping : bool, optional
         Allow snapping at all branch ends, including intersections.
         Defaults to True.
-    logger
-        The logger to log messages with.
 
     Returns
     -------
@@ -557,7 +548,6 @@ def space_branches(
     branches: gpd.GeoDataFrame,
     spacing_col: str = "spacing",
     smooth_branches: bool = False,
-    logger=logger,
 ):
     """
     Space the branches based on the spacing_col on the branch.
@@ -573,8 +563,6 @@ def space_branches(
         The branches to clean up.
     spacing_col : str, optional
         The branch id column name. Defaults to 'spacing'.
-    logger
-        The logger to log messages with.
 
     Returns
     -------
@@ -596,7 +584,6 @@ def space_branches(
 def generate_branchnodes(
     branches: gpd.GeoDataFrame,
     id_col: str = None,
-    logger=logger,
 ):
     """Generate branch nodes at the branch ends.
 
@@ -606,8 +593,6 @@ def generate_branchnodes(
         The branches to generate the end nodes for.
     id_col : str, optional
         The branch id column name. Defaults to None.
-    logger
-        The logger to log messages with.
 
     Returns
     -------
@@ -650,9 +635,8 @@ def generate_branchnodes(
     return nodes
 
 
-def validate_branches(
-    branches: gpd.GeoDataFrame, logger=logger
-):  # TODO: add more content and maybe make a seperate module
+# TODO: add more content and maybe make a seperate module
+def validate_branches(branches: gpd.GeoDataFrame):
     """Validate the branches.
 
     Logs an error when one or more branches have a length of 0 meter.
@@ -661,8 +645,6 @@ def validate_branches(
     ----------
     branches : gpd.GeoDataFrame
         The branches to validate.
-    logger
-        The logger to log messages with.
     """
     # validate pipe geometry
     if sum(branches.geometry.length <= 0) == 0:
@@ -681,7 +663,6 @@ def split_branches(
     spacing_const: float = float("inf"),
     spacing_col: str = None,
     smooth_branches: bool = False,
-    logger=logger,
 ):
     """
     Split branches based on a given spacing.
@@ -705,8 +686,6 @@ def split_branches(
         Default to None.
     smooth_branches: bool, optional
         Switch to split branches into straight lines. By default False.
-    logger
-        The logger to log messages with.
 
     Returns
     -------
@@ -726,7 +705,7 @@ def split_branches(
 
     elif branches[spacing_col].astype(float).notna().any():
         logger.info(
-            "Splitting branches with spacing specifed"
+            "Splitting branches with spacing specified "
             f"in datamodel branches[{spacing_col}]"
         )
         split_branches = []
@@ -891,9 +870,13 @@ def reduce_gdf_precision(gdf: gpd.GeoDataFrame, rounding_precision: int = 8):
     Raises
     ------
     NotImplementedError
-        If the geometry is not a LineString or Point.
+        If the geometry is not a LineString or Point, or if the types are mixed.
     """
-    if isinstance(gdf.geometry[0], LineString):
+    # check for mixed geometry types
+    if len(gdf.geometry.geom_type.unique()) != 1:
+        raise NotImplementedError("Mixed geometry types are not supported.")
+
+    if isinstance(gdf.geometry.iloc[0], LineString):
         branches = gdf.copy()
         for i_branch, branch in enumerate(branches.itertuples()):
             points = shapely.wkt.loads(
@@ -903,7 +886,7 @@ def reduce_gdf_precision(gdf: gpd.GeoDataFrame, rounding_precision: int = 8):
             ).coords[:]
             branches.at[i_branch, "geometry"] = LineString(points)
 
-    elif isinstance(gdf.geometry[0], Point):
+    elif isinstance(gdf.geometry.iloc[0], Point):
         points = gdf.copy()
         for i_point, point in enumerate(points.itertuples()):
             new_point = shapely.wkt.loads(
@@ -912,7 +895,7 @@ def reduce_gdf_precision(gdf: gpd.GeoDataFrame, rounding_precision: int = 8):
             points.at[i_point, "geometry"] = Point(new_point)
 
     else:
-        raise NotImplementedError
+        raise NotImplementedError("Only LineString and Point geometry types supported.")
 
     return gdf
 
@@ -1032,112 +1015,105 @@ def possibly_intersecting(
     return idx
 
 
-# TODO copied from dhydamo geometry.py, update when available in main
-# NOTE add option to write distance to nearest branch
 def find_nearest_branch(
     branches: gpd.GeoDataFrame,
     geometries: gpd.GeoDataFrame,
     method: str = "overal",
-    maxdist: int = 5,
-):
-    """
-    Determine nearest branch for each geometry.
+    maxdist: float = 5.0,
+) -> gpd.GeoDataFrame:
+    """Determine the nearest branch for each geometry.
 
-    The nearest branch can be found by finding t from both ends (ends) or the
-    nearest branch from the geometry as a whole (overal), the centroid (centroid),
-    or intersecting (intersect).
+    The method of determination can vary.
 
     Parameters
     ----------
-    branches : geopandas.GeoDataFrame
-        Geodataframe with branches.
-    geometries : geopandas.GeoDataFrame
-        Geodataframe with geometries to snap.
-    method : {'overal','intersecting','centroid','ends'}
-        Method for determine branch. Defaults to 'overal'.
-    maxdist: int or float
-        Maximum distance for finding nearest geometry. Defaults to 5.
+    branches : gpd.GeoDataFrame
+        Geodataframe containing branch geometries.
+    geometries : gpd.GeoDataFrame
+        Geodataframe containing geometries for which the nearest branch needs to
+        be found.
+    method : str, optional
+        Method to determine the nearest branch. Supports:
+        - 'overal': Find the nearest branch based on the geometry's location.
+        - 'intersecting': Convert the geometry to a centroid of its intersection
+        points with branches.
+        Default is 'overal'.
+    maxdist : float, optional
+        Maximum distance threshold for finding the nearest branch. Default is 5.0.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        Geodataframe with additional columns:
+        - 'branch_id': ID of the nearest branch.
+        - 'branch_distance': Distance to the nearest branch.
+        - 'branch_offset': Offset along the branch.
+
+    Raises
+    ------
+    NotImplementedError
+        If the specified method is not among the allowed methods.
     """
     # Check if method is in allowed methods
-    allowed_methods = ["intersecting", "overal", "centroid", "ends"]
+    allowed_methods = ["intersecting", "overal"]
     if method not in allowed_methods:
         raise NotImplementedError(f'Method "{method}" not implemented.')
 
-    # Add columns if not present
-    if "branch_id" not in geometries.columns:
-        geometries["branch_id"] = ""
-    if "branch_offset" not in geometries.columns:
-        geometries["branch_offset"] = np.nan
-
+    # Depending on method, modify geometries
     if method == "intersecting":
-        # Determine intersection geometries per branch
-        geobounds = geometries.bounds.values.T
-        for branch in branches.itertuples():
-            selectie = geometries.loc[
-                possibly_intersecting(geobounds, branch.geometry)
-            ].copy()
-            intersecting = selectie.loc[selectie.intersects(branch.geometry).values]
+        # Get the intersection points directly
+        for index, geom in geometries.iterrows():
+            # Find branches that intersect with the current geometry
+            intersected_branches = branches[branches.intersects(geom["geometry"])]
 
-            # For each geometrie, determine offset along branch
-            for geometry in intersecting.itertuples():
-                # Determine distance of profile line along branch
-                geometries.at[geometry.Index, "branch_id"] = branch.Index
+            if not intersected_branches.empty:
+                # If there are multiple intersecting points, take the centroid
+                intersection_points = [
+                    geom["geometry"].intersection(branch["geometry"])
+                    for _, branch in intersected_branches.iterrows()
+                ]
+                centroid = MultiPoint(intersection_points).centroid
+                geometries.at[index, "geometry"] = centroid
 
-                # Calculate offset
-                branchgeo = branch.geometry
-                mindist = min(0.1, branchgeo.length / 2.0)
-                offset = round(
-                    branchgeo.project(
-                        branchgeo.intersection(geometry.geometry).centroid
-                    ),
-                    3,
-                )
-                offset = max(mindist, min(branchgeo.length - mindist, offset))
-                geometries.at[geometry.Index, "branch_offset"] = offset
+    # Check for previous data and drop if exist
+    geometries.drop(
+        columns=["branch_id", "branch_distance", "branch_offset"],
+        inplace=True,
+        errors="ignore",
+    )
 
-    else:
-        branch_bounds = branches.bounds.values.T
-        # In case of looking for the nearest, it is easier to iteratie over
-        # the geometries instead of the branches
-        for geometry in geometries.itertuples():
-            # Find near branches
-            nearidx = possibly_intersecting(
-                branch_bounds, geometry.geometry, buffer=maxdist
-            )
-            selectie = branches.loc[nearidx]
+    # Use nearest_merge to get the nearest branches
+    result = nearest_merge(geometries, branches, max_dist=maxdist, columns=["geometry"])
+    result.rename(
+        columns={"index_right": "branch_id", "distance_right": "branch_distance"},
+        inplace=True,
+    )
 
-            if method == "overal":
-                # Determine distances to branches
-                dist = selectie.distance(geometry.geometry)
-            elif method == "centroid":
-                # Determine distances to branches
-                dist = selectie.distance(geometry.geometry.centroid)
-            elif method == "ends":
-                # Since a culvert can cross a channel, it is
-                crds = geometry.geometry.coords[:]
-                dist = (
-                    selectie.distance(Point(*crds[0]))
-                    + selectie.distance(Point(*crds[-1]))
-                ) * 0.5
+    # Select ones that are merged
+    valid_rows = result["branch_distance"] < maxdist
 
-            # Determine nearest
-            if dist.min() < maxdist:
-                branchidxmin = dist.idxmin()
-                geometries.at[geometry.Index, "branch_id"] = dist.idxmin()
-                geometries.at[geometry.Index, "branch_distance"] = dist.min()
-                if isinstance(geometry.geometry, Point):
-                    geo = geometry.geometry
-                else:
-                    geo = geometry.geometry.centroid
+    # Interpolate the branch geometries based on index_right
+    branchgeo = branches.loc[result.loc[valid_rows, "branch_id"], "geometry"].values
+    maxdist = np.array([geo.length for geo in branchgeo])
+    offset = np.array(
+        [
+            geo.project(result.loc[idx, "geometry"])
+            for idx, geo in zip(valid_rows[valid_rows].index, branchgeo)
+        ]
+    )
+    result.loc[valid_rows, "branch_offset"] = np.where(
+        offset > maxdist, maxdist, offset
+    )
+    snapped_geometries = [geo.interpolate(o) for geo, o in zip(branchgeo, offset)]
+    result.loc[valid_rows, "geometry"] = snapped_geometries
 
-                # Calculate offset
-                branchgeo = branches.at[branchidxmin, "geometry"]
-                mindist = min(0.1, branchgeo.length / 2.0)
-                offset = max(
-                    mindist,
-                    min(branchgeo.length - mindist, round(branchgeo.project(geo), 3)),
-                )
-                geometries.at[geometry.Index, "branch_offset"] = offset
+    # For rows where distance is greater than maxdist, set branch_id
+    # to empty and branch_offset to NaN
+    result.loc[~valid_rows, "branch_id"] = None
+    result.loc[~valid_rows, "branch_offset"] = None
+    result.loc[~valid_rows, "branch_distance"] = None
+
+    return result
 
 
 def snap_newbranches_to_branches_at_snappednodes(
@@ -1186,9 +1162,11 @@ def snap_newbranches_to_branches_at_snappednodes(
         new_branch = new_branches.loc[snapnode.branchid]
         snapped_line = LineString(
             [
-                snapnode.geometry_right
-                if Point(xy).equals(snapnode.geometry_left)
-                else Point(xy)
+                (
+                    snapnode.geometry_right
+                    if Point(xy).equals(snapnode.geometry_left)
+                    else Point(xy)
+                )
                 for xy in new_branch.geometry.coords[:]
             ]
         )
@@ -1204,9 +1182,8 @@ def snap_newbranches_to_branches_at_snappednodes(
         ].branch_chainage.to_list()
         snapped_line = MultiLineString(cut_pieces(branch.geometry, distances))
         branches_snapped.at[branch_name, "geometry"] = snapped_line
-        branches_snapped.at[
-            branch_name, "branchorder"
-        ] = branch_order  # allow interpolation on the snapped branch
+        # allow interpolation on the snapped branch
+        branches_snapped.at[branch_name, "branchorder"] = branch_order
 
     # explode multilinestring after snapping
     branches_snapped = branches_snapped.explode(index_parts=False)
@@ -1233,3 +1210,27 @@ def _remove_branches_with_ring_geometries(
     logger.debug("Removing branches with ring geometries.")
 
     return branches
+
+
+def snap_geom_to_branches_and_drop_nonsnapped(
+    branches: gpd.GeoDataFrame, geoms: gpd.GeoDataFrame, snap_offset=0.0
+):
+    """
+    Snap geoms to branches and drop the ones that are not snapped.
+
+    Returns snapped geoms with branchid and chainage.
+    Branches must have branchid.
+    """
+    geoms = find_nearest_branch(
+        branches=branches,
+        geometries=geoms,
+        maxdist=snap_offset,
+    )
+    geoms = geoms.rename(columns={"branch_id": "branchid", "branch_offset": "chainage"})
+
+    # drop ones non snapped
+    _drop_geoms = geoms["chainage"].isna()
+    if any(_drop_geoms):
+        logger.debug(f"Unable to snap to branches: {geoms[_drop_geoms].index}")
+
+    return geoms[~_drop_geoms]

@@ -1,4 +1,4 @@
-# written by HYDROLIB-core 0.5.2
+# written by HYDROLIB-core 0.10.1
 
 [General]
 fileVersion = 2.01
@@ -7,20 +7,26 @@ fileType    = extForce
 [Boundary]
 quantity     = waterlevelbnd
 nodeId       = 1384118.718651_5855518.214933
-forcingFile  = boundaryconditions1d_waterlevelbnd.bc
+forcingFile  = boundarycondition1d.bc
 
 [Boundary]
 quantity     = waterlevelbnd
 nodeId       = 1393117.044157_5866704.071640
-forcingFile  = boundaryconditions1d_waterlevelbnd.bc
+forcingFile  = boundarycondition1d.bc
 
 [Boundary]
 quantity     = waterlevelbnd
 nodeId       = 1387829.368344_5866704.071640
-forcingFile  = boundaryconditions1d_waterlevelbnd.bc
+forcingFile  = boundarycondition1d.bc
 
 [Boundary]
 quantity     = waterlevelbnd
 nodeId       = 1391540.018037_5858077.577220
-forcingFile  = boundaryconditions1d_waterlevelbnd.bc
+forcingFile  = boundarycondition1d.bc
+
+[Meteo]
+quantity        = rainfall_rate               # Name of the quantity. See UM Section C.5.3
+forcingFile     = meteo_boundaryconditions.bc # Name of file containing the forcing for this meteo quantity.
+forcingFileType = bcAscii                     # Type of forcingFile.
+operand         = O                           # How this data is combined with previous data for the same quantity (if any).
 
