@@ -2356,7 +2356,7 @@ class DFlowFMModel(Model):
                 geom=self.region,
                 buffer=0,
                 predicate="contains",
-                variables=["steps"],
+                variables=["steps"], # TODO: this is not the case for e.g. GEBCO data
                 single_var_as_array=True,
             ).astype(
                 np.float64
