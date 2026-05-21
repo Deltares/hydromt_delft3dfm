@@ -53,41 +53,6 @@ __all__ = [
 
 logger = logging.getLogger(f"hydromt.{__name__}")
 
-# dict to translate hydromt names to dflowfm names
-# sourced from rename table in the data_catalog: https://github.com/Deltares/hydromt/blob/385399dd0cbc8a1c1833dd5400080da70d542cd9/data/catalogs/deltares_data/v1.1.1/data_catalog.yml#L502-L509
-# TODO: consider setting it as an attribute in setup_precip_forcing instead
-# TODO: extend with quantities in https://github.com/Deltares/dfm_tools/blob/05528077d0d6b517e92f5a3ad54b40c3dc5761cc/dfm_tools/modelbuilder.py#L263-L282
-# TODO: extend with quantities in https://github.com/Deltares/dfm_tools/blob/05528077d0d6b517e92f5a3ad54b40c3dc5761cc/dfm_tools/download.py#L55-L76
-# TODO: also make it possible to provide "rainfall" in the workflow yml (so if in dict.values(), use that)
-DICT_HYDROMT_DFLOWFM = { # TODO: rename to something like DICT_VARNAME_TO_DFLOWFM
-    # Hydromt to dflowfm
-    "wind10_u": "windx",  # ERA5 u10
-    "wind10_v": "windy",  # ERA5 v10
-    "press_msl": "airpressure",  # ERA5 msl
-    "temp": "airtemperature",  # ERA5 t2m
-    "temp_dew": "dewpoint",  # ERA5 d2m
-    "ssr": "solarradiation",  # ERA5 ssr
-    "tcc": "cloudiness",  # ERA5 tcc
-    "precip": "rainfall",  # ERA5 tp
-    # ERA5 to dflowfm
-    "u10": "windx",
-    "v10": "windy",
-    "msl": "airpressure",
-    "t2m": "airtemperature",
-    "d2m": "dewpoint",
-    "ssr": "solarradiation",
-    "tcc": "cloudiness",
-    "tp": "rainfall",
-    # TODO: hydromt data_catalog deltares_data does not contain these variables from ERA5
-    "sst": "sea_surface_temperature",
-    "strd": "longwaveradiation",  # (ssrd and tisr are supported)
-    "chnk": "charnock",
-    "u10n": "windx",
-    "v10n": "windy",
-    "mer": "rainfall_rate",
-    "mtpr": "rainfall_rate",
-    "rhoao": "airdensity",
-}
 
 def read_branches_gui(
     gdf: gpd.GeoDataFrame,
