@@ -2284,11 +2284,11 @@ class DFlowFMModel(Model):
     @hydromt_step
     def setup_mesh2d_refine(
         self,
-        polygon_fn: Optional[str] = None,
-        sample_fn: Optional[str] = None,
-        bathy_fn: Optional[str] = None,
-        steps: Optional[int] = 1,
-        min_edge_size: Optional[float] = None,
+        polygon_fn: str | None = None,
+        sample_fn: str | None = None,
+        bathy_fn: str | None = None,
+        steps: int | None = 1,
+        min_edge_size: float | None = None,
     ):
         """
         Refine the 2d mesh.
