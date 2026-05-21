@@ -2921,6 +2921,7 @@ class DFlowFMModel(Model):
 
         # make sure that we always have a Dataset, also when variables is only a
         # (list of a) single variable, which get_rasterdataset returns as a DataArray
+        # TODO: instead pass `single_var_as_array=False` to get_rasterdataset()
         if isinstance(meteo_data, xr.DataArray):
             meteo_data = meteo_data.to_dataset()
 
