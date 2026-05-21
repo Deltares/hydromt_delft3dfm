@@ -1322,6 +1322,7 @@ def read_spatial(file_nc: str, quantity: str):
     #  translation dict
     # TODO: add docstring
     import xarray as xr
+
     ds_out = xr.open_dataset(file_nc)
     da_out = ds_out[quantity]
     return da_out
@@ -1358,21 +1359,35 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
         # TODO: the netcdf variable name should actually be u10/rhoao instead of windx/
         #  airdensity request this metadata in `hydromt.data_catalog.get_rasterdataset`
         variable = da.name
-        quantity = da.name # windx/airdensity
+        quantity = da.name  # windx/airdensity
         forcing_fn = f"meteo_{quantity}.nc"
         forcing_fp = Path(join(savedir, forcing_fn))
         # TODO: neater support of latlon vs xy, maybe in setup_spatial_forcing() method or in hydromt
         # https://github.com/Deltares/hydromt/issues/1457
         # TODO: latlon cannot currently be tested in delft3dfm since networkfile cannot be written with crs yet
         if "x" in da_out.coords:
-            da_out["x"] = da_out["x"].assign_attrs(dict(standard_name="projection_x_coordinate", units="m"))
-            da_out["y"] = da_out["y"].assign_attrs(dict(standard_name="projection_y_coordinate", units="m"))
+            da_out["x"] = da_out["x"].assign_attrs(
+                dict(standard_name="projection_x_coordinate", units="m")
+            )
+            da_out["y"] = da_out["y"].assign_attrs(
+                dict(standard_name="projection_y_coordinate", units="m")
+            )
         else:
-            da_out["longitude"] = da_out["longitude"].assign_attrs(dict(standard_name="longitude", units="degrees_east"))
-            da_out["latitude"] = da_out["latitude"].assign_attrs(dict(standard_name="latitude", units="degrees_north"))
+            da_out["longitude"] = da_out["longitude"].assign_attrs(
+                dict(standard_name="longitude", units="degrees_east")
+            )
+            da_out["latitude"] = da_out["latitude"].assign_attrs(
+                dict(standard_name="latitude", units="degrees_north")
+            )
         # TODO: gdal_compliant=True drops the assigned attributes again
         # which are required from dflowfm to read the netcdf files properly
-        write_nc(da_out, forcing_fp, gdal_compliant=False, rename_dims=False, progressbar=True)
+        write_nc(
+            da_out,
+            forcing_fp,
+            gdal_compliant=False,
+            rename_dims=False,
+            progressbar=True,
+        )
 
         # add forcingfile to ext
         ext = dict()

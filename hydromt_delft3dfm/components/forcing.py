@@ -123,7 +123,9 @@ class DFlowFMForcingComponent(SpatialDatasetsComponent):
                     forcingfile = df.forcingfile.iloc[0]
                     # TODO: should actually get the extfile
                     mdu_dirname = dirname(self.model.mdu._filename)
-                    file_nc = join(self.model.root.path, mdu_dirname, forcingfile.filepath)
+                    file_nc = join(
+                        self.model.root.path, mdu_dirname, forcingfile.filepath
+                    )
                     da_out = io_utils.read_spatial(file_nc, quantity=quantity)
                 else:
                     # TODO: assuming lenght 1, enforce this by passing iloc[0] instead
