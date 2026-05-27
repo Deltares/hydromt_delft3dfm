@@ -1345,19 +1345,18 @@ def read_spatial(file_nc: str, quantity: str) -> xr.DataArray:
     return da_out
 
 
-# TODO: update docstring (copy of write_meteo)
 def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     """
-    Write 2d meteo forcing from forcing dict.
+    Write netcdf meteo forcing from forcing dict.
 
-    Note! only forcing file (.bc) is written in this function.
+    Note! only forcing files (.nc) are written in this function.
     Use io_utils.write_ext() for writing external forcing (.ext) file.
 
     Parameters
     ----------
     forcing: dict of xarray DataArray
         Dict of boundary DataArray.
-        Only forcing that startswith "meteo" will be recognised.
+        Only forcing that startswith "spatial" will be recognised.
     savedir: str, optional
         path to the directory where to save the file.
     ext_fn: str or Path, optional
