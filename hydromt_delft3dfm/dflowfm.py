@@ -62,7 +62,7 @@ DICT_VARNAME_TO_DFLOWFM = {
     "msl": "airpressure",  # ERA5 long: mean_sea_level_pressure
     "t2m": "airtemperature",  # ERA5 long: 2m_temperature
     "d2m": "dewpoint",  # ERA5 long: 2m_dewpoint_temperature
-    "ssr": "solarradiation",  # ERA5 long: surface_net_solar_radiation
+    "ssr": "netsolarradiation",  # ERA5 long: surface_net_solar_radiation
     "tcc": "cloudiness",  # ERA5 long: total_cloud_cover
     "tp": "rainfall",
     "sst": "sea_surface_temperature",  # ERA5 long: sea_surface_temperature
@@ -2893,7 +2893,7 @@ class DFlowFMModel(Model):
             See hydromt.model.processes.meteo.precip for more details.
         """
         # TODO: update docstring
-        # TODO: when adding dewpointtemperature/solarradiation/others, also change
+        # TODO: when adding dewpointtemperature/netsolarradiation/others, also change
         #  mdu.physics.temperature = 5
         # TODO: maybe move to components.forcing (also the test)
 

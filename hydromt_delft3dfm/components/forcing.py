@@ -107,7 +107,10 @@ class DFlowFMForcingComponent(SpatialDatasetsComponent):
             # Add to forcing
             self.set(da_out)
         # meteo
+        # TODO: the meteo block might be renamed to spatial in the future
         if len(ext_model.meteo) > 0:
+            # meteo can be netcdf or bcAscii, so this if statement splits in these two
+            # cases
             df_ext = pd.DataFrame([f.__dict__ for f in ext_model.meteo])
             # Forcing dataarrays to prepare for each quantity
             forcing_names = np.unique(df_ext.quantity).tolist()
@@ -115,13 +118,17 @@ class DFlowFMForcingComponent(SpatialDatasetsComponent):
             for quantity in forcing_names:
                 # Get the dataframe corresponding to the current variable
                 df = df_ext[df_ext.quantity == quantity]
-                # TODO: currently no support for multiple forcings for the same
-                #  quantities (would be overwritten), so make sure there is only one
-                assert len(df) == 1
+                if len(df) > 1:
+                    raise NotImplementedError(
+                        "It is currently not supported to have multiple meteo forcings"
+                        " for the same quantity (would be overwritten), so make sure "
+                        "there is only one per quantity."
+                    )
                 if df.forcingfiletype.iloc[0] == "netcdf":
                     # TODO: assuming lenght 1, enforce this by passing iloc[0] instead
                     forcingfile = df.forcingfile.iloc[0]
-                    # TODO: should actually get the extfile
+                    # get the abdir from the model root, mdu dirname and the ext
+                    # filename
                     mdu_dirname = dirname(self.model.mdu._filename)
                     file_nc = join(
                         self.model.root.path, mdu_dirname, forcingfile.filepath
@@ -132,8 +139,6 @@ class DFlowFMForcingComponent(SpatialDatasetsComponent):
                     da_out = io_utils.read_meteo(df, quantity=quantity)
                 # Add to forcing
                 self.set(da_out)
-        # TODO: add spatial (meteo netcdfs)
-        # if len(ext_model.spatial) > 0:
         # TODO lateral
 
     @hydromt_step

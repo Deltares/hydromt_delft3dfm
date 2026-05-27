@@ -1269,7 +1269,6 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     extdicts = list()
     bcdict = list()
     # Loop over forcing dict
-    # TODO: probably da is actually a df
     for name, da in forcing.items():
         for i in da.index.values:
             bc = da.attrs.copy()
@@ -1387,8 +1386,8 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
         forcing_fp = Path(join(savedir, forcing_fn))
         # TODO: neater support of latlon vs xy, maybe in setup_spatial_forcing() method
         #  or in hydromt https://github.com/Deltares/hydromt/issues/1457
-        # TODO: latlon cannot currently be tested in delft3dfm since networkfile cannot
-        #  be written with crs yet
+        # TODO: latlon cannot currently be tested in delft3dfm since networkfile does
+        #  not include crs: https://github.com/Deltares/hydromt_delft3dfm/issues/119
         if "x" in da_out.coords:
             da_out["x"] = da_out["x"].assign_attrs(
                 dict(standard_name="projection_x_coordinate", units="m")
@@ -1403,7 +1402,6 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
             da_out["latitude"] = da_out["latitude"].assign_attrs(
                 dict(standard_name="latitude", units="degrees_north")
             )
-        # TODO: gdal_compliant=True drops the assigned attributes again
         # which are required from dflowfm to read the netcdf files properly
         write_nc(
             da_out,
@@ -1419,7 +1417,8 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
         ext["forcingvariablename"] = variable
         ext["forcingfile"] = forcing_fn
         ext["forcingfiletype"] = "netcdf"
-        # TODO: invalid input is not raised on .write(): https://github.com/Deltares/HYDROLIB-core/issues/1062
+        # TODO: invalid input to extmodel is not raised on .write():
+        #  https://github.com/Deltares/HYDROLIB-core/issues/1062
         # ext["interp"] = "InterpolateTimeAndSpaceSaveWeights"
         ext["interpolationmethod"] = "linearSpaceTime"
         # TODO: also support operand=+
