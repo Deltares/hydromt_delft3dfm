@@ -1377,8 +1377,8 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
     # Loop over forcing dict
     for name, da in forcing.items():
         da_out = da.copy()
-        # TODO: the netcdf variable name should actually be u10/rhoao instead of windx/
-        #  airdensity request this metadata in `hydromt.data_catalog.get_rasterdataset`
+        # TODO: the netcdf variable name should maybe be u10/rhoao instead of windx/
+        #  airdensity, request this metadata in `hydromt.data_catalog.get_rasterdataset
         variable = da.name
         quantity = da.name  # windx/airdensity
         forcing_fn = f"meteo_{quantity}.nc"
