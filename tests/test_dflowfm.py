@@ -443,6 +443,8 @@ def test_setup_spatial_forcing(tmpdir):
     # TODO: temp_dew gets converted from K to C via unit_add, however, the units in the file are not updated
     # https://github.com/Deltares/hydromt/issues/1374
     # TODO probably precip and press_msl are also converted (mult), but maybe they should not be for dflowfm
+    #  precip: 1000, press_msl: 0.01, this might be from m to mm and from hPa to Pa, which might be sensible.
+    #  but msl is probably not converted in DCSM, which makes it unlikely it should be done here.
     mod1.setup_spatial_forcing(
         meteo_fn="era5_hourly",  # source for precipitation.
         variables=[

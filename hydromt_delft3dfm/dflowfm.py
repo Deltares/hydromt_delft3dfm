@@ -2902,7 +2902,6 @@ class DFlowFMModel(Model):
         # so mask is not required
         # mask = self.staticmaps.data[self._MAPS["basins"]].values > 0
 
-        # TODO: clipping should include outer bounds if not exact, test this
         # TODO add to docs: variables should adhere to data conventions:
         #  https://deltares.github.io/hydromt/stable/user_guide/data_catalog/
         #  data_conventions.html#meteorology or alternatively they can be (non-renamed)
@@ -2910,20 +2909,15 @@ class DFlowFMModel(Model):
         #  earthdatahub_data catalog renames some era5 variables to the hydromt
         #  conventions, but the other era5 variables can also be retrieved since the
         #  zarr archive contains all era5 variables and not only the ones renamed by
-        #  the data catalog.
+        #  the data catalog. >> test this after hydromt 1.4.0 is released.
         meteo_data = self.data_catalog.get_rasterdataset(
             meteo_fn,
             geom=self.region,
             buffer=2,
             time_range=(tstart, tstop),
             variables=variables,
+            single_var_as_array=False,
         )
-
-        # make sure that we always have a Dataset, also when variables is only a
-        # (list of a) single variable, which get_rasterdataset returns as a DataArray
-        # TODO: instead pass `single_var_as_array=False` to get_rasterdataset()
-        if isinstance(meteo_data, xr.DataArray):
-            meteo_data = meteo_data.to_dataset()
 
         # immediately convert all variable names from hydromt to dflowfm naming
         # conventions, since we need to distuinguish between more variables than the
