@@ -445,6 +445,7 @@ def test_setup_spatial_forcing(tmpdir):
     #  Probably precip and press_msl are also converted (mult), but maybe they should not be for dflowfm
     #  precip: 1000, press_msl: 0.01, this might be from m to mm and from hPa to Pa, which might be sensible.
     #  but msl is probably not converted in DCSM, which makes it unlikely it should be done here.
+    # TODO: check unit conversions in dfm_tools: https://github.com/Deltares/dfm_tools/blob/6d3235a4e8b5504b123eb8800d5fcbf062f465ce/dfm_tools/xarray_helpers.py#L303-L372
     mod1.setup_spatial_forcing(
         meteo_fn="era5_hourly",  # source for precipitation.
         variables=[
