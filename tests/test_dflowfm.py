@@ -303,6 +303,16 @@ def test_setup_rivers_from_dem(tmpdir):
         hydrography_fn="merit_hydro",
         river_geom_fn="hydro_rivers_lin",
     )
+    # the river width values changed after a bugfix in pyflwdir, more info in
+    # https://github.com/Deltares/hydromt_delft3dfm/issues/297
+    rivwidth_actual = model.geoms.data["rivers"]["width"].values
+    # rivwidth_expected = np.array(
+    #     [60.50078133, 63.595319  , 50.        , 60.93007025, 60.93007025,
+    #      ]) # pyflwdir pypi
+    rivwidth_expected = np.array(
+        [55.000397  , 64.28401   , 50.        , 60.93007025, 60.93007025,
+         ]) # pyflwdir main
+    assert np.allclose(rivwidth_actual, rivwidth_expected)
 
 
 def test_setup_channels(tmpdir):
