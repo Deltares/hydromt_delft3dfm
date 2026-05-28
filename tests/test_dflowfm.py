@@ -437,12 +437,12 @@ def test_setup_spatial_forcing(tmpdir):
     )
     # variable conventions can be found in the hydromt docs
     # https://deltares.github.io/hydromt/stable/user_guide/data_catalog/data_conventions.html
-    # TODO: missing in conventions: neutral wind, charnock, airdensity and more
-    # TODO: consider passing dflowfm quantities instead, but also keep supporting artifact_data/deltares_data
+    # TODO: missing in conventions: neutral wind, charnock, airdensity and more >> might be available via the
+    #  earthdatahub_data in hydromt 1.4.0 via direct era5 variable names
     # TODO: beware the multiplications in hydromt: https://github.com/Deltares/hydromt/blob/385399dd0cbc8a1c1833dd5400080da70d542cd9/data/catalogs/deltares_data/v1.1.1/data_catalog.yml#L495-L500
-    # TODO: temp_dew gets converted from K to C via unit_add, however, the units in the file are not updated
-    # https://github.com/Deltares/hydromt/issues/1374
-    # TODO probably precip and press_msl are also converted (mult), but maybe they should not be for dflowfm
+    #  temp_dew gets converted from K to C via unit_add, however, the units in the file are not updated
+    #  https://github.com/Deltares/hydromt/issues/1374
+    #  Probably precip and press_msl are also converted (mult), but maybe they should not be for dflowfm
     #  precip: 1000, press_msl: 0.01, this might be from m to mm and from hPa to Pa, which might be sensible.
     #  but msl is probably not converted in DCSM, which makes it unlikely it should be done here.
     mod1.setup_spatial_forcing(
@@ -462,11 +462,7 @@ def test_setup_spatial_forcing(tmpdir):
     # write calls the validators and writes all the delft3dfm files
     mod1.write()
 
-
-    # def test_spatial_forcing_read():
     # check if the created model with netcdf forcing can also be read properly
-    # TODO: remove hard-coding of filepath
-    # root = r"c:\Users\veenstra\AppData\Local\Temp\pytest-of-veenstra\pytest-876\test_setup_spatial_forcing0\dflowfm_example"
     mod2 = DFlowFMModel(
         root=root,
         mode="r",

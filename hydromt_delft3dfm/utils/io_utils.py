@@ -1335,11 +1335,6 @@ def read_spatial(file_nc: str, quantity: str) -> xr.DataArray:
         The opened data.
 
     """
-    # TODO: now reading the delft3dfm variable name, but if we would rename it to the
-    #  original variable name in `write_spatial()` we would need some sort of
-    #  translation dict
-    import xarray as xr
-
     ds_out = xr.open_dataset(file_nc)
     da_out = ds_out[quantity]
     return da_out
@@ -1377,8 +1372,6 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
     # Loop over forcing dict
     for name, da in forcing.items():
         da_out = da.copy()
-        # TODO: the netcdf variable name should maybe be u10/rhoao instead of windx/
-        #  airdensity, request this metadata in `hydromt.data_catalog.get_rasterdataset
         variable = da.name
         quantity = da.name  # windx/airdensity
         forcing_fn = f"meteo_{quantity}.nc"
