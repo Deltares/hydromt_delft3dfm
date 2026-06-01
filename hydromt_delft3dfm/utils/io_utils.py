@@ -532,21 +532,6 @@ def read_manholes(gdf: gpd.GeoDataFrame, fm_model: FMModel) -> gpd.GeoDataFrame:
     for b in manholes.storagenode:
         manholes_dict[b.id] = b.__dict__
     df_manholes = pd.DataFrame.from_dict(manholes_dict, orient="index")
-    # replace 0e to 0d
-    # # TODO: fix this when hydrolib-core fix issue
-    # https://github.com/Deltares/HYDROLIB-core/issues/559
-    df_manholes["id"] = df_manholes["id"].apply(
-        lambda x: "0D" + x[2:] if isinstance(x, str) and x.startswith("0e") else x
-    )
-    df_manholes["name"] = df_manholes["name"].apply(
-        lambda x: "0D" + x[2:] if isinstance(x, str) and x.startswith("0e") else x
-    )
-    df_manholes["manholeid"] = df_manholes["manholeid"].apply(
-        lambda x: "0D" + x[2:] if isinstance(x, str) and x.startswith("0e") else x
-    )
-    df_manholes["nodeid"] = df_manholes["nodeid"].apply(
-        lambda x: "0D" + x[2:] if isinstance(x, str) and x.startswith("0e") else x
-    )
 
     # Drop variables
     df_manholes = df_manholes.drop(
