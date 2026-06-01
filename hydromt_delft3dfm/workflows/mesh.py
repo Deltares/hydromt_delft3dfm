@@ -189,7 +189,8 @@ def mesh2d_refine(
     da_sample: xr.DataArray, optional
         Sample array to refine mesh based on. Defaults to None.
     da_bathy: xr.DataArray, optional
-        Sample array with bathymetry values to refine mesh based on Courant criterion. Defaults to None.
+        Sample array with bathymetry values to refine mesh based on Courant criterion.
+        Defaults to None.
     steps: int, optional
         Number of steps to refine mesh when using polygon. Defaults to 1.
     res: float, optional
@@ -285,7 +286,7 @@ def mesh2d_refine(
             mesh_refinement_params=parameters,
         )
     elif refine_type == "bathy":
-        zv = da_bathy.values.flatten().astype('float')
+        zv = da_bathy.values.flatten().astype("float")
         gridded_samples = GriddedSamples(
             x_coordinates=da_bathy.x.values,
             y_coordinates=da_bathy.y.values,
@@ -294,7 +295,7 @@ def mesh2d_refine(
         # refine parameters
         if min_edge_size is None:
             min_edge_size = res
-        
+
         parameters = mk.MeshRefinementParameters(
             refinement_type=mk.RefinementType.WAVE_COURANT,
             min_edge_size=min_edge_size,

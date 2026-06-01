@@ -2318,7 +2318,8 @@ class DFlowFMModel(Model):
             Allow only single values. The resolution of the raster should be the same
             as the desired end result resolution.
         bathy_fn : str Path, optional
-            Path to a raster sample file used to refine the 2D mesh based on Courant criterion.
+            Path to a raster sample file used to refine the 2D mesh based on Courant
+            criterion.
 
             * Required variable: ['steps']
         steps : int, optional
@@ -2356,7 +2357,7 @@ class DFlowFMModel(Model):
                 geom=self.region,
                 buffer=0,
                 predicate="contains",
-                variables=["steps"], # TODO: this is not the case for e.g. GEBCO data
+                variables=["steps"],  # TODO: this is not the case for e.g. GEBCO data
                 single_var_as_array=True,
             ).astype(
                 np.float64
