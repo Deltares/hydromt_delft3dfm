@@ -47,8 +47,8 @@ __all__ = [
     "write_2dboundary",
     "read_meteo",
     "write_meteo",
-    "read_spatial",
-    "write_spatial",
+    "read_spatial_forcing",
+    "write_spatial_forcing",
 ]
 
 logger = logging.getLogger(f"hydromt.{__name__}")
@@ -1300,7 +1300,7 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     return forcing_fn, ext_fn
 
 
-def read_spatial(file_nc: str, quantity: str) -> xr.DataArray:
+def read_spatial_forcing(file_nc: str, quantity: str) -> xr.DataArray:
     """
     Read spatial (netcdf) datasets with xarray.
 
@@ -1325,7 +1325,7 @@ def read_spatial(file_nc: str, quantity: str) -> xr.DataArray:
     return da_out
 
 
-def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
+def write_spatial_forcing(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     """
     Write netcdf meteo forcing from forcing dict.
 

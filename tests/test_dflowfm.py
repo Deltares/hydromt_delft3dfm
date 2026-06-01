@@ -416,7 +416,6 @@ def test_setup_spatial_forcing(tmpdir):
         root=root,
         mode="w",
         data_libs=["artifact_data"],
-        # data_libs=["deltares_data"], # has also wind10_u/wind10_v/temp_dew
         # data_libs=["earthdatahub_data"], # has also wind10_u/wind10_v/temp_dew and probably also all other era5 variables (like u10n/v10n/mer/mtpr/rhoao), available from hydromt 1.4.0
         crs=3857,
     )

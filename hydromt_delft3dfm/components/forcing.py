@@ -134,7 +134,7 @@ class DFlowFMForcingComponent(SpatialDatasetsComponent):
                     file_nc = join(
                         self.model.root.path, mdu_dirname, forcingfile.filepath
                     )
-                    da_out = io_utils.read_spatial(file_nc, quantity=quantity)
+                    da_out = io_utils.read_spatial_forcing(file_nc, quantity=quantity)
                 else:
                     da_out = io_utils.read_meteo(df, quantity=quantity)
                 # Add to forcing
@@ -160,5 +160,5 @@ class DFlowFMForcingComponent(SpatialDatasetsComponent):
         io_utils.write_2dboundary(self.data, savedir, ext_fn=ext_fn)
         io_utils.write_1dlateral(self.data, savedir, ext_fn=ext_fn)
         io_utils.write_meteo(self.data, savedir, ext_fn=ext_fn)
-        io_utils.write_spatial(self.data, savedir, ext_fn=ext_fn)
+        io_utils.write_spatial_forcing(self.data, savedir, ext_fn=ext_fn)
         self.model.mdu.set("external_forcing.extforcefilenew", ext_fn)
