@@ -2883,11 +2883,9 @@ class DFlowFMModel(Model):
             large/small catchments. By default None.
         """
         # TODO: test earthdatahub_data original variables after hydromt 1.4 is released
+        # and update docstring above.
 
         tstart, tstop = self.get_model_time()  # time slice
-        # probably by giving geom self.region, it automatically clips,
-        # so mask is not required
-        # mask = self.staticmaps.data[self._MAPS["basins"]].values > 0
 
         meteo_data = self.data_catalog.get_rasterdataset(
             meteo_fn,
@@ -2946,8 +2944,6 @@ class DFlowFMModel(Model):
                     f"to add multiple forcings for the same variable/quantity."
                 )
             self.forcing.set(da, name=name)
-        # TODO should this be added?
-        # self._update_config_variable_name(self._MAPS["precip"], data_type="forcing")
 
     # ## I/O
     @hydromt_step
