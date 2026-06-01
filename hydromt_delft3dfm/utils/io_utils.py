@@ -1394,9 +1394,7 @@ def write_spatial(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]
         ext["forcingvariablename"] = variable
         ext["forcingfile"] = forcing_fn
         ext["forcingfiletype"] = "netcdf"
-        # TODO: invalid input to extmodel is not raised on .write():
-        #  https://github.com/Deltares/HYDROLIB-core/issues/1062
-        # ext["interp"] = "InterpolateTimeAndSpaceSaveWeights"
+        # only allow linearSpaceTime for spatial forcing writing
         ext["interpolationmethod"] = "linearSpaceTime"
         # TODO: also support operand=+
         ext["operand"] = "O"

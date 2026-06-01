@@ -2868,8 +2868,8 @@ class DFlowFMModel(Model):
         meteo_fn : str, xarray.DataArray
             Meteo RasterDataset source.
         variables : str, list of str
-            The delft3dfm quantities to select from the meteo_fn.
-            Variable names should adhere to data conventions:
+            The variables to select from the meteo_fn. Variable names should adhere
+            to the hydromt data conventions:
             https://deltares.github.io/hydromt/stable/user_guide/data_catalog/
             data_conventions.html#meteorology or alternatively they can be
             variable names in the original dataset. For instance the pre-defined
