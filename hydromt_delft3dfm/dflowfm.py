@@ -61,6 +61,8 @@ DICT_VARNAME_TO_DFLOWFM = {
     "v10n": "windy",  # ERA5 long: 10m_v_component_of_neutral_wind
     "msl": "airpressure",  # ERA5 long: mean_sea_level_pressure
     "t2m": "airtemperature",  # ERA5 long: 2m_temperature
+    # TODO: when adding dewpointtemperature/netsolarradiation/others, also change
+    #  mdu.physics.temperature = 5
     "d2m": "dewpoint",  # ERA5 long: 2m_dewpoint_temperature
     "ssr": "netsolarradiation",  # ERA5 long: surface_net_solar_radiation
     "tcc": "cloudiness",  # ERA5 long: total_cloud_cover
@@ -2857,44 +2859,30 @@ class DFlowFMModel(Model):
         meteo_fn: str | xr.DataArray,
         variables: List[str],
         chunksize: int | None = None,
-        **kwargs,
     ) -> None:
-        """Generate gridded precipitation forcing at model resolution.
-
-        Adds model layer:
-
-        * **precip**: precipitation [mm]
-
-        Required setup methods:
-
-        * :py:meth:`~WflowSbmModel.setup_basemaps`
+        """Generate gridded spatial forcing for the temporal and spatial extent of the
+        model.
 
         Parameters
         ----------
-        precip_fn : str, xarray.DataArray
-            Precipitation RasterDataset source.
-
-            * Required variable: 'precip' [mm]
-
-            * Required dimension: 'time'  [timestamp]
-        precip_clim_fn : str, xarray.DataArray, optional
-            High resolution climatology precipitation RasterDataset source to correct
-            precipitation.
-
-            * Required variable: 'precip' [mm]
-
-            * Required dimension: 'time'  [cyclic month]
+        meteo_fn : str, xarray.DataArray
+            Meteo RasterDataset source.
+        variables : str, list of str
+            The delft3dfm quantities to select from the meteo_fn.
+            Variable names should adhere to data conventions:
+            https://deltares.github.io/hydromt/stable/user_guide/data_catalog/
+            data_conventions.html#meteorology or alternatively they can be
+            variable names in the original dataset. For instance the pre-defined
+            earthdatahub_data catalog renames some era5 variables to the hydromt
+            conventions, but the other era5 variables can also be retrieved since the
+            zarr archive contains all era5 variables and not only the ones renamed by
+            the data catalog.
         chunksize: int, optional
             Chunksize on time dimension for processing data (not for saving to disk!).
             If None the data chunksize is used, this can however be optimized for
             large/small catchments. By default None.
-        **kwargs : dict, optional
-            Additional arguments passed to the forcing function.
-            See hydromt.model.processes.meteo.precip for more details.
         """
-        # TODO: update docstring
-        # TODO: when adding dewpointtemperature/netsolarradiation/others, also change
-        #  mdu.physics.temperature = 5
+        # TODO: test earthdatahub_data original variables after hydromt 1.4 is released
         # TODO: maybe move to components.forcing (also the test)
 
         tstart, tstop = self.get_model_time()  # time slice
@@ -2902,14 +2890,6 @@ class DFlowFMModel(Model):
         # so mask is not required
         # mask = self.staticmaps.data[self._MAPS["basins"]].values > 0
 
-        # TODO add to docs: variables should adhere to data conventions:
-        #  https://deltares.github.io/hydromt/stable/user_guide/data_catalog/
-        #  data_conventions.html#meteorology or alternatively they can be (non-renamed)
-        #  variable names in the original dataset for instance the pre-defined
-        #  earthdatahub_data catalog renames some era5 variables to the hydromt
-        #  conventions, but the other era5 variables can also be retrieved since the
-        #  zarr archive contains all era5 variables and not only the ones renamed by
-        #  the data catalog. >> test this after hydromt 1.4.0 is released.
         meteo_data = self.data_catalog.get_rasterdataset(
             meteo_fn,
             geom=self.region,
@@ -2967,6 +2947,7 @@ class DFlowFMModel(Model):
                     f"to add multiple forcings for the same variable/quantity."
                 )
             self.forcing.set(da, name=name)
+        # TODO should this be added?
         # self._update_config_variable_name(self._MAPS["precip"], data_type="forcing")
 
     # ## I/O

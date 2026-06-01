@@ -107,7 +107,9 @@ class DFlowFMForcingComponent(SpatialDatasetsComponent):
             # Add to forcing
             self.set(da_out)
         # meteo
-        # TODO: the meteo block might be renamed to spatial in the future
+        # TODO: the [Meteo] block will be renamed to [Spatial] in the future
+        #  https://github.com/Deltares/HYDROLIB-core/issues/1025. This probably makes
+        #  it straight-forward to distingish between bc-meteo and nc-meteo.
         if len(ext_model.meteo) > 0:
             # meteo can be netcdf or bcAscii, so this if statement splits in these two
             # cases
@@ -125,9 +127,8 @@ class DFlowFMForcingComponent(SpatialDatasetsComponent):
                         "there is only one per quantity."
                     )
                 if df.forcingfiletype.iloc[0] == "netcdf":
-                    # TODO: assuming lenght 1, enforce this by passing iloc[0] instead
                     forcingfile = df.forcingfile.iloc[0]
-                    # get the abdir from the model root, mdu dirname and the ext
+                    # get the absdir from the model root, mdu dirname and the ext
                     # filename
                     mdu_dirname = dirname(self.model.mdu._filename)
                     file_nc = join(
@@ -135,7 +136,6 @@ class DFlowFMForcingComponent(SpatialDatasetsComponent):
                     )
                     da_out = io_utils.read_spatial(file_nc, quantity=quantity)
                 else:
-                    # TODO: assuming lenght 1, enforce this by passing iloc[0] instead
                     da_out = io_utils.read_meteo(df, quantity=quantity)
                 # Add to forcing
                 self.set(da_out)
