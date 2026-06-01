@@ -410,7 +410,6 @@ def test_inifield_add_raster_data_from_rasterdataset(tmpdir):
 
 
 def test_setup_spatial_forcing(tmpdir):
-    # TODO: convert to dedicated test function without calling/writing the entire model?
     root = join(tmpdir, "dflowfm_example")
     mod1 = DFlowFMModel(
         root=root,

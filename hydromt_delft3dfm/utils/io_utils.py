@@ -1325,7 +1325,9 @@ def read_spatial_forcing(file_nc: str, quantity: str) -> xr.DataArray:
     return da_out
 
 
-def write_spatial_forcing(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
+def write_spatial_forcing(
+    forcing: Dict, savedir: str, ext_fn: str = None
+) -> list[dict]:
     """
     Write netcdf meteo forcing from forcing dict.
 
@@ -1397,6 +1399,7 @@ def write_spatial_forcing(forcing: Dict, savedir: str, ext_fn: str = None) -> li
         # only allow linearSpaceTime for spatial forcing writing
         ext["interpolationmethod"] = "linearSpaceTime"
         # TODO: also support operand=+
+        #  https://github.com/Deltares/hydromt_delft3dfm/issues/301
         ext["operand"] = "O"
         extdicts.append(ext)
 

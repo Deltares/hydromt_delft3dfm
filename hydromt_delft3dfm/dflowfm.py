@@ -38,7 +38,6 @@ logger = logging.getLogger(f"hydromt.{__name__}")
 
 # dict to translate hydromt to dflowfm variable name conventions
 # TODO: consider moving this to a csv in hydromt_delft3dfm/data
-#  or json but then we lose the option to comment so that would also be in an attribute
 DICT_VARNAME_TO_DFLOWFM = {
     # Hydromt to dflowfm (from hydromt deltares_data datacatalog
     #  era5_hourly.data_adapter.rename)
@@ -70,7 +69,8 @@ DICT_VARNAME_TO_DFLOWFM = {
     "sst": "sea_surface_temperature",  # ERA5 long: sea_surface_temperature
     "strd": "longwaveradiation",  # ERA5 long: surface_thermal_radiation_downwards
     "chnk": "charnock",  # ERA5 long: charnock
-    # TODO: mer/avg_ie is negative precipitation, should be accounted for
+    # TODO: mer/avg_ie is negative precipitation, also requires operand="+"
+    # https://github.com/Deltares/hydromt_delft3dfm/issues/301
     "mer": "rainfall_rate",  # ERA5 long: mean_evaporation_rate
     "mtpr": "rainfall_rate",  # ERA5 long: mean_total_precipitation_rate
     # mer and mtpr are now called avg_ie and avg_tprate
@@ -2860,8 +2860,10 @@ class DFlowFMModel(Model):
         variables: List[str],
         chunksize: int | None = None,
     ) -> None:
-        """Generate gridded spatial forcing for the temporal and spatial extent of the
-        model.
+        """Generate gridded spatial forcing.
+
+        Generate gridded spatial netcdf forcing for the temporal and spatial extent of
+        the model.
 
         Parameters
         ----------
@@ -2934,9 +2936,8 @@ class DFlowFMModel(Model):
             # Update meta attributes (used for default output filename later)
             da.attrs.update({"meteo_fn": meteo_fn})
             # prevent overwriting a name/forcing that already exists.
-            # TODO: even if we create a unique name, the netcdf will still be
-            #  overwritten since it uses the dflowfm quantity name. Support for
-            #  duplicated variables also requires operand="+" in the ext file.
+            # TODO: consider adding support for operand="+"
+            #  https://github.com/Deltares/hydromt_delft3dfm/issues/301
             name = f"spatial_{variable}"
             if name in self.forcing.data.keys():
                 raise NotImplementedError(
