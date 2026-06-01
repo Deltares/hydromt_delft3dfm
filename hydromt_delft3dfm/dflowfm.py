@@ -2883,7 +2883,6 @@ class DFlowFMModel(Model):
             large/small catchments. By default None.
         """
         # TODO: test earthdatahub_data original variables after hydromt 1.4 is released
-        # TODO: maybe move to components.forcing (also the test)
 
         tstart, tstop = self.get_model_time()  # time slice
         # probably by giving geom self.region, it automatically clips,

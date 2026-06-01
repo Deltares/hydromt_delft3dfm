@@ -453,12 +453,6 @@ def test_setup_spatial_forcing(tmpdir):
         ],
     )
 
-    # TODO: temporarily also add rainfal as bc so we have a reference for how the data
-    #  returned by the read_spatial() method should look like
-    mod1.setup_rainfall_from_constant(
-        constant_value=150,
-    )
-
     # write calls the validators and writes all the delft3dfm files
     mod1.write()
 
@@ -468,5 +462,5 @@ def test_setup_spatial_forcing(tmpdir):
         mode="r",
     )
     mod2.read()
-    expected_keys = set(['rainfall', 'rainfall_rate', 'airpressure'])
+    expected_keys = set(['rainfall', 'airpressure'])
     assert set(mod2.forcing.data.keys()) == expected_keys
