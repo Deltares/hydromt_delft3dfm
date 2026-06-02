@@ -9,12 +9,12 @@ import pandas as pd
 import pyproj
 import shapely
 
-# from hydromt.gis.vector_utils import nearest_merge
+from hydromt.gis.vector_utils import nearest_merge
 from scipy.spatial import distance
 from shapely.geometry import LineString, MultiLineString, MultiPoint, Point
 
 from hydromt_delft3dfm.utils import graph_utils, mesh_utils
-from hydromt_delft3dfm.utils.gis_utils import cut_pieces, nearest_merge, split_lines
+from hydromt_delft3dfm.utils.gis_utils import cut_pieces, split_lines
 
 logger = logging.getLogger(f"hydromt.{__name__}")
 
