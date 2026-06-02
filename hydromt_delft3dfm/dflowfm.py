@@ -30,57 +30,11 @@ from hydromt_delft3dfm.components import (
 )
 from hydromt_delft3dfm.utils import gis_utils, mesh_utils
 from hydromt_delft3dfm.utils.io_utils import get_fm_paths_from_dimr
+from hydromt_delft3dfm.utils.translate_utils import varname_to_dflowfm_quantity
 
 __all__ = ["DFlowFMModel"]
 __hydromt_eps__ = ["DFlowFMModel"]  # core entrypoints
 logger = logging.getLogger(f"hydromt.{__name__}")
-
-
-# dict to translate hydromt to dflowfm variable name conventions
-# TODO: consider moving this to a csv in hydromt_delft3dfm/data
-DICT_VARNAME_TO_DFLOWFM = {
-    # Hydromt to dflowfm (from hydromt deltares_data datacatalog
-    #  era5_hourly.data_adapter.rename)
-    "wind10_u": "windx",  # ERA5 u10
-    "wind10_v": "windy",  # ERA5 v10
-    "press_msl": "airpressure",  # ERA5 msl
-    "temp": "airtemperature",  # ERA5 t2m
-    "temp_dew": "dewpoint",  # ERA5 d2m
-    "precip": "rainfall",  # ERA5 tp
-    # "kin": "", # ERA5 ssrd
-    # "kout": "", # ERA5 tisr
-    # ERA5 to dflowfm (from dfm_tools.modelbuilder.preprocess_merge_meteofiles_era5 and
-    #  long names from dfm_tools.download.download_ERA5).
-    # These can be retrieved from the ERA5 data if they were not renamed in the
-    #  data_catalog for instance rhoao is not in the hydromt naming conventions but
-    #  can this way be retrieved from the pre-defined earthdatahub_data datacatalog.
-    "u10": "windx",  # ERA5 long: 10m_u_component_of_wind
-    "u10n": "windx",  # ERA5 long: 10m_u_component_of_neutral_wind
-    "v10": "windy",  # ERA5 long: 10m_v_component_of_wind
-    "v10n": "windy",  # ERA5 long: 10m_v_component_of_neutral_wind
-    "msl": "airpressure",  # ERA5 long: mean_sea_level_pressure
-    "t2m": "airtemperature",  # ERA5 long: 2m_temperature
-    # TODO: when adding dewpointtemperature/netsolarradiation/others, also change
-    #  mdu.physics.temperature = 5
-    "d2m": "dewpoint",  # ERA5 long: 2m_dewpoint_temperature
-    "ssr": "netsolarradiation",  # ERA5 long: surface_net_solar_radiation
-    "tcc": "cloudiness",  # ERA5 long: total_cloud_cover
-    "tp": "rainfall",
-    "sst": "sea_surface_temperature",  # ERA5 long: sea_surface_temperature
-    "strd": "longwaveradiation",  # ERA5 long: surface_thermal_radiation_downwards
-    "chnk": "charnock",  # ERA5 long: charnock
-    # TODO: mer/avg_ie is negative precipitation, also requires operand="+"
-    # https://github.com/Deltares/hydromt_delft3dfm/issues/301
-    "mer": "rainfall_rate",  # ERA5 long: mean_evaporation_rate
-    "mtpr": "rainfall_rate",  # ERA5 long: mean_total_precipitation_rate
-    # mer and mtpr are now called avg_ie and avg_tprate
-    "avg_ie": "rainfall_rate",  # ERA5 long: mean_evaporation_rate
-    "avg_tprate": "rainfall_rate",  # ERA5 long: mean_total_precipitation_rate
-    "rhoao": "airdensity",  # ERA5 long: air_density_over_the_oceans
-    # "slhf":"",  # ERA5 long: surface_latent_heat_flux
-    # "sshf":"",  # ERA5 long: surface_sensible_heat_flux
-    # "str":"",  # ERA5 long: surface_net_thermal_radiation
-}
 
 
 class DFlowFMModel(Model):
@@ -2870,15 +2824,11 @@ class DFlowFMModel(Model):
         meteo_fn : str, xarray.DataArray
             Meteo RasterDataset source.
         variables : str, list of str
-            The variables to select from the meteo_fn. Variable names should adhere
-            to the hydromt data conventions:
-            https://deltares.github.io/hydromt/stable/user_guide/data_catalog/
-            data_conventions.html#meteorology or alternatively they can be
-            variable names in the original dataset. For instance the pre-defined
-            earthdatahub_data catalog renames some era5 variables to the hydromt
-            conventions, but the other era5 variables can also be retrieved since the
-            zarr archive contains all era5 variables and not only the ones renamed by
-            the data catalog.
+            The variables to select from the meteo_fn. Variable names should be present
+            in the keys/values of the translation dictionary in
+            :py:meth:`~hydromt_delft3dfm.utils.translate_utils`, which is used to
+            translate them to Delft3D FM quantity names. More information is available
+            in the documentation of that module.
         chunksize: int, optional
             Chunksize on time dimension for processing data (not for saving to disk!).
             If None the data chunksize is used, this can however be optimized for
@@ -2903,10 +2853,7 @@ class DFlowFMModel(Model):
         # hydromt conventions can do.
         translate_dict = {}
         for varname in meteo_data.data_vars:
-            # get quantities from the dict with dict.get() so
-            # if varname is in dict.keys(), quantity is the corresponding value and
-            # if varname is not in dict.keys(), quantity is equal to the varname
-            quantity = DICT_VARNAME_TO_DFLOWFM.get(varname, varname)
+            quantity = varname_to_dflowfm_quantity(varname)
             translate_dict[varname] = quantity
         meteo_data = meteo_data.rename_vars(translate_dict)
 

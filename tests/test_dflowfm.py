@@ -433,8 +433,8 @@ def test_setup_spatial_forcing(tmpdir):
         region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
         res=500,
     )
-    # variable conventions can be found in the hydromt docs
-    # https://deltares.github.io/hydromt/stable/user_guide/data_catalog/data_conventions.html
+    # possible variable names can be found in the translate_utils module
+    # hydromt_delft3dfm.utils.translate_utils
     # TODO: missing in conventions: neutral wind, charnock, airdensity and more >> might be available via the
     #  earthdatahub_data in hydromt 1.4.0 via direct era5 variable names
     # TODO: beware the multiplications in hydromt: https://github.com/Deltares/hydromt/blob/385399dd0cbc8a1c1833dd5400080da70d542cd9/data/catalogs/deltares_data/v1.1.1/data_catalog.yml#L495-L500
