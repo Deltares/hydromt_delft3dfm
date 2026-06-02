@@ -21,7 +21,7 @@ Changed
 -------
 - Dropped support for Python 3.9. (PR #214)
 - Updated to hydromt v1 API and dropped support for Python 3.10 (PR #162)
-- Updated to hydromt 1.4.0 (PR #254)
+- Updated to hydromt 1.4.0 (PR #254 and PR #302)
 - when reading a model prefer crs from mesh/network file, then geoms, then userdefined (PR #271)
 
 Fixed
