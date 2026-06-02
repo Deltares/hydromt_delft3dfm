@@ -14,6 +14,7 @@ import xugrid as xu
 from hydrolib.core.dflowfm import FMModel
 from hydrolib.core.dimr import DIMR
 from hydromt import hydromt_step
+from hydromt.gis.vector_utils import nearest_merge
 from hydromt.model import Model
 from hydromt.model.processes.mesh import create_mesh2d_from_region
 from pyproj import CRS
@@ -1469,7 +1470,7 @@ class DFlowFMModel(Model):
             )
             # replace generated manhole using user manholes
             logger.debug("overwriting generated manholes using user manholes.")
-            manholes = gis_utils.nearest_merge(
+            manholes = nearest_merge(
                 manholes, gdf_manhole, max_dist=snap_offset, overwrite=True
             )
 
@@ -1498,7 +1499,7 @@ class DFlowFMModel(Model):
         network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
             self.mesh.mesh_datasets["network1d"]
         )
-        manholes = gis_utils.nearest_merge(
+        manholes = nearest_merge(
             manholes, network1d_nodes, max_dist=0.1, overwrite=False
         )
         # add additional required columns
@@ -1614,7 +1615,7 @@ class DFlowFMModel(Model):
             network1d_nodes = mesh_utils.network1d_nodes_geodataframe(
                 self.mesh.mesh_datasets["network1d"]
             )
-            retentions = gis_utils.nearest_merge(
+            retentions = nearest_merge(
                 gdf_retentions, network1d_nodes, max_dist=snap_offset, overwrite=False
             )
             # drop not snapped

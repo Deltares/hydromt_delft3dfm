@@ -7,10 +7,9 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import xarray as xr
+from hydromt.gis.vector_utils import nearest_merge
 
-# from hydromt.gis.vector_utils import nearest_merge
 from hydromt_delft3dfm.utils import graph_utils
-from hydromt_delft3dfm.utils.gis_utils import nearest_merge
 
 logger = logging.getLogger(f"hydromt.{__name__}")
 
