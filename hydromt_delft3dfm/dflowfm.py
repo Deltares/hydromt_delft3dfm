@@ -2861,21 +2861,25 @@ class DFlowFMModel(Model):
             meteo_data = meteo_data.chunk({"time": chunksize})
 
         if self.crs != meteo_data.raster.crs:
+            # TODO: possible to simplify this method? Raster properties are taken from
+            #  https://github.com/Deltares/hydromt/blob/main/hydromt/gis/raster.py#L50
+            # derive the resolution of the meteo data in the model crs
+            # e.g. era5 is 0.25 degrees, but da_like requires a resolution in meters
+            model_xmin, model_ymin, model_xmax, model_ymax = self.region.total_bounds
+            resx = (model_xmax - model_xmin) / meteo_data.raster.width
+            resy = (model_ymax - model_ymin) / meteo_data.raster.height
+            res = min(abs(resx), abs(resy))
+
             da_like = create_grid_from_region(
                 region=dict(bbox=list(self.region.total_bounds)),
                 region_crs=self.crs,
                 crs=self.crs,
-                # TODO: res should come from ERA5 source resolution, e.g.
-                #  meteo_data.raster.res but converted to meters if self.crs is
-                #  cartesian
-                res=self.mesh.res,
+                res=res,
             )
-            # TODO: reproj_method default from hydromt.model.processes.meteo.precip
-            #  consider more accurate interpolation like bilinear
+            # reproj_method="nearest_index" in hydromt.model.processes.meteo.precip
+            #  bilinear seems more accurate, options available in
             #  https://rasterio.readthedocs.io/en/stable/api/rasterio.enums.html#rasterio.enums.Resampling
-            reproj_method = "nearest_index"
-            # TODO: precip also uses np.fmax(precip, 0), consider using that also
-            #  (or increasing the buffer?)
+            reproj_method = "bilinear"
             meteo_data = meteo_data.raster.reproject_like(da_like, method=reproj_method)
 
         for variable in meteo_data.data_vars:
