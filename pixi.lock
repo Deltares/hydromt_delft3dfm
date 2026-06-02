@@ -4758,7 +4758,7 @@ packages:
 - pypi: ./
   name: hydromt-delft3dfm
   version: 0.3.1.dev0
-  sha256: 65955546f8f35ec616e9075db9ad78364bc96b67e5d4b951609b4a794c78d8d1
+  sha256: 3617af4507aa98b5c3985feb3e72c4850854110c8178dec1341523e60c7fa3ad
   requires_dist:
   - hydromt>=1.4.0
   - geopandas>=0.10,!=1.0.0
