@@ -8,7 +8,6 @@ import numpy as np
 import pandas as pd
 import pyproj
 import shapely
-
 from hydromt.gis.vector_utils import nearest_merge
 from scipy.spatial import distance
 from shapely.geometry import LineString, MultiLineString, MultiPoint, Point

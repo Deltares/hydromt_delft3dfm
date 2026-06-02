@@ -5,7 +5,6 @@ import logging
 import geopandas as gpd
 import numpy as np
 import pandas as pd
-from hydromt.gis.vector_utils import nearest
 from shapely.geometry import (
     LineString,
     Point,

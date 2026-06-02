@@ -4,7 +4,6 @@ import logging
 
 import geopandas as gpd
 import pandas as pd
-
 from hydromt.gis.vector_utils import nearest_merge
 from shapely.geometry import Point
 
