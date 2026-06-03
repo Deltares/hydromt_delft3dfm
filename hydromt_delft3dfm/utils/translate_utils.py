@@ -4,7 +4,6 @@ import logging
 logger = logging.getLogger(f"hydromt.{__name__}")
 
 # dict to translate hydromt to dflowfm variable name conventions
-# TODO: consider moving this to a csv in hydromt_delft3dfm/data
 DICT_VARNAME_TO_DFLOWFM = {
     # Hydromt to dflowfm (from hydromt deltares_data datacatalog
     #  era5_hourly.data_adapter.rename or https://deltares.github.io/hydromt/stable/
@@ -20,8 +19,8 @@ DICT_VARNAME_TO_DFLOWFM = {
     # ERA5 to dflowfm (from dfm_tools.modelbuilder.preprocess_merge_meteofiles_era5 and
     #  long names from dfm_tools.download.download_ERA5).
     # These can be retrieved from the ERA5 data if they were not renamed in the
-    #  data_catalog for instance rhoao is not in the hydromt naming conventions but
-    #  can this way be retrieved from the pre-defined earthdatahub_data datacatalog.
+    #  data_catalog for instance u10n is not in the hydromt naming conventions but
+    #  can in this way be retrieved from the pre-defined earthdatahub_data datacatalog.
     "u10": "windx",  # ERA5 long: 10m_u_component_of_wind
     "u10n": "windx",  # ERA5 long: 10m_u_component_of_neutral_wind
     "v10": "windy",  # ERA5 long: 10m_v_component_of_wind
@@ -44,6 +43,8 @@ DICT_VARNAME_TO_DFLOWFM = {
     # mer and mtpr are now called avg_ie and avg_tprate
     "avg_ie": "rainfall_rate",  # ERA5 long: mean_evaporation_rate
     "avg_tprate": "rainfall_rate",  # ERA5 long: mean_total_precipitation_rate
+    # TODO: rhoao/mer/mtpr/avg_ie/avg_tprate are not available in earthdatahub_data
+    #  https://github.com/Deltares/hydromt_delft3dfm/issues/294
     "rhoao": "airdensity",  # ERA5 long: air_density_over_the_oceans
     # "slhf":"",  # ERA5 long: surface_latent_heat_flux
     # "sshf":"",  # ERA5 long: surface_sensible_heat_flux

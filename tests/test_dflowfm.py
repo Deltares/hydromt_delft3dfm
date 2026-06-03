@@ -415,7 +415,6 @@ def test_setup_spatial_forcing(tmpdir):
         root=root,
         mode="w",
         data_libs=["artifact_data"],
-        # data_libs=["earthdatahub_data"], # has also wind10_u/wind10_v/temp_dew and probably also all other era5 variables (like u10n/v10n/mer/mtpr/rhoao), available from hydromt 1.4.0
         crs=3857,
     )
 
@@ -431,8 +430,6 @@ def test_setup_spatial_forcing(tmpdir):
     )
     # possible variable names can be found in the translate_utils module
     # hydromt_delft3dfm.utils.translate_utils
-    # TODO: missing in conventions: neutral wind, charnock, airdensity and more >> might be available via the
-    #  earthdatahub_data in hydromt 1.4.0 via direct era5 variable names
     # TODO: beware the multiplications in hydromt: https://github.com/Deltares/hydromt/blob/385399dd0cbc8a1c1833dd5400080da70d542cd9/data/catalogs/deltares_data/v1.1.1/data_catalog.yml#L495-L500
     #  temp_dew gets converted from K to C via unit_add, however, the units in the file are not updated
     #  https://github.com/Deltares/hydromt/issues/1374
@@ -441,9 +438,10 @@ def test_setup_spatial_forcing(tmpdir):
     #  but msl is probably not converted in DCSM, which makes it unlikely it should be done here.
     # TODO: check unit conversions in dfm_tools: https://github.com/Deltares/dfm_tools/blob/6d3235a4e8b5504b123eb8800d5fcbf062f465ce/dfm_tools/xarray_helpers.py#L303-L372
     mod1.setup_spatial_forcing(
-        meteo_fn="era5_hourly",  # source for precipitation.
+        meteo_fn="era5_hourly",  # source for meteo data
         variables=[
             "precip", "press_msl",
+            # more variables available in deltares_data or earthdatahub_data
             # "temp_dew", "wind10_u", "wind10_v",
         ],
     )

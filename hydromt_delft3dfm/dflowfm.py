@@ -2834,9 +2834,6 @@ class DFlowFMModel(Model):
             If None the data chunksize is used, this can however be optimized for
             large/small catchments. By default None.
         """
-        # TODO: test earthdatahub_data original variables after hydromt 1.4 is released
-        # and update docstring above.
-
         tstart, tstop = self.get_model_time()  # time slice
 
         # use inclusive=True to buffer to outer timesteps if not slicing to exact times
