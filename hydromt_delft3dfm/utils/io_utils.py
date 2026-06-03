@@ -151,14 +151,17 @@ def write_branches_gui(
     # replace from/to have different dtypes, so explicitly change it
     branchtp = {"river": 0, "pipe": 2, "sewerconnection": 1}
     branches["branchtype"] = branches["branchtype"].replace(branchtp).astype(int)
-    # TODO: the replacement below does not work when debugging
-    #  test_workflows_mesh.py::test_hydrolib_network_from_mesh, this means there are
-    #  nans remaining.
+    # TODO: this replacement was introduced when moving to hydrolib-core v1 (PR #226),
+    #  but it does not work when debugging
+    #  test_workflows_mesh.py::test_hydrolib_network_from_mesh with pandas 3,
+    #  so there are nans remaining, causing a pydantic ValidationError.
     branches = branches.replace(np.nan, None)
     # TODO: sourceCompartmentName/targetCompartmentName have "nan" (str) instead of
-    #  NaN (na_value), replace this.
+    #  NaN (na_value), replace this. Related to the above, it is replaced by NaN and
+    #  not with None.
     branches = branches.replace("nan", None)
-    # TODO: drop columns with nan instead (this might not be desired though)
+    # TODO: drop columns with NaN instead. This is not desired, since the rows should
+    #  be passed with the NaN values as None (empty)
     branches = branches.loc[branches.notna().all(axis=1)]
     branchgui_model = BranchModel(branch=branches.to_dict("records"))
     branchgui_fn = branchgui_model._filename() + branchgui_model._ext()
@@ -405,10 +408,12 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
         ["frictionid", "frictionvalue", "frictiontype"]
     ]
     frictions = frictions.drop_duplicates().dropna(how="all")
-    # TODO: the replacement below does not work when debugging
-    #  test_dflowfm.py::test_write_structures, this means there are nans remaining
+    # TODO: this replacement was introduced when moving to hydrolib-core v1 (PR #226),
+    #  but it does not work when debugging test_dflowfm.py::test_write_structures with
+    #  pandas 3, so there are nans remaining, causing a pydantic ValidationError.
     frictions = frictions.replace(np.nan, None)
-    # drop columns with nan instead (this might not be desired though)
+    # TODO: drop columns with NaN instead. This is not desired, since the rows should
+    #  be passed with the NaN values as None (empty)
     frictions = frictions.loc[frictions.notna().all(axis=1)]
 
     friction_fns = []
