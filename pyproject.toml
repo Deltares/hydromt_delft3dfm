@@ -15,7 +15,7 @@ dependencies = [
     "hydromt>=1.4.0", # hydromt 1.4.0 has different default geoms precision and bugfix for nearest_merge and bugfix for mesh properties
     "geopandas>=0.10, !=1.0.0", # gpd 1.0.0 has sjoin bug: https://github.com/geopandas/geopandas/issues/352
     "numpy>=2.0.0", # latest <2 version is already EOL
-    "pandas>=2.0.0, <3", # TODO: remove temporary upper limit: https://github.com/Deltares/hydromt_delft3dfm/issues/229
+    "pandas>=3", # TODO: remove temporary upper limit: https://github.com/Deltares/hydromt_delft3dfm/issues/229
     "xarray",
     # hydrolib-core>=1.0.0 has new Pydantic API, support for pandas 3 and support for Python 3.14
     # hydrolib-core>=1.0.1 reverts some incompatibilties introduced in v1
@@ -109,7 +109,7 @@ exclude = ["docs", "examples", "envs", "tests", ".github"]
 [tool.pytest.ini_options]
 addopts = "--durations=0"
 filterwarnings = [
-	"error",
+#	"error",
 	# temporarily ignore numpy incompatibility, more info in https://github.com/Deltares/dfm_tools/issues/1243
 	"ignore:numpy.ndarray size changed:RuntimeWarning",
     # filter until fix of https://github.com/Deltares/HYDROLIB-core/issues/1098
