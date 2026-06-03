@@ -151,7 +151,14 @@ def write_branches_gui(
     # replace from/to have different dtypes, so explicitly change it
     branchtp = {"river": 0, "pipe": 2, "sewerconnection": 1}
     branches["branchtype"] = branches["branchtype"].replace(branchtp).astype(int)
+    # TODO: the replacement below does not work when debugging
+    #  test_dflowfm.py::test_write_structures, this means there are nans remaining
     branches = branches.replace(np.nan, None)
+    # TODO: sourceCompartmentName/targetCompartmentName have "nan" (str) instead of
+    #  NaN (na_value), replace this.
+    branches = branches.replace("nan", None)
+    # TODO: drop columns with nan instead (this might not be desired though)
+    branches = branches.loc[branches.notna().all(axis=1)]
     branchgui_model = BranchModel(branch=branches.to_dict("records"))
     branchgui_fn = branchgui_model._filename() + branchgui_model._ext()
     branchgui_model.filepath = join(savedir, branchgui_fn)
@@ -387,6 +394,7 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
             gdf["crsdef_frictionids"].str.split(";").apply(np.count_nonzero) > 1
         )
         gdf = gdf.loc[~_do_not_support]
+        # TODO: crsdef_frictionids contains just as many nans, might not be expected
         gdf["crsdef_frictionid"] = gdf["crsdef_frictionid"].fillna(
             gdf["crsdef_frictionids"]
         )
@@ -396,7 +404,11 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
         ["frictionid", "frictionvalue", "frictiontype"]
     ]
     frictions = frictions.drop_duplicates().dropna(how="all")
+    # TODO: the replacement below does not work when debugging
+    #  test_dflowfm.py::test_write_structures, this means there are nans remaining
     frictions = frictions.replace(np.nan, None)
+    # drop columns with nan instead (this might not be desired though)
+    frictions = frictions.loc[frictions.notna().all(axis=1)]
 
     friction_fns = []
     # create a new friction
