@@ -152,7 +152,8 @@ def write_branches_gui(
     branchtp = {"river": 0, "pipe": 2, "sewerconnection": 1}
     branches["branchtype"] = branches["branchtype"].replace(branchtp).astype(int)
     # TODO: the replacement below does not work when debugging
-    #  test_dflowfm.py::test_write_structures, this means there are nans remaining
+    #  test_workflows_mesh.py::test_hydrolib_network_from_mesh, this means there are
+    #  nans remaining.
     branches = branches.replace(np.nan, None)
     # TODO: sourceCompartmentName/targetCompartmentName have "nan" (str) instead of
     #  NaN (na_value), replace this.
