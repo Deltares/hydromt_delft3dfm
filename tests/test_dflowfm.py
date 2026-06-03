@@ -429,7 +429,7 @@ def test_setup_spatial_forcing(tmpdir):
         res=500,
     )
     # Possible variable names can be found in the translate_utils module
-    #   hydromt_delft3dfm.utils.translate_utils.
+    #  hydromt_delft3dfm.utils.translate_utils.
     # Beware of unit conversions: https://github.com/Deltares/hydromt_delft3dfm/issues/304
     mod1.setup_spatial_forcing(
         meteo_fn="era5_hourly",  # source for meteo data
