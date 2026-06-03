@@ -672,7 +672,7 @@ class DFlowFMModel(Model):
         # setup geoms #TODO do we still need channels?
         logger.debug("Adding rivers and river_nodes vector to geoms.")
         self.geoms.set(rivers, "rivers")
-        self.geoms.set(river_nodes, "rivers_nodes")
+        self.geoms.set(river_nodes, "river_nodes")
 
         # add to branches geoms
         branches = workflows.add_branches(
@@ -876,7 +876,7 @@ class DFlowFMModel(Model):
         # setup geoms for rivers and river_nodes
         logger.debug("Adding rivers and river_nodes vector to geoms.")
         self.geoms.set(rivers, "rivers")
-        self.geoms.set(river_nodes, "rivers_nodes")
+        self.geoms.set(river_nodes, "river_nodes")
 
         # setup branches
         branches = workflows.add_branches(
