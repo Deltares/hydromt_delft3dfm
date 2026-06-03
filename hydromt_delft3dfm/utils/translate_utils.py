@@ -44,6 +44,7 @@ DICT_VARNAME_TO_DFLOWFM = {
     "avg_ie": "rainfall_rate",  # ERA5 long: mean_evaporation_rate
     "avg_tprate": "rainfall_rate",  # ERA5 long: mean_total_precipitation_rate
     # TODO: rhoao/mer/mtpr/avg_ie/avg_tprate are not available in earthdatahub_data
+    #  probably not both mer/avg_ie and mtpr/avg_tprate will be included anyway
     #  https://github.com/Deltares/hydromt_delft3dfm/issues/294
     "rhoao": "airdensity",  # ERA5 long: air_density_over_the_oceans
     # "slhf":"",  # ERA5 long: surface_latent_heat_flux
