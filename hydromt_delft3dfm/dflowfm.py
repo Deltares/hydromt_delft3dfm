@@ -2839,11 +2839,12 @@ class DFlowFMModel(Model):
 
         tstart, tstop = self.get_model_time()  # time slice
 
+        # use inclusive=True to buffer to outer timesteps if not slicing to exact times
         meteo_data = self.data_catalog.get_rasterdataset(
             meteo_fn,
             geom=self.region,
             buffer=2,
-            time_range=(tstart, tstop),
+            time_range={"start": tstart, "end": tstop, "inclusive": True},
             variables=variables,
             single_var_as_array=False,
         )

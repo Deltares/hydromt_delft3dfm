@@ -420,10 +420,6 @@ def test_setup_spatial_forcing(tmpdir):
     )
 
     # change the start/stop times to be in the period of the artifact_data
-    # TODO: the returned era5 dataset is too short when not exactly slicing to its time
-    #  axis, this should be buffered: https://github.com/Deltares/hydromt/issues/1458
-    # TODO: setting the model_tstop>era5_tstop does not make the delft3dfm model crash
-    #  somehow, but it does crash if model_tstart<era5_tstart
     mod1.setup_config(**{
         "time.startdatetime": "20100202",
         "time.stopdatetime": "20100203",
