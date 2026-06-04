@@ -1,4 +1,4 @@
-# written by HYDROLIB-core 0.10.1
+# written by HYDROLIB-core 1.0.1
 
 [General]
 fileVersion = 2.00     # File version. Do not edit this.
@@ -96,100 +96,72 @@ isLengthCustom        = 1                    # branch length specified by user.
 sourceCompartmentName = manhole_13_generated # Source compartment name this sewer connection is beginning.
 
 [Branch]
-name                  = river_1 # Unique branch id.
-branchType            = 0       # Channel = 0, SewerConnection = 1, Pipe = 2.
-isLengthCustom        = 1       # branch length specified by user.
-sourceCompartmentName = nan     # Source compartment name this sewer connection is beginning.
-targetCompartmentName = nan     # Source compartment name this sewer connection is beginning.
+name           = river_1 # Unique branch id.
+branchType     = 0       # Channel = 0, SewerConnection = 1, Pipe = 2.
+isLengthCustom = 1       # branch length specified by user.
 
 [Branch]
-name                  = river_2 # Unique branch id.
-branchType            = 0       # Channel = 0, SewerConnection = 1, Pipe = 2.
-isLengthCustom        = 1       # branch length specified by user.
-sourceCompartmentName = nan     # Source compartment name this sewer connection is beginning.
-targetCompartmentName = nan     # Source compartment name this sewer connection is beginning.
+name           = river_2 # Unique branch id.
+branchType     = 0       # Channel = 0, SewerConnection = 1, Pipe = 2.
+isLengthCustom = 1       # branch length specified by user.
 
 [Branch]
-name                  = branch_1 # Unique branch id.
-branchType            = 0        # Channel = 0, SewerConnection = 1, Pipe = 2.
-isLengthCustom        = 1        # branch length specified by user.
-sourceCompartmentName = nan      # Source compartment name this sewer connection is beginning.
-targetCompartmentName = nan      # Source compartment name this sewer connection is beginning.
+name           = branch_1 # Unique branch id.
+branchType     = 0        # Channel = 0, SewerConnection = 1, Pipe = 2.
+isLengthCustom = 1        # branch length specified by user.
 
 [Branch]
-name                  = branch_2 # Unique branch id.
-branchType            = 0        # Channel = 0, SewerConnection = 1, Pipe = 2.
-isLengthCustom        = 1        # branch length specified by user.
-sourceCompartmentName = nan      # Source compartment name this sewer connection is beginning.
-targetCompartmentName = nan      # Source compartment name this sewer connection is beginning.
+name           = branch_2 # Unique branch id.
+branchType     = 0        # Channel = 0, SewerConnection = 1, Pipe = 2.
+isLengthCustom = 1        # branch length specified by user.
 
 [Branch]
-name                  = branch_3 # Unique branch id.
-branchType            = 0        # Channel = 0, SewerConnection = 1, Pipe = 2.
-isLengthCustom        = 1        # branch length specified by user.
-sourceCompartmentName = nan      # Source compartment name this sewer connection is beginning.
-targetCompartmentName = nan      # Source compartment name this sewer connection is beginning.
+name           = branch_3 # Unique branch id.
+branchType     = 0        # Channel = 0, SewerConnection = 1, Pipe = 2.
+isLengthCustom = 1        # branch length specified by user.
 
 [Branch]
-name                  = branch_4 # Unique branch id.
-branchType            = 0        # Channel = 0, SewerConnection = 1, Pipe = 2.
-isLengthCustom        = 1        # branch length specified by user.
-sourceCompartmentName = nan      # Source compartment name this sewer connection is beginning.
-targetCompartmentName = nan      # Source compartment name this sewer connection is beginning.
+name           = branch_4 # Unique branch id.
+branchType     = 0        # Channel = 0, SewerConnection = 1, Pipe = 2.
+isLengthCustom = 1        # branch length specified by user.
 
 [Branch]
-name                  = branch_5 # Unique branch id.
-branchType            = 0        # Channel = 0, SewerConnection = 1, Pipe = 2.
-isLengthCustom        = 1        # branch length specified by user.
-sourceCompartmentName = nan      # Source compartment name this sewer connection is beginning.
-targetCompartmentName = nan      # Source compartment name this sewer connection is beginning.
+name           = branch_5 # Unique branch id.
+branchType     = 0        # Channel = 0, SewerConnection = 1, Pipe = 2.
+isLengthCustom = 1        # branch length specified by user.
 
 [Branch]
-name                  = branch_6 # Unique branch id.
-branchType            = 0        # Channel = 0, SewerConnection = 1, Pipe = 2.
-isLengthCustom        = 1        # branch length specified by user.
-sourceCompartmentName = nan      # Source compartment name this sewer connection is beginning.
-targetCompartmentName = nan      # Source compartment name this sewer connection is beginning.
+name           = branch_6 # Unique branch id.
+branchType     = 0        # Channel = 0, SewerConnection = 1, Pipe = 2.
+isLengthCustom = 1        # branch length specified by user.
 
 [Branch]
-name                  = branch_7 # Unique branch id.
-branchType            = 0        # Channel = 0, SewerConnection = 1, Pipe = 2.
-isLengthCustom        = 1        # branch length specified by user.
-sourceCompartmentName = nan      # Source compartment name this sewer connection is beginning.
-targetCompartmentName = nan      # Source compartment name this sewer connection is beginning.
+name           = branch_7 # Unique branch id.
+branchType     = 0        # Channel = 0, SewerConnection = 1, Pipe = 2.
+isLengthCustom = 1        # branch length specified by user.
 
 [Branch]
-name                  = branch_8 # Unique branch id.
-branchType            = 0        # Channel = 0, SewerConnection = 1, Pipe = 2.
-isLengthCustom        = 1        # branch length specified by user.
-sourceCompartmentName = nan      # Source compartment name this sewer connection is beginning.
-targetCompartmentName = nan      # Source compartment name this sewer connection is beginning.
+name           = branch_8 # Unique branch id.
+branchType     = 0        # Channel = 0, SewerConnection = 1, Pipe = 2.
+isLengthCustom = 1        # branch length specified by user.
 
 [Branch]
-name                  = branch_10 # Unique branch id.
-branchType            = 0         # Channel = 0, SewerConnection = 1, Pipe = 2.
-isLengthCustom        = 1         # branch length specified by user.
-sourceCompartmentName = nan       # Source compartment name this sewer connection is beginning.
-targetCompartmentName = nan       # Source compartment name this sewer connection is beginning.
+name           = branch_10 # Unique branch id.
+branchType     = 0         # Channel = 0, SewerConnection = 1, Pipe = 2.
+isLengthCustom = 1         # branch length specified by user.
 
 [Branch]
-name                  = branch_11 # Unique branch id.
-branchType            = 0         # Channel = 0, SewerConnection = 1, Pipe = 2.
-isLengthCustom        = 1         # branch length specified by user.
-sourceCompartmentName = nan       # Source compartment name this sewer connection is beginning.
-targetCompartmentName = nan       # Source compartment name this sewer connection is beginning.
+name           = branch_11 # Unique branch id.
+branchType     = 0         # Channel = 0, SewerConnection = 1, Pipe = 2.
+isLengthCustom = 1         # branch length specified by user.
 
 [Branch]
-name                  = branch_12 # Unique branch id.
-branchType            = 0         # Channel = 0, SewerConnection = 1, Pipe = 2.
-isLengthCustom        = 1         # branch length specified by user.
-sourceCompartmentName = nan       # Source compartment name this sewer connection is beginning.
-targetCompartmentName = nan       # Source compartment name this sewer connection is beginning.
+name           = branch_12 # Unique branch id.
+branchType     = 0         # Channel = 0, SewerConnection = 1, Pipe = 2.
+isLengthCustom = 1         # branch length specified by user.
 
 [Branch]
-name                  = branch_13 # Unique branch id.
-branchType            = 0         # Channel = 0, SewerConnection = 1, Pipe = 2.
-isLengthCustom        = 1         # branch length specified by user.
-sourceCompartmentName = nan       # Source compartment name this sewer connection is beginning.
-targetCompartmentName = nan       # Source compartment name this sewer connection is beginning.
+name           = branch_13 # Unique branch id.
+branchType     = 0         # Channel = 0, SewerConnection = 1, Pipe = 2.
+isLengthCustom = 1         # branch length specified by user.
 
