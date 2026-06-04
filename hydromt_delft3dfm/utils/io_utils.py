@@ -413,8 +413,8 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
     #  pandas 3, so there are nans remaining, causing a pydantic ValidationError.
     #  Since we are filtering with notna() now, this can probably be removed (first test with pandas 2 and 3).
     frictions = frictions.replace(np.nan, None)
-    # drop columns with NaN/None before looping over the rows
-    # TODO: this also drops rows that only have a nan/None for the frictiontype column
+    # Drop columns with None (pandas 2) or NaN (pandas 3) before looping over the rows.
+    # TODO: this also drops rows that only have a NaN/None for the frictiontype column
     frictions = frictions.loc[frictions.notna().all(axis=1)]
 
     friction_fns = []
