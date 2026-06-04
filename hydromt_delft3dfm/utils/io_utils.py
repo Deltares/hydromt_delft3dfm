@@ -156,10 +156,6 @@ def write_branches_gui(
     #  test_workflows_mesh.py::test_hydrolib_network_from_mesh with pandas 3,
     #  so there are nans remaining, causing a pydantic ValidationError.
     branches = branches.replace(np.nan, None)
-    # TODO: sourceCompartmentName/targetCompartmentName have "nan" (str) instead of
-    #  NaN (na_value), replace this. Related to the above, it is replaced by NaN and
-    #  not with None.
-    branches = branches.replace("nan", None)
     # TODO: drop columns with NaN instead. This is not desired, since the rows should
     #  be passed with the NaN values as None (empty). Or maybe support this na_value
     #  in hydrolib-core: https://github.com/Deltares/HYDROLIB-core/issues/1107
