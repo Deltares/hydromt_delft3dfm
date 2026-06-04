@@ -161,7 +161,8 @@ def write_branches_gui(
     #  not with None.
     branches = branches.replace("nan", None)
     # TODO: drop columns with NaN instead. This is not desired, since the rows should
-    #  be passed with the NaN values as None (empty)
+    #  be passed with the NaN values as None (empty). Or maybe support this na_value
+    #  in hydrolib-core: https://github.com/Deltares/HYDROLIB-core/issues/1107
     # branches = branches.loc[branches.notna().all(axis=1)]
     branchgui_model = BranchModel(branch=branches.to_dict("records"))
     branchgui_fn = branchgui_model._filename() + branchgui_model._ext()
