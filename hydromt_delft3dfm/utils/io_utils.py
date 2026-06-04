@@ -162,7 +162,7 @@ def write_branches_gui(
     branches = branches.replace("nan", None)
     # TODO: drop columns with NaN instead. This is not desired, since the rows should
     #  be passed with the NaN values as None (empty)
-    branches = branches.loc[branches.notna().all(axis=1)]
+    # branches = branches.loc[branches.notna().all(axis=1)]
     branchgui_model = BranchModel(branch=branches.to_dict("records"))
     branchgui_fn = branchgui_model._filename() + branchgui_model._ext()
     branchgui_model.filepath = join(savedir, branchgui_fn)
@@ -411,22 +411,22 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
     # TODO: this replacement was introduced when moving to hydrolib-core v1 (PR #226),
     #  but it does not work when debugging test_dflowfm.py::test_write_structures with
     #  pandas 3, so there are nans remaining, causing a pydantic ValidationError.
+    #  Since we are filtering with notna() now, this can probably be removed (first test with pandas 2 and 3).
     frictions = frictions.replace(np.nan, None)
-    # TODO: drop columns with NaN instead. This is not desired, since the rows should
-    #  be passed with the NaN values as None (empty)
+    # drop columns with NaN/None before looping over the rows
+    # TODO: this also drops rows that only have a nan/None for the frictiontype column
     frictions = frictions.loc[frictions.notna().all(axis=1)]
 
     friction_fns = []
     # create a new friction
     for i, row in frictions.iterrows():
-        if row.frictionid is not None and row.frictionvalue is not None:
-            fric_model = FrictionModel(global_=row.to_dict())
-            fric_name = f"{row.frictionid}"
-            fric_filename = f"{fric_model._filename()}_{fric_name}" + fric_model._ext()
-            fric_model.filepath = join(savedir, fric_filename)
-            fric_model.save(fric_model.filepath, recurse=False)
-            # save relative path to mdu
-            friction_fns.append(fric_filename)
+        fric_model = FrictionModel(global_=row.to_dict())
+        fric_name = f"{row.frictionid}"
+        fric_filename = f"{fric_model._filename()}_{fric_name}" + fric_model._ext()
+        fric_model.filepath = join(savedir, fric_filename)
+        fric_model.save(fric_model.filepath, recurse=False)
+        # save relative path to mdu
+        friction_fns.append(fric_filename)
 
     return friction_fns
 
