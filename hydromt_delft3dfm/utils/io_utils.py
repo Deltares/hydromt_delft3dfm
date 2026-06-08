@@ -1232,8 +1232,8 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     """
     Write 2d meteo forcing from forcing dict.
 
-    Note! only forcing file (.bc) is written in this function.
-    Use io_utils.write_ext() for writing external forcing (.ext) file.
+    Note! Forcing files (.bc) are written in this function.
+    Furthermore, the external forcing (.ext) file will be extended.
 
     Parameters
     ----------
@@ -1331,8 +1331,8 @@ def write_spatial_forcing(
     """
     Write netcdf meteo forcing from forcing dict.
 
-    Note! only forcing files (.nc) are written in this function.
-    Use io_utils.write_ext() for writing external forcing (.ext) file.
+    Note! Forcing files (.nc) are written in this function.
+    Furthermore, the external forcing (.ext) file will be extended.
 
     Parameters
     ----------
