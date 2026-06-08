@@ -24,6 +24,7 @@ from hydrolib.core.dflowfm import (
     StorageNodeModel,
     StructureModel,
 )
+from hydromt.writers import write_nc
 from shapely.geometry import Point, Polygon
 
 from hydromt_delft3dfm.utils import gis_utils
@@ -46,6 +47,8 @@ __all__ = [
     "write_2dboundary",
     "read_meteo",
     "write_meteo",
+    "read_spatial_forcing",
+    "write_spatial_forcing",
 ]
 
 logger = logging.getLogger(f"hydromt.{__name__}")
@@ -1245,8 +1248,8 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     """
     Write 2d meteo forcing from forcing dict.
 
-    Note! only forcing file (.bc) is written in this function.
-    Use io_utils.write_ext() for writing external forcing (.ext) file.
+    Note! Forcing files (.bc) are written in this function.
+    Furthermore, the external forcing (.ext) file will be extended.
 
     Parameters
     ----------
@@ -1304,6 +1307,117 @@ def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     # add forcingfile to ext
     ext["forcingfile"] = forcing_fn
     extdicts.append(ext)
+
+    # write external forcing file
+    if ext_fn is not None:
+        # write to external forcing file
+        write_ext(extdicts, savedir, ext_fn=ext_fn, block_name="meteo", mode="append")
+
+    return forcing_fn, ext_fn
+
+
+def read_spatial_forcing(file_nc: str, quantity: str) -> xr.DataArray:
+    """
+    Read spatial (netcdf) datasets with xarray.
+
+    The data is only opened, not read, which saves time and memory.
+
+    Parameters
+    ----------
+    file_nc: str, path
+        Filepath to the netcdf file to open.
+
+    quantity: str
+        Variable to select out of the netcdf file.
+
+    Returns
+    -------
+    da_out: xarray.DataArray
+        The opened data.
+
+    """
+    ds_out = xr.open_dataset(file_nc)
+    da_out = ds_out[quantity]
+    return da_out
+
+
+def write_spatial_forcing(
+    forcing: Dict, savedir: str, ext_fn: str = None
+) -> list[dict]:
+    """
+    Write netcdf meteo forcing from forcing dict.
+
+    Note! Forcing files (.nc) are written in this function.
+    Furthermore, the external forcing (.ext) file will be extended.
+
+    Parameters
+    ----------
+    forcing: dict of xarray DataArray
+        Dict of boundary DataArray.
+        Only forcing that startswith "spatial" will be recognised.
+    savedir: str, optional
+        path to the directory where to save the file.
+    ext_fn: str or Path, optional
+        Path of the external forcing file (.ext) in which this function will append to.
+
+    """
+    # filter for 2d meteo
+    forcing = {key: forcing[key] for key in forcing.keys() if key.startswith("spatial")}
+    if len(forcing) == 0:
+        return
+
+    logger.warning(
+        "You are writing netcdf forcing into the new ext file, this is supported "
+        "from delft3dfm 2026.01 onwards (DIMRset 2.29.28, 3 Oct 2025)."
+    )
+
+    extdicts = list()
+    # Loop over forcing dict
+    for name, da in forcing.items():
+        da_out = da.copy()
+        variable = da.name
+        quantity = da.name  # windx/airdensity
+        forcing_fn = f"meteo_{quantity}.nc"
+        forcing_fp = Path(join(savedir, forcing_fn))
+        # TODO: neater support of latlon vs xy, maybe in setup_spatial_forcing() method
+        #  or in hydromt https://github.com/Deltares/hydromt/issues/1457
+        # TODO: latlon cannot currently be tested in delft3dfm since networkfile does
+        #  not include crs: https://github.com/Deltares/hydromt_delft3dfm/issues/119
+        if "x" in da_out.coords:
+            da_out["x"] = da_out["x"].assign_attrs(
+                dict(standard_name="projection_x_coordinate", units="m")
+            )
+            da_out["y"] = da_out["y"].assign_attrs(
+                dict(standard_name="projection_y_coordinate", units="m")
+            )
+        else:
+            da_out["longitude"] = da_out["longitude"].assign_attrs(
+                dict(standard_name="longitude", units="degrees_east")
+            )
+            da_out["latitude"] = da_out["latitude"].assign_attrs(
+                dict(standard_name="latitude", units="degrees_north")
+            )
+        # which are required from dflowfm to read the netcdf files properly
+        write_nc(
+            da_out,
+            forcing_fp,
+            gdal_compliant=False,
+            rename_dims=False,
+            progressbar=True,
+        )
+
+        # add forcingfile to ext
+        ext = dict()
+        ext["quantity"] = quantity
+        ext["forcingvariablename"] = variable
+        ext["forcingfile"] = forcing_fn
+        ext["forcingfiletype"] = "netcdf"
+        # only allow linearSpaceTime for spatial forcing writing
+        ext["interpolationmethod"] = "linearSpaceTime"
+        # TODO: also support operand=+
+        #  https://github.com/Deltares/hydromt_delft3dfm/issues/301
+        ext["operand"] = "O"
+        extdicts.append(ext)
 
     # write external forcing file
     if ext_fn is not None:
