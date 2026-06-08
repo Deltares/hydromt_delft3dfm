@@ -46,6 +46,7 @@ Setup components
    DFlowFMModel.setup_2dboundary
    DFlowFMModel.setup_rainfall_from_constant
    DFlowFMModel.setup_rainfall_from_uniform_timeseries
+   DFlowFMModel.setup_spatial_forcing
 
 Attributes
 ----------
