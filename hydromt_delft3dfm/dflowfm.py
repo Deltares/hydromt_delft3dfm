@@ -2814,7 +2814,7 @@ class DFlowFMModel(Model):
         variables: List[str],
         chunksize: int | None = None,
     ) -> None:
-        """Generate gridded spatial forcing.
+        """Generate gridded spatial netcdf forcing.
 
         Generate gridded spatial netcdf forcing for the temporal and spatial extent of
         the model.
