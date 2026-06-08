@@ -61,6 +61,11 @@ def varname_to_dflowfm_quantity(varname: str):
     to the hydromt conventions, but the other era5 variables can also be retrieved
     since the zarr archive contains all era5 variables and not only the ones renamed by
     the data catalog.
+
+    DflowFM quantities currently supported are: windx, windy, airpressure, charnock,
+    sea_surface_temperature, airtemperature, dewpoint, cloudiness, solarradiation,
+    netsolarradiation, longwaveradiation, rainfall, rainfall_rate, airdensity.
+    # TODO: support all quantities supported by HYDROLIB-core.
     """
     if varname in DICT_VARNAME_TO_DFLOWFM.values():
         quantity = varname
