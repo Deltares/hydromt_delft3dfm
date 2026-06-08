@@ -417,3 +417,49 @@ def test_inifield_add_raster_data_from_rasterdataset(tmpdir):
     roughness_values = np.unique(model.inifield.data[variable]).tolist()
     expected_values = [-999.0, 0.025, 0.044, 0.050, 0.055]
     assert np.allclose(roughness_values, expected_values, atol=TOLERANCE)
+
+
+def test_setup_spatial_forcing(tmpdir):
+    root = join(tmpdir, "dflowfm_example")
+    mod1 = DFlowFMModel(
+        root=root,
+        mode="w",
+        data_libs=["artifact_data"],
+        crs=3857,
+    )
+
+    # change the start/stop times to be in the period of the artifact_data
+    mod1.setup_config(**{
+        "time.startdatetime": "20100202",
+        "time.stopdatetime": "20100203",
+    })
+
+    mod1.setup_mesh2d(
+        region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
+        res=500,
+    )
+    # Possible variable names can be found in the translate_utils module
+    #  hydromt_delft3dfm.utils.translate_utils.
+    # Beware of unit conversions: https://github.com/Deltares/hydromt_delft3dfm/issues/304
+    mod1.setup_spatial_forcing(
+        meteo_fn="era5_hourly",  # source for meteo data
+        variables=[
+            "precip", "press_msl",
+            # more variables available in deltares_data
+            # "temp_dew", "wind10_u", "wind10_v",
+            # even more in earthdatahub_data
+            # "u10n", "v10n", "chnk",
+        ],
+    )
+
+    # write calls the validators and writes all the delft3dfm files
+    mod1.write()
+
+    # check if the created model with netcdf forcing can also be read properly
+    mod2 = DFlowFMModel(
+        root=root,
+        mode="r",
+    )
+    mod2.read()
+    expected_keys = set(['rainfall', 'airpressure'])
+    assert set(mod2.forcing.data.keys()) == expected_keys
