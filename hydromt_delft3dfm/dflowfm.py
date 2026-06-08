@@ -3,7 +3,7 @@
 import logging
 from os.path import exists, isfile, join
 from pathlib import Path
-from typing import Any
+from typing import Any, List
 
 import geopandas as gpd
 import hydromt
@@ -30,6 +30,7 @@ from hydromt_delft3dfm.components import (
 )
 from hydromt_delft3dfm.utils import gis_utils, mesh_utils
 from hydromt_delft3dfm.utils.io_utils import get_fm_paths_from_dimr
+from hydromt_delft3dfm.utils.translate_utils import varname_to_dflowfm_quantity
 
 __all__ = ["DFlowFMModel"]
 __hydromt_eps__ = ["DFlowFMModel"]  # core entrypoints
@@ -672,7 +673,7 @@ class DFlowFMModel(Model):
         # setup geoms #TODO do we still need channels?
         logger.debug("Adding rivers and river_nodes vector to geoms.")
         self.geoms.set(rivers, "rivers")
-        self.geoms.set(river_nodes, "rivers_nodes")
+        self.geoms.set(river_nodes, "river_nodes")
 
         # add to branches geoms
         branches = workflows.add_branches(
@@ -876,7 +877,7 @@ class DFlowFMModel(Model):
         # setup geoms for rivers and river_nodes
         logger.debug("Adding rivers and river_nodes vector to geoms.")
         self.geoms.set(rivers, "rivers")
-        self.geoms.set(river_nodes, "rivers_nodes")
+        self.geoms.set(river_nodes, "river_nodes")
 
         # setup branches
         branches = workflows.add_branches(
@@ -2851,6 +2852,82 @@ class DFlowFMModel(Model):
         self.forcing.set(da_out, name=f"meteo_{da_out.name}")
 
         self.mdu.set("external_forcing.rainfall", 1)
+
+    @hydromt_step
+    def setup_spatial_forcing(
+        self,
+        meteo_fn: str | xr.DataArray,
+        variables: List[str],
+        chunksize: int | None = None,
+    ) -> None:
+        """Generate gridded spatial netcdf forcing.
+
+        Generate gridded spatial netcdf forcing for the temporal and spatial extent of
+        the model.
+
+        Parameters
+        ----------
+        meteo_fn : str, xarray.DataArray
+            Meteo RasterDataset source.
+        variables : str, list of str
+            The variables to select from the meteo_fn. Variable names should be present
+            in the keys/values of the translation dictionary in
+            :py:meth:`~hydromt_delft3dfm.utils.translate_utils`, which is used to
+            translate them to Delft3D FM quantity names. More information is available
+            in the documentation of that module.
+        chunksize: int, optional
+            Chunksize on time dimension for processing data (not for saving to disk!).
+            If None the data chunksize is used, this can however be optimized for
+            large/small catchments. By default None.
+        """
+        tstart, tstop = self.get_model_time()  # time slice
+
+        # use inclusive=True to buffer to outer timesteps if not slicing to exact times
+        meteo_data = self.data_catalog.get_rasterdataset(
+            meteo_fn,
+            geom=self.region,
+            buffer=2,
+            time_range={"start": tstart, "end": tstop, "inclusive": True},
+            variables=variables,
+            single_var_as_array=False,
+        )
+
+        # immediately convert all variable names from hydromt to dflowfm naming
+        # conventions, since we need to distuinguish between more variables than the
+        # hydromt conventions can do.
+        translate_dict = {}
+        for varname in meteo_data.data_vars:
+            quantity = varname_to_dflowfm_quantity(varname)
+            translate_dict[varname] = quantity
+        meteo_data = meteo_data.rename_vars(translate_dict)
+
+        if chunksize is not None:
+            meteo_data = meteo_data.chunk({"time": chunksize})
+
+        if self.crs != meteo_data.raster.crs:
+            # hydromt.model.processes.meteo.precip uses reproj_method="nearest_index",
+            #  but bilinear seems more accurate. More options are available in
+            #  rasterio.enums.Resampling.
+            reproj_method = "bilinear"
+            meteo_data = meteo_data.raster.reproject(
+                dst_crs=self.crs,
+                method=reproj_method,
+            )
+
+        for variable in meteo_data.data_vars:
+            da = meteo_data[variable]
+            # Update meta attributes (used for default output filename later)
+            da.attrs.update({"meteo_fn": meteo_fn})
+            # prevent overwriting a name/forcing that already exists.
+            # TODO: consider adding support for operand="+"
+            #  https://github.com/Deltares/hydromt_delft3dfm/issues/301
+            name = f"spatial_{variable}"
+            if name in self.forcing.data.keys():
+                raise NotImplementedError(
+                    f"forcing '{name}' is already present and it is not yet supported "
+                    f"to add multiple forcings for the same variable/quantity."
+                )
+            self.forcing.set(da, name=name)
 
     # ## I/O
     @hydromt_step

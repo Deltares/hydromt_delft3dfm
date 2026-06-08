@@ -107,15 +107,36 @@ class DFlowFMForcingComponent(SpatialDatasetsComponent):
             # Add to forcing
             self.set(da_out)
         # meteo
+        # TODO: the [Meteo] block will be renamed to [Spatial] in the future
+        #  https://github.com/Deltares/HYDROLIB-core/issues/1025. This probably makes
+        #  it straight-forward to distingish between bc-meteo and nc-meteo.
         if len(ext_model.meteo) > 0:
+            # meteo can be netcdf or bcAscii, so this if statement splits in these two
+            # cases
             df_ext = pd.DataFrame([f.__dict__ for f in ext_model.meteo])
             # Forcing dataarrays to prepare for each quantity
             forcing_names = np.unique(df_ext.quantity).tolist()
             # Loop over forcing names to build data arrays
-            for name in forcing_names:
+            for quantity in forcing_names:
                 # Get the dataframe corresponding to the current variable
-                df = df_ext[df_ext.quantity == name]
-                da_out = io_utils.read_meteo(df, quantity=name)
+                df = df_ext[df_ext.quantity == quantity]
+                if len(df) > 1:
+                    raise NotImplementedError(
+                        "It is currently not supported to have multiple meteo forcings"
+                        " for the same quantity (would be overwritten), so make sure "
+                        "there is only one per quantity."
+                    )
+                if df.forcingfiletype.iloc[0] == "netcdf":
+                    forcingfile = df.forcingfile.iloc[0]
+                    # get the absdir from the model root, mdu dirname and the ext
+                    # filename
+                    mdu_dirname = dirname(self.model.mdu._filename)
+                    file_nc = join(
+                        self.model.root.path, mdu_dirname, forcingfile.filepath
+                    )
+                    da_out = io_utils.read_spatial_forcing(file_nc, quantity=quantity)
+                else:
+                    da_out = io_utils.read_meteo(df, quantity=quantity)
                 # Add to forcing
                 self.set(da_out)
         # TODO lateral
@@ -139,4 +160,5 @@ class DFlowFMForcingComponent(SpatialDatasetsComponent):
         io_utils.write_2dboundary(self.data, savedir, ext_fn=ext_fn)
         io_utils.write_1dlateral(self.data, savedir, ext_fn=ext_fn)
         io_utils.write_meteo(self.data, savedir, ext_fn=ext_fn)
+        io_utils.write_spatial_forcing(self.data, savedir, ext_fn=ext_fn)
         self.model.mdu.set("external_forcing.extforcefilenew", ext_fn)
