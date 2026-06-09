@@ -2912,9 +2912,7 @@ class DFlowFMModel(Model):
             )
 
             dt = df_meteo.index[1] - df_meteo.index[0]
-            t_index = pd.DatetimeIndex(
-                pd.date_range(start=tstart, end=tstop, freq=dt)
-            )
+            t_index = pd.DatetimeIndex(pd.date_range(start=tstart, end=tstop, freq=dt))
             df_meteo = df_meteo.reindex(t_index).fillna(fill_value)
 
         else:
