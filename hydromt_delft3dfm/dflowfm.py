@@ -2680,7 +2680,7 @@ class DFlowFMModel(Model):
         constant_value: float,
     ):
         """
-        Deprecated.
+        Deprecate.
 
         Use ``setup_spatial_uniform_meteo(
         meteo_type="rainfall_rate", constant_value=...
@@ -2704,7 +2704,7 @@ class DFlowFMModel(Model):
         is_rate: bool = True,
     ):
         """
-        Deprecated.
+        Deprecate.
 
         Use ``setup_spatial_uniform_meteo(
         meteo_type="rainfall_rate" or "rainfall",
