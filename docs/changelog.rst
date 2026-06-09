@@ -17,6 +17,7 @@ Added
 - Support for user-specified paths for mdu/network and models without geoms folder (PR #271)
 - Updated to hydrolib-core v1 (pydantic V2 API) (PR #226)
 - New method **setup_spatial_forcing** (PR #263)
+- New method **setup_spatial_uniform_meteo** (PR #276)
 
 Changed
 -------
