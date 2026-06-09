@@ -460,130 +460,65 @@ def df_to_bc(
 def compute_spatial_uniform_meteo_forcings(
     df_meteo: pd.DataFrame,
     meteo_type: str = "rainfall_rate",
-    fill_value: float = 0.0,
-    meteo_location: tuple = None,
+    meteo_unit: str = "mm/day",
+    meteo_location: tuple = (0.0, 0.0),
 ) -> xr.DataArray:
     """
-    Compute spatially uniform meteorological forcings.
+    Compute spatially uniform meteo forcing from DataFrame into a DataArray.
+
+    This function assumes that model-specific validation and preprocessing have
+    already been handled by the setup method.
 
     Parameters
     ----------
     df_meteo : pd.DataFrame
-        DataFrame containing the meteo time series values.
-
-        Required columns:
-
-        * ``time``
-        * one column matching ``meteo_type``
-
-        Supported meteo columns are:
-
-        * ``rainfall_rate``
-        * ``rainfall``
-        * ``windxy``
-        * ``windx``
-        * ``windy``
-
+        DataFrame containing a ``time`` column and one column matching
+        ``meteo_type``.
     meteo_type : str, optional
-        Type of meteorological forcing to prepare.
-
-        Supported values are:
-
-        * ``rainfall_rate``
-        * ``rainfall``
-        * ``windxy``
-        * ``windx``
-        * ``windy``
-
-        By default ``rainfall_rate``.
-
-    fill_value : float, optional
-        Constant value used to fill missing values. By default 0.0.
-
-    meteo_location : tuple
-        Global location for the spatially uniform meteo time series, provided as
-        ``(x, y)``.
+        Type of meteorological forcing to prepare. By default ``"rainfall_rate"``.
+    meteo_unit : str, optional
+        Unit corresponding to ``meteo_type``. By default ``"mm/day"``.
+    meteo_location : tuple, optional
+        Global location for the spatially uniform meteo time series as ``(x, y)``.
+        By default ``(0., 0.)``.
 
     Returns
     -------
     da_meteo : xr.DataArray
         DataArray containing the meteo time series values.
     """
-    allowed_meteo_types = {
-        "rainfall_rate": "mm/day",
-        "rainfall": "mm",
-        "windxy": "m/s",
-        "windx": "m/s",
-        "windy": "m/s",
-    }
-
-    if meteo_type not in allowed_meteo_types:
-        raise ValueError(
-            f"Unsupported meteo_type '{meteo_type}'. "
-            f"Supported values are: {sorted(allowed_meteo_types)}."
-        )
-
-    if df_meteo is None:
-        raise ValueError("df_meteo is required.")
-
-    if "time" not in df_meteo.columns:
-        raise ValueError("df_meteo must contain a 'time' column.")
-
-    if meteo_type not in df_meteo.columns:
-        raise ValueError(f"df_meteo must contain a '{meteo_type}' column.")
-
-    if len(df_meteo.index) < 2:
-        raise ValueError(
-            "df_meteo must contain at least two timesteps to infer "
-            "the time frequency."
-        )
-
-    if meteo_location is None:
-        raise ValueError("meteo_location is required.")
-
-    meteo_unit = allowed_meteo_types[meteo_type]
-
     logger.info("Preparing global spatially uniform %s timeseries.", meteo_type)
 
-    # Ensure time column is datetime-like.
     df_meteo = df_meteo.copy()
     df_meteo["time"] = pd.to_datetime(df_meteo["time"])
 
-    # Get data frequency.
-    dt = df_meteo.time.iloc[1] - df_meteo.time.iloc[0]
+    dt = df_meteo["time"].iloc[1] - df_meteo["time"].iloc[0]
     freq = dt.resolution_string
 
-    multiplier = 1
-
-    if freq == "D":
-        logger.warning(
-            "Time unit days is not supported by the current GUI version: 2022.04. "
-            "Converting days to hours as a temporary solution."
+    if freq not in _TIMESTR:
+        raise ValueError(
+            f"Unsupported time frequency '{freq}'. "
+            f"Supported frequencies are: {sorted(_TIMESTR)}."
         )
-        multiplier = 24
-
-    expected_time_index = pd.date_range(
-        df_meteo.time.iloc[0],
-        df_meteo.time.iloc[-1],
-        freq=dt,
-    )
-
-    if len(expected_time_index) != len(df_meteo.time):
-        raise ValueError("Non-equidistant time series are not supported.")
 
     freq_name = _TIMESTR[freq]
     freq_step = getattr(dt.components, freq_name)
 
-    meteo_times = np.array(
-        [(i * freq_step * multiplier) for i in range(len(df_meteo.time))]
+    expected_time_index = pd.date_range(
+        df_meteo["time"].iloc[0],
+        df_meteo["time"].iloc[-1],
+        freq=dt,
     )
 
-    if multiplier == 24:
-        freq_name = "hours"
+    if len(expected_time_index) != len(df_meteo["time"]):
+        raise ValueError("Non-equidistant time series are not supported.")
+
+    meteo_times = np.array(
+        [i * freq_step for i in range(len(df_meteo))],
+        dtype=np.float32,
+    )
 
     x, y = meteo_location
-
-    # Support scalar, numpy, pandas, and xarray scalar-like coordinates.
     x = float(np.asarray(x).squeeze())
     y = float(np.asarray(y).squeeze())
 
@@ -601,14 +536,13 @@ def compute_spatial_uniform_meteo_forcings(
             timeInterpolation="Linear",
             quantity=meteo_type,
             units=meteo_unit,
-            time_unit=f"{freq_name} since {pd.to_datetime(df_meteo.time.iloc[0])}",
+            time_unit=f"{freq_name} since {pd.to_datetime(df_meteo['time'].iloc[0])}",
         ),
     )
 
-    da_out = da_out.fillna(fill_value)
     da_out.name = meteo_type
 
-    return da_out.dropna(dim="time")
+    return da_out
 
 
 def _standardize_forcing_timeindexes(da):

@@ -2680,7 +2680,9 @@ class DFlowFMModel(Model):
         constant_value: float,
     ):
         """
-        Deprecate.
+        Prepare constant daily rainfall_rate timeseries from `constant_value`.
+
+        Deprecated.
 
         Use ``setup_spatial_uniform_meteo(
         meteo_type="rainfall_rate", constant_value=...
@@ -2704,7 +2706,9 @@ class DFlowFMModel(Model):
         is_rate: bool = True,
     ):
         """
-        Deprecate.
+        Prepare spatially uniform rainfall/rainfall_rate from `meteo_timeseries_fn`.
+
+        Deprecated.
 
         Use ``setup_spatial_uniform_meteo(
         meteo_type="rainfall_rate" or "rainfall",
@@ -2730,7 +2734,7 @@ class DFlowFMModel(Model):
         meteo_type: str,
         meteo_timeseries_fn: str | Path | None = None,
         constant_value: float | None = None,
-        fill_value: float | None = None,
+        fill_value: float = 0.0,
     ):
         """
         Prepare space-uniform meteo forcing from either a timeseries file or a constant.
@@ -2752,7 +2756,7 @@ class DFlowFMModel(Model):
 
         Exactly one of ``meteo_timeseries_fn`` or ``constant_value`` must be provided.
 
-        Call the function multiple times to setup different types of meteorological
+        Call the function multiple times to set up different types of meteorological
         forcing, e.g. rainfall and wind.
 
         Examples
@@ -2764,18 +2768,19 @@ class DFlowFMModel(Model):
         ...     constant_value=10.0,
         ... )
 
-        Set up a constant x-direction wind forcing:
-
-        >>> model.setup_spatial_uniform_meteo(
-        ...     meteo_type="windx",
-        ...     constant_value=5.0,
-        ... )
-
-        Set up rainfall from a timeseries file or data catalog entry:
+        Set up rainfall from a data catalog entry:
 
         >>> model.setup_spatial_uniform_meteo(
         ...     meteo_type="rainfall_rate",
         ...     meteo_timeseries_fn="rainfall_timeseries",
+        ...     fill_value=0.0,
+        ... )
+
+        Set up rainfall from a csv file:
+
+        >>> model.setup_spatial_uniform_meteo(
+        ...     meteo_type="rainfall_rate",
+        ...     meteo_timeseries_fn="rainfall_timeseries.csv",
         ...     fill_value=0.0,
         ... )
 
@@ -2797,12 +2802,22 @@ class DFlowFMModel(Model):
             - ``"windxy"``, ``"windx"``, ``"windy"``: ``"m/s"``
 
         meteo_timeseries_fn : str, Path, optional
-            Path or data source name to a tabulated timeseries file.
+            Path to a CSV file or data source name in data catalog.
 
-            The file should contain a column matching ``meteo_type`` and a datetime
-            index. Alternatively, ``meteo_timeseries_fn`` can refer to a data catalog
-            entry that provides the timeseries file and optional preprocessing such
-            as rename, nodata handling, ``unit_add``, or ``unit_mult``.
+            The resulting dataframe must contain one column matching ``meteo_type`` and
+            must have a datetime index.
+
+            When providing a direct CSV file path, the CSV file must contain a ``time``
+            column and one column matching ``meteo_type``. The ``time`` column is parsed
+            as datetimes and used as the dataframe index.
+
+            When providing a data catalog source name, the data catalog entry must be
+            configured so that the time values are parsed as a datetime index. For CSV
+            sources, this typically means passing driver keyword arguments such as
+            ``parse_dates=["time"]`` and ``index_col="time"``.
+
+            Data catalog preprocessing can also be used to rename columns, fill nodata,
+            or apply ``unit_add`` and ``unit_mult``.
 
         constant_value : float, optional
             Constant meteorological value used for the full model simulation period.
@@ -2819,12 +2834,18 @@ class DFlowFMModel(Model):
             is used and ``fill_value`` is not provided, ``fill_value`` defaults to
             ``0.0``.
         """
-        allowed_meteo_types = {"rainfall_rate", "rainfall", "windxy", "windx", "windy"}
+        meteo_units = {
+            "rainfall_rate": "mm/day",
+            "rainfall": "mm",
+            "windxy": "m/s",
+            "windx": "m/s",
+            "windy": "m/s",
+        }
 
-        if meteo_type not in allowed_meteo_types:
+        if meteo_type not in meteo_units:
             raise ValueError(
                 f"Unsupported meteo_type '{meteo_type}'. "
-                f"Supported values are: {sorted(allowed_meteo_types)}."
+                f"Supported values are: {sorted(meteo_units)}."
             )
 
         if (meteo_timeseries_fn is None) == (constant_value is None):
@@ -2855,20 +2876,27 @@ class DFlowFMModel(Model):
             )
 
         else:
-            if fill_value is None:
-                fill_value = 0.0
-
-            df_meteo = self.data_catalog.get_dataframe(
-                meteo_timeseries_fn,
-                variables=[meteo_type],
-                time_range=(tstart, tstop),
-            )
+            if isfile(meteo_timeseries_fn):
+                df_meteo = pd.read_csv(
+                    meteo_timeseries_fn,
+                    parse_dates=["time"],
+                    index_col="time",
+                )
+            else:
+                df_meteo = self.data_catalog.get_dataframe(
+                    meteo_timeseries_fn,
+                    variables=[meteo_type],
+                    time_range=(tstart, tstop),
+                )
 
             if not np.issubdtype(df_meteo.index.dtype, np.datetime64):
                 raise ValueError(
-                    "Dates in meteo_timeseries_fn were not parsed correctly. "
-                    "Update the source kwargs in the DataCatalog based on the driver "
-                    "function arguments, e.g. pandas.read_csv for the csv driver."
+                    "meteo_timeseries_fn must provide a datetime index, but the parsed "
+                    f"index has dtype {df_meteo.index.dtype!r}. "
+                    "For a direct CSV file, include a 'time' column that can be parsed "
+                    "as datetimes. For a DataCatalog source, configure the driver "
+                    "kwargs so the time column is parsed as dates and used as the index"
+                    ", for example `parse_dates=['time']` and `index_col='time'`."
                 )
 
             if len(df_meteo.index) < 2:
@@ -2877,10 +2905,15 @@ class DFlowFMModel(Model):
                     "the time frequency."
                 )
 
+            dt = df_meteo.index.to_series().diff().dropna()
+
+            if not (dt == dt.iloc[0]).all():
+                raise ValueError("Non-equidistant time series are not supported.")
+
             if (df_meteo.index[-1] - df_meteo.index[0]) < (tstop - tstart):
                 logger.warning(
                     "Time in meteo_timeseries_fn is shorter than the model simulation "
-                    "time. Missing values will be filled using fill_value."
+                    f"time. Missing values will be filled using {fill_value}."
                 )
 
                 dt = df_meteo.index[1] - df_meteo.index[0]
@@ -2889,12 +2922,16 @@ class DFlowFMModel(Model):
                 )
                 df_meteo = df_meteo.reindex(t_index).fillna(fill_value)
 
+            else:
+                df_meteo = df_meteo.fillna(fill_value)
+
+            df_meteo = df_meteo.copy()
             df_meteo["time"] = df_meteo.index
 
         da_out = workflows.compute_spatial_uniform_meteo_forcings(
             df_meteo=df_meteo,
             meteo_type=meteo_type,
-            fill_value=fill_value,
+            meteo_unit=meteo_units[meteo_type],
             meteo_location=meteo_location,
         )
 

@@ -2,6 +2,7 @@ from os.path import abspath, basename, dirname, join
 from os import makedirs, rename
 from hydromt_delft3dfm import DFlowFMModel
 import numpy as np
+import pandas as pd
 from pathlib import Path
 import pytest
 import shutil
@@ -465,6 +466,13 @@ def dflowfm_2dmodel_with_localdata(tmpdir):
         mode="w",
     )
 
+    model.setup_config(
+        **{
+            "time.startdatetime": "20200101",
+            "time.stopdatetime": "20200102",
+        }
+    )
+
     # Set a small default mesh to speed up the test, since we only want to test
     # setup_spatial_uniform_meteo and not mesh setup here.
     model.setup_mesh2d(
@@ -474,39 +482,10 @@ def dflowfm_2dmodel_with_localdata(tmpdir):
 
     return model
 
-def test_setup_spatial_uniform_meteo_from_constant(dflowfm_2dmodel_with_localdata):
-    dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
-        meteo_type="rainfall",
-        constant_value=5.0,
-    )
-
-    assert "meteo_rainfall" in dflowfm_2dmodel_with_localdata.forcing.data
-
-
-def test_setup_spatial_uniform_meteo_from_timeseries(dflowfm_2dmodel_with_localdata):
-    dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
-        meteo_type="rainfall_rate",
-        meteo_timeseries_fn="meteo_timeseries_T2",
-    )
-
-    assert "meteo_rainfall_rate" in dflowfm_2dmodel_with_localdata.forcing.data
-
-
-def test_setup_spatial_uniform_meteo_accepts_wind_type(dflowfm_2dmodel_with_localdata):
-    dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
-        meteo_type="windx",
-        constant_value=5.0,
-    )
-
-    assert "meteo_windx" in dflowfm_2dmodel_with_localdata.forcing.data
-
-
-def test_setup_spatial_uniform_meteo_rejects_unknown_type(dflowfm_2dmodel_with_localdata):
-    with pytest.raises(ValueError, match="Unsupported meteo_type"):
-        dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
-            meteo_type="evapotranspiration",
-            constant_value=1.0,
-        )
+def _write_csv(tmpdir, filename, lines):
+    meteo_fn = tmpdir.join(filename)
+    meteo_fn.write("\n".join(lines))
+    return str(meteo_fn)
 
 
 def test_setup_spatial_uniform_meteo_requires_data_source(dflowfm_2dmodel_with_localdata):
@@ -515,6 +494,71 @@ def test_setup_spatial_uniform_meteo_requires_data_source(dflowfm_2dmodel_with_l
             meteo_type="rainfall",
         )
 
+def test_setup_spatial_uniform_rainfall_from_constant(dflowfm_2dmodel_with_localdata):
+    dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+        meteo_type="rainfall",
+        constant_value=5.0,
+    )
+    assert "meteo_rainfall" in dflowfm_2dmodel_with_localdata.forcing.data
+    assert np.isclose(dflowfm_2dmodel_with_localdata.mdu.get_value('external_forcing.rainfall'), 1)
+
+
+def test_setup_spatial_uniform_rainfall_rate_from_datacatalog(dflowfm_2dmodel_with_localdata):
+    dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+        meteo_type="rainfall_rate",
+        meteo_timeseries_fn="meteo_timeseries_T2",
+    )
+
+    assert "meteo_rainfall_rate" in dflowfm_2dmodel_with_localdata.forcing.data
+
+def test_setup_spatial_uniform_windx_from_csv(dflowfm_2dmodel_with_localdata, tmpdir):
+    meteo_fn = _write_csv(
+        tmpdir,
+        "windx.csv",
+        [
+            "time,windx",
+            "2020-01-01 00:00,2.0",
+            "2020-01-02 00:00,2.0",
+        ],
+    )
+
+    dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+        meteo_type="windx",
+        meteo_timeseries_fn=meteo_fn,
+    )
+    assert "meteo_windx" in dflowfm_2dmodel_with_localdata.forcing.data
+
+def test_setup_spatial_uniform_rainfall_timeseries_fills_missing_values(
+    dflowfm_2dmodel_with_localdata,
+    tmpdir,
+):
+    meteo_fn = _write_csv(
+        tmpdir,
+        "missing_values_meteo.csv",
+        [
+            "time,rainfall",
+            "2020-01-01 00:00,2.0",
+            "2020-01-02 00:00,NaN",
+        ],
+    )
+    dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+        meteo_type="rainfall",
+        meteo_timeseries_fn=str(meteo_fn),
+        fill_value=0.0,
+    )
+
+    da = dflowfm_2dmodel_with_localdata.forcing.data["meteo_rainfall"]
+
+    assert not np.isnan(da.values).any()
+    assert np.isclose(da.values[0, -1], 0.0)
+
+
+def test_setup_spatial_uniform_meteo_rejects_unknown_type(dflowfm_2dmodel_with_localdata):
+    with pytest.raises(ValueError, match="Unsupported meteo_type"):
+        dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+            meteo_type="evapotranspiration",
+            constant_value=1.0,
+       )
 
 def test_setup_spatial_uniform_meteo_rejects_multiple_data_sources(
     dflowfm_2dmodel_with_localdata,
@@ -525,6 +569,66 @@ def test_setup_spatial_uniform_meteo_rejects_multiple_data_sources(
             meteo_timeseries_fn="meteo_timeseries_T2",
             constant_value=5.0,
         )
+
+def test_setup_spatial_uniform_meteo_rejects_non_equidistant_timeseries_from_csv(
+    dflowfm_2dmodel_with_localdata,
+    tmpdir,
+):
+    meteo_fn = _write_csv(
+        tmpdir,
+        "non_equidistant_meteo.csv",
+        [
+            "time,rainfall",
+            "2020-01-01 00:00,2.0",
+            "2020-01-01 00:20,2.0",
+            "2020-01-02 00:00,2.0",
+        ],
+    )
+
+    with pytest.raises(ValueError, match="Non-equidistant time series"):
+        dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+            meteo_type="rainfall",
+            meteo_timeseries_fn=str(meteo_fn),
+        )
+
+def test_setup_spatial_uniform_meteo_rejects_no_time_column_from_csv(
+    dflowfm_2dmodel_with_localdata,
+    tmpdir,
+):
+    meteo_fn = _write_csv(
+        tmpdir,
+        "no_time_index_meteo.csv",
+        [
+            "date,rainfall",
+            "2020-01-01 00:00,2.0",
+            "2020-01-02 00:00,2.0",
+        ],
+    )
+    with pytest.raises(ValueError, match="Missing column provided to 'parse_dates': 'time'"):
+        dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+            meteo_type="rainfall",
+            meteo_timeseries_fn=str(meteo_fn),
+        )
+
+def test_setup_spatial_uniform_meteo_rejects_no_time_index_from_datacatalog(
+    dflowfm_2dmodel_with_localdata,
+):
+    with pytest.raises(ValueError, match="must provide a datetime index"):
+        dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+            meteo_type="rainfall_rate",
+            meteo_timeseries_fn="meteo_timeseries_incorrectly_parsed",
+        )
+
+def test_setup_spatial_uniform_meteo_rejects_no_matching_variable(
+    dflowfm_2dmodel_with_localdata,
+):
+    with pytest.raises(ValueError, match="columns expected but not found"):
+        dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+            meteo_type="rainfall",
+            meteo_timeseries_fn="meteo_timeseries_T2",
+        )
+
+
 
 def test_setup_rainfall_from_constant_deprecated(
     dflowfm_2dmodel_with_localdata,
