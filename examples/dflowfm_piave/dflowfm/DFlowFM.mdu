@@ -1,4 +1,4 @@
-# written by HYDROLIB-core 0.10.1
+# written by HYDROLIB-core 1.0.1
 
 [General]
 fileVersion           = 1.09          # File version. Do not edit this.
@@ -11,14 +11,8 @@ pathsRelativeToParent = 0             # Whether or not (1/0) to resolve file nam
 [Geometry]
 netFile                        = fm_net.nc                                                      # The net file <*_net.nc>
 bathymetryFile                 =                                                                # Removed since March 2022. See [geometry] keyword BedLevelFile.
-dryPointsFile                  =                                                                # Dry points file <*.xyz>, third column dummy z values, or polygon file <*.pol>.
-structureFile                  =                                                                # File <*.ini> containing list of hydraulic structures.
 iniFieldFile                   = fieldFile.ini                                                  # Initial and parameter field file <*.ini>.
 waterLevIniFile                =                                                                # Initial water levels sample file <*.xyz>.
-landBoundaryFile               =                                                                # Only for plotting.
-thinDamFile                    =                                                                # <*_thd.pli>, Polyline(s) for tracing thin dams.
-fixedWeirFile                  =                                                                # <*_fxw.pliz>, Polyline(s) x, y, z, z = fixed weir top levels (formerly fixed weir).
-pillarFile                     =                                                                # <*_pillar.pliz>, Polyline file containing four colums with x, y, diameter and Cd coefficient for bridge pillars.
 useCaching                     = 1                                                              # Use caching for geometrical/network-related items (0: no, 1: yes) (section C.19).
 vertPlizFile                   =                                                                # <*_vlay.pliz>), = pliz with x, y, Z, first Z = nr of layers, second Z = laytyp.
 frictFile                      = roughness_Manning_0.023.ini;roughness_WhiteColeBrook_0.003.ini # Location of the files with roughness data for 1D.
@@ -259,8 +253,6 @@ wrishp_pump                       = 0      # Writing pumps to shape file (0=no, 
 outputDir                         =        # Output directory of map-, his-, rst-, dat- and timingsfiles, default: DFM_OUTPUT_<modelname>. Set to . for no dir/current dir.
 waqOutputDir                      =        # Output directory of Water Quality files.
 flowGeomFile                      =        # *_flowgeom.nc Flow geometry file in netCDF format.
-obsFile                           =        # Space separated list of files, containing information about observation points.
-crsFile                           =        # Space separated list of files, containing information about observation cross sections.
 fouFile                           =        # Fourier analysis input file *.fou
 fouUpdateStep                     = 0      # Fourier update step type: 0=every user time step, 1=every computational timestep, 2=same as history output.
 hisFile                           =        # *_his.nc History file in netCDF format.

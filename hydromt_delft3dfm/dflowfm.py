@@ -2861,9 +2861,6 @@ class DFlowFMModel(Model):
         )
 
         if constant_value is not None:
-            if fill_value is None:
-                fill_value = constant_value
-
             df_meteo = pd.DataFrame(
                 {
                     "time": pd.date_range(
@@ -2875,58 +2872,57 @@ class DFlowFMModel(Model):
                 }
             )
 
+        if meteo_timeseries_fn is not None and isfile(meteo_timeseries_fn):
+            df_meteo = pd.read_csv(
+                meteo_timeseries_fn,
+                parse_dates=["time"],
+                index_col="time",
+            )
         else:
-            if isfile(meteo_timeseries_fn):
-                df_meteo = pd.read_csv(
-                    meteo_timeseries_fn,
-                    parse_dates=["time"],
-                    index_col="time",
-                )
-            else:
-                df_meteo = self.data_catalog.get_dataframe(
-                    meteo_timeseries_fn,
-                    variables=[meteo_type],
-                    time_range=(tstart, tstop),
-                )
+            df_meteo = self.data_catalog.get_dataframe(
+                meteo_timeseries_fn,
+                variables=[meteo_type],
+                time_range=(tstart, tstop),
+            )
 
-            if not np.issubdtype(df_meteo.index.dtype, np.datetime64):
-                raise ValueError(
-                    "meteo_timeseries_fn must provide a datetime index, but the parsed "
-                    f"index has dtype {df_meteo.index.dtype!r}. "
-                    "For a direct CSV file, include a 'time' column that can be parsed "
-                    "as datetimes. For a DataCatalog source, configure the driver "
-                    "kwargs so the time column is parsed as dates and used as the index"
-                    ", for example `parse_dates=['time']` and `index_col='time'`."
-                )
+        if not np.issubdtype(df_meteo.index.dtype, np.datetime64):
+            raise ValueError(
+                "meteo_timeseries_fn must provide a datetime index, but the parsed "
+                f"index has dtype {df_meteo.index.dtype!r}. "
+                "For a direct CSV file, include a 'time' column that can be parsed "
+                "as datetimes. For a DataCatalog source, configure the driver "
+                "kwargs so the time column is parsed as dates and used as the index"
+                ", for example `parse_dates=['time']` and `index_col='time'`."
+            )
 
-            if len(df_meteo.index) < 2:
-                raise ValueError(
-                    "meteo_timeseries_fn must contain at least two timesteps to infer "
-                    "the time frequency."
-                )
+        if len(df_meteo.index) < 2:
+            raise ValueError(
+                "meteo_timeseries_fn must contain at least two timesteps to infer "
+                "the time frequency."
+            )
 
-            dt = df_meteo.index.to_series().diff().dropna()
+        dt = df_meteo.index.to_series().diff().dropna()
 
-            if not (dt == dt.iloc[0]).all():
-                raise ValueError("Non-equidistant time series are not supported.")
+        if not (dt == dt.iloc[0]).all():
+            raise ValueError("Non-equidistant time series are not supported.")
 
-            if (df_meteo.index[-1] - df_meteo.index[0]) < (tstop - tstart):
-                logger.warning(
-                    "Time in meteo_timeseries_fn is shorter than the model simulation "
-                    f"time. Missing values will be filled using {fill_value}."
-                )
+        if (df_meteo.index[-1] - df_meteo.index[0]) < (tstop - tstart):
+            logger.warning(
+                "Time in meteo_timeseries_fn is shorter than the model simulation "
+                f"time. Missing values will be filled using {fill_value}."
+            )
 
-                dt = df_meteo.index[1] - df_meteo.index[0]
-                t_index = pd.DatetimeIndex(
-                    pd.date_range(start=tstart, end=tstop, freq=dt)
-                )
-                df_meteo = df_meteo.reindex(t_index).fillna(fill_value)
+            dt = df_meteo.index[1] - df_meteo.index[0]
+            t_index = pd.DatetimeIndex(
+                pd.date_range(start=tstart, end=tstop, freq=dt)
+            )
+            df_meteo = df_meteo.reindex(t_index).fillna(fill_value)
 
-            else:
-                df_meteo = df_meteo.fillna(fill_value)
+        else:
+            df_meteo = df_meteo.fillna(fill_value)
 
-            df_meteo = df_meteo.copy()
-            df_meteo["time"] = df_meteo.index
+        df_meteo = df_meteo.copy()
+        df_meteo["time"] = df_meteo.index
 
         da_out = workflows.compute_spatial_uniform_meteo_forcings(
             df_meteo=df_meteo,
