@@ -45,8 +45,8 @@ __all__ = [
     "write_1dboundary",
     "read_2dboundary",
     "write_2dboundary",
-    "read_meteo",
-    "write_meteo",
+    "read_spatial_uniform_meteo",
+    "write_spatial_uniform_meteo",
     "read_spatial_forcing",
     "write_spatial_forcing",
 ]
@@ -1228,7 +1228,9 @@ def read_spatial_uniform_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
     return da_out
 
 
-def write_spatial_uniform_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
+def write_spatial_uniform_meteo(
+    forcing: Dict, savedir: str, ext_fn: str = None
+) -> list[dict]:
     """
     Write 2d meteo forcing from forcing dict.
 

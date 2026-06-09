@@ -2696,7 +2696,6 @@ class DFlowFMModel(Model):
             constant_value=constant_value,
         )
 
-
     @hydromt_step
     def setup_rainfall_from_uniform_timeseries(
         self,
@@ -2725,7 +2724,6 @@ class DFlowFMModel(Model):
             fill_value=fill_value,
         )
 
-
     @hydromt_step
     def setup_spatial_uniform_meteo(
         self,
@@ -2735,8 +2733,7 @@ class DFlowFMModel(Model):
         fill_value: float | None = None,
     ):
         """
-        Prepare space-uniform meteorological forcing from either a timeseries file
-        or a constant value.
+        Prepare space-uniform meteo forcing from either a timeseries file or a constant.
 
         The forcing is written as a bcAscii meteorological forcing block.
         See the D-Flow FM User Manual 1D2D, Section C.5.
@@ -2755,7 +2752,7 @@ class DFlowFMModel(Model):
 
         Exactly one of ``meteo_timeseries_fn`` or ``constant_value`` must be provided.
 
-        Call the function multiple times to setup different types of meteorological 
+        Call the function multiple times to setup different types of meteorological
         forcing, e.g. rainfall and wind.
 
         Examples
@@ -2905,7 +2902,6 @@ class DFlowFMModel(Model):
 
         if meteo_type in ["rainfall_rate", "rainfall"]:
             self.mdu.set("external_forcing.rainfall", 1)
-
 
     @hydromt_step
     def setup_spatial_forcing(
