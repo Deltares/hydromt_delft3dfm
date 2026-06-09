@@ -1179,7 +1179,7 @@ def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[di
     return forcing_fn, ext_fn
 
 
-def read_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
+def read_spatial_uniform_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
     """
     Read for a specific quantity the external and forcing files and parse to xarray.
 
@@ -1228,7 +1228,7 @@ def read_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
     return da_out
 
 
-def write_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
+def write_spatial_uniform_meteo(forcing: Dict, savedir: str, ext_fn: str = None) -> list[dict]:
     """
     Write 2d meteo forcing from forcing dict.
 

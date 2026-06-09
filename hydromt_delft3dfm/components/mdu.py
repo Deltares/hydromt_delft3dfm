@@ -58,7 +58,7 @@ class MDUComponent(ConfigComponent):
 
     def get_model_time(self):
         """
-        Return (refdate, tstart, tstop) tuple.
+        Return (tstart, tstop) tuple.
 
         It is parsed from model startdatetime/stopdatetime, or from the refdate/tunit/
         tstart/tstop if not available.

@@ -456,68 +456,95 @@ def test_setup_spatial_forcing(tmpdir):
     assert set(mod2.forcing.data.keys()) == expected_keys
 
 
-def test_setup_meteo_constant_rainfall_rate(tmpdir):
-    model = DFlowFMModel(str(tmpdir), 
-                         data_libs=join(EXAMPLEDIR, "data", "data_catalog_local.yaml"),
-                         crs=3857,
-                          mode="w")
-    
-    # set a small default mesh to speed up the test, since we only want to test the setup_meteo and not the mesh setup here
-    model.setup_mesh2d(region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]), res=5000)
-
-    model.setup_meteo(
-        meteo_type="rainfall_rate",
-        constant_value=5.0,
+@pytest.fixture
+def dflowfm_2dmodel_with_localdata(tmpdir):
+    model = DFlowFMModel(
+        str(tmpdir),
+        data_libs=join(EXAMPLEDIR, "data", "data_catalog_local.yaml"),
+        crs=3857,
+        mode="w",
     )
-    assert "meteo_rainfall_rate" in model.forcing.data
 
+    # Set a small default mesh to speed up the test, since we only want to test
+    # setup_spatial_uniform_meteo and not mesh setup here.
+    model.setup_mesh2d(
+        region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
+        res=5000,
+    )
 
-def test_setup_meteo_constant_rainfall(tmpdir):
-    model = DFlowFMModel(str(tmpdir), 
-                         data_libs=join(EXAMPLEDIR, "data", "data_catalog_local.yaml"),
-                         crs=3857,
-                          mode="w")
-    
-    # set a small default mesh to speed up the test, since we only want to test the setup_meteo and not the mesh setup here
-    model.setup_mesh2d(region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]), res=5000)
+    return model
 
-    model.setup_meteo(
+def test_setup_spatial_uniform_meteo_from_constant(dflowfm_2dmodel_with_localdata):
+    dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
         meteo_type="rainfall",
         constant_value=5.0,
     )
-    assert "meteo_rainfall" in model.forcing.data
+
+    assert "meteo_rainfall" in dflowfm_2dmodel_with_localdata.forcing.data
 
 
-def test_setup_meteo_timeseries_rainfall_rate(tmpdir):
-    model = DFlowFMModel(str(tmpdir), 
-                         data_libs=join(EXAMPLEDIR, "data", "data_catalog_local.yaml"),
-                         crs=3857,
-                          mode="w")
-    
-    # set a small default mesh to speed up the test, since we only want to test the setup_meteo and not the mesh setup here
-    model.setup_mesh2d(region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]), res=5000)
-
-    model.setup_meteo(
+def test_setup_spatial_uniform_meteo_from_timeseries(dflowfm_2dmodel_with_localdata):
+    dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
         meteo_type="rainfall_rate",
         meteo_timeseries_fn="meteo_timeseries_T2",
     )
-    assert "meteo_rainfall_rate" in model.forcing.data
+
+    assert "meteo_rainfall_rate" in dflowfm_2dmodel_with_localdata.forcing.data
 
 
-def test_setup_meteo_rejects_unknown_type(tmpdir):
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
-    model.read()
-    model.root.set(tmpdir, mode="w")
+def test_setup_spatial_uniform_meteo_accepts_wind_type(dflowfm_2dmodel_with_localdata):
+    dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+        meteo_type="windx",
+        constant_value=5.0,
+    )
+
+    assert "meteo_windx" in dflowfm_2dmodel_with_localdata.forcing.data
+
+
+def test_setup_spatial_uniform_meteo_rejects_unknown_type(dflowfm_2dmodel_with_localdata):
     with pytest.raises(ValueError, match="Unsupported meteo_type"):
-        model.setup_meteo(
+        dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
             meteo_type="evapotranspiration",
             constant_value=1.0,
         )
 
 
-def test_setup_meteo_requires_one_source(tmpdir):
-    model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")
-    model.read()
-    model.root.set(tmpdir, mode="w")
+def test_setup_spatial_uniform_meteo_requires_data_source(dflowfm_2dmodel_with_localdata):
     with pytest.raises(ValueError, match="Provide exactly one"):
-        model.setup_meteo()
+        dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+            meteo_type="rainfall",
+        )
+
+
+def test_setup_spatial_uniform_meteo_rejects_multiple_data_sources(
+    dflowfm_2dmodel_with_localdata,
+):
+    with pytest.raises(ValueError, match="Provide exactly one"):
+        dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+            meteo_type="rainfall",
+            meteo_timeseries_fn="meteo_timeseries_T2",
+            constant_value=5.0,
+        )
+
+def test_setup_rainfall_from_constant_deprecated(
+    dflowfm_2dmodel_with_localdata,
+    caplog,
+):
+    dflowfm_2dmodel_with_localdata.setup_rainfall_from_constant(constant_value=5.0)
+
+    assert "meteo_rainfall_rate" in dflowfm_2dmodel_with_localdata.forcing.data
+    assert "setup_rainfall_from_constant is deprecated" in caplog.text
+
+
+def test_setup_rainfall_from_uniform_timeseries_deprecated(
+    dflowfm_2dmodel_with_localdata,
+    caplog,
+):
+    dflowfm_2dmodel_with_localdata.setup_rainfall_from_uniform_timeseries(
+        meteo_timeseries_fn="meteo_timeseries_T2",
+        fill_value=0.0,
+        is_rate=True,
+    )
+
+    assert "meteo_rainfall_rate" in dflowfm_2dmodel_with_localdata.forcing.data
+    assert "setup_rainfall_from_uniform_timeseries is deprecated" in caplog.text

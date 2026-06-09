@@ -2680,18 +2680,22 @@ class DFlowFMModel(Model):
         constant_value: float,
     ):
         """
-        Use the method``setup_meteo(constant_value=...)`` instead.
+        Deprecated.
 
-        This method is deprecated.
+        Use ``setup_spatial_uniform_meteo(
+        meteo_type="rainfall_rate", constant_value=...
+        )`` instead.
         """
         logger.warning(
             "setup_rainfall_from_constant is deprecated. "
-            "Use setup_meteo(constant_value=...) instead."
+            "Use setup_spatial_uniform_meteo("
+            "meteo_type='rainfall_rate', constant_value=...) instead."
         )
-        self.setup_meteo(
+        self.setup_spatial_uniform_meteo(
             meteo_type="rainfall_rate",
             constant_value=constant_value,
         )
+
 
     @hydromt_step
     def setup_rainfall_from_uniform_timeseries(
@@ -2701,45 +2705,82 @@ class DFlowFMModel(Model):
         is_rate: bool = True,
     ):
         """
-        Use ``setup_meteo(meteo_timeseries_fn=...)`` instead.
+        Deprecated.
 
-        This method is deprecated.
+        Use ``setup_spatial_uniform_meteo(
+        meteo_type="rainfall_rate" or "rainfall",
+        meteo_timeseries_fn=...
+        )`` instead.
         """
+        meteo_type = "rainfall_rate" if is_rate else "rainfall"
+
         logger.warning(
             "setup_rainfall_from_uniform_timeseries is deprecated. "
-            "Use setup_meteo(meteo_timeseries_fn=...) instead."
+            "Use setup_spatial_uniform_meteo("
+            f"meteo_type='{meteo_type}', meteo_timeseries_fn=...) instead."
         )
-        self.setup_meteo(
-            meteo_type="rainfall_rate" if is_rate else "rainfall",
+        self.setup_spatial_uniform_meteo(
+            meteo_type=meteo_type,
             meteo_timeseries_fn=meteo_timeseries_fn,
             fill_value=fill_value,
         )
 
+
     @hydromt_step
-    def setup_meteo(
+    def setup_spatial_uniform_meteo(
         self,
-        meteo_type: str = "rainfall_rate",
+        meteo_type: str,
         meteo_timeseries_fn: str | Path | None = None,
         constant_value: float | None = None,
-        fill_value: float = 0.0,
+        fill_value: float | None = None,
     ):
         """
-        Prepare spatially uniform 2D rainfall meteorological forcing.
+        Prepare space-uniform meteorological forcing from either a timeseries file
+        or a constant value.
 
-        This method merges the previous behavior of:
+        The forcing is written as a bcAscii meteorological forcing block.
+        See the D-Flow FM User Manual 1D2D, Section C.5.
 
-        * ``setup_rainfall_from_constant``
-        * ``setup_rainfall_from_uniform_timeseries``
+        Quantity names in a bc block for meteorological forcings, Section C.5.3:
 
-        The forcing can be created either from a constant value or from a tabulated
-        time series. For now only spatially uniform rainfall / rainfall_rate forcing
-        is supported.
+        - rainfall
+        - rainfall_rate
+        - windxy
+        - windx
+        - windy
 
-        If ``meteo_timeseries_fn`` has missing values or is shorter than the model
-        simulation time, ``fill_value`` is used to fill missing values.
+        Use ``constant_value`` to quickly set up a spatially uniform and temporally
+        constant forcing for testing. Use ``meteo_timeseries_fn`` when providing a
+        user-defined timeseries.
 
-        The dataset / time series is clipped to the model time based on the model
-        config ``tstart`` and ``tstop`` entries.
+        Exactly one of ``meteo_timeseries_fn`` or ``constant_value`` must be provided.
+
+        Call the function multiple times to setup different types of meteorological 
+        forcing, e.g. rainfall and wind.
+
+        Examples
+        --------
+        Set up a constant rainfall rate for a quick test model:
+
+        >>> model.setup_spatial_uniform_meteo(
+        ...     meteo_type="rainfall_rate",
+        ...     constant_value=10.0,
+        ... )
+
+        Set up a constant x-direction wind forcing:
+
+        >>> model.setup_spatial_uniform_meteo(
+        ...     meteo_type="windx",
+        ...     constant_value=5.0,
+        ... )
+
+        Set up rainfall from a timeseries file or data catalog entry:
+
+        >>> model.setup_spatial_uniform_meteo(
+        ...     meteo_type="rainfall_rate",
+        ...     meteo_timeseries_fn="rainfall_timeseries",
+        ...     fill_value=0.0,
+        ... )
 
         Adds/Updates model layers:
 
@@ -2747,26 +2788,41 @@ class DFlowFMModel(Model):
 
         Parameters
         ----------
-        meteo_type : {"rainfall_rate", "rainfall"}, optional
-            Type of meteo forcing to prepare. By default ``"rainfall_rate"``.
+        meteo_type : str
+            Type of meteorological forcing to prepare. Supported values are
+            ``"rainfall_rate"``, ``"rainfall"``, ``"windxy"``, ``"windx"``, and
+            ``"windy"``.
 
-            If ``"rainfall_rate"``, values are expected in mm/day.
-            If ``"rainfall"``, values are expected in mm.
+            Corresponding units are:
+
+            - ``"rainfall_rate"``: ``"mm/day"``
+            - ``"rainfall"``: ``"mm"``
+            - ``"windxy"``, ``"windx"``, ``"windy"``: ``"m/s"``
 
         meteo_timeseries_fn : str, Path, optional
-            Path or data source name to a tabulated time series file.
+            Path or data source name to a tabulated timeseries file.
 
-            The source should contain a column matching ``meteo_type`` and a
-            datetime index configured through the data catalog.
+            The file should contain a column matching ``meteo_type`` and a datetime
+            index. Alternatively, ``meteo_timeseries_fn`` can refer to a data catalog
+            entry that provides the timeseries file and optional preprocessing such
+            as rename, nodata handling, ``unit_add``, or ``unit_mult``.
 
         constant_value : float, optional
-            Constant meteo value for the full model simulation period.
+            Constant meteorological value used for the full model simulation period.
+
+            This option is intended for quick test models. Do not provide
+            ``meteo_timeseries_fn`` when using ``constant_value``.
 
         fill_value : float, optional
-            Value used to fill missing values or missing time steps when reading
-            from ``meteo_timeseries_fn``. By default 0.0.
+            Value used to fill missing values or missing timesteps when reading from
+            ``meteo_timeseries_fn``.
+
+            If ``constant_value`` is used and ``fill_value`` is not provided,
+            ``fill_value`` defaults to ``constant_value``. If ``meteo_timeseries_fn``
+            is used and ``fill_value`` is not provided, ``fill_value`` defaults to
+            ``0.0``.
         """
-        allowed_meteo_types = {"rainfall_rate", "rainfall"}
+        allowed_meteo_types = {"rainfall_rate", "rainfall", "windxy", "windx", "windy"}
 
         if meteo_type not in allowed_meteo_types:
             raise ValueError(
@@ -2779,13 +2835,6 @@ class DFlowFMModel(Model):
                 "Provide exactly one of 'meteo_timeseries_fn' or 'constant_value'."
             )
 
-        if constant_value is not None:
-            logger.info("Preparing %s meteo forcing from constant value.", meteo_type)
-        else:
-            logger.info(
-                "Preparing %s meteo forcing from uniform timeseries.", meteo_type
-            )
-
         tstart, tstop = self.get_model_time()
 
         meteo_location = (
@@ -2794,6 +2843,9 @@ class DFlowFMModel(Model):
         )
 
         if constant_value is not None:
+            if fill_value is None:
+                fill_value = constant_value
+
             df_meteo = pd.DataFrame(
                 {
                     "time": pd.date_range(
@@ -2805,9 +2857,10 @@ class DFlowFMModel(Model):
                 }
             )
 
-            fill_value_for_compute = constant_value
-
         else:
+            if fill_value is None:
+                fill_value = 0.0
+
             df_meteo = self.data_catalog.get_dataframe(
                 meteo_timeseries_fn,
                 variables=[meteo_type],
@@ -2832,6 +2885,7 @@ class DFlowFMModel(Model):
                     "Time in meteo_timeseries_fn is shorter than the model simulation "
                     "time. Missing values will be filled using fill_value."
                 )
+
                 dt = df_meteo.index[1] - df_meteo.index[0]
                 t_index = pd.DatetimeIndex(
                     pd.date_range(start=tstart, end=tstop, freq=dt)
@@ -2840,18 +2894,18 @@ class DFlowFMModel(Model):
 
             df_meteo["time"] = df_meteo.index
 
-            fill_value_for_compute = fill_value
-
-        da_out = workflows.compute_meteo_forcings(
+        da_out = workflows.compute_spatial_uniform_meteo_forcings(
             df_meteo=df_meteo,
             meteo_type=meteo_type,
-            fill_value=fill_value_for_compute,
+            fill_value=fill_value,
             meteo_location=meteo_location,
         )
 
         self.forcing.set(da_out, name=f"meteo_{da_out.name}")
 
-        self.mdu.set("external_forcing.rainfall", 1)
+        if meteo_type in ["rainfall_rate", "rainfall"]:
+            self.mdu.set("external_forcing.rainfall", 1)
+
 
     @hydromt_step
     def setup_spatial_forcing(
@@ -3098,7 +3152,7 @@ class DFlowFMModel(Model):
 
     def get_model_time(self):
         """
-        Return (refdate, tstart, tstop) tuple.
+        Return (tstart, tstop) tuple.
 
         It is parsed from model startdatetime/stopdatetime, or from the refdate/tunit/
         tstart/tstop if not available.

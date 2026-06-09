@@ -19,7 +19,7 @@ __all__ = [
     "validate_boundaries",
     "compute_boundary_values",
     "compute_2dboundary_values",
-    "compute_meteo_forcings",
+    "compute_spatial_uniform_meteo_forcings",
     "compute_forcing_values_points",
     "compute_forcing_values_polygon",
     "get_geometry_coords_for_polygons",
@@ -457,14 +457,14 @@ def df_to_bc(
                 f.write(f"\t{i} {di}\n")
 
 
-def compute_meteo_forcings(
+def compute_spatial_uniform_meteo_forcings(
     df_meteo: pd.DataFrame,
     meteo_type: str = "rainfall_rate",
     fill_value: float = 0.0,
     meteo_location: tuple = None,
 ) -> xr.DataArray:
     """
-    Compute spatially uniform meteo forcings.
+    Compute spatially uniform meteorological forcings.
 
     Parameters
     ----------
@@ -476,27 +476,33 @@ def compute_meteo_forcings(
         * ``time``
         * one column matching ``meteo_type``
 
-        For example:
+        Supported meteo columns are:
 
         * ``rainfall_rate``
         * ``rainfall``
+        * ``windxy``
+        * ``windx``
+        * ``windy``
 
     meteo_type : str, optional
-        Type of meteo forcing to prepare.
+        Type of meteorological forcing to prepare.
 
-        Supported values:
+        Supported values are:
 
         * ``rainfall_rate``
         * ``rainfall``
+        * ``windxy``
+        * ``windx``
+        * ``windy``
 
-        By default ``rainfall_rate``. Note that
-        Delft3D FM 1D2D Suite 2022.04 supports only ``rainfall_rate``.
+        By default ``rainfall_rate``.
 
     fill_value : float, optional
         Constant value used to fill missing values. By default 0.0.
 
     meteo_location : tuple
-        Global location for meteo time series.
+        Global location for the spatially uniform meteo time series, provided as
+        ``(x, y)``.
 
     Returns
     -------
@@ -506,6 +512,9 @@ def compute_meteo_forcings(
     allowed_meteo_types = {
         "rainfall_rate": "mm/day",
         "rainfall": "mm",
+        "windxy": "m/s",
+        "windx": "m/s",
+        "windy": "m/s",
     }
 
     if meteo_type not in allowed_meteo_types:
@@ -535,6 +544,10 @@ def compute_meteo_forcings(
     meteo_unit = allowed_meteo_types[meteo_type]
 
     logger.info("Preparing global spatially uniform %s timeseries.", meteo_type)
+
+    # Ensure time column is datetime-like.
+    df_meteo = df_meteo.copy()
+    df_meteo["time"] = pd.to_datetime(df_meteo["time"])
 
     # Get data frequency.
     dt = df_meteo.time.iloc[1] - df_meteo.time.iloc[0]
@@ -568,18 +581,20 @@ def compute_meteo_forcings(
     if multiplier == 24:
         freq_name = "hours"
 
+    x, y = meteo_location
+
+    # Support scalar, numpy, pandas, and xarray scalar-like coordinates.
+    x = float(np.asarray(x).squeeze())
+    y = float(np.asarray(y).squeeze())
+
     da_out = xr.DataArray(
-        data=np.full(
-            (1, len(df_meteo)),
-            df_meteo[meteo_type].values,
-            dtype=np.float32,
-        ),
+        data=np.asarray(df_meteo[meteo_type].values, dtype=np.float32)[None, :],
         dims=["index", "time"],
         coords=dict(
             index=["global"],
             time=meteo_times,
-            x=("index", meteo_location[0].values),
-            y=("index", meteo_location[1].values),
+            x=("index", [x]),
+            y=("index", [y]),
         ),
         attrs=dict(
             function="TimeSeries",
