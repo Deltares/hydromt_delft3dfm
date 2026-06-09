@@ -2870,9 +2870,8 @@ class DFlowFMModel(Model):
                     ),
                     meteo_type: constant_value,
                 }
-            )
-
-        if meteo_timeseries_fn is not None and isfile(meteo_timeseries_fn):
+            ).set_index("time")
+        elif meteo_timeseries_fn is not None and isfile(meteo_timeseries_fn):
             df_meteo = pd.read_csv(
                 meteo_timeseries_fn,
                 parse_dates=["time"],
