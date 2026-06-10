@@ -3252,7 +3252,7 @@ packages:
   name: hydromt-delft3dfm
   requires_dist:
   - hydromt>=1.4.0
-  - geopandas>=0.10,!=1.0.0
+  - geopandas>=1.0.1
   - numpy>=2.0.0
   - pandas>=2.0.0,<3
   - xarray
