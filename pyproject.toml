@@ -13,7 +13,7 @@ authors = [
 ]
 dependencies = [
     "hydromt>=1.4.0", # hydromt 1.4.0 has different default geoms precision and bugfix for nearest_merge and bugfix for mesh properties
-    "geopandas>=0.10, !=1.0.0", # gpd 1.0.0 has sjoin bug: https://github.com/geopandas/geopandas/issues/352
+    "geopandas>=1.0.1", # gpd 1.0.1 fixed sjoin bug: https://github.com/geopandas/geopandas/issues/352
     "numpy>=2.0.0", # latest <2 version is already EOL
     "pandas>=3.0.0", # TODO: allow for both pandas 2 and 3 ("pandas>=2.0.0")
     "xarray",
