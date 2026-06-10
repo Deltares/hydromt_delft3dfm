@@ -26,7 +26,7 @@ dependencies = [
     "pyproj",
     "shapely>=2.0.0",
     "scipy",
-#    "pyflwdir>=0.5.4",
+#    "pyflwdir>=0.5.4", #TODO: move to pypi version after release
     "pyflwdir @ git+https://github.com/Deltares/pyflwdir.git",
     "networkx",
 ]
