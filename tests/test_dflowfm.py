@@ -617,21 +617,18 @@ def test_setup_rainfall_from_constant_deprecated(
     dflowfm_2dmodel_with_localdata,
     caplog,
 ):
-    dflowfm_2dmodel_with_localdata.setup_rainfall_from_constant(constant_value=5.0)
-
-    assert "meteo_rainfall_rate" in dflowfm_2dmodel_with_localdata.forcing.data
-    assert "setup_rainfall_from_constant is deprecated" in caplog.text
+    err_msg = "setup_rainfall_from_constant is deprecated"
+    with pytest.raises(AttributeError, match=err_msg):
+        dflowfm_2dmodel_with_localdata.setup_rainfall_from_constant(constant_value=5.0)
 
 
 def test_setup_rainfall_from_uniform_timeseries_deprecated(
     dflowfm_2dmodel_with_localdata,
-    caplog,
 ):
-    dflowfm_2dmodel_with_localdata.setup_rainfall_from_uniform_timeseries(
-        meteo_timeseries_fn="meteo_timeseries_T2",
-        fill_value=0.0,
-        is_rate=True,
-    )
-
-    assert "meteo_rainfall_rate" in dflowfm_2dmodel_with_localdata.forcing.data
-    assert "setup_rainfall_from_uniform_timeseries is deprecated" in caplog.text
+    err_msg = "setup_rainfall_from_uniform_timeseries is deprecated"
+    with pytest.raises(AttributeError, match=err_msg):
+        dflowfm_2dmodel_with_localdata.setup_rainfall_from_uniform_timeseries(
+            meteo_timeseries_fn="meteo_timeseries_T2",
+            fill_value=0.0,
+            is_rate=True,
+        )

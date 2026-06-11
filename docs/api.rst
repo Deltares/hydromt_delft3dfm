@@ -228,8 +228,8 @@ Input/Output methods
    utils.io_utils.write_1dlateral
    utils.io_utils.read_2dboundary
    utils.io_utils.write_2dboundary
-   utils.io_utils.read_meteo
-   utils.io_utils.write_meteo
+   utils.io_utils.read_spatial_uniform_meteo
+   utils.io_utils.write_spatial_uniform_meteo
 
 Mesh conversion methods
 -----------------------

@@ -515,7 +515,7 @@ def compute_spatial_uniform_meteo_forcings(
     )
 
     da_out = xr.DataArray(
-        data=np.asarray(df_meteo[meteo_type].values, dtype=np.float32)[None, :],
+        data=df_meteo[[meteo_type]].astype(np.float32).T,
         dims=["index", "time"],
         coords=dict(
             index=["global"],

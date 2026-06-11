@@ -2688,14 +2688,10 @@ class DFlowFMModel(Model):
         meteo_type="rainfall_rate", constant_value=...
         )`` instead.
         """
-        logger.warning(
+        raise AttributeError(
             "setup_rainfall_from_constant is deprecated. "
             "Use setup_spatial_uniform_meteo("
             "meteo_type='rainfall_rate', constant_value=...) instead."
-        )
-        self.setup_spatial_uniform_meteo(
-            meteo_type="rainfall_rate",
-            constant_value=constant_value,
         )
 
     @hydromt_step
@@ -2717,15 +2713,10 @@ class DFlowFMModel(Model):
         """
         meteo_type = "rainfall_rate" if is_rate else "rainfall"
 
-        logger.warning(
+        raise AttributeError(
             "setup_rainfall_from_uniform_timeseries is deprecated. "
             "Use setup_spatial_uniform_meteo("
             f"meteo_type='{meteo_type}', meteo_timeseries_fn=...) instead."
-        )
-        self.setup_spatial_uniform_meteo(
-            meteo_type=meteo_type,
-            meteo_timeseries_fn=meteo_timeseries_fn,
-            fill_value=fill_value,
         )
 
     @hydromt_step
@@ -2793,7 +2784,7 @@ class DFlowFMModel(Model):
         meteo_type : str
             Type of meteorological forcing to prepare. Supported values are
             ``"rainfall_rate"``, ``"rainfall"``, ``"windxy"``, ``"windx"``, and
-            ``"windy"``.
+            ``"windy"`` (as of delft3dfm 2026.02).
 
             Corresponding units are:
 

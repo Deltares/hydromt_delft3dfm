@@ -1199,8 +1199,8 @@ def read_spatial_uniform_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
     forcingfile_uniq = df.forcingfile.astype(str).unique()
     if len(forcingfile_uniq) > 1:
         raise NotImplementedError(
-            "read_meteo() does not support more than 1 forcing filename, found: "
-            f"{forcingfile_uniq}."
+            "read_spatial_uniform_meteo() does not support more than 1 forcing "
+            f"filename, found: {forcingfile_uniq}."
         )
     forcing = df.forcingfile.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
@@ -1212,9 +1212,6 @@ def read_spatial_uniform_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
         index_values=["global"],
         quantity=quantity,
     )
-    # Do not apply to "global" meteo
-    # coords["x"]
-    # coords["y"]
 
     # Prep DataArray and add to forcing
     da_out = xr.DataArray(
