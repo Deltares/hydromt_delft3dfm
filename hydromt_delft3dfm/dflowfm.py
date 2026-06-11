@@ -2857,17 +2857,20 @@ class DFlowFMModel(Model):
                     meteo_type: constant_value,
                 }
             ).set_index("time")
-        elif meteo_timeseries_fn is not None and isfile(meteo_timeseries_fn):
-            df_meteo = pd.read_csv(
-                meteo_timeseries_fn,
-                parse_dates=["time"],
-                index_col="time",
-            )
-        else:
+        elif meteo_timeseries_fn is not None:
+            # TODO: use index_col="time" after fixing
+            #  https://github.com/Deltares/hydromt/issues/1502
+            source_kwargs = {
+                "driver": {
+                    "name": "pandas",
+                    "options": {"parse_dates": ["time"], "index_col": 0},
+                }
+            }
             df_meteo = self.data_catalog.get_dataframe(
                 meteo_timeseries_fn,
                 variables=[meteo_type],
                 time_range=(tstart, tstop),
+                source_kwargs=source_kwargs,
             )
 
         if not np.issubdtype(df_meteo.index.dtype, np.datetime64):
