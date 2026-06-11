@@ -486,7 +486,6 @@ def compute_spatial_uniform_meteo_forcings(
     logger.info("Preparing global spatially uniform %s timeseries.", meteo_type)
 
     df_meteo = df_meteo.copy()
-    df_meteo["time"] = pd.to_datetime(df_meteo["time"])
 
     dt = df_meteo["time"].iloc[1] - df_meteo["time"].iloc[0]
     freq = dt.resolution_string
