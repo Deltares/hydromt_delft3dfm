@@ -596,7 +596,8 @@ def test_setup_spatial_uniform_meteo_rejects_no_time_column_from_csv(
 def test_setup_spatial_uniform_meteo_rejects_no_time_index_from_datacatalog(
     dflowfm_2dmodel_with_localdata,
 ):
-    err_msg = "Dates in meteo_timeseries_fn were not parsed correctly"
+
+    err_msg = "meteo_timeseries_fn must provide a datetime index"
     with pytest.raises(ValueError, match=err_msg):
         dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
             meteo_type="rainfall_rate",
