@@ -2,7 +2,6 @@ from os.path import abspath, basename, dirname, join
 from os import makedirs, rename
 from hydromt_delft3dfm import DFlowFMModel
 import numpy as np
-import pandas as pd
 from pathlib import Path
 import pytest
 import shutil
@@ -10,7 +9,6 @@ import xugrid as xu
 
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 TOLERANCE = 1e-6
-
 
 
 def test_write_read_empty_model(tmpdir):
@@ -457,31 +455,6 @@ def test_setup_spatial_forcing(tmpdir):
     assert set(mod2.forcing.data.keys()) == expected_keys
 
 
-@pytest.fixture
-def dflowfm_2dmodel_with_localdata(tmpdir):
-    model = DFlowFMModel(
-        str(tmpdir),
-        data_libs=join(EXAMPLEDIR, "data", "data_catalog_local.yaml"),
-        crs=3857,
-        mode="w",
-    )
-
-    model.setup_config(
-        **{
-            "time.startdatetime": "20200101",
-            "time.stopdatetime": "20200102",
-        }
-    )
-
-    # Set a small default mesh to speed up the test, since we only want to test
-    # setup_spatial_uniform_meteo and not mesh setup here.
-    model.setup_mesh2d(
-        region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
-        res=5000,
-    )
-
-    return model
-
 def _write_csv(tmpdir, filename, lines):
     meteo_fn = tmpdir.join(filename)
     meteo_fn.write("\n".join(lines))
@@ -494,13 +467,17 @@ def test_setup_spatial_uniform_meteo_requires_data_source(dflowfm_2dmodel_with_l
             meteo_type="rainfall",
         )
 
+
 def test_setup_spatial_uniform_rainfall_from_constant(dflowfm_2dmodel_with_localdata):
     dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
         meteo_type="rainfall",
         constant_value=5.0,
     )
     assert "meteo_rainfall" in dflowfm_2dmodel_with_localdata.forcing.data
-    assert np.isclose(dflowfm_2dmodel_with_localdata.mdu.get_value('external_forcing.rainfall'), 1)
+    mdu_rainfaill = dflowfm_2dmodel_with_localdata.mdu.get_value(
+        'external_forcing.rainfall'
+    )
+    assert mdu_rainfaill == 1
 
 
 def test_setup_spatial_uniform_rainfall_rate_from_datacatalog(dflowfm_2dmodel_with_localdata):
@@ -510,6 +487,7 @@ def test_setup_spatial_uniform_rainfall_rate_from_datacatalog(dflowfm_2dmodel_wi
     )
 
     assert "meteo_rainfall_rate" in dflowfm_2dmodel_with_localdata.forcing.data
+
 
 def test_setup_spatial_uniform_windx_from_csv(dflowfm_2dmodel_with_localdata, tmpdir):
     meteo_fn = _write_csv(
@@ -527,6 +505,7 @@ def test_setup_spatial_uniform_windx_from_csv(dflowfm_2dmodel_with_localdata, tm
         meteo_timeseries_fn=meteo_fn,
     )
     assert "meteo_windx" in dflowfm_2dmodel_with_localdata.forcing.data
+
 
 def test_setup_spatial_uniform_rainfall_timeseries_fills_missing_values(
     dflowfm_2dmodel_with_localdata,
@@ -560,6 +539,7 @@ def test_setup_spatial_uniform_meteo_rejects_unknown_type(dflowfm_2dmodel_with_l
             constant_value=1.0,
        )
 
+
 def test_setup_spatial_uniform_meteo_rejects_multiple_data_sources(
     dflowfm_2dmodel_with_localdata,
 ):
@@ -569,6 +549,7 @@ def test_setup_spatial_uniform_meteo_rejects_multiple_data_sources(
             meteo_timeseries_fn="meteo_timeseries_T2",
             constant_value=5.0,
         )
+
 
 def test_setup_spatial_uniform_meteo_rejects_non_equidistant_timeseries_from_csv(
     dflowfm_2dmodel_with_localdata,
@@ -591,6 +572,7 @@ def test_setup_spatial_uniform_meteo_rejects_non_equidistant_timeseries_from_csv
             meteo_timeseries_fn=str(meteo_fn),
         )
 
+
 def test_setup_spatial_uniform_meteo_rejects_no_time_column_from_csv(
     dflowfm_2dmodel_with_localdata,
     tmpdir,
@@ -610,9 +592,11 @@ def test_setup_spatial_uniform_meteo_rejects_no_time_column_from_csv(
             meteo_timeseries_fn=str(meteo_fn),
         )
 
+
 def test_setup_spatial_uniform_meteo_rejects_no_time_index_from_datacatalog(
     dflowfm_2dmodel_with_localdata,
 ):
+
     with pytest.raises(ValueError, match="must provide a datetime index"):
         dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
             meteo_type="rainfall_rate",
@@ -627,7 +611,6 @@ def test_setup_spatial_uniform_meteo_rejects_no_matching_variable(
             meteo_type="rainfall",
             meteo_timeseries_fn="meteo_timeseries_T2",
         )
-
 
 
 def test_setup_rainfall_from_constant_deprecated(

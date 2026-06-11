@@ -459,9 +459,8 @@ def df_to_bc(
 
 def compute_spatial_uniform_meteo_forcings(
     df_meteo: pd.DataFrame,
-    meteo_type: str = "rainfall_rate",
-    meteo_unit: str = "mm/day",
-    meteo_location: tuple = (0.0, 0.0),
+    meteo_type: str,
+    meteo_unit: str,
 ) -> xr.DataArray:
     """
     Compute spatially uniform meteo forcing from DataFrame into a DataArray.
@@ -475,12 +474,9 @@ def compute_spatial_uniform_meteo_forcings(
         DataFrame containing a ``time`` column and one column matching
         ``meteo_type``.
     meteo_type : str, optional
-        Type of meteorological forcing to prepare. By default ``"rainfall_rate"``.
+        Type of meteorological forcing to prepare.
     meteo_unit : str, optional
-        Unit corresponding to ``meteo_type``. By default ``"mm/day"``.
-    meteo_location : tuple, optional
-        Global location for the spatially uniform meteo time series as ``(x, y)``.
-        By default ``(0., 0.)``.
+        Unit corresponding to ``meteo_type``.
 
     Returns
     -------
@@ -518,18 +514,12 @@ def compute_spatial_uniform_meteo_forcings(
         dtype=np.float32,
     )
 
-    x, y = meteo_location
-    x = float(np.asarray(x).squeeze())
-    y = float(np.asarray(y).squeeze())
-
     da_out = xr.DataArray(
         data=np.asarray(df_meteo[meteo_type].values, dtype=np.float32)[None, :],
         dims=["index", "time"],
         coords=dict(
             index=["global"],
             time=meteo_times,
-            x=("index", [x]),
-            y=("index", [y]),
         ),
         attrs=dict(
             function="TimeSeries",

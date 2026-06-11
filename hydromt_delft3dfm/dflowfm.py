@@ -2855,11 +2855,6 @@ class DFlowFMModel(Model):
 
         tstart, tstop = self.get_model_time()
 
-        meteo_location = (
-            self.region.centroid.x,
-            self.region.centroid.y,
-        )
-
         if constant_value is not None:
             df_meteo = pd.DataFrame(
                 {
@@ -2925,7 +2920,6 @@ class DFlowFMModel(Model):
             df_meteo=df_meteo,
             meteo_type=meteo_type,
             meteo_unit=meteo_units[meteo_type],
-            meteo_location=meteo_location,
         )
 
         self.forcing.set(da_out, name=f"meteo_{da_out.name}")
