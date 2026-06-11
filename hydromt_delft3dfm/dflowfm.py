@@ -2875,12 +2875,9 @@ class DFlowFMModel(Model):
 
         if not np.issubdtype(df_meteo.index.dtype, np.datetime64):
             raise ValueError(
-                "meteo_timeseries_fn must provide a datetime index, but the parsed "
-                f"index has dtype {df_meteo.index.dtype!r}. "
-                "For a direct CSV file, include a 'time' column that can be parsed "
-                "as datetimes. For a DataCatalog source, configure the driver "
-                "kwargs so the time column is parsed as dates and used as the index"
-                ", for example `parse_dates=['time']` and `index_col='time'`."
+                "Dates in meteo_timeseries_fn were not parsed correctly. "
+                "Update the source kwargs in the DataCatalog based on the driver"
+                "function arguments (eg pandas.read_csv for csv driver)."
             )
 
         if len(df_meteo.index) < 2:
