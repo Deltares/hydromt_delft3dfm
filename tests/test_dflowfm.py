@@ -488,6 +488,9 @@ def test_setup_spatial_uniform_rainfall_rate_from_datacatalog(dflowfm_2dmodel_wi
 
     assert "meteo_rainfall_rate" in dflowfm_2dmodel_with_localdata.forcing.data
 
+    # to at least call the writer in one of the tests
+    dflowfm_2dmodel_with_localdata.forcing.write()
+
 
 def test_setup_spatial_uniform_windx_from_csv(dflowfm_2dmodel_with_localdata, tmpdir):
     meteo_fn = _write_csv(

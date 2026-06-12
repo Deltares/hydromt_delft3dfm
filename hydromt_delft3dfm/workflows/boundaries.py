@@ -7,6 +7,7 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import xarray as xr
+from cftime import date2num
 from hydromt.gis.vector_utils import nearest_merge
 
 from hydromt_delft3dfm.utils import graph_utils
@@ -320,14 +321,6 @@ def compute_2dboundary_values(
         # get data freq in seconds
         dt = df_bnd.time[1] - df_bnd.time[0]
         freq = dt.resolution_string
-        multiplier = 1
-        if freq == "D":
-            logger.warning(
-                "time unit days is not supported by the current GUI version: 2022.04"
-            )  # converting to hours as temporary solution
-            # FIXME: day is supported in version 2023.02,
-            # general question: where to indicate gui version?
-            multiplier = 24
         if len(
             pd.date_range(df_bnd.iloc[0, :].time, df_bnd.iloc[-1, :].time, freq=dt)
         ) != len(df_bnd.time):
@@ -335,11 +328,6 @@ def compute_2dboundary_values(
         freq_name = _TIMESTR[freq]
         freq_step = getattr(dt.components, freq_name)
         bnd_times = np.array([(i * freq_step) for i in range(len(df_bnd.time))])
-        if multiplier == 24:
-            bnd_times = np.array(
-                [(i * freq_step * multiplier) for i in range(len(df_bnd.time))]
-            )
-            freq_name = "hours"
 
         # for each boundary apply boundary data
         da_out_dict = {}
@@ -497,22 +485,15 @@ def compute_spatial_uniform_meteo_forcings(
         )
 
     freq_name = _TIMESTR[freq]
-    freq_step = getattr(dt.components, freq_name)
 
-    expected_time_index = pd.date_range(
-        df_meteo["time"].iloc[0],
-        df_meteo["time"].iloc[-1],
-        freq=dt,
+    time_unit = f"{freq_name} since {pd.to_datetime(df_meteo['time'].iloc[0])}"
+    # TODO: maybe better to apply date2num in io_utils.py instead
+    #  then just provide a time dataarray including units attribute to the dataset.
+    meteo_times = date2num(
+        pd.DatetimeIndex(df_meteo["time"].to_numpy()).to_pydatetime(),
+        units=time_unit,
+        calendar="standard",
     )
-
-    if len(expected_time_index) != len(df_meteo["time"]):
-        raise ValueError("Non-equidistant time series are not supported.")
-
-    meteo_times = np.array(
-        [i * freq_step for i in range(len(df_meteo))],
-        dtype=np.float32,
-    )
-
     da_out = xr.DataArray(
         data=df_meteo[[meteo_type]].astype(np.float32).T,
         dims=["index", "time"],
@@ -525,7 +506,7 @@ def compute_spatial_uniform_meteo_forcings(
             timeInterpolation="Linear",
             quantity=meteo_type,
             units=meteo_unit,
-            time_unit=f"{freq_name} since {pd.to_datetime(df_meteo['time'].iloc[0])}",
+            time_unit=time_unit,
         ),
     )
 
@@ -538,12 +519,6 @@ def _standardize_forcing_timeindexes(da):
     """Standardize timeindexes frequency based on forcing DataArray."""
     dt = pd.to_timedelta((da.time[1].values - da.time[0].values))
     freq = dt.resolution_string
-    multiplier = 1
-    if freq == "D":
-        logger.warning(
-            "time unit days is not supported by the current GUI version: 2022.04"
-        )  # TODO: remove temporay pin on GUI version
-        multiplier = 24
     if len(pd.date_range(da.time[0].values, da.time[-1].values, freq=dt)) != len(
         da.time
     ):
@@ -551,9 +526,6 @@ def _standardize_forcing_timeindexes(da):
     freq_name = _TIMESTR[freq]
     freq_step = getattr(dt.components, freq_name)
     bd_times = np.array([float(i * freq_step) for i in range(len(da.time))])
-    if multiplier == 24:
-        bd_times = np.array([(i * freq_step * multiplier) for i in range(len(da.time))])
-        freq_name = "hours"
     return bd_times, freq_name
 
 
