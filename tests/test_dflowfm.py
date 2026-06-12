@@ -593,12 +593,55 @@ def test_setup_spatial_uniform_meteo_rejects_no_time_column_from_csv(
         )
 
 
-def test_setup_spatial_uniform_meteo_rejects_no_time_index_from_datacatalog(
-    dflowfm_2dmodel_with_localdata,
-):
+def test_setup_spatial_uniform_meteo_rejects_no_time_index_from_datacatalog(tmpdir):
+    # create dummy catalog with incomplete driver (commented)
+    # this test is purely to trigger the error
+    datacat_file = join(tmpdir, "datacatalog.yaml")
+    with open(datacat_file, "w") as f:
+        f.write("""
+meteo_timeseries_incorrectly_parsed:
+  data_type: DataFrame
+  uri: rainfall_series.csv
+  driver:
+    name: pandas
+    #options:
+    #  index_col: 0
+    #  parse_dates: true
+  metadata:
+    unit: mm day-1
+  data_adapter:
+    rename:
+      T5_mm/day: rainfall_rate
+"""
+                )
+
+    # copy datafile to tmpdir
+    data_file = join(EXAMPLEDIR, "data", "local_data", "rainfall_series.csv")
+    data_file_copy = join(tmpdir, "rainfall_series.csv")
+    shutil.copyfile(data_file, data_file_copy)
+
+    # intitiate model with dummy datacatalog
+    model = DFlowFMModel(
+        root=str(tmpdir),
+        data_libs=datacat_file,
+        crs=3857,
+        mode="w",
+    )
+    model.setup_config(
+        **{
+            "time.startdatetime": "20200101",
+            "time.stopdatetime": "20200102",
+        }
+    )
+    # Set a small default mesh to add a region to the model
+    model.setup_mesh2d(
+        region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
+        res=5000,
+    )
+
     err_msg = "meteo_timeseries_fn must provide a datetime index"
     with pytest.raises(ValueError, match=err_msg):
-        dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+        model.setup_spatial_uniform_meteo(
             meteo_type="rainfall_rate",
             meteo_timeseries_fn="meteo_timeseries_incorrectly_parsed",
         )

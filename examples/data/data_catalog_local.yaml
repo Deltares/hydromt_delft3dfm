@@ -208,16 +208,6 @@ meteo_timeseries_T5:
   data_adapter:
     rename:
       T5_mm/day: rainfall_rate
-meteo_timeseries_incorrectly_parsed:
-  data_type: DataFrame
-  uri: local_data/rainfall_series.csv
-  driver:
-    name: pandas
-  metadata:
-    unit: mm day-1
-  data_adapter:
-    rename:
-      T5_mm/day: rainfall_rate
 dem:
   data_type: RasterDataset
   uri: local_data/dem.tif
