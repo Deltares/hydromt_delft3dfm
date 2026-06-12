@@ -2288,13 +2288,15 @@ class DFlowFMModel(Model):
         self,
         polygon_fn: str | None = None,
         sample_fn: str | None = None,
+        bathy_fn: str | None = None,
         steps: int | None = 1,
+        min_edge_size: float | None = None,
     ):
         """
         Refine the 2d mesh.
 
         Refinement are done within the geometry based on polygon `polygon_fn` or
-        raster samples `sample_fn`.
+        raster samples `sample_fn` or raster bathymetry `bathy_fn`.
 
         The number of refinement is defined by `steps` if `polygon_fn` is used.
 
@@ -2317,12 +2319,16 @@ class DFlowFMModel(Model):
             The value of each sample point is the number of steps to refine the mesh.
             Allow only single values. The resolution of the raster should be the same
             as the desired end result resolution.
+        bathy_fn : str Path, optional
+            Path to a raster sample file used to refine the 2D mesh based on Courant
+            criterion.
 
             * Required variable: ['steps']
         steps : int, optional
             Number of steps in the refinement when `polygon_fn' is used.
             By default 1, i.e. no refinement is applied.
-
+        min_edge_size : float, optional
+            Resolution min_edge_size to which to refine when using bathy_fn.
         """
         if "mesh2d" not in self.mesh.mesh_names:
             logger.error(
@@ -2340,15 +2346,20 @@ class DFlowFMModel(Model):
             if gdf.crs != self.crs:
                 gdf = gdf.to_crs(self.crs)
 
-        elif sample_fn is not None:
-            logger.info(f"reading samples from file {sample_fn}. ")
+        elif sample_fn is not None or bathy_fn is not None:
+            if sample_fn is not None:
+                ds_path = sample_fn
+            elif bathy_fn is not None:
+                ds_path = bathy_fn
+            self.logger.info(f"reading samples from file {ds_path}. ")
+
             # read
             da = self.data_catalog.get_rasterdataset(
-                sample_fn,
+                ds_path,
                 geom=self.region,
                 buffer=0,
                 predicate="contains",
-                variables=["steps"],
+                variables=["steps"],  # TODO: this is not the case for e.g. GEBCO data
                 single_var_as_array=True,
             ).astype(
                 np.float64
@@ -2365,8 +2376,10 @@ class DFlowFMModel(Model):
         mesh2d, res = workflows.mesh2d_refine(
             mesh2d=self.mesh.get_mesh("mesh2d"),
             res=self.mesh.res,
+            min_edge_size=min_edge_size if min_edge_size is not None else None,
             gdf_polygon=gdf if polygon_fn is not None else None,
             da_sample=da if sample_fn is not None else None,
+            da_bathy=da if bathy_fn is not None else None,
             steps=steps,
         )
 
