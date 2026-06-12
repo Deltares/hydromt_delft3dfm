@@ -82,10 +82,10 @@ steps:
       boundary_type: waterlevel
       boundary_value: -999
 
-  - setup_rainfall_from_uniform_timeseries:
+  - setup_spatial_uniform_meteo:
+      meteo_type: rainfall_rate
       meteo_timeseries_fn: meteo_timeseries_T2
       fill_value: 0
-      is_rate: True
 
   - setup_link1d2d:
       link_direction: 1d_to_2d

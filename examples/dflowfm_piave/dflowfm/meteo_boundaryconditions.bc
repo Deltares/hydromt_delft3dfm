@@ -11,9 +11,9 @@ timeInterpolation = linear
 offset            = 0.0
 factor            = 1.0
 quantity          = time
-unit              = hours since 2020-01-01 00:00:00
+unit              = days since 2020-01-01 00:00:00
 quantity          = rainfall_rate
 unit              = mm/day
-0.0   150.0
-24.0  150.0
+0.0  150.0
+1.0  150.0
 

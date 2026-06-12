@@ -7,6 +7,7 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import xarray as xr
+from cftime import date2num
 from hydromt.gis.vector_utils import nearest_merge
 
 from hydromt_delft3dfm.utils import graph_utils
@@ -19,7 +20,8 @@ __all__ = [
     "validate_boundaries",
     "compute_boundary_values",
     "compute_2dboundary_values",
-    "compute_meteo_forcings",
+    "compute_spatial_uniform_meteo_forcings",
+    "compute_constant_meteo_forcings",
     "compute_forcing_values_points",
     "compute_forcing_values_polygon",
     "get_geometry_coords_for_polygons",
@@ -320,14 +322,6 @@ def compute_2dboundary_values(
         # get data freq in seconds
         dt = df_bnd.time[1] - df_bnd.time[0]
         freq = dt.resolution_string
-        multiplier = 1
-        if freq == "D":
-            logger.warning(
-                "time unit days is not supported by the current GUI version: 2022.04"
-            )  # converting to hours as temporary solution
-            # FIXME: day is supported in version 2023.02,
-            # general question: where to indicate gui version?
-            multiplier = 24
         if len(
             pd.date_range(df_bnd.iloc[0, :].time, df_bnd.iloc[-1, :].time, freq=dt)
         ) != len(df_bnd.time):
@@ -335,11 +329,6 @@ def compute_2dboundary_values(
         freq_name = _TIMESTR[freq]
         freq_step = getattr(dt.components, freq_name)
         bnd_times = np.array([(i * freq_step) for i in range(len(df_bnd.time))])
-        if multiplier == 24:
-            bnd_times = np.array(
-                [(i * freq_step * multiplier) for i in range(len(df_bnd.time))]
-            )
-            freq_name = "hours"
 
         # for each boundary apply boundary data
         da_out_dict = {}
@@ -457,96 +446,114 @@ def df_to_bc(
                 f.write(f"\t{i} {di}\n")
 
 
-def compute_meteo_forcings(
-    df_meteo: pd.DataFrame = None,
-    fill_value: float = 0.0,
-    is_rate: bool = True,
-    meteo_location: tuple = None,
+def compute_spatial_uniform_meteo_forcings(
+    df_meteo: pd.DataFrame,
+    meteo_type: str,
+    meteo_unit: str,
 ) -> xr.DataArray:
     """
-    Compute meteo forcings.
+    Compute spatially uniform meteo forcing from DataFrame into a DataArray.
+
+    This function assumes that model-specific validation and preprocessing have
+    already been handled by the setup method.
 
     Parameters
     ----------
-    df_meteo : pd.DataFrame, optional
-        pd.DataFrame containing the meteo timeseries values.
-        If None, uses ``fill_value``.
-
-        * Required variables: ["precip"]
-    meteo_value : float, optional
-        Constant value to use for global meteo if ``df_meteo`` is None and to
-        fill in missing data in ``df_meteo``. By default 0.0 mm/day.
-    is_rate : bool, optional
-        Specify if the type of meteo data is direct "rainfall" (False)
-        or "rainfall_rate" (True). By default True for "rainfall_rate".
-        Note that Delft3DFM 1D2D Suite 2022.04 supports only "rainfall_rate".
-        If rate, unit is expected to be in mm/day and else mm.
-    meteo_location : tuple
-        Global location for meteo timeseries
+    df_meteo : pd.DataFrame
+        DataFrame containing a ``time`` column and one column matching
+        ``meteo_type``.
+    meteo_type : str, optional
+        Type of meteorological forcing to prepare.
+    meteo_unit : str, optional
+        Unit corresponding to ``meteo_type``.
 
     Returns
     -------
     da_meteo : xr.DataArray
-        xr.DataArray containing the meteo timeseries values. If None, uses ``df_meteo``.
-
-        * Required variables if netcdf: [``precip``]
+        DataArray containing the meteo time series values.
     """
-    # Set units and type
-    if is_rate:
-        meteo_type = "rainfall_rate"
-        meteo_unit = "mm/day"
-    else:
-        meteo_type = "rainfall"
-        meteo_unit = "mm"
+    logger.info("Preparing global spatially uniform %s timeseries.", meteo_type)
 
-    # Timeseries boundary values
+    df_meteo = df_meteo.copy()
 
-    logger.info("Preparing global (spatially uniform) timeseries.")
-    # get data freq in seconds
-    dt = df_meteo.time.iloc[1] - df_meteo.time.iloc[0]
+    dt = df_meteo["time"].iloc[1] - df_meteo["time"].iloc[0]
     freq = dt.resolution_string
-    multiplier = 1
-    if freq == "D":
-        logger.warning(
-            "time unit days is not supported by the current GUI version: 2022.04"
-        )  # converting to hours as temporary solution
-        # FIXME: day is converted to hours temporarily
-        multiplier = 24
-    if len(
-        pd.date_range(df_meteo.iloc[0, :].time, df_meteo.iloc[-1, :].time, freq=dt)
-    ) != len(df_meteo.time):
-        logger.error("does not support non-equidistant time-series.")
-    freq_name = _TIMESTR[freq]
-    freq_step = getattr(dt.components, freq_name)
-    meteo_times = np.array([(i * freq_step) for i in range(len(df_meteo.time))])
-    if multiplier == 24:
-        meteo_times = np.array(
-            [(i * freq_step * multiplier) for i in range(len(df_meteo.time))]
+
+    if freq not in _TIMESTR:
+        raise ValueError(
+            f"Unsupported time frequency '{freq}'. "
+            f"Supported frequencies are: {sorted(_TIMESTR)}."
         )
-        freq_name = "hours"
-    # instantiate xr.DataArray for global time series
+
+    freq_name = _TIMESTR[freq]
+
+    time_unit = f"{freq_name} since {pd.to_datetime(df_meteo['time'].iloc[0])}"
+    # TODO: maybe better to apply date2num in io_utils.py instead
+    #  then just provide a time dataarray including units attribute to the dataset.
+    meteo_times = date2num(
+        pd.DatetimeIndex(df_meteo["time"].to_numpy()).to_pydatetime(),
+        units=time_unit,
+        calendar="standard",
+    )
     da_out = xr.DataArray(
-        data=np.full((1, len(df_meteo)), df_meteo["precip"].values, dtype=np.float32),
+        data=df_meteo[[meteo_type]].astype(np.float32).T,
         dims=["index", "time"],
         coords=dict(
             index=["global"],
             time=meteo_times,
-            x=("index", meteo_location[0].values),
-            y=("index", meteo_location[1].values),
         ),
         attrs=dict(
             function="TimeSeries",
             timeInterpolation="Linear",
-            quantity=f"{meteo_type}",
-            units=f"{meteo_unit}",
-            time_unit=f"{freq_name} since {pd.to_datetime(df_meteo.time.iloc[0])}",
-            # support only yyyy-mm-dd HH:MM:SS
+            quantity=meteo_type,
+            units=meteo_unit,
+            time_unit=time_unit,
         ),
     )
-    # fill in na using default
-    da_out = da_out.fillna(fill_value)
-    da_out.name = f"{meteo_type}"
-    da_out.dropna(dim="time")
+
+    da_out.name = meteo_type
+
+    return da_out
+
+
+def compute_constant_meteo_forcings(
+    value: float,
+    meteo_type: str,
+    meteo_unit: str,
+) -> xr.DataArray:
+    """
+    Compute spatially uniform meteo forcing from DataFrame into a DataArray.
+
+    This function assumes that model-specific validation and preprocessing have
+    already been handled by the setup method.
+
+    Parameters
+    ----------
+    df_meteo : pd.DataFrame
+        DataFrame containing a ``time`` column and one column matching
+        ``meteo_type``.
+    meteo_type : str, optional
+        Type of meteorological forcing to prepare.
+    meteo_unit : str, optional
+        Unit corresponding to ``meteo_type``.
+
+    Returns
+    -------
+    da_meteo : xr.DataArray
+        DataArray containing the meteo time series values.
+    """
+    logger.info("Preparing global spatially uniform %s constant.", meteo_type)
+
+    da_out = xr.DataArray(
+        data=value,
+        dims=["index"],
+        coords=dict(
+            index=["global"],
+        ),
+        attrs=dict(function="constant", quantity=meteo_type, units=meteo_unit),
+    )
+
+    da_out.name = meteo_type
 
     return da_out
 
@@ -555,12 +562,6 @@ def _standardize_forcing_timeindexes(da):
     """Standardize timeindexes frequency based on forcing DataArray."""
     dt = pd.to_timedelta((da.time[1].values - da.time[0].values))
     freq = dt.resolution_string
-    multiplier = 1
-    if freq == "D":
-        logger.warning(
-            "time unit days is not supported by the current GUI version: 2022.04"
-        )  # TODO: remove temporay pin on GUI version
-        multiplier = 24
     if len(pd.date_range(da.time[0].values, da.time[-1].values, freq=dt)) != len(
         da.time
     ):
@@ -568,9 +569,6 @@ def _standardize_forcing_timeindexes(da):
     freq_name = _TIMESTR[freq]
     freq_step = getattr(dt.components, freq_name)
     bd_times = np.array([float(i * freq_step) for i in range(len(da.time))])
-    if multiplier == 24:
-        bd_times = np.array([(i * freq_step * multiplier) for i in range(len(da.time))])
-        freq_name = "hours"
     return bd_times, freq_name
 
 
