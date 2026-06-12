@@ -113,6 +113,7 @@ Boundaries
    workflows.validate_boundaries
    workflows.compute_boundary_values
    workflows.compute_2dboundary_values
+   workflows.compute_constant_meteo_forcings
    workflows.compute_spatial_uniform_meteo_forcings
    workflows.compute_forcing_values_points
    workflows.compute_forcing_values_polygon

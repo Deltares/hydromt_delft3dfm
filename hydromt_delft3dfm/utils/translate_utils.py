@@ -50,6 +50,14 @@ DICT_VARNAME_TO_DFLOWFM = {
     "rhoao": "airdensity",  # CDS varname: air_density_over_the_oceans
 }
 
+METEO_UNITS = {
+    "rainfall_rate": "mm/day",
+    "rainfall": "mm",
+    "windxy": "m/s",
+    "windx": "m/s",
+    "windy": "m/s",
+}
+
 
 def varname_to_dflowfm_quantity(varname: str):
     """Get quantity names from the translation dict.
@@ -79,3 +87,27 @@ def varname_to_dflowfm_quantity(varname: str):
             f"varname {varname} not in keys or values of translation dictionary."
         )
     return quantity
+
+
+def meteo_unit_from_type(meteo_type: str):
+    """Get the meteo units from the meteo type string.
+
+    Type of meteorological forcing to prepare. Supported values are
+    ``"rainfall_rate"``, ``"rainfall"``, ``"windxy"``, ``"windx"``, and
+    ``"windy"`` (as of delft3dfm 2026.02). This follows from the METEO_UNITS
+    translation dictionary in the module
+    :py:meth:`~hydromt_delft3dfm.utils.translate_utils`.
+
+    Corresponding units are:
+
+    - ``"rainfall_rate"``: ``"mm/day"``
+    - ``"rainfall"``: ``"mm"``
+    - ``"windxy"``, ``"windx"``, ``"windy"``: ``"m/s"``
+    """
+    if meteo_type not in METEO_UNITS:
+        raise ValueError(
+            f"Unsupported meteo_type '{meteo_type}'. "
+            f"Supported values are: {sorted(METEO_UNITS)}."
+        )
+    meteo_units = METEO_UNITS[meteo_type]
+    return meteo_units

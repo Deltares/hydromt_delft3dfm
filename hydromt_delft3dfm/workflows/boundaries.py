@@ -21,6 +21,7 @@ __all__ = [
     "compute_boundary_values",
     "compute_2dboundary_values",
     "compute_spatial_uniform_meteo_forcings",
+    "compute_constant_meteo_forcings",
     "compute_forcing_values_points",
     "compute_forcing_values_polygon",
     "get_geometry_coords_for_polygons",
@@ -508,6 +509,48 @@ def compute_spatial_uniform_meteo_forcings(
             units=meteo_unit,
             time_unit=time_unit,
         ),
+    )
+
+    da_out.name = meteo_type
+
+    return da_out
+
+
+def compute_constant_meteo_forcings(
+    value: float,
+    meteo_type: str,
+    meteo_unit: str,
+) -> xr.DataArray:
+    """
+    Compute spatially uniform meteo forcing from DataFrame into a DataArray.
+
+    This function assumes that model-specific validation and preprocessing have
+    already been handled by the setup method.
+
+    Parameters
+    ----------
+    df_meteo : pd.DataFrame
+        DataFrame containing a ``time`` column and one column matching
+        ``meteo_type``.
+    meteo_type : str, optional
+        Type of meteorological forcing to prepare.
+    meteo_unit : str, optional
+        Unit corresponding to ``meteo_type``.
+
+    Returns
+    -------
+    da_meteo : xr.DataArray
+        DataArray containing the meteo time series values.
+    """
+    logger.info("Preparing global spatially uniform %s constant.", meteo_type)
+
+    da_out = xr.DataArray(
+        data=value,
+        dims=["index"],
+        coords=dict(
+            index=["global"],
+        ),
+        attrs=dict(function="constant", quantity=meteo_type, units=meteo_unit),
     )
 
     da_out.name = meteo_type

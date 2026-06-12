@@ -461,15 +461,8 @@ def _write_csv(tmpdir, filename, lines):
     return str(meteo_fn)
 
 
-def test_setup_spatial_uniform_meteo_requires_data_source(dflowfm_2dmodel_with_localdata):
-    with pytest.raises(ValueError, match="Provide exactly one"):
-        dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
-            meteo_type="rainfall",
-        )
-
-
-def test_setup_spatial_uniform_rainfall_from_constant(dflowfm_2dmodel_with_localdata):
-    dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+def test_setup_constant_meteo(dflowfm_2dmodel_with_localdata):
+    dflowfm_2dmodel_with_localdata.setup_constant_meteo(
         meteo_type="rainfall",
         constant_value=5.0,
     )
@@ -478,6 +471,8 @@ def test_setup_spatial_uniform_rainfall_from_constant(dflowfm_2dmodel_with_local
         'external_forcing.rainfall'
     )
     assert mdu_rainfaill == 1
+    # to at least call the writer in one of the tests
+    dflowfm_2dmodel_with_localdata.forcing.write()
 
 
 def test_setup_spatial_uniform_rainfall_rate_from_datacatalog(dflowfm_2dmodel_with_localdata):
@@ -535,23 +530,12 @@ def test_setup_spatial_uniform_rainfall_timeseries_fills_missing_values(
     assert np.isclose(da.values[0, -1], 0.0)
 
 
-def test_setup_spatial_uniform_meteo_rejects_unknown_type(dflowfm_2dmodel_with_localdata):
+def test_setup_constant_meteo_rejects_unknown_type(dflowfm_2dmodel_with_localdata):
     with pytest.raises(ValueError, match="Unsupported meteo_type"):
-        dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+        dflowfm_2dmodel_with_localdata.setup_constant_meteo(
             meteo_type="evapotranspiration",
             constant_value=1.0,
        )
-
-
-def test_setup_spatial_uniform_meteo_rejects_multiple_data_sources(
-    dflowfm_2dmodel_with_localdata,
-):
-    with pytest.raises(ValueError, match="Provide exactly one"):
-        dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
-            meteo_type="rainfall",
-            meteo_timeseries_fn="meteo_timeseries_T2",
-            constant_value=5.0,
-        )
 
 
 def test_setup_spatial_uniform_meteo_rejects_non_equidistant_timeseries_from_csv(

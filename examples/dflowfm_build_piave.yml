@@ -65,7 +65,7 @@ steps:
       reclass_variables: ['roughness_manning', 'infiltcap']
       interpolation_method: triangulation
 
-  - setup_spatial_uniform_meteo:
+  - setup_constant_meteo:
       meteo_type: rainfall_rate
       constant_value: 150
 
