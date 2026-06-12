@@ -2858,14 +2858,21 @@ class DFlowFMModel(Model):
                 }
             ).set_index("time")
         elif meteo_timeseries_fn is not None:
-            # TODO: use index_col="time" after fixing
-            #  https://github.com/Deltares/hydromt/issues/1502
-            source_kwargs = {
-                "driver": {
-                    "name": "pandas",
-                    "options": {"parse_dates": ["time"], "index_col": 0},
+            if isfile(meteo_timeseries_fn):
+                # when directly reading a csv without a datacatalog, source_kwargs
+                #  help with parsing the time column
+                # TODO: use index_col="time" after fixing
+                #  https://github.com/Deltares/hydromt/issues/1502
+                source_kwargs = {
+                    "driver": {
+                        "name": "pandas",
+                        "options": {"parse_dates": ["time"], "index_col": 0},
+                    }
                 }
-            }
+            else:
+                # otherwise the source_kwargs come from the datacatalog so we can pass
+                #  None here.
+                source_kwargs = None
             df_meteo = self.data_catalog.get_dataframe(
                 meteo_timeseries_fn,
                 variables=[meteo_type],
