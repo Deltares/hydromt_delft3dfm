@@ -158,7 +158,7 @@ def write_branches_gui(
     #  but it does not work when debugging
     #  test_workflows_mesh.py::test_hydrolib_network_from_mesh with pandas 3,
     #  so there are nans remaining, causing a pydantic ValidationError.
-    branches = branches.replace(np.nan, None)
+    branches = branches.replace([np.nan], [None])
     # TODO: drop columns with NaN instead. This is not desired, since the rows should
     #  be passed with the NaN values as None (empty). Or maybe support this na_value
     #  in hydrolib-core: https://github.com/Deltares/HYDROLIB-core/issues/1107
@@ -291,7 +291,9 @@ def write_crosssections(gdf: gpd.GeoDataFrame, savedir: str) -> Tuple[str, str]:
         columns={c: c.removeprefix("crsdef_") for c in gpd_crsdef.columns}
     )
     gpd_crsdef = gpd_crsdef.drop_duplicates(subset="id")
-    gpd_crsdef = gpd_crsdef.astype(object).replace(np.nan, None)
+    # add block brackets to make replacement also work in pandas 3
+    #  https://github.com/pandas-dev/pandas/issues/65892
+    gpd_crsdef = gpd_crsdef.replace([np.nan], [None])
     crsdef = CrossDefModel(definition=gpd_crsdef.to_dict("records"))
 
     crsdef_fn = crsdef._filename() + ".ini"
@@ -408,12 +410,6 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
         ["frictionid", "frictionvalue", "frictiontype"]
     ]
     frictions = frictions.drop_duplicates().dropna(how="all")
-    # TODO: this replacement was introduced when moving to hydrolib-core v1 (PR #226),
-    #  but it does not work when debugging test_dflowfm.py::test_write_structures with
-    #  pandas 3, so there are nans remaining, causing a pydantic ValidationError.
-    #  Since we are filtering with notna() now, this can probably be removed (first
-    #  test with pandas 2 and 3).
-    frictions = frictions.replace(np.nan, None)
     # Drop columns with None (pandas 2) or NaN (pandas 3) before looping over the rows.
     # TODO: this also drops rows that only have a NaN/None for the frictiontype column
     frictions = frictions.loc[frictions.notna().all(axis=1)]
@@ -511,7 +507,9 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     else:
         gdf_cmp = pd.concat(list_df, axis=0)
     # replace nan with None
-    gdf = gdf.replace(np.nan, None)
+    # add block brackets to make replacement also work in pandas 3
+    #  https://github.com/pandas-dev/pandas/issues/65892
+    gdf = gdf.replace([np.nan], [None])
 
     # Write structures
     structures = StructureModel(
