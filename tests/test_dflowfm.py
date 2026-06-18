@@ -1,5 +1,7 @@
 from os.path import abspath, basename, dirname, join
 from os import makedirs, rename
+from hydromt.data_catalog import DataCatalog
+from hydromt.error import NoDataException
 from hydromt_delft3dfm import DFlowFMModel
 import numpy as np
 from pathlib import Path
@@ -9,6 +11,23 @@ import xugrid as xu
 
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 TOLERANCE = 1e-6
+
+
+def _write_csv(outputdir, lines):
+    meteo_fn = join(outputdir, "meteo_timeseries.csv")
+    with open(meteo_fn, "w") as f:
+        f.write("\n".join(lines))
+
+
+def _model_update_datacatalog(model, datacat_contents):
+    model_root = model.root.path
+    datacat_file = join(model_root, "dummy_data_catalog.yaml")
+    with open(datacat_file, "w") as f:
+        f.write(datacat_contents)
+    datacat = DataCatalog(datacat_file)
+    model.data_catalog.update_sources(
+        meteo_timeseries=datacat.get_source("meteo_timeseries"),
+    )
 
 
 def test_write_read_empty_model(tmpdir):
@@ -463,3 +482,291 @@ def test_setup_spatial_forcing(tmpdir):
     mod2.read()
     expected_keys = set(['rainfall', 'airpressure'])
     assert set(mod2.forcing.data.keys()) == expected_keys
+
+
+def test_setup_constant_meteo(dflowfm_2dmodel_with_localdata):
+    dflowfm_2dmodel_with_localdata.setup_constant_meteo(
+        meteo_type="rainfall",
+        constant_value=5.0,
+    )
+    assert "meteo_rainfall" in dflowfm_2dmodel_with_localdata.forcing.data
+    mdu_rainfaill = dflowfm_2dmodel_with_localdata.mdu.get_value(
+        'external_forcing.rainfall'
+    )
+    assert mdu_rainfaill == 1
+    # to at least call the writer in one of the tests
+    dflowfm_2dmodel_with_localdata.forcing.write()
+
+
+def test_setup_timeseries_rainfall_rate_from_datacatalog(dflowfm_2dmodel_with_localdata):
+    dflowfm_2dmodel_with_localdata.setup_timeseries_meteo(
+        meteo_type="rainfall_rate",
+        meteo_timeseries_fn="meteo_timeseries_T2",
+    )
+
+    assert "meteo_rainfall_rate" in dflowfm_2dmodel_with_localdata.forcing.data
+
+    # to at least call the writer in one of the tests
+    dflowfm_2dmodel_with_localdata.forcing.write()
+
+
+def test_setup_timeseries_rainfall_timeseries_fills_missing_values(
+        dflowfm_2dmodel_empty,
+):
+    # the model_root is a tmpdir named to the test that calls the fixture
+    model_root = dflowfm_2dmodel_empty.root.path
+    # write meteo timeseries with missing values (nan)
+    _write_csv(
+        model_root,
+        [
+            "time,rainfall",
+            "2020-01-01 00:00,2.0",
+            "2020-01-02 00:00,NaN",
+        ],
+    )
+
+    dflowfm_2dmodel_empty.setup_timeseries_meteo(
+        meteo_type="rainfall",
+        meteo_timeseries_fn="meteo_timeseries",
+        fill_value=0.0,
+    )
+
+    da = dflowfm_2dmodel_empty.forcing.data["meteo_rainfall"]
+
+    assert not np.isnan(da.values).any()
+    assert np.isclose(da.values[0, -1], 0.0)
+
+
+def test_setup_constant_meteo_rejects_unknown_type(dflowfm_2dmodel_with_localdata):
+    with pytest.raises(ValueError, match="Unsupported meteo_type"):
+        dflowfm_2dmodel_with_localdata.setup_constant_meteo(
+            meteo_type="evapotranspiration",
+            constant_value=1.0,
+       )
+
+
+def test_setup_timeseries_meteo_no_csv(
+     dflowfm_2dmodel_empty,
+):
+    with pytest.raises(NoDataException, match="Resolver 'convention' found no files"):
+        dflowfm_2dmodel_empty.setup_timeseries_meteo(
+            meteo_type="rainfall",
+            meteo_timeseries_fn="meteo_timeseries",
+        )
+
+
+def test_setup_timeseries_meteo_rejects_single_timestep(
+     dflowfm_2dmodel_empty,
+):
+    # the model_root is a tmpdir named to the test that calls the fixture
+    model_root = dflowfm_2dmodel_empty.root.path
+    # create a meteo timeseries with a single timeseries to trigger the error
+    _write_csv(
+        model_root,
+        [
+            "time,rainfall",
+            "2020-01-01 00:00,2.0",
+        ],
+    )
+
+    with pytest.raises(ValueError, match="must contain at least two timesteps"):
+        dflowfm_2dmodel_empty.setup_timeseries_meteo(
+            meteo_type="rainfall",
+            meteo_timeseries_fn="meteo_timeseries",
+        )
+
+
+def test_setup_timeseries_meteo_too_short_timeseries(
+     caplog,
+    dflowfm_2dmodel_empty,
+):
+    # the model_root is a tmpdir named to the test that calls the fixture
+    model_root = dflowfm_2dmodel_empty.root.path
+    # create a meteo timeseries with a single timeseries to trigger the error
+    _write_csv(
+        model_root,
+        [
+            "time,rainfall",
+            "2019-12-31 00:00,2.0",
+            "2019-12-31 12:00,2.0",
+            "2020-01-01 00:00,2.0",
+            "2020-01-01 12:00,2.0",
+        ],
+    )
+
+    # with pytest.raises(ValueError, match="must contain at least two timesteps"):
+    dflowfm_2dmodel_empty.setup_timeseries_meteo(
+        meteo_type="rainfall",
+        meteo_timeseries_fn="meteo_timeseries",
+    )
+
+    # hydromt-core warning that timeseries is too long and will be clipped
+    assert "Requested time range" in caplog.text
+    assert "partially overlaps with available range" in caplog.text
+    assert "Clamping to (2020-01-01 00:00:00, 2020-01-01 12:00:00)" in caplog.text
+    # hydromt_delft3dfm warning that timeseries will be padded with fill_value
+    assert "Time in meteo_timeseries_fn is shorter than the model" in caplog.text
+    assert "Missing values will be filled using 0.0" in caplog.text
+
+    # assert resulting timeseries
+    ts = dflowfm_2dmodel_empty.forcing.data["meteo_rainfall"].to_numpy()
+    assert np.allclose(ts, [[2., 2., 0.]])
+
+
+def test_setup_timeseries_meteo_rejects_non_equidistant_timeseries(
+     dflowfm_2dmodel_empty,
+):
+    # the model_root is a tmpdir named to the test that calls the fixture
+    model_root = dflowfm_2dmodel_empty.root.path
+    # create a non-equidistant meteo timeseries to trigger the error
+    # meteo_timeseries.csv is predefined in the data_catalog.yaml in the
+    # dflowfm_2dmodel_empty fixture
+    _write_csv(
+        model_root,
+        [
+            "time,rainfall",
+            "2020-01-01 00:00,2.0",
+            "2020-01-01 00:20,2.0",
+            "2020-01-02 00:00,2.0",
+        ],
+    )
+
+    with pytest.raises(ValueError, match="Non-equidistant time series"):
+        dflowfm_2dmodel_empty.setup_timeseries_meteo(
+            meteo_type="rainfall",
+            meteo_timeseries_fn="meteo_timeseries",
+        )
+
+
+def test_setup_timeseries_meteo_rejects_unknown_freq(
+     dflowfm_2dmodel_empty,
+):
+    # the model_root is a tmpdir named to the test that calls the fixture
+    model_root = dflowfm_2dmodel_empty.root.path
+    # create a ts with ms frequency to trigger the error
+    _write_csv(
+        model_root,
+        [
+            "time,rainfall",
+            "2020-01-01 00:00:00.000,2.0",
+            "2020-01-01 00:00:00.200,2.0",
+            "2020-01-02 00:00:01.400,2.0",
+        ],
+    )
+
+    with pytest.raises(ValueError, match="Unsupported time frequency 'ms'"):
+        dflowfm_2dmodel_empty.setup_timeseries_meteo(
+            meteo_type="rainfall",
+            meteo_timeseries_fn="meteo_timeseries",
+        )
+
+
+def test_setup_timeseries_meteo_rejects_no_column_named_time(
+    dflowfm_2dmodel_empty,
+):
+    # the model_root is a tmpdir named to the test that calls the fixture
+    model_root = dflowfm_2dmodel_empty.root.path
+
+    # update the meteo_timeseries datasource to have index_col=time (instead of 0),
+    #  but the csv deliberately has a column called `date`, triggering the error.
+    # TODO: even if we would provide the correct column name (date) there will still be
+    #  an error until https://github.com/Deltares/hydromt/issues/1502 is fixed.
+    #  The only way to get it working at the moment is with index_col=0.
+    datacat_contents = """
+        meteo_timeseries:
+          data_type: DataFrame
+          uri: meteo_timeseries.csv
+          driver:
+            name: pandas
+            options:
+              index_col: time
+              parse_dates: true
+          metadata:
+            unit: mm day-1
+        """
+    _model_update_datacatalog(dflowfm_2dmodel_empty, datacat_contents)
+
+    _write_csv(
+        model_root,
+        [
+            "date,rainfall",
+            "2020-01-01 00:00,2.0",
+            "2020-01-02 00:00,2.0",
+        ],
+    )
+
+    # The error is "'time' not in list" in python<=3.13, but this has changed to
+    #  "list.index(x): x not in list" in python 3.14. This can be reproduced with:
+    #  `["a", "b", "c"].index("d")`. Therefore only match the end of the error message.
+    with pytest.raises(ValueError, match=" not in list"):
+        dflowfm_2dmodel_empty.setup_timeseries_meteo(
+            meteo_type="rainfall",
+            meteo_timeseries_fn="meteo_timeseries",
+        )
+
+
+def test_setup_timeseries_meteo_rejects_no_time_index_from_datacatalog(dflowfm_2dmodel_empty):
+    # the model_root is a tmpdir named to the test that calls the fixture
+    model_root = dflowfm_2dmodel_empty.root.path
+
+    # create dummy catalog with incomplete driver (commented)
+    # this test is purely to trigger the error
+    datacat_contents = """
+meteo_timeseries:
+  data_type: DataFrame
+  uri: meteo_timeseries.csv
+  driver:
+    name: pandas
+    #options:
+    #  index_col: 0
+    #  parse_dates: true
+  metadata:
+    unit: mm day-1
+"""
+    _model_update_datacatalog(dflowfm_2dmodel_empty, datacat_contents)
+
+    _write_csv(
+        model_root,
+        [
+            "time,rainfall_rate",
+            "2020-01-01 00:00,2.0",
+            "2020-01-02 00:00,2.0",
+        ],
+    )
+
+    err_msg = "meteo_timeseries_fn must provide a datetime index"
+    with pytest.raises(ValueError, match=err_msg):
+        dflowfm_2dmodel_empty.setup_timeseries_meteo(
+            meteo_type="rainfall_rate",
+            meteo_timeseries_fn="meteo_timeseries",
+        )
+
+
+def test_setup_timeseries_meteo_rejects_no_matching_variable(
+    dflowfm_2dmodel_with_localdata,
+):
+    with pytest.raises(ValueError, match="columns expected but not found"):
+        dflowfm_2dmodel_with_localdata.setup_timeseries_meteo(
+            meteo_type="rainfall",
+            meteo_timeseries_fn="meteo_timeseries_T2",
+        )
+
+
+def test_setup_rainfall_from_constant_deprecated(
+    dflowfm_2dmodel_with_localdata,
+):
+    err_msg = "setup_rainfall_from_constant is deprecated"
+    with pytest.raises(AttributeError, match=err_msg):
+        dflowfm_2dmodel_with_localdata.setup_rainfall_from_constant(constant_value=5.0)
+
+
+def test_setup_rainfall_from_uniform_timeseries_deprecated(
+    dflowfm_2dmodel_with_localdata,
+):
+    err_msg = "setup_rainfall_from_uniform_timeseries is deprecated"
+    with pytest.raises(AttributeError, match=err_msg):
+        dflowfm_2dmodel_with_localdata.setup_rainfall_from_uniform_timeseries(
+            meteo_timeseries_fn="meteo_timeseries_T2",
+            fill_value=0.0,
+            is_rate=True,
+        )
