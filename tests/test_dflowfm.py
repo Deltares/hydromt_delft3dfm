@@ -475,8 +475,8 @@ def test_setup_constant_meteo(dflowfm_2dmodel_with_localdata):
     dflowfm_2dmodel_with_localdata.forcing.write()
 
 
-def test_setup_spatial_uniform_rainfall_rate_from_datacatalog(dflowfm_2dmodel_with_localdata):
-    dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+def test_setup_timeseries_rainfall_rate_from_datacatalog(dflowfm_2dmodel_with_localdata):
+    dflowfm_2dmodel_with_localdata.setup_timeseries_meteo(
         meteo_type="rainfall_rate",
         meteo_timeseries_fn="meteo_timeseries_T2",
     )
@@ -487,7 +487,7 @@ def test_setup_spatial_uniform_rainfall_rate_from_datacatalog(dflowfm_2dmodel_wi
     dflowfm_2dmodel_with_localdata.forcing.write()
 
 
-def test_setup_spatial_uniform_rainfall_timeseries_fills_missing_values(
+def test_setup_timeseries_rainfall_timeseries_fills_missing_values(
     tmpdir,
 ):
     datacat_file = join(tmpdir, "datacatalog.yaml")
@@ -530,13 +530,13 @@ def test_setup_spatial_uniform_rainfall_timeseries_fills_missing_values(
     )
 
     # Set a small default mesh to speed up the test, since we only want to test
-    # setup_spatial_uniform_meteo and not mesh setup here.
+    # setup_timeseries_meteo and not mesh setup here.
     model.setup_mesh2d(
         region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
         res=5000,
     )
 
-    model.setup_spatial_uniform_meteo(
+    model.setup_timeseries_meteo(
         meteo_type="rainfall",
         meteo_timeseries_fn="missing_values_meteo",
         fill_value=0.0,
@@ -556,7 +556,7 @@ def test_setup_constant_meteo_rejects_unknown_type(dflowfm_2dmodel_with_localdat
        )
 
 
-def test_setup_spatial_uniform_meteo_rejects_non_equidistant_timeseries(
+def test_setup_timeseries_meteo_rejects_non_equidistant_timeseries(
     tmpdir,
 ):
     datacat_file = join(tmpdir, "datacatalog.yaml")
@@ -600,20 +600,20 @@ def test_setup_spatial_uniform_meteo_rejects_non_equidistant_timeseries(
     )
 
     # Set a small default mesh to speed up the test, since we only want to test
-    # setup_spatial_uniform_meteo and not mesh setup here.
+    # setup_timeseries_meteo and not mesh setup here.
     model.setup_mesh2d(
         region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
         res=5000,
     )
 
     with pytest.raises(ValueError, match="Non-equidistant time series"):
-        model.setup_spatial_uniform_meteo(
+        model.setup_timeseries_meteo(
             meteo_type="rainfall",
             meteo_timeseries_fn="non_equidistant_meteo",
         )
 
 
-def test_setup_spatial_uniform_meteo_rejects_no_column_named_time(
+def test_setup_timeseries_meteo_rejects_no_column_named_time(
     tmpdir,
 ):
     # even if we would provide the correct column name (date) there will still be an
@@ -663,13 +663,13 @@ def test_setup_spatial_uniform_meteo_rejects_no_column_named_time(
     #  reproduced with: `["a", "b", "c"].index("d")`. For now, only match the last
     #  part of the error message.
     with pytest.raises(ValueError, match=" is not in list"):
-        model.setup_spatial_uniform_meteo(
+        model.setup_timeseries_meteo(
             meteo_type="rainfall",
             meteo_timeseries_fn="no_time_index_meteo",
         )
 
 
-def test_setup_spatial_uniform_meteo_rejects_no_time_index_from_datacatalog(tmpdir):
+def test_setup_timeseries_meteo_rejects_no_time_index_from_datacatalog(tmpdir):
     # create dummy catalog with incomplete driver (commented)
     # this test is purely to trigger the error
     datacat_file = join(tmpdir, "datacatalog.yaml")
@@ -717,17 +717,17 @@ meteo_timeseries_incorrectly_parsed:
 
     err_msg = "meteo_timeseries_fn must provide a datetime index"
     with pytest.raises(ValueError, match=err_msg):
-        model.setup_spatial_uniform_meteo(
+        model.setup_timeseries_meteo(
             meteo_type="rainfall_rate",
             meteo_timeseries_fn="meteo_timeseries_incorrectly_parsed",
         )
 
 
-def test_setup_spatial_uniform_meteo_rejects_no_matching_variable(
+def test_setup_timeseries_meteo_rejects_no_matching_variable(
     dflowfm_2dmodel_with_localdata,
 ):
     with pytest.raises(ValueError, match="columns expected but not found"):
-        dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+        dflowfm_2dmodel_with_localdata.setup_timeseries_meteo(
             meteo_type="rainfall",
             meteo_timeseries_fn="meteo_timeseries_T2",
         )

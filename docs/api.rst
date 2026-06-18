@@ -114,7 +114,7 @@ Boundaries
    workflows.compute_boundary_values
    workflows.compute_2dboundary_values
    workflows.compute_constant_meteo_forcings
-   workflows.compute_spatial_uniform_meteo_forcings
+   workflows.compute_timeseries_meteo_forcings
    workflows.compute_forcing_values_points
    workflows.compute_forcing_values_polygon
    workflows.get_geometry_coords_for_polygons
@@ -229,8 +229,8 @@ Input/Output methods
    utils.io_utils.write_1dlateral
    utils.io_utils.read_2dboundary
    utils.io_utils.write_2dboundary
-   utils.io_utils.read_spatial_uniform_meteo
-   utils.io_utils.write_spatial_uniform_meteo
+   utils.io_utils.read_timeseries_meteo
+   utils.io_utils.write_timeseries_meteo
 
 Mesh conversion methods
 -----------------------

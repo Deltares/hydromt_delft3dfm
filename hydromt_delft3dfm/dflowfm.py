@@ -2687,13 +2687,13 @@ class DFlowFMModel(Model):
 
         Deprecated.
 
-        Use ``setup_spatial_uniform_meteo(
+        Use ``setup_timeseries_meteo(
         meteo_type="rainfall_rate", constant_value=...
         )`` instead.
         """
         raise AttributeError(
             "setup_rainfall_from_constant is deprecated. "
-            "Use setup_spatial_uniform_meteo("
+            "Use setup_timeseries_meteo("
             "meteo_type='rainfall_rate', constant_value=...) instead."
         )
 
@@ -2709,7 +2709,7 @@ class DFlowFMModel(Model):
 
         Deprecated.
 
-        Use ``setup_spatial_uniform_meteo(
+        Use ``setup_timeseries_meteo(
         meteo_type="rainfall_rate" or "rainfall",
         meteo_timeseries_fn=...
         )`` instead.
@@ -2718,7 +2718,7 @@ class DFlowFMModel(Model):
 
         raise AttributeError(
             "setup_rainfall_from_uniform_timeseries is deprecated. "
-            "Use setup_spatial_uniform_meteo("
+            "Use setup_timeseries_meteo("
             f"meteo_type='{meteo_type}', meteo_timeseries_fn=...) instead."
         )
 
@@ -2752,7 +2752,7 @@ class DFlowFMModel(Model):
         --------
         Set up a constant rainfall rate for a quick test model:
 
-        >>> model.setup_spatial_uniform_meteo(
+        >>> model.setup_timeseries_meteo(
         ...     meteo_type="rainfall_rate",
         ...     constant_value=10.0,
         ... )
@@ -2788,7 +2788,7 @@ class DFlowFMModel(Model):
             self.mdu.set("external_forcing.rainfall", 1)
 
     @hydromt_step
-    def setup_spatial_uniform_meteo(
+    def setup_timeseries_meteo(
         self,
         meteo_type: str,
         meteo_timeseries_fn: str,
@@ -2818,7 +2818,7 @@ class DFlowFMModel(Model):
         --------
         Set up rainfall from a data catalog entry:
 
-        >>> model.setup_spatial_uniform_meteo(
+        >>> model.setup_timeseries_meteo(
         ...     meteo_type="rainfall_rate",
         ...     meteo_timeseries_fn="rainfall_timeseries",
         ...     fill_value=0.0,
@@ -2893,7 +2893,7 @@ class DFlowFMModel(Model):
         df_meteo = df_meteo.copy()
         df_meteo["time"] = df_meteo.index
 
-        da_out = workflows.compute_spatial_uniform_meteo_forcings(
+        da_out = workflows.compute_timeseries_meteo_forcings(
             df_meteo=df_meteo,
             meteo_type=meteo_type,
             meteo_unit=meteo_units,

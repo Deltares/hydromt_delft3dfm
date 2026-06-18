@@ -45,8 +45,8 @@ __all__ = [
     "write_1dboundary",
     "read_2dboundary",
     "write_2dboundary",
-    "read_spatial_uniform_meteo",
-    "write_spatial_uniform_meteo",
+    "read_timeseries_meteo",
+    "write_timeseries_meteo",
     "read_spatial_forcing",
     "write_spatial_forcing",
 ]
@@ -1179,7 +1179,7 @@ def write_2dboundary(forcing: Dict, savedir: str, ext_fn: str = None) -> list[di
     return forcing_fn, ext_fn
 
 
-def read_spatial_uniform_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
+def read_timeseries_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
     """
     Read for a specific quantity the external and forcing files and parse to xarray.
 
@@ -1199,7 +1199,7 @@ def read_spatial_uniform_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
     forcingfile_uniq = df.forcingfile.astype(str).unique()
     if len(forcingfile_uniq) > 1:
         raise NotImplementedError(
-            "read_spatial_uniform_meteo() does not support more than 1 forcing "
+            "read_timeseries_meteo() does not support more than 1 forcing "
             f"filename, found: {forcingfile_uniq}."
         )
     forcing = df.forcingfile.iloc[0]
@@ -1225,7 +1225,7 @@ def read_spatial_uniform_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
     return da_out
 
 
-def write_spatial_uniform_meteo(
+def write_timeseries_meteo(
     forcing: Dict, savedir: str, ext_fn: str = None
 ) -> list[dict]:
     """

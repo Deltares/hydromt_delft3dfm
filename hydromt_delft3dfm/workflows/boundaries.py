@@ -20,7 +20,7 @@ __all__ = [
     "validate_boundaries",
     "compute_boundary_values",
     "compute_2dboundary_values",
-    "compute_spatial_uniform_meteo_forcings",
+    "compute_timeseries_meteo_forcings",
     "compute_constant_meteo_forcings",
     "compute_forcing_values_points",
     "compute_forcing_values_polygon",
@@ -446,7 +446,7 @@ def df_to_bc(
                 f.write(f"\t{i} {di}\n")
 
 
-def compute_spatial_uniform_meteo_forcings(
+def compute_timeseries_meteo_forcings(
     df_meteo: pd.DataFrame,
     meteo_type: str,
     meteo_unit: str,
