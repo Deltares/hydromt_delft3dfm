@@ -67,7 +67,7 @@ a specific method see its documentation.
       -  Setup a spatial uniform precipitation forcing to the 2D mesh.
     * - :py:func:`~DFlowFMModel.setup_spatial_forcing`
       -  Setup a temporal and spatial varying meteo forcing (netcdf format).
-    * - :py:func:`~DFlowFMModel.setup_spatial_uniform_meteo`
+    * - :py:func:`~DFlowFMModel.setup_timeseries_meteo`
       -  Setup a spatial uniform meteorological forcing to the 2D mesh.
 
 
