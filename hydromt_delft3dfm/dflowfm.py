@@ -2791,7 +2791,7 @@ class DFlowFMModel(Model):
     def setup_spatial_uniform_meteo(
         self,
         meteo_type: str,
-        meteo_timeseries_fn: str | Path,
+        meteo_timeseries_fn: str,
         fill_value: float = 0.0,
     ):
         """
@@ -2824,14 +2824,6 @@ class DFlowFMModel(Model):
         ...     fill_value=0.0,
         ... )
 
-        Set up rainfall from a csv file:
-
-        >>> model.setup_spatial_uniform_meteo(
-        ...     meteo_type="rainfall_rate",
-        ...     meteo_timeseries_fn="rainfall_timeseries.csv",
-        ...     fill_value=0.0,
-        ... )
-
         Adds/Updates model layers:
 
         * **meteo_{meteo_type}** forcing: DataArray
@@ -2843,67 +2835,36 @@ class DFlowFMModel(Model):
             corresponding units are documented in
             :py:meth:`~hydromt_delft3dfm.utils.translate_utils.meteo_unit_from_type`.
 
-        meteo_timeseries_fn : str, Path, optional
-            Path to a CSV file or data source name in data catalog.
+        meteo_timeseries_fn : str
+            Data source name in data catalog.
 
-            The resulting dataframe must contain one column matching ``meteo_type`` and
-            must have a datetime index.
-
-            When providing a direct CSV file path, the CSV file must contain a ``time``
-            column and one column matching ``meteo_type``. The ``time`` column is parsed
-            as datetimes and used as the dataframe index.
-
-            When providing a data catalog source name, the data catalog entry must be
-            configured so that the time values are parsed as a datetime index. For CSV
-            sources, this typically means passing driver keyword arguments such as
-            ``parse_dates=["time"]`` and ``index_col="time"``.
+            The resulting dataframe must contain one column matching ``meteo_type``
+            and must have a datetime index. The data catalog entry must be
+            configured such that the time values are parsed as a datetime index.
 
             Data catalog preprocessing can also be used to rename columns, fill nodata,
             or apply ``unit_add`` and ``unit_mult``.
 
         fill_value : float, optional
             Value used to fill missing values or missing timesteps when reading from
-            ``meteo_timeseries_fn``.
-
-            If ``constant_value`` is used and ``fill_value`` is not provided,
-            ``fill_value`` defaults to ``constant_value``. If ``meteo_timeseries_fn``
-            is used and ``fill_value`` is not provided, ``fill_value`` defaults to
-            ``0.0``.
+            ``meteo_timeseries_fn``. Defaults to ``0.0``.
         """
         tstart, tstop = self.get_model_time()
         meteo_units = meteo_unit_from_type(meteo_type)
-
-        if isfile(meteo_timeseries_fn):
-            # when directly reading a csv without a datacatalog, source_kwargs
-            #  help with parsing the time column
-            # TODO: use index_col="time" after fixing
-            #  https://github.com/Deltares/hydromt/issues/1502
-            source_kwargs = {
-                "driver": {
-                    "name": "pandas",
-                    "options": {"parse_dates": ["time"], "index_col": 0},
-                }
-            }
-        else:
-            # otherwise the source_kwargs come from the datacatalog so we can pass
-            #  None here.
-            source_kwargs = None
 
         df_meteo = self.data_catalog.get_dataframe(
             meteo_timeseries_fn,
             variables=[meteo_type],
             time_range=(tstart, tstop),
-            source_kwargs=source_kwargs,
         )
 
         if not np.issubdtype(df_meteo.index.dtype, np.datetime64):
             raise ValueError(
                 "meteo_timeseries_fn must provide a datetime index, but the parsed "
                 f"index has dtype {df_meteo.index.dtype!r}. "
-                "For a direct CSV file, include a 'time' column that can be parsed "
-                "as datetimes. For a DataCatalog source, configure the driver "
+                "For a DataCatalog source, configure the driver "
                 "kwargs so the time column is parsed as dates and used as the index"
-                ", for example `parse_dates=['time']` and `index_col='time'`."
+                ", for example `parse_dates=True and `index_col=0."
             )
 
         if len(df_meteo.index) < 2:

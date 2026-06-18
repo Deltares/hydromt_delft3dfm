@@ -487,28 +487,24 @@ def test_setup_spatial_uniform_rainfall_rate_from_datacatalog(dflowfm_2dmodel_wi
     dflowfm_2dmodel_with_localdata.forcing.write()
 
 
-def test_setup_spatial_uniform_windx_from_csv(dflowfm_2dmodel_with_localdata, tmpdir):
-    meteo_fn = _write_csv(
-        tmpdir,
-        "windx.csv",
-        [
-            "time,windx",
-            "2020-01-01 00:00,2.0",
-            "2020-01-02 00:00,2.0",
-        ],
-    )
-
-    dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
-        meteo_type="windx",
-        meteo_timeseries_fn=meteo_fn,
-    )
-    assert "meteo_windx" in dflowfm_2dmodel_with_localdata.forcing.data
-
-
 def test_setup_spatial_uniform_rainfall_timeseries_fills_missing_values(
-    dflowfm_2dmodel_with_localdata,
     tmpdir,
 ):
+    datacat_file = join(tmpdir, "datacatalog.yaml")
+    with open(datacat_file, "w") as f:
+        f.write("""
+    missing_values_meteo:
+      data_type: DataFrame
+      uri: missing_values_meteo.csv
+      driver:
+        name: pandas
+        options:
+          index_col: 0
+          parse_dates: true
+      metadata:
+        unit: mm day-1
+    """
+                )
     meteo_fn = _write_csv(
         tmpdir,
         "missing_values_meteo.csv",
@@ -518,13 +514,35 @@ def test_setup_spatial_uniform_rainfall_timeseries_fills_missing_values(
             "2020-01-02 00:00,NaN",
         ],
     )
-    dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+
+    model = DFlowFMModel(
+        root=str(tmpdir),
+        data_libs=datacat_file,
+        crs=3857,
+        mode="w",
+    )
+
+    model.setup_config(
+        **{
+            "time.startdatetime": "20200101",
+            "time.stopdatetime": "20200102",
+        }
+    )
+
+    # Set a small default mesh to speed up the test, since we only want to test
+    # setup_spatial_uniform_meteo and not mesh setup here.
+    model.setup_mesh2d(
+        region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
+        res=5000,
+    )
+
+    model.setup_spatial_uniform_meteo(
         meteo_type="rainfall",
-        meteo_timeseries_fn=str(meteo_fn),
+        meteo_timeseries_fn="missing_values_meteo",
         fill_value=0.0,
     )
 
-    da = dflowfm_2dmodel_with_localdata.forcing.data["meteo_rainfall"]
+    da = model.forcing.data["meteo_rainfall"]
 
     assert not np.isnan(da.values).any()
     assert np.isclose(da.values[0, -1], 0.0)
@@ -538,10 +556,24 @@ def test_setup_constant_meteo_rejects_unknown_type(dflowfm_2dmodel_with_localdat
        )
 
 
-def test_setup_spatial_uniform_meteo_rejects_non_equidistant_timeseries_from_csv(
-    dflowfm_2dmodel_with_localdata,
+def test_setup_spatial_uniform_meteo_rejects_non_equidistant_timeseries(
     tmpdir,
 ):
+    datacat_file = join(tmpdir, "datacatalog.yaml")
+    with open(datacat_file, "w") as f:
+        f.write("""
+    non_equidistant_meteo:
+      data_type: DataFrame
+      uri: non_equidistant_meteo.csv
+      driver:
+        name: pandas
+        options:
+          index_col: 0
+          parse_dates: true
+      metadata:
+        unit: mm day-1
+    """
+                )
     meteo_fn = _write_csv(
         tmpdir,
         "non_equidistant_meteo.csv",
@@ -553,17 +585,55 @@ def test_setup_spatial_uniform_meteo_rejects_non_equidistant_timeseries_from_csv
         ],
     )
 
+    model = DFlowFMModel(
+        root=str(tmpdir),
+        data_libs=datacat_file,
+        crs=3857,
+        mode="w",
+    )
+
+    model.setup_config(
+        **{
+            "time.startdatetime": "20200101",
+            "time.stopdatetime": "20200102",
+        }
+    )
+
+    # Set a small default mesh to speed up the test, since we only want to test
+    # setup_spatial_uniform_meteo and not mesh setup here.
+    model.setup_mesh2d(
+        region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
+        res=5000,
+    )
+
     with pytest.raises(ValueError, match="Non-equidistant time series"):
-        dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+        model.setup_spatial_uniform_meteo(
             meteo_type="rainfall",
-            meteo_timeseries_fn=str(meteo_fn),
+            meteo_timeseries_fn="non_equidistant_meteo",
         )
 
 
-def test_setup_spatial_uniform_meteo_rejects_no_time_column_from_csv(
-    dflowfm_2dmodel_with_localdata,
+def test_setup_spatial_uniform_meteo_rejects_no_column_named_time(
     tmpdir,
 ):
+    # even if we would provide the correct column name (date) there will still be an
+    #  error until https://github.com/Deltares/hydromt/issues/1502 is fixed.
+    #  The only way to get it working is with index_col=0 at the moment.
+    datacat_file = join(tmpdir, "datacatalog.yaml")
+    with open(datacat_file, "w") as f:
+        f.write("""
+    no_time_index_meteo:
+      data_type: DataFrame
+      uri: no_time_index_meteo.csv
+      driver:
+        name: pandas
+        options:
+          index_col: time
+          parse_dates: true
+      metadata:
+        unit: mm day-1
+    """
+                )
     meteo_fn = _write_csv(
         tmpdir,
         "no_time_index_meteo.csv",
@@ -573,10 +643,25 @@ def test_setup_spatial_uniform_meteo_rejects_no_time_column_from_csv(
             "2020-01-02 00:00,2.0",
         ],
     )
-    with pytest.raises(ValueError, match="Missing column provided to 'parse_dates': 'time'"):
-        dflowfm_2dmodel_with_localdata.setup_spatial_uniform_meteo(
+
+    model = DFlowFMModel(
+        root=str(tmpdir),
+        data_libs=datacat_file,
+        crs=3857,
+        mode="w",
+    )
+
+    model.setup_config(
+        **{
+            "time.startdatetime": "20200101",
+            "time.stopdatetime": "20200102",
+        }
+    )
+
+    with pytest.raises(ValueError, match="'time' is not in list"):
+        model.setup_spatial_uniform_meteo(
             meteo_type="rainfall",
-            meteo_timeseries_fn=str(meteo_fn),
+            meteo_timeseries_fn="no_time_index_meteo",
         )
 
 

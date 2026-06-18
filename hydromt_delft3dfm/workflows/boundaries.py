@@ -488,8 +488,6 @@ def compute_spatial_uniform_meteo_forcings(
     freq_name = _TIMESTR[freq]
 
     time_unit = f"{freq_name} since {pd.to_datetime(df_meteo['time'].iloc[0])}"
-    # TODO: maybe better to apply date2num in io_utils.py instead
-    #  then just provide a time dataarray including units attribute to the dataset.
     meteo_times = date2num(
         pd.DatetimeIndex(df_meteo["time"].to_numpy()).to_pydatetime(),
         units=time_unit,
