@@ -87,10 +87,10 @@ steps:
       # better to have setup_mesh2d just generating a mesh that includes the entire geom, or having a 2D_boundary that is not too big, or having a grid that completely fills the initial geometry
       tolerance: 6
 
-  - setup_rainfall_from_uniform_timeseries:
+  - setup_timeseries_meteo:
+      meteo_type: rainfall_rate
       meteo_timeseries_fn: meteo_timeseries_T2
       fill_value: 0
-      is_rate: True
 
   - setup_link1d2d:
       link_direction: 1d_to_2d
