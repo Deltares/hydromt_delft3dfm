@@ -61,14 +61,12 @@ a specific method see its documentation.
       -  Setup a 1D boundary forcing to the 1D branches.
     * - :py:func:`~DFlowFMModel.setup_2dboundary`
       -  Setup a 2D boundary forcing to the 2D mesh.
-    * - :py:func:`~DFlowFMModel.setup_rainfall_from_constant`
-      -  Setup a constant precipitation forcing to the 2D mesh.
-    * - :py:func:`~DFlowFMModel.setup_rainfall_from_uniform_timeseries`
-      -  Setup a spatial uniform precipitation forcing to the 2D mesh.
+    * - :py:func:`~DFlowFMModel.setup_constant_meteo`
+      -  Setup a constant meteo forcing to the 2D mesh.
+    * - :py:func:`~DFlowFMModel.setup_timeseries_meteo`
+      -  Setup a spatial uniform timeseries meteo forcing to the 2D mesh.
     * - :py:func:`~DFlowFMModel.setup_spatial_forcing`
       -  Setup a temporal and spatial varying meteo forcing (netcdf format).
-    * - :py:func:`~DFlowFMModel.setup_timeseries_meteo`
-      -  Setup a spatial uniform meteorological forcing to the 2D mesh.
 
 
 .. _model_components:

@@ -94,8 +94,10 @@ def meteo_unit_from_type(meteo_type: str):
 
     Type of meteorological forcing to prepare. Supported values are
     ``"rainfall_rate"``, ``"rainfall"``, ``"windxy"``, ``"windx"``, and
-    ``"windy"`` (as of delft3dfm 2026.02). This follows from the METEO_UNITS
-    translation dictionary in the module
+    ``"windy"`` (as of delft3dfm 2026.02). Might be resolved in
+    https://github.com/Deltares/hydromt_delft3dfm/issues/311.
+
+    Units follow from the METEO_UNITS translation dictionary in the module
     :py:meth:`~hydromt_delft3dfm.utils.translate_utils`.
 
     Corresponding units are:

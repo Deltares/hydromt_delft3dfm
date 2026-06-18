@@ -2768,7 +2768,7 @@ class DFlowFMModel(Model):
             corresponding units are documented in
             :py:meth:`~hydromt_delft3dfm.utils.translate_utils.meteo_unit_from_type`.
 
-        constant_value : float, optional
+        constant_value : float
             Constant meteorological value used for the full model simulation period.
 
             This option is intended for quick test models.

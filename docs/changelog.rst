@@ -17,7 +17,7 @@ Added
 - Support for user-specified paths for mdu/network and models without geoms folder (PR #271)
 - Updated to hydrolib-core v1 (pydantic V2 API) (PR #226)
 - New method **setup_spatial_forcing** (PR #263)
-- New method **setup_timeseries_meteo** (PR #276)
+- New method **setup_constant_meteo** and **setup_timeseries_meteo** (PR #276)
 
 Changed
 -------
@@ -26,6 +26,7 @@ Changed
 - Updated to hydromt 1.4.0 (PR #254 and PR #302)
 - when reading a model prefer crs from mesh/network file, then geoms, then userdefined (PR #271)
 - Allow writing 'days since' to bc forcing file as time unit (PR #276)
+- Removed **setup_rainfall_from_constant** and **setup_rainfall_from_uniform_timeseries** (PR #276)
 
 Fixed
 -----
