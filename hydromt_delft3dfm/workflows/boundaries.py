@@ -17,7 +17,6 @@ logger = logging.getLogger(f"hydromt.{__name__}")
 __all__ = [
     "get_boundaries_with_nodeid",
     "select_boundary_type",
-    "validate_boundaries",
     "compute_boundary_values",
     "compute_2dboundary_values",
     "compute_timeseries_meteo_forcings",
@@ -124,38 +123,6 @@ def select_boundary_type(
             )
 
     return boundaries_branch_type
-
-
-def validate_boundaries(boundaries: gpd.GeoDataFrame, branch_type: str = "river"):
-    """Validate boundaries per branch type.
-
-    Will log a warning if the validation fails.
-
-    Parameters
-    ----------
-    boundaries : gpd.GeoDataFrame
-        The boundaries.
-    branch_type : {'river', 'pipe'}
-        The branch type.
-
-    """
-    if branch_type == "river":  # TODO add other open system branch_type
-        for _, bnd in boundaries.iterrows():
-            # TODO extended
-            if bnd["where"] == "downstream" and bnd["boundary_type"] == "discharge":
-                logger.warning(
-                    "Boundary type violates modeller suggestions: using"
-                    f"downstream discharge boundary at branch {bnd['branchid']}"
-                )
-
-    if branch_type == "pipe":  # TODO add other close system branch_type
-        for _, bnd in boundaries.iterrows():
-            # TODO extended
-            if bnd["where"] == "upstream":
-                logger.warning(
-                    "Boundary type violates modeller suggestions:"
-                    f"using upstream boundary at branch {bnd['branchid']}"
-                )
 
 
 def compute_boundary_values(
@@ -377,73 +344,6 @@ def compute_2dboundary_values(
             da_out_dict.update({f"{bnd_id}": da_out})
 
     return da_out_dict
-
-
-def gpd_to_pli(gdf: gpd.GeoDataFrame, output_dir: Path):
-    """Convert geopandas GeoDataFrame (gdf) into pli files.
-
-    Pli files at 'output_dir' directory.
-
-    the geodataframe must has index as stations and geometry
-    of the stations.
-    each row of the geodataframe will be converted into a single pli file.
-
-    the file name and the station name will be the index of that row.
-    """
-    for _, g in gdf.iterrows():
-        pli_name = g.index
-        pli_coords = g.geometry.coords[:]
-        with open(output_dir.joinpath(f"{pli_name}.pli"), "w") as f:
-            f.write(f"{pli_name}\n")
-            f.write(f"\t{len(pli_coords)} {2}\n")
-            for p in pli_coords:
-                f.write(f"\t{' '.join(str(pi) for pi in p)}\n")
-
-
-def df_to_bc(
-    df,
-    output_dir,
-    output_filename="boundary",
-    quantity="discharge",
-    unit="m3/s",
-    freq="H",
-):
-    """Convert pandas timeseires 'df' into bc file.
-
-    bc file from 'output_dir'/'output_filename'.bc
-
-    the time series must has time as index, columns names as stations.
-    the time series will be first converted into a equidistance timeseries
-    with frequency specified in 'freq'. support [D, H,M,S]
-    each columns-wise array will be converted into one bc timeseries.
-
-    The time series has the quantity and unit as specified
-    in 'quantity' and 'unit'.
-    """
-    time_unit = {"D": "days", "H": "hours", "M": "minutes", "S": "seconds"}
-
-    df = df.resample(freq).ffill()
-    time = df.index
-    stations = df.columns
-
-    with open(output_dir.joinpath(f"{output_filename}.bc"), "w") as f:
-        f.write("[General]\n")
-        f.write("\tfileVersion = 1.01\n")
-        f.write("\tfileType = boundConds\n")
-        for s in stations:
-            d = df[s]
-            f.write("\n")
-            f.write("[forcing]\n")
-            f.write(f"\tName = {d.name}\n")
-            f.write("\tfunction = timeSeries\n")
-            f.write("\ttimeInterpolation = linear\n")
-            f.write(f"\tquantity = {quantity}\n")
-            f.write(f"\tunit = {unit}\n")
-            f.write("\tquantity = time\n")
-            f.write(f"\tunit = {time_unit[freq]} since {time[0].date()}\n")
-            f.write("\t0 0\n")
-            for i, di in enumerate(d.values):
-                f.write(f"\t{i} {di}\n")
 
 
 def compute_timeseries_meteo_forcings(
