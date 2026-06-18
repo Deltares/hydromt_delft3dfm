@@ -545,6 +545,64 @@ def test_setup_timeseries_meteo_no_csv(
         )
 
 
+def test_setup_timeseries_meteo_rejects_single_timestep(
+     dflowfm_2dmodel_empty,
+):
+    # the model_root is a tmpdir named to the test that calls the fixture
+    model_root = dflowfm_2dmodel_empty.root.path
+    # create a meteo timeseries with a single timeseries to trigger the error
+    _write_csv(
+        model_root,
+        [
+            "time,rainfall",
+            "2020-01-01 00:00,2.0",
+        ],
+    )
+
+    with pytest.raises(ValueError, match="must contain at least two timesteps"):
+        dflowfm_2dmodel_empty.setup_timeseries_meteo(
+            meteo_type="rainfall",
+            meteo_timeseries_fn="meteo_timeseries",
+        )
+
+
+def test_setup_timeseries_meteo_too_short_timeseries(
+     caplog,
+    dflowfm_2dmodel_empty,
+):
+    # the model_root is a tmpdir named to the test that calls the fixture
+    model_root = dflowfm_2dmodel_empty.root.path
+    # create a meteo timeseries with a single timeseries to trigger the error
+    _write_csv(
+        model_root,
+        [
+            "time,rainfall",
+            "2019-12-31 00:00,2.0",
+            "2019-12-31 12:00,2.0",
+            "2020-01-01 00:00,2.0",
+            "2020-01-01 12:00,2.0",
+        ],
+    )
+
+    # with pytest.raises(ValueError, match="must contain at least two timesteps"):
+    dflowfm_2dmodel_empty.setup_timeseries_meteo(
+        meteo_type="rainfall",
+        meteo_timeseries_fn="meteo_timeseries",
+    )
+
+    # hydromt-core warning that timeseries is too long and will be clipped
+    assert "Requested time range" in caplog.text
+    assert "partially overlaps with available range" in caplog.text
+    assert "Clamping to (2020-01-01 00:00:00, 2020-01-01 12:00:00)" in caplog.text
+    # hydromt_delft3dfm warning that timeseries will be padded with fill_value
+    assert "Time in meteo_timeseries_fn is shorter than the model" in caplog.text
+    assert "Missing values will be filled using 0.0" in caplog.text
+
+    # assert resulting timeseries
+    ts = dflowfm_2dmodel_empty.forcing.data["meteo_rainfall"].to_numpy()
+    assert np.allclose(ts, [[2., 2., 0.]])
+
+
 def test_setup_timeseries_meteo_rejects_non_equidistant_timeseries(
      dflowfm_2dmodel_empty,
 ):
@@ -564,6 +622,29 @@ def test_setup_timeseries_meteo_rejects_non_equidistant_timeseries(
     )
 
     with pytest.raises(ValueError, match="Non-equidistant time series"):
+        dflowfm_2dmodel_empty.setup_timeseries_meteo(
+            meteo_type="rainfall",
+            meteo_timeseries_fn="meteo_timeseries",
+        )
+
+
+def test_setup_timeseries_meteo_rejects_unknown_freq(
+     dflowfm_2dmodel_empty,
+):
+    # the model_root is a tmpdir named to the test that calls the fixture
+    model_root = dflowfm_2dmodel_empty.root.path
+    # create a ts with ms frequency to trigger the error
+    _write_csv(
+        model_root,
+        [
+            "time,rainfall",
+            "2020-01-01 00:00:00.000,2.0",
+            "2020-01-01 00:00:00.200,2.0",
+            "2020-01-02 00:00:01.400,2.0",
+        ],
+    )
+
+    with pytest.raises(ValueError, match="Unsupported time frequency 'ms'"):
         dflowfm_2dmodel_empty.setup_timeseries_meteo(
             meteo_type="rainfall",
             meteo_timeseries_fn="meteo_timeseries",
@@ -663,7 +744,6 @@ def test_setup_timeseries_meteo_rejects_no_matching_variable(
 
 def test_setup_rainfall_from_constant_deprecated(
     dflowfm_2dmodel_with_localdata,
-    caplog,
 ):
     err_msg = "setup_rainfall_from_constant is deprecated"
     with pytest.raises(AttributeError, match=err_msg):
