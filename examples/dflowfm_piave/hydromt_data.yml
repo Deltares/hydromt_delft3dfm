@@ -1,79 +1,107 @@
+meta:
+  root: None
+
 grip_roads:
-  data_type: GeoDataFrame
+  uri: grip_roads.gpkg
+  driver:
+    name: pyogrio
   version: v4
-  path: C:\Users\veenstra\.hydromt_data\artifact_data\v0.0.9\data.tar\grip_roads.gpkg
-  driver: vector
-  meta:
+  metadata:
+    crs: 4326
     category: road
     paper_doi: 10.1088/1748-9326/aabd42
     paper_ref: Meijer et al, 2018
-    source_license: CC0-1.0
-    source_url: https://www.globio.info/download-grip-dataset
-  crs: 4326
-hydro_rivers_lin:
+    url: https://www.globio.info/download-grip-dataset
+    license: CC0-1.0
   data_type: GeoDataFrame
+  root: None
+
+hydro_rivers_lin:
+  uri: rivers_lin2019_v1.gpkg
+  driver:
+    name: pyogrio
   version: '1'
-  path: C:\Users\veenstra\.hydromt_data\artifact_data\v0.0.9\data.tar\rivers_lin2019_v1.gpkg
-  driver: vector
-  meta:
+  metadata:
     category: hydrography
     paper_doi: 10.5281/zenodo.3552776
     paper_ref: Lin et al. (2019)
-    source_license: CC-BY-NC 4.0
-    source_url: https://zenodo.org/record/3552776#.YVbOrppByUk
     processing_notes: hydrography/rivers_lin2019/README
+    url: https://zenodo.org/record/3552776#.YVbOrppByUk
+    license: CC-BY-NC 4.0
+  data_type: GeoDataFrame
+  root: None
+
 manholes_defaults:
-  data_type: DataFrame
-  path: C:\DATA\checkouts\hydromt_delft3dfm\hydromt_delft3dfm\data\storages\manholes_defaults.csv
-  driver: csv
-  meta:
+  uri: storages/manholes_defaults.csv
+  driver:
+    name: pandas
+  metadata:
     notes: default manhole parameters.
+  data_type: DataFrame
+  root: None
+
 merit_hydro:
-  data_type: RasterDataset
+  uri: merit_hydro/{variable}.tif
+  driver:
+    options: {}
+    name: rasterio
   version: '1.0'
-  path: C:\Users\veenstra\.hydromt_data\artifact_data\v0.0.9\data.tar\merit_hydro\{variable}.tif
-  driver: raster
-  meta:
+  metadata:
+    crs: 4326
     category: topography
     paper_doi: 10.1029/2019WR024873
     paper_ref: Yamazaki et al. (2019)
-    source_license: CC-BY-NC 4.0 or ODbL 1.0
-    source_url: http://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_Hydro
-  crs: 4326
-pipes_defaults:
-  data_type: DataFrame
-  path: C:\DATA\checkouts\hydromt_delft3dfm\hydromt_delft3dfm\data\branches\pipes_defaults.csv
-  driver: csv
-  meta:
-    notes: default pipe parameters.
-rivers_defaults:
-  data_type: DataFrame
-  path: C:\DATA\checkouts\hydromt_delft3dfm\hydromt_delft3dfm\data\branches\rivers_defaults.csv
-  driver: csv
-  meta:
-    notes: default river parameters.
-vito_2015:
+    url: http://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_Hydro
+    license: CC-BY-NC 4.0 or ODbL 1.0
   data_type: RasterDataset
+  root: None
+
+pipes_defaults:
+  uri: branches/pipes_defaults.csv
+  driver:
+    name: pandas
+  metadata:
+    notes: default pipe parameters.
+  data_type: DataFrame
+  root: None
+
+rivers_defaults:
+  uri: branches/rivers_defaults.csv
+  driver:
+    name: pandas
+  metadata:
+    notes: default river parameters.
+  data_type: DataFrame
+  root: None
+
+vito_2015:
+  uri: vito.tif
+  driver:
+    options: {}
+    name: rasterio
   version: 2.0.2
-  path: C:\Users\veenstra\.hydromt_data\artifact_data\v0.0.9\data.tar\vito.tif
-  driver: raster
-  meta:
+  metadata:
+    crs: 4326
     category: landuse & landcover
     paper_doi: 10.5281/zenodo.3939038
     paper_ref: Buchhorn et al (2020)
-    source_url: https://land.copernicus.eu/global/products/lc
-  crs: 4326
+    url: https://land.copernicus.eu/global/products/lc
+  data_type: RasterDataset
+  root: None
+
 vito_mapping:
-  data_type: DataFrame
-  path: C:\DATA\checkouts\hydromt_delft3dfm\hydromt_delft3dfm\data\landuse\vito_mapping.csv
-  driver: csv
-  driver_kwargs:
-    index_col: 0
-  nodata:
-    landuse: 0
-    roughness_manning: -999.0
-    infiltcap: -999.0
-  meta:
+  uri: landuse/vito_mapping.csv
+  driver:
+    options:
+      index_col: 0
+    name: pandas
+  metadata:
+    nodata:
+      landuse: 0
+      roughness_manning: -999.0
+      infiltcap: -999.0
     category: landuse
-    source_info: landuse parameters based on vito classification (https://land.copernicus.eu/global/products/lc)
     source_version: 1.0
+    notes: landuse parameters based on vito classification (https://land.copernicus.eu/global/products/lc)
+  data_type: DataFrame
+  root: None
