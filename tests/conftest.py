@@ -6,6 +6,49 @@ EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 
 
 @pytest.fixture
+def dflowfm_2dmodel_empty(tmpdir):
+    # tmpdir is with respect to the test that calls this fixture, so the files created
+    # in this fixture are created there
+    datacat_file = tmpdir.join("datacatalog.yaml")
+    datacat_file.write("""
+    meteo_timeseries:
+      data_type: DataFrame
+      uri: meteo_timeseries.csv
+      driver:
+        name: pandas
+        options:
+          index_col: 0
+          parse_dates: true
+      metadata:
+        unit: mm day-1
+    """
+                )
+
+    model = DFlowFMModel(
+        root=str(tmpdir),
+        data_libs=datacat_file,
+        crs=3857,
+        mode="w",
+    )
+
+    model.setup_config(
+        **{
+            "time.startdatetime": "20200101",
+            "time.stopdatetime": "20200102",
+        }
+    )
+
+    # Set a small default mesh to speed up the test, since we only want to test
+    # setup_timeseries_meteo and not mesh setup here.
+    model.setup_mesh2d(
+        region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
+        res=5000,
+    )
+
+    return model
+
+
+@pytest.fixture
 def dflowfm_2dmodel_with_localdata(tmpdir):
     model = DFlowFMModel(
         root=str(tmpdir),

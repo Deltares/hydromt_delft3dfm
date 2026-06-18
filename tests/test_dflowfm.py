@@ -1,5 +1,7 @@
 from os.path import abspath, basename, dirname, join
 from os import makedirs, rename
+from hydromt.data_catalog import DataCatalog
+from hydromt.error import NoDataException
 from hydromt_delft3dfm import DFlowFMModel
 import numpy as np
 from pathlib import Path
@@ -9,6 +11,23 @@ import xugrid as xu
 
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 TOLERANCE = 1e-6
+
+
+def _write_csv(outputdir, lines):
+    meteo_fn = join(outputdir, "meteo_timeseries.csv")
+    with open(meteo_fn, "w") as f:
+        f.write("\n".join(lines))
+
+
+def _model_update_datacatalog(model, datacat_contents):
+    model_root = model.root.path
+    datacat_file = join(model_root, "dummy_data_catalog.yaml")
+    with open(datacat_file, "w") as f:
+        f.write(datacat_contents)
+    datacat = DataCatalog(datacat_file)
+    model.data_catalog.update_sources(
+        meteo_timeseries=datacat.get_source("meteo_timeseries"),
+    )
 
 
 def test_write_read_empty_model(tmpdir):
@@ -455,12 +474,6 @@ def test_setup_spatial_forcing(tmpdir):
     assert set(mod2.forcing.data.keys()) == expected_keys
 
 
-def _write_csv(tmpdir, filename, lines):
-    meteo_fn = tmpdir.join(filename)
-    meteo_fn.write("\n".join(lines))
-    return str(meteo_fn)
-
-
 def test_setup_constant_meteo(dflowfm_2dmodel_with_localdata):
     dflowfm_2dmodel_with_localdata.setup_constant_meteo(
         meteo_type="rainfall",
@@ -488,26 +501,13 @@ def test_setup_timeseries_rainfall_rate_from_datacatalog(dflowfm_2dmodel_with_lo
 
 
 def test_setup_timeseries_rainfall_timeseries_fills_missing_values(
-    tmpdir,
+        dflowfm_2dmodel_empty,
 ):
-    datacat_file = join(tmpdir, "datacatalog.yaml")
-    with open(datacat_file, "w") as f:
-        f.write("""
-    missing_values_meteo:
-      data_type: DataFrame
-      uri: missing_values_meteo.csv
-      driver:
-        name: pandas
-        options:
-          index_col: 0
-          parse_dates: true
-      metadata:
-        unit: mm day-1
-    """
-                )
-    meteo_fn = _write_csv(
-        tmpdir,
-        "missing_values_meteo.csv",
+    # the model_root is a tmpdir named to the test that calls the fixture
+    model_root = dflowfm_2dmodel_empty.root.path
+    # write meteo timeseries with missing values (nan)
+    _write_csv(
+        model_root,
         [
             "time,rainfall",
             "2020-01-01 00:00,2.0",
@@ -515,34 +515,13 @@ def test_setup_timeseries_rainfall_timeseries_fills_missing_values(
         ],
     )
 
-    model = DFlowFMModel(
-        root=str(tmpdir),
-        data_libs=datacat_file,
-        crs=3857,
-        mode="w",
-    )
-
-    model.setup_config(
-        **{
-            "time.startdatetime": "20200101",
-            "time.stopdatetime": "20200102",
-        }
-    )
-
-    # Set a small default mesh to speed up the test, since we only want to test
-    # setup_timeseries_meteo and not mesh setup here.
-    model.setup_mesh2d(
-        region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
-        res=5000,
-    )
-
-    model.setup_timeseries_meteo(
+    dflowfm_2dmodel_empty.setup_timeseries_meteo(
         meteo_type="rainfall",
-        meteo_timeseries_fn="missing_values_meteo",
+        meteo_timeseries_fn="meteo_timeseries",
         fill_value=0.0,
     )
 
-    da = model.forcing.data["meteo_rainfall"]
+    da = dflowfm_2dmodel_empty.forcing.data["meteo_rainfall"]
 
     assert not np.isnan(da.values).any()
     assert np.isclose(da.values[0, -1], 0.0)
@@ -556,27 +535,26 @@ def test_setup_constant_meteo_rejects_unknown_type(dflowfm_2dmodel_with_localdat
        )
 
 
-def test_setup_timeseries_meteo_rejects_non_equidistant_timeseries(
-    tmpdir,
+def test_setup_timeseries_meteo_no_csv(
+     dflowfm_2dmodel_empty,
 ):
-    datacat_file = join(tmpdir, "datacatalog.yaml")
-    with open(datacat_file, "w") as f:
-        f.write("""
-    non_equidistant_meteo:
-      data_type: DataFrame
-      uri: non_equidistant_meteo.csv
-      driver:
-        name: pandas
-        options:
-          index_col: 0
-          parse_dates: true
-      metadata:
-        unit: mm day-1
-    """
-                )
-    meteo_fn = _write_csv(
-        tmpdir,
-        "non_equidistant_meteo.csv",
+    with pytest.raises(NoDataException, match="Resolver 'convention' found no files"):
+        dflowfm_2dmodel_empty.setup_timeseries_meteo(
+            meteo_type="rainfall",
+            meteo_timeseries_fn="meteo_timeseries",
+        )
+
+
+def test_setup_timeseries_meteo_rejects_non_equidistant_timeseries(
+     dflowfm_2dmodel_empty,
+):
+    # the model_root is a tmpdir named to the test that calls the fixture
+    model_root = dflowfm_2dmodel_empty.root.path
+    # create a non-equidistant meteo timeseries to trigger the error
+    # meteo_timeseries.csv is predefined in the data_catalog.yaml in the
+    # dflowfm_2dmodel_empty fixture
+    _write_csv(
+        model_root,
         [
             "time,rainfall",
             "2020-01-01 00:00,2.0",
@@ -585,58 +563,40 @@ def test_setup_timeseries_meteo_rejects_non_equidistant_timeseries(
         ],
     )
 
-    model = DFlowFMModel(
-        root=str(tmpdir),
-        data_libs=datacat_file,
-        crs=3857,
-        mode="w",
-    )
-
-    model.setup_config(
-        **{
-            "time.startdatetime": "20200101",
-            "time.stopdatetime": "20200102",
-        }
-    )
-
-    # Set a small default mesh to speed up the test, since we only want to test
-    # setup_timeseries_meteo and not mesh setup here.
-    model.setup_mesh2d(
-        region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
-        res=5000,
-    )
-
     with pytest.raises(ValueError, match="Non-equidistant time series"):
-        model.setup_timeseries_meteo(
+        dflowfm_2dmodel_empty.setup_timeseries_meteo(
             meteo_type="rainfall",
-            meteo_timeseries_fn="non_equidistant_meteo",
+            meteo_timeseries_fn="meteo_timeseries",
         )
 
 
 def test_setup_timeseries_meteo_rejects_no_column_named_time(
-    tmpdir,
+    dflowfm_2dmodel_empty,
 ):
-    # even if we would provide the correct column name (date) there will still be an
-    #  error until https://github.com/Deltares/hydromt/issues/1502 is fixed.
-    #  The only way to get it working is with index_col=0 at the moment.
-    datacat_file = join(tmpdir, "datacatalog.yaml")
-    with open(datacat_file, "w") as f:
-        f.write("""
-    no_time_index_meteo:
-      data_type: DataFrame
-      uri: no_time_index_meteo.csv
-      driver:
-        name: pandas
-        options:
-          index_col: time
-          parse_dates: true
-      metadata:
-        unit: mm day-1
-    """
-                )
-    meteo_fn = _write_csv(
-        tmpdir,
-        "no_time_index_meteo.csv",
+    # the model_root is a tmpdir named to the test that calls the fixture
+    model_root = dflowfm_2dmodel_empty.root.path
+
+    # update the meteo_timeseries datasource to have index_col=time (instead of 0),
+    #  but the csv deliberately has a column called `date`, triggering the error.
+    # TODO: even if we would provide the correct column name (date) there will still be
+    #  an error until https://github.com/Deltares/hydromt/issues/1502 is fixed.
+    #  The only way to get it working at the moment is with index_col=0.
+    datacat_contents = """
+        meteo_timeseries:
+          data_type: DataFrame
+          uri: meteo_timeseries.csv
+          driver:
+            name: pandas
+            options:
+              index_col: time
+              parse_dates: true
+          metadata:
+            unit: mm day-1
+        """
+    _model_update_datacatalog(dflowfm_2dmodel_empty, datacat_contents)
+
+    _write_csv(
+        model_root,
         [
             "date,rainfall",
             "2020-01-01 00:00,2.0",
@@ -644,39 +604,26 @@ def test_setup_timeseries_meteo_rejects_no_column_named_time(
         ],
     )
 
-    model = DFlowFMModel(
-        root=str(tmpdir),
-        data_libs=datacat_file,
-        crs=3857,
-        mode="w",
-    )
-
-    model.setup_config(
-        **{
-            "time.startdatetime": "20200101",
-            "time.stopdatetime": "20200102",
-        }
-    )
-
     # The error is "'time' not in list" in python<=3.13, but this has changed to
     #  "list.index(x): x not in list" in python 3.14. This can be reproduced with:
     #  `["a", "b", "c"].index("d")`. Therefore only match the end of the error message.
     with pytest.raises(ValueError, match=" not in list"):
-        model.setup_timeseries_meteo(
+        dflowfm_2dmodel_empty.setup_timeseries_meteo(
             meteo_type="rainfall",
-            meteo_timeseries_fn="no_time_index_meteo",
+            meteo_timeseries_fn="meteo_timeseries",
         )
 
 
-def test_setup_timeseries_meteo_rejects_no_time_index_from_datacatalog(tmpdir):
+def test_setup_timeseries_meteo_rejects_no_time_index_from_datacatalog(dflowfm_2dmodel_empty):
+    # the model_root is a tmpdir named to the test that calls the fixture
+    model_root = dflowfm_2dmodel_empty.root.path
+
     # create dummy catalog with incomplete driver (commented)
     # this test is purely to trigger the error
-    datacat_file = join(tmpdir, "datacatalog.yaml")
-    with open(datacat_file, "w") as f:
-        f.write("""
-meteo_timeseries_incorrectly_parsed:
+    datacat_contents = """
+meteo_timeseries:
   data_type: DataFrame
-  uri: rainfall_series.csv
+  uri: meteo_timeseries.csv
   driver:
     name: pandas
     #options:
@@ -684,41 +631,23 @@ meteo_timeseries_incorrectly_parsed:
     #  parse_dates: true
   metadata:
     unit: mm day-1
-  data_adapter:
-    rename:
-      T5_mm/day: rainfall_rate
 """
-                )
+    _model_update_datacatalog(dflowfm_2dmodel_empty, datacat_contents)
 
-    # copy datafile to tmpdir
-    data_file = join(EXAMPLEDIR, "data", "local_data", "rainfall_series.csv")
-    data_file_copy = join(tmpdir, "rainfall_series.csv")
-    shutil.copyfile(data_file, data_file_copy)
-
-    # intitiate model with dummy datacatalog
-    model = DFlowFMModel(
-        root=str(tmpdir),
-        data_libs=datacat_file,
-        crs=3857,
-        mode="w",
-    )
-    model.setup_config(
-        **{
-            "time.startdatetime": "20200101",
-            "time.stopdatetime": "20200102",
-        }
-    )
-    # Set a small default mesh to add a region to the model
-    model.setup_mesh2d(
-        region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
-        res=5000,
+    _write_csv(
+        model_root,
+        [
+            "time,rainfall_rate",
+            "2020-01-01 00:00,2.0",
+            "2020-01-02 00:00,2.0",
+        ],
     )
 
     err_msg = "meteo_timeseries_fn must provide a datetime index"
     with pytest.raises(ValueError, match=err_msg):
-        model.setup_timeseries_meteo(
+        dflowfm_2dmodel_empty.setup_timeseries_meteo(
             meteo_type="rainfall_rate",
-            meteo_timeseries_fn="meteo_timeseries_incorrectly_parsed",
+            meteo_timeseries_fn="meteo_timeseries",
         )
 
 
