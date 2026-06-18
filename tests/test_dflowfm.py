@@ -662,7 +662,7 @@ def test_setup_timeseries_meteo_rejects_no_column_named_time(
     #  a bug in python 3.14 resulting in "list.index(x): x not in list. This can be
     #  reproduced with: `["a", "b", "c"].index("d")`. For now, only match the last
     #  part of the error message.
-    with pytest.raises(ValueError, match=" is not in list"):
+    with pytest.raises(ValueError, match=" not in list"):
         model.setup_timeseries_meteo(
             meteo_type="rainfall",
             meteo_timeseries_fn="no_time_index_meteo",
