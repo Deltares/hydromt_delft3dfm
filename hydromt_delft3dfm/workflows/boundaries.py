@@ -1,7 +1,6 @@
 """Workflows to prepare boundaries for Delft3D FM model."""
 
 import logging
-from pathlib import Path
 
 import geopandas as gpd
 import numpy as np
