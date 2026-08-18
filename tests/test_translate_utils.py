@@ -34,7 +34,12 @@ def test_varname_to_dflowfm_quantity_notpresent():
 
 
 def test_meteo_unit_from_type():
-    with pytest.raises(KeyError) as e:
+    unit = meteo_unit_from_type("airpressure")
+    assert unit == "N/m2"
+
+
+def test_meteo_unit_from_type_unsupported_quantity():
+    with pytest.raises(ValueError) as e:
         _ = meteo_unit_from_type("aaa")
     assert "Unsupported meteo_type 'aaa'. Supported values are" in str(e.value)
 
