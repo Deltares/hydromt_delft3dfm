@@ -51,11 +51,26 @@ DICT_VARNAME_TO_DFLOWFM = {
 }
 
 METEO_UNITS = {
-    "rainfall_rate": "mm/day",
-    "rainfall": "mm",
     "windxy": "m/s",
     "windx": "m/s",
     "windy": "m/s",
+    "airpressure": "N/m2",
+    "atmosphericpressure": "N/m2",
+    "charnock": "-",
+    "pseudoAirPressure": "N/m2",
+    "waterLevelCorrection": "m",
+    "rainfall_rate": "mm/day",
+    "rainfall": "mm",
+    "humidity": "-",
+    "cloudiness": "-",
+    "airdensity": "kg/m3",
+    "airtemperature": "◦C",
+    "dewpoint": "◦C",
+    "longwaveradiation": "W/m2",
+    "sensibleheatflux": "W/m2",
+    "latentheatflux": "W/m2",
+    "netsolarradiation": "W/m2",
+    "solarradiation": "W/m2",
 }
 
 
@@ -93,18 +108,11 @@ def meteo_unit_from_type(meteo_type: str):
     """Get the meteo units from the meteo type string.
 
     Type of meteorological forcing to prepare. Supported values are
-    ``"rainfall_rate"``, ``"rainfall"``, ``"windxy"``, ``"windx"``, and
-    ``"windy"`` (as of delft3dfm 2026.02). Might be resolved in
-    https://github.com/Deltares/hydromt_delft3dfm/issues/311.
+    documented in the D-Flow FM User Manual, Section C.5.3 and C.6.3.
+    All meteo quantities are supported as of delft3dfm 2027.01 (DIMRset 2.31.19).
 
     Units follow from the METEO_UNITS translation dictionary in the module
-    :py:meth:`~hydromt_delft3dfm.utils.translate_utils`.
-
-    Corresponding units are:
-
-    - ``"rainfall_rate"``: ``"mm/day"``
-    - ``"rainfall"``: ``"mm"``
-    - ``"windxy"``, ``"windx"``, ``"windy"``: ``"m/s"``
+    :py:meth:`~hydromt_delft3dfm.utils.translate_utils`.`
     """
     if meteo_type not in METEO_UNITS:
         raise ValueError(
