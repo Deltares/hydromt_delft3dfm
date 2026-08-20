@@ -6,7 +6,6 @@ on:
     types:
       - published
 
-
 jobs:
   build-artifacts:
     runs-on: ubuntu-latest
