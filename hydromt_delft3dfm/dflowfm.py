@@ -2745,18 +2745,10 @@ class DFlowFMModel(Model):
         Prepare space-uniform meteo forcing from a constant value.
 
         The forcing is written as a bcAscii meteorological forcing block.
-        See the D-Flow FM User Manual 1D2D, Section C.5.
+        See the D-Flow FM User Manual 1D2D/2D3D, Section C.5.
 
-        Quantity names in a bc block for meteorological forcings, Section C.5.3:
-
-        - rainfall
-        - rainfall_rate
-        - windxy
-        - windx
-        - windy
-
-        Use ``constant_value`` to quickly set up a spatially uniform and temporally
-        constant forcing for testing.
+        Supported quantity names in a bc forcing block for meteorological forcings are
+        documented in Section C.5.3/C.6.3.
 
         Call the function multiple times to set up different types of meteorological
         forcing, e.g. rainfall and wind.
@@ -2811,15 +2803,10 @@ class DFlowFMModel(Model):
         Prepare space-uniform meteo forcing from a timeseries file.
 
         The forcing is written as a bcAscii meteorological forcing block.
-        See the D-Flow FM User Manual 1D2D, Section C.5.
+        See the D-Flow FM User Manual 1D2D/2D3D, Section C.5.
 
-        Quantity names in a bc block for meteorological forcings, Section C.5.3:
-
-        - rainfall
-        - rainfall_rate
-        - windxy
-        - windx
-        - windy
+        Supported quantity names in a bc forcing block for meteorological forcings are
+        documented in Section C.5.3/C.6.3.
 
         Use ``meteo_timeseries_fn`` when providing a
         user-defined timeseries.
