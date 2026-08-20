@@ -8,7 +8,7 @@ The format is based on `Keep a Changelog`_, and this project adheres to
 
 UNRELEASED
 ==========
-This release supports Python 3.11 and up.
+This release supports Python 3.11 and up. Some new features are only available from D-Flow FM version 2027.01 onwards.
 
 Added
 -----
@@ -18,6 +18,7 @@ Added
 - Updated to hydrolib-core v1 (pydantic V2 API) (PR #226)
 - New method **setup_spatial_forcing** (PR #263)
 - New method **setup_constant_meteo** and **setup_timeseries_meteo** (PR #276)
+- Extended bcascii support to all meteo quantities (PR #324)
 
 Changed
 -------
