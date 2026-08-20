@@ -107,7 +107,7 @@ def meteo_unit_from_type(meteo_type: str):
     """Get the meteo units from the meteo type string.
 
     Type of meteorological forcing to prepare. Supported values are
-    documented in the D-Flow FM User Manual, Section C.5.3 and C.6.3.
+    documented in the D-Flow FM User Manual 1D2D/2D3D, Section C.5.3 and C.6.3.
     All meteo quantities are supported as of delft3dfm 2027.01 (DIMRset 2.31.19).
 
     Units follow from the METEO_UNITS translation dictionary in the module
