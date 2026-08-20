@@ -154,7 +154,15 @@ def write_branches_gui(
     # replace from/to have different dtypes, so explicitly change it
     branchtp = {"river": 0, "pipe": 2, "sewerconnection": 1}
     branches["branchtype"] = branches["branchtype"].replace(branchtp).astype(int)
-    branches = branches.replace(np.nan, None)
+    # TODO: this replacement was introduced when moving to hydrolib-core v1 (PR #226),
+    #  but it does not work when debugging
+    #  test_workflows_mesh.py::test_hydrolib_network_from_mesh with pandas 3,
+    #  so there are nans remaining, causing a pydantic ValidationError.
+    branches = branches.replace([np.nan], [None])
+    # TODO: drop columns with NaN instead. This is not desired, since the rows should
+    #  be passed with the NaN values as None (empty). Or maybe support this na_value
+    #  in hydrolib-core: https://github.com/Deltares/HYDROLIB-core/issues/1107
+    # branches = branches.loc[branches.notna().all(axis=1)]
     branchgui_model = BranchModel(branch=branches.to_dict("records"))
     branchgui_fn = branchgui_model._filename() + branchgui_model._ext()
     branchgui_model.filepath = join(savedir, branchgui_fn)
@@ -283,7 +291,9 @@ def write_crosssections(gdf: gpd.GeoDataFrame, savedir: str) -> Tuple[str, str]:
         columns={c: c.removeprefix("crsdef_") for c in gpd_crsdef.columns}
     )
     gpd_crsdef = gpd_crsdef.drop_duplicates(subset="id")
-    gpd_crsdef = gpd_crsdef.astype(object).replace(np.nan, None)
+    # add block brackets to make replacement also work in pandas 3
+    #  https://github.com/pandas-dev/pandas/issues/65892
+    gpd_crsdef = gpd_crsdef.replace([np.nan], [None])
     crsdef = CrossDefModel(definition=gpd_crsdef.to_dict("records"))
 
     crsdef_fn = crsdef._filename() + ".ini"
@@ -390,6 +400,7 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
             gdf["crsdef_frictionids"].str.split(";").apply(np.count_nonzero) > 1
         )
         gdf = gdf.loc[~_do_not_support]
+        # TODO: crsdef_frictionids contains just as many nans, might not be expected
         gdf["crsdef_frictionid"] = gdf["crsdef_frictionid"].fillna(
             gdf["crsdef_frictionids"]
         )
@@ -399,19 +410,20 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
         ["frictionid", "frictionvalue", "frictiontype"]
     ]
     frictions = frictions.drop_duplicates().dropna(how="all")
-    frictions = frictions.replace(np.nan, None)
+    # Drop columns with None (pandas 2) or NaN (pandas 3) before looping over the rows.
+    # TODO: this also drops rows that only have a NaN/None for the frictiontype column
+    frictions = frictions.loc[frictions.notna().all(axis=1)]
 
     friction_fns = []
     # create a new friction
     for i, row in frictions.iterrows():
-        if row.frictionid is not None and row.frictionvalue is not None:
-            fric_model = FrictionModel(global_=row.to_dict())
-            fric_name = f"{row.frictionid}"
-            fric_filename = f"{fric_model._filename()}_{fric_name}" + fric_model._ext()
-            fric_model.filepath = join(savedir, fric_filename)
-            fric_model.save(fric_model.filepath, recurse=False)
-            # save relative path to mdu
-            friction_fns.append(fric_filename)
+        fric_model = FrictionModel(global_=row.to_dict())
+        fric_name = f"{row.frictionid}"
+        fric_filename = f"{fric_model._filename()}_{fric_name}" + fric_model._ext()
+        fric_model.filepath = join(savedir, fric_filename)
+        fric_model.save(fric_model.filepath, recurse=False)
+        # save relative path to mdu
+        friction_fns.append(fric_filename)
 
     return friction_fns
 
@@ -495,7 +507,9 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     else:
         gdf_cmp = pd.concat(list_df, axis=0)
     # replace nan with None
-    gdf = gdf.replace(np.nan, None)
+    # add block brackets to make replacement also work in pandas 3
+    #  https://github.com/pandas-dev/pandas/issues/65892
+    gdf = gdf.replace([np.nan], [None])
 
     # Write structures
     structures = StructureModel(
