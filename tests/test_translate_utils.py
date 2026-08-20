@@ -45,10 +45,7 @@ def test_meteo_unit_from_type_unsupported_quantity():
 
 
 def test_consistency_varnames_units():
-    exceptions = ["sea_surface_temperature"]
     for quantity in DICT_VARNAME_TO_DFLOWFM.values():
         if quantity in METEO_UNITS.keys():
-            continue
-        if quantity in exceptions:
             continue
         raise KeyError(f"quantity '{quantity}' not in METEO_UNITS keys.")

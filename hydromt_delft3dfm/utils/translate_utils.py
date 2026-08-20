@@ -27,7 +27,6 @@ DICT_VARNAME_TO_DFLOWFM = {
     "v10n": "windy",  # CDS varname: 10m_v_component_of_neutral_wind
     "msl": "airpressure",  # CDS varname: mean_sea_level_pressure
     "chnk": "charnock",  # CDS varname: charnock
-    "sst": "sea_surface_temperature",  # CDS varname: sea_surface_temperature
     "t2m": "airtemperature",  # CDS varname: 2m_temperature
     # TODO: when adding dewpointtemperature/netsolarradiation/others,
     #  also update `mdu.physics.temperature = 5`
