@@ -48,7 +48,7 @@ sillHeightMin                  = 0.0                                            
 makeOrthoCenters               = 0                                                              # (1: yes, 0: no) switch from circumcentres to orthocentres in geominit.
 dCenterInside                  = 1.0                                                            # limit cell center; 1.0:in cell <-> 0.0:on c/g.
 baMin                          = 1e-06                                                          # Minimum grid cell area [m2], i.c.m. cutcells.
-openBoundaryTolerance          = 3.0                                                            # Search tolerance factor between boundary polyline and grid cells. [Unit: in cell size units (i.e., not meters)].
+openBoundaryTolerance          = 6.0                                                            # Search tolerance factor between boundary polyline and grid cells. [Unit: in cell size units (i.e., not meters)].
 renumberFlowNodes              = 1                                                              # Renumber the flow nodes (1: yes, 0: no).
 kmx                            = 0                                                              # Number of vertical layers.
 layerType                      = 1                                                              # 1= sigma-layers, 2 = z-layers, 3 = use VertplizFile.
