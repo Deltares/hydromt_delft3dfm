@@ -1,0 +1,19 @@
+gebco_elev:
+  rename:
+    gebco: elevtn
+  unit_mult:
+    elevtn: 1.0
+  crs: 4326
+  data_type: RasterDataset
+  driver: raster
+  meta:
+    category: topography
+    paper_doi: 10.5285/a29c5465-b138-234d-e053-6c86abc040b9
+    paper_ref: Weatherall et al (2020)
+    source_license: https://www.gebco.net/data_and_products/gridded_bathymetry_data/#a1
+    source_url: https://www.bodc.ac.uk/data/open_download/gebco/gebco_2020/geotiff/
+    source_version: 2020
+    unit: m+MSL
+    comment_rename: temporary entry since original gebco file only contains gebco varname, which should be elevtn. We rename it here
+    comment_unit_mult: convert from int to float (to avoid FM error "GeoTIFF files with non-float raster bands are currently not supported")
+  path: data/gebco.tif
