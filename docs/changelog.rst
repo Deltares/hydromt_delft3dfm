@@ -19,6 +19,7 @@ Added
 - New method **setup_spatial_forcing** (PR #263)
 - New method **setup_constant_meteo** and **setup_timeseries_meteo** (PR #276)
 - Extended bcascii support to all meteo quantities (PR #324)
+- Support for hydrolib-core v1.1+ (new extforcefile) (PR #334)
 
 Changed
 -------

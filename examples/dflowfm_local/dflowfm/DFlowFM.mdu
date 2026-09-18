@@ -107,8 +107,6 @@ chkAdvd                   = 0.1    # Check advection terms if depth < chkadvdp.
 teta0                     = 0.55   # Theta (implicitness) of time integration, 0.5 < Theta < 1.0.
 qhRelax                   = 0.01
 cstBnd                    = 0      # Delft3D-FLOW type velocity treatment near boundaries for small coastal models (1) or not (0).
-maxitVerticalForesterSal  = 0      # Forester iterations for salinity (0: no vertical filter for salinity, > 0: max nr of iterations).
-maxitVerticalForesterTem  = 0      # Forester iterations for temperature (0: no vertical filter for temperature, > 0: max nr of iterations).
 turbulenceModel           = 3      # 0=no, 1 = constant, 2 = algebraic, 3 = k-epsilon, 4 = k-tau.
 turbulenceAdvection       = 3      # Turbulence advection (0=no, 3 = horizontal explicit vertical implicit).
 antiCreep                 = 0      # Include anti-creep calculation (0: no, 1: yes).

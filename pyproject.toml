@@ -17,9 +17,8 @@ dependencies = [
     "numpy>=2.0.0", # latest <2 version is already EOL
     "pandas>=2.0.0, <3", # TODO: remove temporary upper limit: https://github.com/Deltares/hydromt_delft3dfm/issues/229
     "xarray",
-    # hydrolib-core>=1.0.0 has new Pydantic API, support for pandas 3 and support for Python 3.14
-    # hydrolib-core>=1.0.1 reverts some incompatibilties introduced in v1
-    "hydrolib-core>=1.0.1",
+    # hydrolib-core>=1.4 is latest version with most up to date extforce status/warnings
+    "hydrolib-core>=1.4",
     "xugrid>=0.15.2", # consistent projected/geographic properties and crs attributes in the resulting datasets
     # meshkernel>=8.3.0 supports interpolation of arbitrary properties like bathymetry
     "meshkernel>=8.3.0",
@@ -28,6 +27,7 @@ dependencies = [
     "scipy",
     "pyflwdir>=0.5.12", #pyflwdir 0.5.12 fixed river widths computation
     "networkx",
+    "affine<3", # TODO: temporary pin on affine, to be fixed in https://github.com/Deltares/hydromt/issues/1543
 ]
 requires-python = ">=3.11"
 readme = "README.rst"
@@ -111,9 +111,6 @@ filterwarnings = [
 	"error",
 	# temporarily ignore numpy incompatibility, more info in https://github.com/Deltares/dfm_tools/issues/1243
 	"ignore:numpy.ndarray size changed:RuntimeWarning",
-    # filter until fix of https://github.com/Deltares/HYDROLIB-core/issues/1098
-	# note the use of single quote below to denote "raw" strings in TOML
-	'ignore:datetime.datetime.utcnow\(\) is deprecated:DeprecationWarning',
     # TODO: ignore xugrid ugrid infer xy coords UserWarning until https://github.com/Deltares/HYDROLIB-core/issues/577 is fixed
 	# note the use of single quote below to denote "raw" strings in TOML
 	'''ignore:No standard_name of \('projection_x_coordinate':UserWarning''',
@@ -122,6 +119,14 @@ filterwarnings = [
     # ignore "Geometry is in a geographic CRS. Results from interpolate/length are likely incorrect"
     # since length>0 is still valid and midpoint interpolation (0.5 normalized) is also still valid
     "ignore:Geometry is in a geographic CRS:UserWarning",
+    # TODO: ignore hydrolib-core warning until https://github.com/Deltares/HYDROLIB-core/issues/1139 is fixed
+    "ignore:Setting the shape on a NumPy array has been deprecated in NumPy 2.5:DeprecationWarning",
+    # TODO: filtering extforce deprecationwarnings, to be fixed in https://github.com/Deltares/hydromt_delft3dfm/issues/332
+	# note the use of single quote below to denote "raw" strings in TOML
+    "ignore:Operand value 'O' is deprecated; use 'override' instead:DeprecationWarning",
+    'ignore:`InitialField` \(and `\[Initial\]` blocks in inifield files\):DeprecationWarning',
+    'ignore:`ParameterField` \(and `\[Parameter\]` blocks in inifield files\):DeprecationWarning',
+    "ignore:`ExtModel.meteo` is deprecated; use `ExtModel.spatial` instead:DeprecationWarning",
 	]
 markers = [
 	"slow: slow tests",
