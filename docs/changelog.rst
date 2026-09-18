@@ -20,7 +20,7 @@ Added
 - New method **setup_constant_meteo** and **setup_timeseries_meteo** (PR #276)
 - Extended bcascii support to all meteo quantities (PR #324)
 - Support for hydrolib-core v1.1+ (new extforcefile) (PR #334)
-- Proper support for Python 3.14 (PR #)
+- Proper support for Python 3.14 (PR #335)
 
 Changed
 -------
