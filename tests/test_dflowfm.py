@@ -1,13 +1,15 @@
+import shutil
+from os import makedirs
 from os.path import abspath, basename, dirname, join
-from os import makedirs, rename
+from pathlib import Path
+
+import numpy as np
+import pytest
+import xugrid as xu
 from hydromt.data_catalog import DataCatalog
 from hydromt.error import NoDataException
+
 from hydromt_delft3dfm import DFlowFMModel
-import numpy as np
-from pathlib import Path
-import pytest
-import shutil
-import xugrid as xu
 
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 TOLERANCE = 1e-6
@@ -46,7 +48,7 @@ def _model_update_datacatalog(model, datacat_contents):
 
 def test_write_read_empty_model(tmpdir):
     """
-    writing a model without a mesh is prohibited since
+    Writing a model without a mesh is prohibited since
     https://github.com/Deltares/hydromt_delft3dfm/issues/270
     """
     crs = 3857
@@ -60,7 +62,7 @@ def test_write_read_empty_model(tmpdir):
 
 def test_read_empty_root_folder(tmpdir):
     """
-    if writing the model fails like in test_write_read_empty_model, a root folder is
+    If writing the model fails like in test_write_read_empty_model, a root folder is
     still created (without any files). Give a proper error in this case. Added in
     https://github.com/Deltares/hydromt_delft3dfm/issues/270
     """
@@ -235,7 +237,7 @@ def test_write_read_model_without_geoms_crs(tmpdir):
 
 def test_init_dflowfmmodel_mode_write_crs_none(tmpdir):
     """
-    tests whether the crs is parsed properly
+    Tests whether the crs is parsed properly
     https://github.com/Deltares/hydromt_delft3dfm/issues/247
     """
     root = join(tmpdir, "dflowfm_example")
@@ -249,7 +251,7 @@ def test_init_dflowfmmodel_mode_write_crs_none(tmpdir):
 
 def test_init_dflowfmmodel_mode_read_crs_none():
     """
-    tests whether the crs is parsed properly
+    Tests whether the crs is parsed properly
     https://github.com/Deltares/hydromt_delft3dfm/issues/247
     """
     root = join(EXAMPLEDIR, "dflowfm_local")
@@ -261,7 +263,7 @@ def test_init_dflowfmmodel_mode_read_crs_none():
 
 def test_init_dflowfmmodel_mode_read_crs_notnone(tmpdir):
     """
-    tests whether the crs is parsed properly
+    Tests whether the crs is parsed properly
     https://github.com/Deltares/hydromt_delft3dfm/issues/247
     """
     # TODO: the model crs is actually 32647, but is overwritten here
@@ -323,7 +325,7 @@ def test_setup_mesh2d_refine(tmpdir):
 
 def test_setup_rivers_from_dem(tmpdir):
     """
-    based on test_model_build[piave]
+    Based on test_model_build[piave]
     also raises the NumbaTypeSafetyWarning to be resolved in
     https://github.com/Deltares/hydromt_delft3dfm/issues/289
     """
@@ -424,7 +426,7 @@ def test_setup_culverts(tmpdir):
 
 def test_write_structures(tmpdir):
     """
-    failed before for dflowfm_local model due to nan values in gdf
+    Failed before for dflowfm_local model due to nan values in gdf
     https://github.com/Deltares/hydromt_delft3dfm/issues/150
     """
     model = DFlowFMModel(root=join(EXAMPLEDIR, "dflowfm_local"), mode="r")

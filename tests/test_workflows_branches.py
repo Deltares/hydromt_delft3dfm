@@ -1,7 +1,8 @@
-import pytest
 import geopandas as gpd
+import pytest
+from shapely import LineString, MultiPoint, Point
+
 from hydromt_delft3dfm.workflows.branches import reduce_gdf_precision
-from shapely import LineString, Point, MultiPoint
 
 
 def test_reduce_gdf_precision():

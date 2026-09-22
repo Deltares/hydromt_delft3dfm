@@ -2,11 +2,12 @@
 
 import logging
 from os.path import abspath, dirname, join
-import pytest
-
-from hydromt.readers import read_workflow_yaml
-from hydromt_delft3dfm import DFlowFMModel
 from sys import platform
+
+import pytest
+from hydromt.readers import read_workflow_yaml
+
+from hydromt_delft3dfm import DFlowFMModel
 
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 
@@ -96,7 +97,7 @@ def test_model_update(tmp_path):
     _, _, steps = read_workflow_yaml(config)
 
     # test update method, compare network size before and after refinement
-    root = join(EXAMPLEDIR, f"dflowfm_piave")
+    root = join(EXAMPLEDIR, "dflowfm_piave")
     logger = logging.getLogger("hydromt")
     logger.setLevel(logging.DEBUG)
     model = DFlowFMModel(
