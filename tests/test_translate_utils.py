@@ -1,12 +1,12 @@
 import pytest
-from hydromt_delft3dfm.utils.translate_utils import (
-    meteo_unit_from_type,
-    varname_to_dflowfm_quantity,
-)
+
 from hydromt_delft3dfm.utils.translate_utils import (
     DICT_VARNAME_TO_DFLOWFM,
     METEO_UNITS,
+    meteo_unit_from_type,
+    varname_to_dflowfm_quantity,
 )
+
 
 def test_varname_to_dflowfm_quantity_hydromt():
     varname = "precip"

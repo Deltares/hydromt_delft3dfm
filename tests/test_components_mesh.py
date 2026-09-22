@@ -6,8 +6,10 @@ Created on Thu Apr 23 02:38:07 2026
 """
 
 import os
+
 import numpy as np
 import pytest
+
 from hydromt_delft3dfm import DFlowFMModel
 
 
