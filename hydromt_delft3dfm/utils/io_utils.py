@@ -1246,7 +1246,11 @@ def write_timeseries_meteo(
 
     """
     # filter for 2d meteo
-    forcing = {key.lstrip("meteo_"): forcing[key] for key in forcing.keys() if key.startswith("meteo")}
+    forcing = {
+        key.lstrip("meteo_"): forcing[key]
+        for key in forcing.keys()
+        if key.startswith("meteo")
+    }
     if len(forcing) == 0:
         return
 
