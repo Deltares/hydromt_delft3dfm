@@ -1,8 +1,10 @@
 from os.path import abspath, dirname, join
+
 import geopandas as gpd
 import pandas as pd
-import hydromt_delft3dfm.workflows.crosssections as xsec # needed to access private functions
-from shapely import Point, LineString
+from shapely import LineString, Point
+
+import hydromt_delft3dfm.workflows.crosssections as xsec  # needed to access private functions
 
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 

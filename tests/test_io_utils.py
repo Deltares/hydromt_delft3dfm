@@ -1,6 +1,8 @@
-from hydromt_delft3dfm.utils.io_utils import read_branches_gui, write_branches_gui
 import geopandas as gpd
 from hydrolib.core.dflowfm.mdu import FMModel
+
+from hydromt_delft3dfm.utils.io_utils import read_branches_gui, write_branches_gui
+
 
 def test_read_branches_gui():
     """
