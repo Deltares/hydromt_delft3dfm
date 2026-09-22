@@ -27,7 +27,7 @@ dependencies = [
     "scipy",
     "pyflwdir>=0.5.12", #pyflwdir 0.5.12 fixed river widths computation
     "networkx",
-    "affine<3", # TODO: temporary pin on affine, to be fixed in https://github.com/Deltares/hydromt/issues/1543
+    "affine<3", # TODO: temporary pin on affine, to be fixed in https://github.com/Deltares/hydromt_delft3dfm/issues/337
 ]
 requires-python = ">=3.11"
 readme = "README.rst"
