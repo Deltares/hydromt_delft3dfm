@@ -771,7 +771,7 @@ def test_setup_rainfall_from_uniform_timeseries_deprecated(
         )
 
 def test_setup_timeseries_meteo_multiple_quantities(dflowfm_2dmodel_empty):
-
+    # fixes https://github.com/Deltares/hydromt_delft3dfm/issues/336
     # the model_root is a tmpdir named to the test that calls the fixture
     model_root = dflowfm_2dmodel_empty.root.path
     # create a meteo timeseries with two quantities to enable applying
