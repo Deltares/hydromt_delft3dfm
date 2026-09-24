@@ -593,7 +593,6 @@ def test_setup_timeseries_meteo_too_short_timeseries(
         ],
     )
 
-    # with pytest.raises(ValueError, match="must contain at least two timesteps"):
     dflowfm_2dmodel_empty.setup_timeseries_meteo(
         meteo_type="rainfall",
         meteo_timeseries_fn="meteo_timeseries",
@@ -610,6 +609,31 @@ def test_setup_timeseries_meteo_too_short_timeseries(
     # assert resulting timeseries
     ts = dflowfm_2dmodel_empty.forcing.data["meteo_rainfall"].to_numpy()
     assert np.allclose(ts, [[2., 2., 0.]])
+
+
+def test_setup_timeseries_meteo_timeseries_wrongperiod(
+     caplog,
+    dflowfm_2dmodel_empty,
+):
+    # the model_root is a tmpdir named to the test that calls the fixture
+    model_root = dflowfm_2dmodel_empty.root.path
+    # create a meteo timeseries for the wrong period to trigger the error
+    _write_csv(
+        model_root,
+        [
+            "time,rainfall",
+            "2010-01-01 00:00,2.0",
+            "2010-01-01 12:00,2.0",
+        ],
+    )
+
+    # Requested time range (2020-01-01 00:00:00, 2020-01-02 00:00:00) has no overlap
+    # with available range '2010-01-01 00:00:00' to '2010-01-01 12:00:00'.
+    with pytest.raises(NoDataException, match="has no overlap with available range"):
+        dflowfm_2dmodel_empty.setup_timeseries_meteo(
+            meteo_type="rainfall",
+            meteo_timeseries_fn="meteo_timeseries",
+        )
 
 
 def test_setup_timeseries_meteo_rejects_non_equidistant_timeseries(
@@ -769,3 +793,96 @@ def test_setup_rainfall_from_uniform_timeseries_deprecated(
             fill_value=0.0,
             is_rate=True,
         )
+
+def test_setup_timeseries_meteo_multiple_quantities(dflowfm_2dmodel_empty):
+    # fixes https://github.com/Deltares/hydromt_delft3dfm/issues/336
+    # the model_root is a tmpdir named to the test that calls the fixture
+    model_root = dflowfm_2dmodel_empty.root.path
+    # create a meteo timeseries with two quantities to enable applying
+    # setup_timeseries_meteo for two quantities
+    # meteo_timeseries.csv is predefined in the data_catalog.yaml in the
+    # dflowfm_2dmodel_empty fixture
+    _write_csv(
+        model_root,
+        [
+            "time,rainfall,airtemperature",
+            "2020-01-01 00:00,2.0,10",
+            "2020-01-02 00:00,2.0,10",
+        ],
+    )
+
+    dflowfm_2dmodel_empty.setup_timeseries_meteo(
+            meteo_type="rainfall",
+            meteo_timeseries_fn="meteo_timeseries",
+        )
+
+    dflowfm_2dmodel_empty.setup_timeseries_meteo(
+            meteo_type="airtemperature",
+            meteo_timeseries_fn="meteo_timeseries",
+        )
+
+    # check if both timeseries have been set up correctly
+    assert "meteo_rainfall" in dflowfm_2dmodel_empty.forcing.data
+    assert "meteo_airtemperature" in dflowfm_2dmodel_empty.forcing.data 
+
+    # write and read
+    dflowfm_2dmodel_empty.write()
+    dflowfm_2dmodel = DFlowFMModel(root=model_root, mode="r")
+
+    # check if both timeseries have been set up correctly
+    assert "meteo_rainfall" in dflowfm_2dmodel.forcing.data
+    assert "meteo_airtemperature" in dflowfm_2dmodel.forcing.data 
+
+
+def test_update_meteo_to_new_period(dflowfm_2dmodel_empty):
+    # the model_root is a tmpdir named to the test that calls the fixture
+    model_root = dflowfm_2dmodel_empty.root.path
+    # create a meteo timeseries csv
+    # meteo_timeseries.csv is predefined in the data_catalog.yaml in the
+    # dflowfm_2dmodel_empty fixture
+    _write_csv(
+        model_root,
+        [
+            "time,rainfall",
+            "2020-01-01 00:00,2.0",
+            "2020-01-02 00:00,2.0",
+        ],
+    )
+    dflowfm_2dmodel_empty.setup_timeseries_meteo(
+            meteo_type="rainfall",
+            meteo_timeseries_fn="meteo_timeseries",
+        )
+    dflowfm_2dmodel_empty.write()
+
+    # check if the initial timeseries has the correct time unit
+    assert dflowfm_2dmodel_empty.forcing.data["meteo_rainfall"].time_unit == 'days since 2020-01-01 00:00:00'
+
+
+    # overwrite the meteo timeseries with new data
+    _write_csv(
+        model_root,
+        [
+            "time,rainfall",
+            "2021-01-01 00:00,5.0",
+            "2021-01-02 00:00,5.0",
+        ],
+    )
+
+    # Open the existing model in read/write mode.
+    updated_model = DFlowFMModel(root=model_root, mode="r+", data_libs=join(model_root, "datacatalog.yaml"))
+
+    # Update the model configuration and timeseries to the new period.
+    updated_model.setup_config(
+        **{
+            "time.startdatetime": "20210101",
+            "time.stopdatetime": "20210102",
+        }
+    )
+    updated_model.setup_timeseries_meteo(
+        meteo_type="rainfall",
+        meteo_timeseries_fn="meteo_timeseries",
+    )
+    updated_model.write()
+
+    # check if the updated timeseries has the correct time unit
+    assert updated_model.forcing.data["meteo_rainfall"].time_unit == 'days since 2021-01-01 00:00:00'

@@ -46,6 +46,15 @@ If you add any dependencies or change anything in the package configuration, you
 
     $ pixi lock
 
+Pre-commit hooks
+----------------
+
+To ensure code quality and consistency, it is recommended to set up pre-commit hooks. This can be done by running:
+
+.. code-block:: console
+
+    $ pixi run pre-commit
+
 Generating the docs
 -------------------
 
