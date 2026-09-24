@@ -20,20 +20,6 @@ def _write_csv(outputdir, lines):
     with open(meteo_fn, "w") as f:
         f.write("\n".join(lines))
 
-    datacat_file = join(outputdir, "datacatalog.yaml")
-    with open(datacat_file, "w") as f:
-        f.write("""
-    meteo_timeseries:
-      data_type: DataFrame
-      uri: meteo_timeseries.csv
-      driver:
-        name: pandas
-        options:
-          index_col: 0
-          parse_dates: true
-    """
-                )
-
 
 def _model_update_datacatalog(model, datacat_contents):
     model_root = model.root.path
