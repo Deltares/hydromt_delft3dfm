@@ -784,11 +784,12 @@ def test_setup_rainfall_from_uniform_timeseries_deprecated(
             is_rate=True,
         )
 
-def test_setup_multiple_timeseries_meteo(dflowfm_2dmodel_empty):
+def test_setup_timeseries_meteo_multiple_quantities(dflowfm_2dmodel_empty):
 
     # the model_root is a tmpdir named to the test that calls the fixture
     model_root = dflowfm_2dmodel_empty.root.path
-    # create a non-equidistant meteo timeseries to trigger the error
+    # create a meteo timeseries with two quantities to enable applying
+    # setup_timeseries_meteo for two quantities
     # meteo_timeseries.csv is predefined in the data_catalog.yaml in the
     # dflowfm_2dmodel_empty fixture
     _write_csv(
@@ -823,48 +824,33 @@ def test_setup_multiple_timeseries_meteo(dflowfm_2dmodel_empty):
     assert "meteo_airtemperature" in dflowfm_2dmodel.forcing.data 
 
 
-def test_update_meteo_to_new_period(tmpdir):
-
-    # write the initial meteo timeseries
+def test_update_meteo_to_new_period(dflowfm_2dmodel_empty):
+    # the model_root is a tmpdir named to the test that calls the fixture
+    model_root = dflowfm_2dmodel_empty.root.path
+    # create a meteo timeseries csv
+    # meteo_timeseries.csv is predefined in the data_catalog.yaml in the
+    # dflowfm_2dmodel_empty fixture
     _write_csv(
-            str(tmpdir),
-            [
-                "time,rainfall",
-                "2020-01-01 00:00,2.0",
-                "2020-01-02 00:00,2.0",
-            ],
-        )
-
-    # create the model with the initial configuration
-    model = DFlowFMModel(
-        root=str(tmpdir),
-        crs=3857,
-        data_libs=join(str(tmpdir), "datacatalog.yaml"),
-        mode="w",
+        model_root,
+        [
+            "time,rainfall",
+            "2020-01-01 00:00,2.0",
+            "2020-01-02 00:00,2.0",
+        ],
     )
-    model.setup_config(
-        **{
-            "time.startdatetime": "20200101",
-            "time.stopdatetime": "20200102",
-        }
-    )
-    model.setup_timeseries_meteo(
+    dflowfm_2dmodel_empty.setup_timeseries_meteo(
             meteo_type="rainfall",
             meteo_timeseries_fn="meteo_timeseries",
         )
-    model.setup_mesh2d(
-            region=dict(bbox=[12.4331, 46.4661, 12.5212, 46.5369]),
-            res=5000,
-        )
-    model.write()
+    dflowfm_2dmodel_empty.write()
 
     # check if the initial timeseries has the correct time unit
-    assert model.forcing.data["meteo_rainfall"].time_unit == 'days since 2020-01-01 00:00:00'
+    assert dflowfm_2dmodel_empty.forcing.data["meteo_rainfall"].time_unit == 'days since 2020-01-01 00:00:00'
 
 
     # overwrite the meteo timeseries with new data
     _write_csv(
-        str(tmpdir),
+        model_root,
         [
             "time,rainfall",
             "2021-01-01 00:00,5.0",
@@ -873,7 +859,7 @@ def test_update_meteo_to_new_period(tmpdir):
     )
 
     # Open the existing model in read/write mode.
-    updated_model = DFlowFMModel(root=str(tmpdir), mode="r+", data_libs=join(str(tmpdir), "datacatalog.yaml"))
+    updated_model = DFlowFMModel(root=model_root, mode="r+", data_libs=join(model_root, "datacatalog.yaml"))
 
     # Update the model configuration and timeseries to the new period.
     updated_model.setup_config(
