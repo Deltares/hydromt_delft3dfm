@@ -1204,8 +1204,6 @@ def read_timeseries_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
         )
     forcing = df.forcingfile.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
-    # Filter for the current nodes
-    df_forcing = df_forcing[np.isin(df_forcing.name, "global")]
 
     data, dims, coords, bc = _read_forcing_dataframe(
         df_forcing,
@@ -1246,11 +1244,7 @@ def write_timeseries_meteo(
 
     """
     # filter for 2d meteo
-    forcing = {
-        key.lstrip("meteo_"): forcing[key]
-        for key in forcing.keys()
-        if key.startswith("meteo")
-    }
+    forcing = {key: forcing[key] for key in forcing.keys() if key.startswith("meteo")}
     if len(forcing) == 0:
         return
 
@@ -1291,8 +1285,7 @@ def write_timeseries_meteo(
             extdicts.append(ext)
 
     # write forcing file
-    forcing_model = ForcingModel()
-    forcing_model.forcing = bcdict
+    forcing_model = ForcingModel(forcing=bcdict)
     forcing_model.save(join(savedir, forcing_fn), recurse=True)
 
     # write external forcing file
