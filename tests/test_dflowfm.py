@@ -593,7 +593,6 @@ def test_setup_timeseries_meteo_too_short_timeseries(
         ],
     )
 
-    # with pytest.raises(ValueError, match="must contain at least two timesteps"):
     dflowfm_2dmodel_empty.setup_timeseries_meteo(
         meteo_type="rainfall",
         meteo_timeseries_fn="meteo_timeseries",
@@ -610,6 +609,33 @@ def test_setup_timeseries_meteo_too_short_timeseries(
     # assert resulting timeseries
     ts = dflowfm_2dmodel_empty.forcing.data["meteo_rainfall"].to_numpy()
     assert np.allclose(ts, [[2., 2., 0.]])
+
+
+def test_setup_timeseries_meteo_timeseries_wrongperiod(
+     caplog,
+    dflowfm_2dmodel_empty,
+):
+    # the model_root is a tmpdir named to the test that calls the fixture
+    model_root = dflowfm_2dmodel_empty.root.path
+    # create a meteo timeseries with a single timeseries to trigger the error
+    _write_csv(
+        model_root,
+        [
+            "time,rainfall",
+            "2009-12-31 00:00,2.0",
+            "2009-12-31 12:00,2.0",
+            "2010-01-01 00:00,2.0",
+            "2010-01-01 12:00,2.0",
+        ],
+    )
+
+    # Requested time range (2020-01-01 00:00:00, 2020-01-02 00:00:00) has no overlap
+    # with available range '2009-12-31 00:00:00' to '2010-01-01 12:00:00'.
+    with pytest.raises(NoDataException, match="has no overlap with available range"):
+        dflowfm_2dmodel_empty.setup_timeseries_meteo(
+            meteo_type="rainfall",
+            meteo_timeseries_fn="meteo_timeseries",
+        )
 
 
 def test_setup_timeseries_meteo_rejects_non_equidistant_timeseries(
