@@ -617,20 +617,18 @@ def test_setup_timeseries_meteo_timeseries_wrongperiod(
 ):
     # the model_root is a tmpdir named to the test that calls the fixture
     model_root = dflowfm_2dmodel_empty.root.path
-    # create a meteo timeseries with a single timeseries to trigger the error
+    # create a meteo timeseries for the wrong period to trigger the error
     _write_csv(
         model_root,
         [
             "time,rainfall",
-            "2009-12-31 00:00,2.0",
-            "2009-12-31 12:00,2.0",
             "2010-01-01 00:00,2.0",
             "2010-01-01 12:00,2.0",
         ],
     )
 
     # Requested time range (2020-01-01 00:00:00, 2020-01-02 00:00:00) has no overlap
-    # with available range '2009-12-31 00:00:00' to '2010-01-01 12:00:00'.
+    # with available range '2010-01-01 00:00:00' to '2010-01-01 12:00:00'.
     with pytest.raises(NoDataException, match="has no overlap with available range"):
         dflowfm_2dmodel_empty.setup_timeseries_meteo(
             meteo_type="rainfall",
