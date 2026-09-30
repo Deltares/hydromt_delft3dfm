@@ -42,6 +42,7 @@ Fixed
 - consistently initialize manhole_up/manhole_dn as None instead of empty string (PR #287)
 - fixed warnings emmitted by hydromt_delft3dfm (PR #288)
 - fixed river widths computation by requiring newer pyflwdir version (PR #297)
+- prevent overwriting of extblocks with multiple scalar meteo quantities (PR #338)
 
 
 v0.3.0 (18 October 2024)

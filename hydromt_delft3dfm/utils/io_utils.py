@@ -1204,12 +1204,10 @@ def read_timeseries_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
         )
     forcing = df.forcingfile.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
-    # Filter for the current nodes
-    df_forcing = df_forcing[np.isin(df_forcing.name, "global")]
 
     data, dims, coords, bc = _read_forcing_dataframe(
         df_forcing,
-        index_values=["global"],
+        index_values=df_forcing.name.values,
         quantity=quantity,
     )
 
@@ -1220,7 +1218,7 @@ def read_timeseries_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
         coords=coords,
         attrs=bc,
     )
-    da_out.name = f"{quantity}"
+    da_out.name = f"meteo_{quantity}"
 
     return da_out
 
@@ -1250,6 +1248,7 @@ def write_timeseries_meteo(
     if len(forcing) == 0:
         return
 
+    forcing_fn = f"meteo_{ForcingModel()._filename()}.bc"
     extdicts = list()
     bcdict = list()
     # Loop over forcing dict
@@ -1258,6 +1257,7 @@ def write_timeseries_meteo(
             bc = da.attrs.copy()
             # Meteo
             ext = dict()
+            ext["forcingfile"] = forcing_fn
             ext["quantity"] = bc["quantity"]
             ext["forcingFileType"] = "bcAscii"
             # FIXME: hardcoded, decide whether use bcAscii or netcdf in setup
@@ -1282,14 +1282,11 @@ def write_timeseries_meteo(
             bc.pop("quantity")
             bc.pop("units")
             bcdict.append(bc)
+            extdicts.append(ext)
 
+    # write forcing file
     forcing_model = ForcingModel(forcing=bcdict)
-    forcing_fn = f"meteo_{forcing_model._filename()}.bc"
     forcing_model.save(join(savedir, forcing_fn), recurse=True)
-
-    # add forcingfile to ext
-    ext["forcingfile"] = forcing_fn
-    extdicts.append(ext)
 
     # write external forcing file
     if ext_fn is not None:
