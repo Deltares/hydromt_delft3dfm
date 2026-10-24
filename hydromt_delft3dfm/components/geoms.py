@@ -119,7 +119,7 @@ class Delft3DFMGeomsComponent(GeomsComponent):
 
         # Write geojson equivalent of all objects.
         # Note that these files are not directly used when updating the model
-        super().write(precision=None)
+        super().write()
 
         # Write dfm files
         savedir = dirname(join(self.root.path, self.model.mdu._filename))
