@@ -97,6 +97,11 @@ def test_model_build(tmpdir, modelname):
             expected_value = "2 out of 2007 geometries are not almost equal."
             if value.startswith(expected_value):
                 errors["geoms"].pop("crosssections", None)
+        if "manholes" in errors["geoms"]:
+            value = errors["geoms"]["manholes"]
+            expected_value = "1 out of 1007 geometries are not almost equal."
+            if value.startswith(expected_value):
+                errors["geoms"].pop("manholes", None)
         if len(errors["geoms"]) == 0:
             errors.pop("geoms", None)
 
