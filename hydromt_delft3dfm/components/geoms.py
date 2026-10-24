@@ -200,4 +200,4 @@ class Delft3DFMGeomsComponent(GeomsComponent):
         """
         eq, errors = super().test_equal(other)
 
-        return eq, {"geoms": errors}
+        return eq, errors
