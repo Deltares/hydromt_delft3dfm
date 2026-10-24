@@ -1394,9 +1394,9 @@ def write_spatial_forcing(
         ext["forcingfiletype"] = "netcdf"
         # only allow linearSpaceTime for spatial forcing writing
         ext["interpolationmethod"] = "linearSpaceTime"
-        # TODO: also support operand=+
+        # TODO: also support operand=add
         #  https://github.com/Deltares/hydromt_delft3dfm/issues/301
-        ext["operand"] = "O"
+        ext["operand"] = "override"
         extdicts.append(ext)
 
     # write external forcing file

@@ -119,7 +119,6 @@ filterwarnings = [
     "ignore:Geometry is in a geographic CRS:UserWarning",
     # TODO: filtering extforce deprecationwarnings, to be fixed in https://github.com/Deltares/hydromt_delft3dfm/issues/332
 	# note the use of single quote below to denote "raw" strings in TOML
-    "ignore:Operand value 'O' is deprecated; use 'override' instead:DeprecationWarning",
     'ignore:`InitialField` \(and `\[Initial\]` blocks in inifield files\):DeprecationWarning',
     'ignore:`ParameterField` \(and `\[Parameter\]` blocks in inifield files\):DeprecationWarning',
     "ignore:`ExtModel.meteo` is deprecated; use `ExtModel.spatial` instead:DeprecationWarning",

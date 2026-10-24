@@ -220,7 +220,7 @@ class IniFieldComponent(SpatialDatasetsComponent):
                     "dataFile": f"../maps/{name}.tif",
                     "dataFileType": "GeoTIFF",
                     "interpolationMethod": interp_method,
-                    "operand": da_dict.get("oprand", "O"),
+                    "operand": da_dict.get("oprand", "override"),
                     "locationType": locationtype,
                 }
             else:
@@ -229,7 +229,7 @@ class IniFieldComponent(SpatialDatasetsComponent):
                     "dataFile": f"../maps/{name}.tif",
                     "dataFileType": "GeoTIFF",
                     "interpolationMethod": "averaging",
-                    "operand": da_dict.get("oprand", "O"),
+                    "operand": da_dict.get("oprand", "override"),
                     "averagingType": interp_method,
                     "averagingRelSize": da_dict.get("averagingrelsize"),
                     "locationType": locationtype,

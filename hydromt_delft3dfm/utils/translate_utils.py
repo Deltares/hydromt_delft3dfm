@@ -36,7 +36,7 @@ DICT_VARNAME_TO_DFLOWFM = {
     "ssr": "netsolarradiation",  # CDS varname: surface_net_solar_radiation
     "strd": "longwaveradiation",  # CDS varname: surface_thermal_radiation_downwards
     "tp": "rainfall",  # CDS varname: total_precipitation
-    # TODO: mer/avg_ie is negative precipitation, this requires operand="+"
+    # TODO: mer/avg_ie is negative precipitation, this requires operand="add"
     # https://github.com/Deltares/hydromt_delft3dfm/issues/301
     "mer": "rainfall_rate",  # CDS varname: mean_evaporation_rate
     "mtpr": "rainfall_rate",  # CDS varname: mean_total_precipitation_rate
