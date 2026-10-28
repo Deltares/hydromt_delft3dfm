@@ -154,15 +154,7 @@ def write_branches_gui(
     # replace from/to have different dtypes, so explicitly change it
     branchtp = {"river": 0, "pipe": 2, "sewerconnection": 1}
     branches["branchtype"] = branches["branchtype"].replace(branchtp).astype(int)
-    # TODO: this replacement was introduced when moving to hydrolib-core v1 (PR #226),
-    #  but it does not work when debugging
-    #  test_workflows_mesh.py::test_hydrolib_network_from_mesh with pandas 3,
-    #  so there are nans remaining, causing a pydantic ValidationError.
-    branches = branches.replace([np.nan], [None])
-    # TODO: drop columns with NaN instead. This is not desired, since the rows should
-    #  be passed with the NaN values as None (empty). Or maybe support this na_value
-    #  in hydrolib-core: https://github.com/Deltares/HYDROLIB-core/issues/1107
-    # branches = branches.loc[branches.notna().all(axis=1)]
+    branches = branches.replace(np.nan, None)
     branchgui_model = BranchModel(branch=branches.to_dict("records"))
     branchgui_fn = branchgui_model._filename() + branchgui_model._ext()
     branchgui_model.filepath = join(savedir, branchgui_fn)
@@ -502,7 +494,6 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
         gdf_cmp = gdf_cmp = pd.DataFrame()
     else:
         gdf_cmp = pd.concat(list_df, axis=0)
-
     # geometry is not accepted as input for StructureModel, so drop this column
     gdf = gdf.drop("geometry", axis=1)
     # convert to dict and drop np.nan/None values since the hydrolib-core validators
@@ -1217,12 +1208,10 @@ def read_timeseries_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
         )
     forcing = df.forcingfile.iloc[0]
     df_forcing = pd.DataFrame([f.__dict__ for f in forcing.forcing])
-    # Filter for the current nodes
-    df_forcing = df_forcing[np.isin(df_forcing.name, "global")]
 
     data, dims, coords, bc = _read_forcing_dataframe(
         df_forcing,
-        index_values=["global"],
+        index_values=df_forcing.name.values,
         quantity=quantity,
     )
 
@@ -1233,7 +1222,7 @@ def read_timeseries_meteo(df: pd.DataFrame, quantity: str) -> xr.DataArray:
         coords=coords,
         attrs=bc,
     )
-    da_out.name = f"{quantity}"
+    da_out.name = f"meteo_{quantity}"
 
     return da_out
 
@@ -1263,6 +1252,7 @@ def write_timeseries_meteo(
     if len(forcing) == 0:
         return
 
+    forcing_fn = f"meteo_{ForcingModel()._filename()}.bc"
     extdicts = list()
     bcdict = list()
     # Loop over forcing dict
@@ -1271,6 +1261,7 @@ def write_timeseries_meteo(
             bc = da.attrs.copy()
             # Meteo
             ext = dict()
+            ext["forcingfile"] = forcing_fn
             ext["quantity"] = bc["quantity"]
             ext["forcingFileType"] = "bcAscii"
             # FIXME: hardcoded, decide whether use bcAscii or netcdf in setup
@@ -1295,14 +1286,11 @@ def write_timeseries_meteo(
             bc.pop("quantity")
             bc.pop("units")
             bcdict.append(bc)
+            extdicts.append(ext)
 
+    # write forcing file
     forcing_model = ForcingModel(forcing=bcdict)
-    forcing_fn = f"meteo_{forcing_model._filename()}.bc"
     forcing_model.save(join(savedir, forcing_fn), recurse=True)
-
-    # add forcingfile to ext
-    ext["forcingfile"] = forcing_fn
-    extdicts.append(ext)
 
     # write external forcing file
     if ext_fn is not None:
