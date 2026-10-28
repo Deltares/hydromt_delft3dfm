@@ -21,6 +21,7 @@ Added
 - Extended bcascii support to all meteo quantities (PR #324)
 - Support for hydrolib-core v1.1+ (new extforcefile) (PR #334)
 - Proper support for Python 3.14 (PR #335)
+- Support for pandas 3 (PR #308)
 
 Changed
 -------
