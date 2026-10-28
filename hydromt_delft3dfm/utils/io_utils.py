@@ -293,8 +293,8 @@ def write_crosssections(gdf: gpd.GeoDataFrame, savedir: str) -> Tuple[str, str]:
         columns={c: c.removeprefix("crsdef_") for c in gpd_crsdef.columns}
     )
     gpd_crsdef = gpd_crsdef.drop_duplicates(subset="id")
-    gpd_crsdef = gpd_crsdef.astype(object).replace(np.nan, None)
-    crsdef = CrossDefModel(definition=gpd_crsdef.to_dict("records"))
+    gpd_crsdef_dict_list = dataframe_to_dict_list_dropna(gpd_crsdef)
+    crsdef = CrossDefModel(definition=gpd_crsdef_dict_list)
 
     crsdef_fn = crsdef._filename() + ".ini"
     crsdef.save(
