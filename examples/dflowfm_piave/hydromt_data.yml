@@ -45,6 +45,8 @@ merit_hydro:
   driver:
     options: {}
     name: rasterio
+  uri_resolver:
+    name: convention
   version: '1.0'
   metadata:
     crs: 4326

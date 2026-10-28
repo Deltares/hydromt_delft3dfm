@@ -291,9 +291,7 @@ def write_crosssections(gdf: gpd.GeoDataFrame, savedir: str) -> Tuple[str, str]:
         columns={c: c.removeprefix("crsdef_") for c in gpd_crsdef.columns}
     )
     gpd_crsdef = gpd_crsdef.drop_duplicates(subset="id")
-    # add block brackets to make replacement also work in pandas 3
-    #  https://github.com/pandas-dev/pandas/issues/65892
-    gpd_crsdef = gpd_crsdef.replace([np.nan], [None])
+    gpd_crsdef = gpd_crsdef.astype(object).replace(np.nan, None)
     crsdef = CrossDefModel(definition=gpd_crsdef.to_dict("records"))
 
     crsdef_fn = crsdef._filename() + ".ini"
@@ -400,7 +398,6 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
             gdf["crsdef_frictionids"].str.split(";").apply(np.count_nonzero) > 1
         )
         gdf = gdf.loc[~_do_not_support]
-        # TODO: crsdef_frictionids contains just as many nans, might not be expected
         gdf["crsdef_frictionid"] = gdf["crsdef_frictionid"].fillna(
             gdf["crsdef_frictionids"]
         )
@@ -410,20 +407,19 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
         ["frictionid", "frictionvalue", "frictiontype"]
     ]
     frictions = frictions.drop_duplicates().dropna(how="all")
-    # Drop columns with None (pandas 2) or NaN (pandas 3) before looping over the rows.
-    # TODO: this also drops rows that only have a NaN/None for the frictiontype column
-    frictions = frictions.loc[frictions.notna().all(axis=1)]
+    frictions = frictions.replace(np.nan, None)
 
     friction_fns = []
     # create a new friction
     for i, row in frictions.iterrows():
-        fric_model = FrictionModel(global_=row.to_dict())
-        fric_name = f"{row.frictionid}"
-        fric_filename = f"{fric_model._filename()}_{fric_name}" + fric_model._ext()
-        fric_model.filepath = join(savedir, fric_filename)
-        fric_model.save(fric_model.filepath, recurse=False)
-        # save relative path to mdu
-        friction_fns.append(fric_filename)
+        if row.frictionid is not None and row.frictionvalue is not None:
+            fric_model = FrictionModel(global_=row.to_dict())
+            fric_name = f"{row.frictionid}"
+            fric_filename = f"{fric_model._filename()}_{fric_name}" + fric_model._ext()
+            fric_model.filepath = join(savedir, fric_filename)
+            fric_model.save(fric_model.filepath, recurse=False)
+            # save relative path to mdu
+            friction_fns.append(fric_filename)
 
     return friction_fns
 
@@ -507,9 +503,7 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     else:
         gdf_cmp = pd.concat(list_df, axis=0)
     # replace nan with None
-    # add block brackets to make replacement also work in pandas 3
-    #  https://github.com/pandas-dev/pandas/issues/65892
-    gdf = gdf.replace([np.nan], [None])
+    gdf = gdf.replace(np.nan, None)
 
     # Write structures
     structures = StructureModel(
