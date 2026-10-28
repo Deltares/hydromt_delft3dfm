@@ -31,8 +31,8 @@ dependencies = [
     "meshkernel>=8.3.0",
     #pyproj>=3.4.0 is the first version to support Python 3.11
 	"pyproj>=3.4.0",
-    #shapely>=2.1.1 supports numpy 2: https://github.com/Deltares/dfm_tools/issues/1330
-	"shapely>=2.1.1",
+    #shapely>=2.1.2 required by hydromt 1.4
+	"shapely>=2.1.2",
     #scipy>=1.13.0 is the first version to support numpy 2.0
 	"scipy>=1.13.0",
     #pyflwdir 0.5.12 fixed river widths computation
@@ -163,6 +163,23 @@ docs-build = { cmd = ["sphinx-build", "docs", "docs/_build"] }
 [tool.pixi.pypi-dependencies]
 hydromt_delft3dfm = { path = ".", editable = true }
 
+[tool.pixi.feature.minimal.pypi-dependencies]
+# the versions are a manual copy of [project.dependencies],
+# but with == to test with the lowest versions of direct dependencies
+hydromt = "==1.4.0"
+geopandas = "==1.0.1"
+numpy = "==2.2.0"
+pandas = "==2.2.2"
+xarray = "==2024.7.0"
+hydrolib-core = "==1.6"
+xugrid = "==0.15.2"
+meshkernel = "==8.3.0"
+pyproj = "==3.4.0"
+shapely = "==2.1.2"
+scipy = "==1.13.0"
+pyflwdir = "==0.5.12"
+networkx = "*"
+
 # Define features for different Python versions and Hydromt versions
 [tool.pixi.feature.py311.dependencies]
 python = "3.11.*"
@@ -199,3 +216,5 @@ pypi-314 = { features = ["py314", "dev", "test"]}
 dev-314 = { features = ["py314", "dev", "test", "hydromt_dev"]}
 
 hcdev-314= { features = ["py314", "dev", "test", "hydrolibcore_dev"]}
+
+py311-mindeps = { features = ["py311", "dev", "test", "minimal"]}
