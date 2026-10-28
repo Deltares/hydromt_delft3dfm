@@ -515,11 +515,6 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     # Write structures
     structures = StructureModel(structure=gdf_dict_list + gdf_cmp.to_dict("records"))
 
-    # Write structures
-    structures = StructureModel(
-        structure=gdf.to_dict("records") + gdf_cmp.to_dict("records")
-    )
-
     structures_fn = structures._filename() + ".ini"
     structures.save(
         join(savedir, structures_fn),
