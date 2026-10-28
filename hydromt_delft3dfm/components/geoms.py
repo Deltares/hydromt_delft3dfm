@@ -5,7 +5,6 @@ import itertools
 import logging
 from os.path import dirname, join
 
-import numpy as np
 import pandas as pd
 from hydromt import hydromt_step
 from hydromt.model import Model
