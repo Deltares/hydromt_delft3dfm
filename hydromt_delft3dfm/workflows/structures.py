@@ -146,11 +146,6 @@ def prepare_1dstructures(
     # add to structures
     gdf_st = gdf_st.sjoin(gdf_st_crsdefs, how="left")
 
-    # 6. replace np.nan as None
-    # add block brackets to make replacement also work in pandas 3
-    #  https://github.com/pandas-dev/pandas/issues/65892
-    gdf_st = gdf_st.replace([np.nan], [None])
-
     # 7. remove index and add name
     gdf_st = gdf_st.reset_index(names=id_col)  # force colname to index_col with names=
     gdf_st = gdf_st.drop_duplicates(subset=id_col, keep="first")
