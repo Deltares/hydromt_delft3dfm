@@ -1,9 +1,9 @@
 """hydroMT plugin for Delft3D FM models."""
 
+from importlib.metadata import version
 from pathlib import Path
 
 import pandas as pd
-from importlib.metadata import version
 from packaging.version import Version
 
 __version__ = "0.3.1.dev"
@@ -21,6 +21,6 @@ __all__ = ["DFlowFMModel"]
 #  so only do this in pandas 3.
 #  Also be sure to remove this when allowing for pandas 4:
 #  https://github.com/Deltares/hydromt_delft3dfm/issues/354
-pd_version = version('pandas')
+pd_version = version("pandas")
 if Version(pd_version) < Version("3.0.0"):
     pd.set_option("future.no_silent_downcasting", True)
