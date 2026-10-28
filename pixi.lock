@@ -3831,15 +3831,15 @@ packages:
   requires_dist:
   - hydromt>=1.4.0
   - geopandas>=1.0.1
-  - numpy>=2.0.0
-  - pandas>=3.0.0
-  - xarray
+  - numpy>=2.2.0
+  - pandas>=2.2.2,<4
+  - xarray>=2024.7.0
   - hydrolib-core>=1.6
   - xugrid>=0.15.2
   - meshkernel>=8.3.0
-  - pyproj
-  - shapely>=2.0.0
-  - scipy
+  - pyproj>=3.4.0
+  - shapely>=2.1.1
+  - scipy>=1.13.0
   - pyflwdir>=0.5.12
   - networkx
   - affine<3

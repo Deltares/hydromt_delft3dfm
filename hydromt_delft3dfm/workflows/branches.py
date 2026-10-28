@@ -491,17 +491,18 @@ def cleanup_branches(
         )
 
     # check duplicated id
-    _branches = _branches.reset_index(drop=True)
+    _branches = branches.copy()
+    _branches.reset_index(drop=True, inplace=True)
     _branches["count"] = (
         _branches.groupby(id_col)[id_col].transform("cumcount").astype(int)
     )
     for bi, b in _branches.iterrows():
         if b["count"] >= 1:
-            _branches = _branches.rename(
-                index={bi: b[id_col] + "-" + str(b["count"])}
+            _branches.rename(
+                index={bi: b[id_col] + "-" + str(b["count"])}, inplace=True
             )
         else:
-            _branches = _branches.rename(index={bi: b[id_col]})
+            _branches.rename(index={bi: b[id_col]}, inplace=True)
     _branches[id_col] = _branches.index
     _branches.index.name = id_col
     branches = _branches.copy()
@@ -1074,8 +1075,9 @@ def find_nearest_branch(
                 geometries.at[index, "geometry"] = centroid
 
     # Check for previous data and drop if exist
-    geometries = geometries.drop(
+    geometries.drop(
         columns=["branch_id", "branch_distance", "branch_offset"],
+        inplace=True,
         errors="ignore",
     )
 
