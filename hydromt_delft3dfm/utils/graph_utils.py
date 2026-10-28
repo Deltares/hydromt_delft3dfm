@@ -103,5 +103,5 @@ def get_endnodes_from_lines(
         geometry=[Point(endnode) for endnode in endnodes],
         crs=lines.crs,
     )
-    endnodes_gpd.reset_index(inplace=True)
+    endnodes_gpd = endnodes_gpd.reset_index()
     return endnodes_gpd

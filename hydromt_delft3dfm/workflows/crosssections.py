@@ -1024,7 +1024,7 @@ def xyzp2xyzl(xyz: pd.DataFrame, sort_by: list = ["x", "y"]) -> gpd.GeoDataFrame
     if xyz is not None:
         yz_index = xyz.index.unique()
         xyz.columns = [c.lower() for c in xyz.columns]
-        xyz.reset_index(drop=True, inplace=True)
+        xyz = xyz.reset_index(drop=True)
 
         # sort
         xyz_sorted = xyz.sort_values(by=sort_by)
