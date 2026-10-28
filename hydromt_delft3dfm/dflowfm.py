@@ -2060,7 +2060,7 @@ class DFlowFMModel(Model):
 
         # setup bridges (note the allowed columns are different per structure)
         bridges.columns = bridges.columns.str.lower()
-        bridges.rename(
+        bridges = bridges.rename(
             columns={
                 "structure_id": "id",
                 "structure_name": "name",
@@ -2071,7 +2071,6 @@ class DFlowFMModel(Model):
                 "friction_type": "frictiontype",
                 "friction_value": "friction",
             },
-            inplace=True,
         )
         # filter for allowed columns
         allowed_columns = set(_allowed_columns).intersection(bridges.columns)
@@ -2207,7 +2206,7 @@ class DFlowFMModel(Model):
 
         # setup culverts (note the allowed columns are different per structure)
         culverts.columns = culverts.columns.str.lower()
-        culverts.rename(
+        culverts = culverts.rename(
             columns={
                 "structure_id": "id",
                 "structure_name": "name",
@@ -2218,7 +2217,6 @@ class DFlowFMModel(Model):
                 "friction_type": "bedfrictiontype",
                 "friction_value": "bedfriction",
             },
-            inplace=True,
         )
         # filter for allowed columns
         allowed_columns = set(_allowed_columns).intersection(culverts.columns)
