@@ -2,11 +2,12 @@
 
 import logging
 from os.path import abspath, dirname, join
-import pytest
-
-from hydromt.readers import read_workflow_yaml
-from hydromt_delft3dfm import DFlowFMModel
 from sys import platform
+
+import pytest
+from hydromt.readers import read_workflow_yaml
+
+from hydromt_delft3dfm import DFlowFMModel
 
 EXAMPLEDIR = join(dirname(abspath(__file__)), "..", "examples")
 
@@ -82,6 +83,28 @@ def test_model_build(tmpdir, modelname):
         if len(errors["inifield"]) == 0:
             errors.pop("inifield", None)
 
+    # the reference files are generated on windows and the crosssections values are
+    # slightly different despite using default precision (1 decimal for projected crs)
+    # implemented in https://github.com/Deltares/hydromt_delft3dfm/issues/347. There
+    # seems to be a bug in hydromt since the geojson files still not have 1 decimal
+    # despite rounding:
+    # - before: 662793.794186791637912, 1524515.451732161454856
+    # - updated: 662793.800000000046566, 1524515.5
+    # Rather than specifying linux-specific reference files, this is ignored for now.
+    if platform == "linux" and "geoms" in errors:
+        if "crosssections" in errors["geoms"]:
+            value = errors["geoms"]["crosssections"]
+            expected_value = "2 out of 2007 geometries are not almost equal."
+            if value.startswith(expected_value):
+                errors["geoms"].pop("crosssections", None)
+        if "manholes" in errors["geoms"]:
+            value = errors["geoms"]["manholes"]
+            expected_value = "1 out of 1007 geometries are not almost equal."
+            if value.startswith(expected_value):
+                errors["geoms"].pop("manholes", None)
+        if len(errors["geoms"]) == 0:
+            errors.pop("geoms", None)
+
     # after popping accepted errors, set equal=True if errors={}
     if len(errors) == 0:
         equal = True
@@ -96,7 +119,7 @@ def test_model_update(tmp_path):
     _, _, steps = read_workflow_yaml(config)
 
     # test update method, compare network size before and after refinement
-    root = join(EXAMPLEDIR, f"dflowfm_piave")
+    root = join(EXAMPLEDIR, "dflowfm_piave")
     logger = logging.getLogger("hydromt")
     logger.setLevel(logging.DEBUG)
     model = DFlowFMModel(

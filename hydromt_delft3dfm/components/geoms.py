@@ -5,7 +5,6 @@ import itertools
 import logging
 from os.path import dirname, join
 
-import numpy as np
 import pandas as pd
 from hydromt import hydromt_step
 from hydromt.model import Model
@@ -119,7 +118,7 @@ class Delft3DFMGeomsComponent(GeomsComponent):
 
         # Write geojson equivalent of all objects.
         # Note that these files are not directly used when updating the model
-        super().write(precision=None)
+        super().write()
 
         # Write dfm files
         savedir = dirname(join(self.root.path, self.model.mdu._filename))
@@ -155,7 +154,7 @@ class Delft3DFMGeomsComponent(GeomsComponent):
             for st in existing_structures:
                 structures.append(self.data.get(st).to_dict("records"))
             structures = list(itertools.chain.from_iterable(structures))
-            structures = pd.DataFrame(structures).replace(np.nan, None)
+            structures = pd.DataFrame(structures)
             # write
             logger.info("Writting structures file.")
             structures_fn = io_utils.write_structures(
@@ -200,4 +199,4 @@ class Delft3DFMGeomsComponent(GeomsComponent):
         """
         eq, errors = super().test_equal(other)
 
-        return eq, {"geoms": errors}
+        return eq, errors

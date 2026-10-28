@@ -1,8 +1,11 @@
-import pytest
-from hydromt_delft3dfm import DFlowFMModel
-from hydromt_delft3dfm.components.mdu import MDUComponent
 import datetime as dt
 from os.path import join
+
+import pytest
+
+from hydromt_delft3dfm import DFlowFMModel
+from hydromt_delft3dfm.components.mdu import MDUComponent
+
 
 def test_get_model_time_from_refdate_tunit_start_tstop():
     # it is required to pass a DFlowFMModel to MDUComponent, so initialize an empty one

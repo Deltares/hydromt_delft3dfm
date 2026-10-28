@@ -1,4 +1,4 @@
-# written by HYDROLIB-core 0.10.1
+# written by HYDROLIB-core 1.6.0
 
 [General]
 fileVersion           = 1.09          # File version. Do not edit this.
@@ -10,7 +10,6 @@ pathsRelativeToParent = 0             # Whether or not (1/0) to resolve file nam
 
 [Geometry]
 netFile                        = fm_net.nc                                                      # The net file <*_net.nc>
-bathymetryFile                 =                                                                # Removed since March 2022. See [geometry] keyword BedLevelFile.
 dryPointsFile                  =                                                                # Dry points file <*.xyz>, third column dummy z values, or polygon file <*.pol>.
 structureFile                  =                                                                # File <*.ini> containing list of hydraulic structures.
 iniFieldFile                   = fieldFile.ini                                                  # Initial and parameter field file <*.ini>.
@@ -29,7 +28,6 @@ storageNodeFile                = nodeFile.ini                                   
 profLocFile                    =                                                                # <*_proflocation.xyz>) x, y, z, z = profile refnumber.
 profDefFile                    =                                                                # <*_profdefinition.def>) definition for all profile nrs.
 profDefXyzFile                 =                                                                # <*_profdefinition.def>) definition for all profile nrs.
-manholeFile                    =                                                                # File containing manholes (e.g. <*.dat>).
 partitionFile                  =                                                                # <*_part.pol>, polyline(s) x, y.
 uniformWidth1D                 = 2.0                                                            # Uniform width for channel profiles not specified by profloc
 dxWuiMin2D                     = 0.0                                                            # Smallest fraction dx/wu , set dx > Dxwuimin2D*wu
@@ -105,10 +103,8 @@ slopeDrop2D               = 0.0    # Apply droplosses only if local bottom slope
 drop1D                    = 0      # Limit the downstream water level in the momentum equation to the downstream invert level, BOBdown (ζ*down = max(BOBdown, ζdown)).
 chkAdvd                   = 0.1    # Check advection terms if depth < chkadvdp.
 teta0                     = 0.55   # Theta (implicitness) of time integration, 0.5 < Theta < 1.0.
-qhRelax                   = 0.01
 cstBnd                    = 0      # Delft3D-FLOW type velocity treatment near boundaries for small coastal models (1) or not (0).
-maxitVerticalForesterSal  = 0      # Forester iterations for salinity (0: no vertical filter for salinity, > 0: max nr of iterations).
-maxitVerticalForesterTem  = 0      # Forester iterations for temperature (0: no vertical filter for temperature, > 0: max nr of iterations).
+maxitverticalforester     = 0      # Forester iterations for all constituents (0: no vertical filter, > 0: max nr of iterations)
 turbulenceModel           = 3      # 0=no, 1 = constant, 2 = algebraic, 3 = k-epsilon, 4 = k-tau.
 turbulenceAdvection       = 3      # Turbulence advection (0=no, 3 = horizontal explicit vertical implicit).
 antiCreep                 = 0      # Include anti-creep calculation (0: no, 1: yes).
@@ -253,7 +249,6 @@ wrishp_thd                        = 0      # Writing thin dams to shape file (0=
 wrishp_obs                        = 0      # Writing observation points to shape file (0=no, 1=yes).
 wrishp_emb                        = 0      # Writing embankments file (0=no, 1=yes).
 wrishp_dryArea                    = 0      # Writing dry areas to shape file (0=no, 1=yes).
-wrishp_enc                        = 0      # Writing enclosures to shape file (0=no, 1=yes).
 wrishp_src                        = 0      # Writing sources and sinks to shape file (0=no, 1=yes).
 wrishp_pump                       = 0      # Writing pumps to shape file (0=no, 1=yes).
 outputDir                         =        # Output directory of map-, his-, rst-, dat- and timingsfiles, default: DFM_OUTPUT_<modelname>. Set to . for no dir/current dir.
@@ -269,7 +264,7 @@ xlsInterval                       = 0.0    # Interval between XLS history [s].
 mapFile                           =        # *_map.nc Map file in netCDF format.
 mapInterval                       = 1200.0 # Map file output, given as 'interval' 'start period' 'end period' [s].
 rstInterval                       = 0.0    # Restart file output, given as 'interval' 'start period' 'end period' [s].
-mapFormat                         = 4      # Map file format, 1: netCDF, 2: Tecplot, 3: NetCFD and Tecplot, 4: netCDF UGRID.
+mapFormat                         = 4      # Map file format, 1: NetCDF, 4: NetCDF-UGRID.
 ncFormat                          = 3      # Format for all NetCDF output files (3: classic, 4: NetCDF4+HDF5).
 ncNoUnlimited                     = 0      # Write full-length time-dimension instead of unlimited dimension (1: yes, 0: no). (Might require NcFormat=4.)
 ncNoForcedFlush                   = 0      # Do not force flushing of map-like files every output timestep (1: yes, 0: no).
@@ -330,7 +325,7 @@ wrimap_chezy                      = 1      # Write chezy values to map file, (1:
 wrimap_turbulence                 = 1      # Write turbulence to map file, (1: yes, 0: no).
 wrimap_rain                       = 0      # Write rainfall rate to map file, (1: yes, 0: no).
 wrimap_wind                       = 1      # Write winds to map file, (1: yes, 0: no).
-wrimap_windstress                 = 0      # Write wind stress to map file (1: yes, 0: no).
+wrimap_windstress                 = 0      # Write wind stress to map file (1: yes, 0: no)
 wrimap_airdensity                 = 0      # Write air density to map file, (1:yes, 0:no).
 wrimap_calibration                = 1      # Write roughness calibration factors to map file.
 wrimap_salinity                   = 1      # Write salinity to map file.
