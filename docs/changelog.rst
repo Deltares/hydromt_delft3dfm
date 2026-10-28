@@ -8,7 +8,7 @@ The format is based on `Keep a Changelog`_, and this project adheres to
 
 UNRELEASED
 ==========
-This release supports Python 3.11 and up. Some new features are only available from D-Flow FM version 2027.01 onwards.
+This release supports Python 3.11 and up. Some new features are only available from D-Flow FM version 2027.01 and up.
 
 Added
 -----
@@ -43,6 +43,7 @@ Fixed
 - fixed warnings emmitted by hydromt_delft3dfm (PR #288)
 - fixed river widths computation by requiring newer pyflwdir version (PR #297)
 - prevent overwriting of extblocks with multiple scalar meteo quantities (PR #338)
+- prevent writing of obsolete mdu keywords for delft3dfm 2027.01 and prevent passing unrelated parameters to StructureModel (PR #351)
 
 
 v0.3.0 (18 October 2024)
