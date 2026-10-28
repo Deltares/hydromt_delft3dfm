@@ -54,6 +54,14 @@ __all__ = [
 logger = logging.getLogger(f"hydromt.{__name__}")
 
 
+def dataframe_to_dict_list(df):
+    dict_list = []
+    for _, row in df.iterrows():
+        row_filt = row.dropna()
+        dict_list.append(row_filt.to_dict())
+    return dict_list
+
+
 def read_branches_gui(
     gdf: gpd.GeoDataFrame,
     fm_model: FMModel,
@@ -154,8 +162,8 @@ def write_branches_gui(
     # replace from/to have different dtypes, so explicitly change it
     branchtp = {"river": 0, "pipe": 2, "sewerconnection": 1}
     branches["branchtype"] = branches["branchtype"].replace(branchtp).astype(int)
-    branches = branches.replace(np.nan, None)
-    branchgui_model = BranchModel(branch=branches.to_dict("records"))
+    branches_dict_list = dataframe_to_dict_list(branches)
+    branchgui_model = BranchModel(branch=branches_dict_list)
     branchgui_fn = branchgui_model._filename() + branchgui_model._ext()
     branchgui_model.filepath = join(savedir, branchgui_fn)
     branchgui_model.save()
@@ -399,7 +407,9 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
         ["frictionid", "frictionvalue", "frictiontype"]
     ]
     frictions = frictions.drop_duplicates().dropna(how="all")
-    frictions = frictions.replace(np.nan, None)
+    # add block brackets to make replacement also work in pandas 3
+    #  https://github.com/pandas-dev/pandas/issues/65892
+    frictions = frictions.replace([np.nan], [None])
 
     friction_fns = []
     # create a new friction
@@ -498,10 +508,7 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     gdf = gdf.drop("geometry", axis=1)
     # convert to dict and drop np.nan/None values since the hydrolib-core validators
     # do not accept culvert parameters for bridges and the other way round
-    gdf_dict_list = []
-    for _, row in gdf.iterrows():
-        row_filt = row.dropna()
-        gdf_dict_list.append(row_filt.to_dict())
+    gdf_dict_list = dataframe_to_dict_list(gdf)
 
     # Write structures
     structures = StructureModel(structure=gdf_dict_list + gdf_cmp.to_dict("records"))
