@@ -54,7 +54,11 @@ __all__ = [
 logger = logging.getLogger(f"hydromt.{__name__}")
 
 
-def dataframe_to_dict_list(df):
+def dataframe_to_dict_list_dropna(df):
+    """
+    convert dataframe to a list of dicts. Just like df.to_dict("records")
+    but then also dropping all nan values.
+    """
     dict_list = []
     for _, row in df.iterrows():
         row_filt = row.dropna()
@@ -162,7 +166,7 @@ def write_branches_gui(
     # replace from/to have different dtypes, so explicitly change it
     branchtp = {"river": 0, "pipe": 2, "sewerconnection": 1}
     branches["branchtype"] = branches["branchtype"].replace(branchtp).astype(int)
-    branches_dict_list = dataframe_to_dict_list(branches)
+    branches_dict_list = dataframe_to_dict_list_dropna(branches)
     branchgui_model = BranchModel(branch=branches_dict_list)
     branchgui_fn = branchgui_model._filename() + branchgui_model._ext()
     branchgui_model.filepath = join(savedir, branchgui_fn)
@@ -508,7 +512,7 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     gdf = gdf.drop("geometry", axis=1)
     # convert to dict and drop np.nan/None values since the hydrolib-core validators
     # do not accept culvert parameters for bridges and the other way round
-    gdf_dict_list = dataframe_to_dict_list(gdf)
+    gdf_dict_list = dataframe_to_dict_list_dropna(gdf)
 
     # Write structures
     structures = StructureModel(structure=gdf_dict_list + gdf_cmp.to_dict("records"))

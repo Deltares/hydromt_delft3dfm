@@ -155,9 +155,7 @@ class Delft3DFMGeomsComponent(GeomsComponent):
             for st in existing_structures:
                 structures.append(self.data.get(st).to_dict("records"))
             structures = list(itertools.chain.from_iterable(structures))
-            # add block brackets to make replacement also work in pandas 3
-            #  https://github.com/pandas-dev/pandas/issues/65892
-            structures = pd.DataFrame(structures).replace([np.nan], [None])
+            structures = pd.DataFrame(structures)
             # write
             logger.info("Writting structures file.")
             structures_fn = io_utils.write_structures(
