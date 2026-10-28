@@ -12,22 +12,34 @@ authors = [
     { name = "Sebastian Hartgring", email = "sebastian.hartgring@deltares.nl" },
 ]
 dependencies = [
-    "hydromt>=1.4.0", # hydromt 1.4.0 has different default geoms precision and bugfix for nearest_merge and bugfix for mesh properties
-    "geopandas>=1.0.1", # gpd 1.0.1 fixed sjoin bug: https://github.com/geopandas/geopandas/issues/352
-    "numpy>=2.0.0", # latest <2 version is already EOL
-    "pandas>=2.0.0, <3", # TODO: remove temporary upper limit: https://github.com/Deltares/hydromt_delft3dfm/issues/229
-    "xarray",
-    # hydrolib-core>=1.6 is latest version with most up to date extforce status/warnings and stricter validation and no obsolete mdu keywords for delft3dfm 2027.01
+    #hydromt 1.4.0 has different default geoms precision and bugfix for nearest_merge and bugfix for mesh properties
+    "hydromt>=1.4.0",
+	#geopandas>=1.1.0 resolves shapely.geos DeprecationWarning: https://github.com/geopandas/geopandas/pull/3453
+	"geopandas>=1.1.0",
+    #numpy>=2.2.0 is oldest supported version in Q4 2026, numpy 2.1 has vulnerability issues
+	"numpy>=2.2.0",
+    #pandas>=2.2.2 supports numpy 2: https://github.com/Deltares/dfm_tools/issues/1330
+    #first resolve Pandas4Warning before allowing for pandas 4: https://github.com/Deltares/hydromt_delft3dfm/issues/354
+    "pandas>=2.2.2,<4",
+    #xarray>=2024.7.0 includes fix for numpy v2: https://github.com/pydata/xarray/issues/9179
+	"xarray>=2024.7.0",
+    #hydrolib-core>=1.6 is latest version with most up to date extforce status/warnings and stricter validation and no obsolete mdu keywords for delft3dfm 2027.01
     "hydrolib-core>=1.6",
-    "xugrid>=0.15.2", # consistent projected/geographic properties and crs attributes in the resulting datasets
-    # meshkernel>=8.3.0 supports interpolation of arbitrary properties like bathymetry
+    #consistent projected/geographic properties and crs attributes in the resulting datasets
+    "xugrid>=0.15.2",
+    #meshkernel>=8.3.0 supports interpolation of arbitrary properties like bathymetry
     "meshkernel>=8.3.0",
-    "pyproj",
-    "shapely>=2.0.0",
-    "scipy",
-    "pyflwdir>=0.5.12", #pyflwdir 0.5.12 fixed river widths computation
+    #pyproj>=3.5.0 is required by geopandas>=1.1.0
+	"pyproj>=3.5.0",
+    #shapely>=2.1.2 required by hydromt 1.4
+	"shapely>=2.1.2",
+    #scipy>=1.13.0 is the first version to support numpy 2.0
+	"scipy>=1.13.0",
+    #pyflwdir 0.5.12 fixed river widths computation
+    "pyflwdir>=0.5.12",
     "networkx",
-    "affine<3", # TODO: temporary pin on affine, to be fixed in https://github.com/Deltares/hydromt_delft3dfm/issues/337
+    # TODO: temporary pin on affine, to be fixed in https://github.com/Deltares/hydromt_delft3dfm/issues/337
+    "affine<3",
 ]
 requires-python = ">=3.11"
 readme = "README.rst"
@@ -109,6 +121,15 @@ exclude = ["docs", "examples", "envs", "tests", ".github"]
 addopts = "--durations=0"
 filterwarnings = [
 	"error",
+    # TODO: fix Pandas4Warning instead of filtering them: https://github.com/Deltares/hydromt_delft3dfm/issues/354
+    # pandas.errors.Pandas4Warning does not exist in pandas 2, but since it is built upon DeprecationWarning we can filter on that
+    "ignore:Setting a value on a DataFrame via .at with a key that does not exist in the index is deprecated:DeprecationWarning",
+    "ignore:The inplace keyword in GeoDataFrame.reset_index is deprecated:DeprecationWarning",
+    "ignore:The inplace keyword in GeoDataFrame.rename is deprecated:DeprecationWarning",
+    "ignore:The inplace keyword in GeoDataFrame.dropna is deprecated:DeprecationWarning",
+    "ignore:The inplace keyword in GeoDataFrame.drop is deprecated:DeprecationWarning",
+    # support for pandas 2
+    "ignore:__array__ implementation doesn't accept a copy keyword:DeprecationWarning",
     # TODO: ignore xugrid ugrid infer xy coords UserWarning until https://github.com/Deltares/HYDROLIB-core/issues/577 is fixed
 	# note the use of single quote below to denote "raw" strings in TOML
 	'''ignore:No standard_name of \('projection_x_coordinate':UserWarning''',
@@ -144,6 +165,23 @@ docs-build = { cmd = ["sphinx-build", "docs", "docs/_build"] }
 # Takes the dependencies from pyproject.toml, which will be overridden in the features below.
 [tool.pixi.pypi-dependencies]
 hydromt_delft3dfm = { path = ".", editable = true }
+
+[tool.pixi.feature.minimal.pypi-dependencies]
+# the versions are a manual copy of [project.dependencies],
+# but with == to test with the lowest versions of direct dependencies
+hydromt = "==1.4.0"
+geopandas = "==1.1.0"
+numpy = "==2.2.0"
+pandas = "==2.2.2"
+xarray = "==2024.7.0"
+hydrolib-core = "==1.6"
+xugrid = "==0.15.2"
+meshkernel = "==8.3.0"
+pyproj = "==3.5.0"
+shapely = "==2.1.2"
+scipy = "==1.13.0"
+pyflwdir = "==0.5.12"
+networkx = "*"
 
 # Define features for different Python versions and Hydromt versions
 [tool.pixi.feature.py311.dependencies]
@@ -181,3 +219,5 @@ pypi-314 = { features = ["py314", "dev", "test"]}
 dev-314 = { features = ["py314", "dev", "test", "hydromt_dev"]}
 
 hcdev-314= { features = ["py314", "dev", "test", "hydrolibcore_dev"]}
+
+py311-mindeps = { features = ["py311", "dev", "test", "minimal"]}

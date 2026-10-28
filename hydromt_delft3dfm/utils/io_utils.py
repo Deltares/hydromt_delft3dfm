@@ -54,6 +54,16 @@ __all__ = [
 logger = logging.getLogger(f"hydromt.{__name__}")
 
 
+def dataframe_to_dict_list_dropna(df):
+    # convert dataframe to a list of dicts. Just like df.to_dict("records")
+    # but then also dropping all nan values.
+    dict_list = []
+    for _, row in df.iterrows():
+        row_filt = row.dropna()
+        dict_list.append(row_filt.to_dict())
+    return dict_list
+
+
 def read_branches_gui(
     gdf: gpd.GeoDataFrame,
     fm_model: FMModel,
@@ -154,8 +164,8 @@ def write_branches_gui(
     # replace from/to have different dtypes, so explicitly change it
     branchtp = {"river": 0, "pipe": 2, "sewerconnection": 1}
     branches["branchtype"] = branches["branchtype"].replace(branchtp).astype(int)
-    branches = branches.replace(np.nan, None)
-    branchgui_model = BranchModel(branch=branches.to_dict("records"))
+    branches_dict_list = dataframe_to_dict_list_dropna(branches)
+    branchgui_model = BranchModel(branch=branches_dict_list)
     branchgui_fn = branchgui_model._filename() + branchgui_model._ext()
     branchgui_model.filepath = join(savedir, branchgui_fn)
     branchgui_model.save()
@@ -283,8 +293,8 @@ def write_crosssections(gdf: gpd.GeoDataFrame, savedir: str) -> Tuple[str, str]:
         columns={c: c.removeprefix("crsdef_") for c in gpd_crsdef.columns}
     )
     gpd_crsdef = gpd_crsdef.drop_duplicates(subset="id")
-    gpd_crsdef = gpd_crsdef.astype(object).replace(np.nan, None)
-    crsdef = CrossDefModel(definition=gpd_crsdef.to_dict("records"))
+    gpd_crsdef_dict_list = dataframe_to_dict_list_dropna(gpd_crsdef)
+    crsdef = CrossDefModel(definition=gpd_crsdef_dict_list)
 
     crsdef_fn = crsdef._filename() + ".ini"
     crsdef.save(
@@ -399,19 +409,22 @@ def write_friction(gdf: gpd.GeoDataFrame, savedir: str) -> List[str]:
         ["frictionid", "frictionvalue", "frictiontype"]
     ]
     frictions = frictions.drop_duplicates().dropna(how="all")
-    frictions = frictions.replace(np.nan, None)
+    frictions_dict_list = dataframe_to_dict_list_dropna(frictions)
 
     friction_fns = []
     # create a new friction
-    for i, row in frictions.iterrows():
-        if row.frictionid is not None and row.frictionvalue is not None:
-            fric_model = FrictionModel(global_=row.to_dict())
-            fric_name = f"{row.frictionid}"
-            fric_filename = f"{fric_model._filename()}_{fric_name}" + fric_model._ext()
-            fric_model.filepath = join(savedir, fric_filename)
-            fric_model.save(fric_model.filepath, recurse=False)
-            # save relative path to mdu
-            friction_fns.append(fric_filename)
+    for friction_dict in frictions_dict_list:
+        if "frictionid" not in friction_dict.keys():
+            continue
+        if "frictionvalue" not in friction_dict.keys():
+            continue
+        fric_model = FrictionModel(global_=friction_dict)
+        fric_name = f"{friction_dict['frictionid']}"
+        fric_filename = f"{fric_model._filename()}_{fric_name}" + fric_model._ext()
+        fric_model.filepath = join(savedir, fric_filename)
+        fric_model.save(fric_model.filepath, recurse=False)
+        # save relative path to mdu
+        friction_fns.append(fric_filename)
 
     return friction_fns
 
@@ -498,10 +511,7 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
     gdf = gdf.drop("geometry", axis=1)
     # convert to dict and drop np.nan/None values since the hydrolib-core validators
     # do not accept culvert parameters for bridges and the other way round
-    gdf_dict_list = []
-    for _, row in gdf.iterrows():
-        row_filt = row.dropna()
-        gdf_dict_list.append(row_filt.to_dict())
+    gdf_dict_list = dataframe_to_dict_list_dropna(gdf)
 
     # Write structures
     structures = StructureModel(structure=gdf_dict_list + gdf_cmp.to_dict("records"))
