@@ -494,12 +494,18 @@ def write_structures(gdf: gpd.GeoDataFrame, savedir: str) -> str:
         gdf_cmp = gdf_cmp = pd.DataFrame()
     else:
         gdf_cmp = pd.concat(list_df, axis=0)
-    # replace nan with None
-    gdf = gdf.replace(np.nan, None)
+    # geometry is not accepted as input for StructureModel, so drop this column
+    gdf = gdf.drop("geometry", axis=1)
+    # convert to dict and drop np.nan/None values since the hydrolib-core validators
+    # do not accept culvert parameters for bridges and the other way round
+    gdf_dict_list = []
+    for _, row in gdf.iterrows():
+        row_filt = row.dropna()
+        gdf_dict_list.append(row_filt.to_dict())
 
     # Write structures
     structures = StructureModel(
-        structure=gdf.to_dict("records") + gdf_cmp.to_dict("records")
+        structure= gdf_dict_list + gdf_cmp.to_dict("records")
     )
 
     structures_fn = structures._filename() + ".ini"
