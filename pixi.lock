@@ -1416,6 +1416,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/17/50/bc0394b4ad5b1601be22fa43652173d47e4c9efbf0044c62e9a59b747c56/pytokens-0.4.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/18/53/84099323c2ec4be98d935f63c033ac4151ee83836ca1050ede3b3aadf155/joblib-1.6.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1a/f1/b474e930c4d910328780e3940da76f5aa5cbc48ce1fc14e44d239d9ea9db/cryptography-50.0.2-cp311-abi3-manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/1b/01/6df17f3b802b2d49480c102516dff30d294c4d300dbc3dfa9a9867b83609/pyproj-3.5.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/1f/c0/a3a64c3446aa4d41bd551b23127a8dbe45c5abff05b6cdab43edef5c54f8/pystac_ext_sar-1.0.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/20/c2/247c150f5ca12f8593c20e39115db551b18de5c6cb383006de21b57399e4/pyogrio-0.13.0-cp311-abi3-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/2a/2d/d4bf65e47cea8ff2c794a600c4fd1273a7902f268757c531e0ee9f18aa58/pooch-1.9.0-py3-none-any.whl
@@ -1447,6 +1448,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/4b/72/ac5ca81fe9121fcaa9d828d21017cba00a16a98e4ea5fb60c878f93dda4f/readme_renderer-46.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/4b/eb/dfbce2a6028198d65d238370f42ced033a506d61804fcb3b882e08f2d930/netcdf4-1.7.5.1.post1-cp311-abi3-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/4e/08/b66ad4239f592e05202e25925c08cdd04cc14c3994000ec70ec61fea202c/geoalchemy2-0.20.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/4e/de/748bd7609c71cae5d737f0ba9192f19329f70180ecda8fff3cac02c5abe3/psycopg-3.3.6-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/4f/ef/c66110d46fb800dda0bf33164182dfadabe26a90e4476844d502a23dca8e/pytz-2026.5-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/51/39/1f5d8c8877a0fa327db959c19341d4be61660de1ab6b7391f9eb805bcd67/pytest-9.2.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/52/33/10825f580f42a353f744abc450dcd2a4b1e6f1931abb0ccbd1d63bd3993c/numpy-2.2.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
@@ -1483,7 +1485,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/71/46/17f022dd3e953bf20a04a028a21ec746d942f8d2af30fa0f124fa0e6a684/pygments-2.21.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/71/60/917329f640924b18ff085ab889a11c763e0b573da888e8404ff486657602/pyyaml-6.0.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/71/e7/40fb618334dcdf7c5a316c0e7343c5cd82d3d866edc100d98e29bc945ecd/partd-1.4.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/72/85/4e56ddf15803f71130f61f89d4ca9a8c530ee876f29c98dfbaf9a652d59f/pyproj-3.4.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/73/86/43fa9f15c5b9fb6e82620428827cd3c284aa933431405d1bcf5231ae3d3e/cligj-0.7.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/79/7b/2c79738432f5c924bef5071f933bcc9efd0473bac3b4aa584a6f7c1c8df8/mypy_extensions-1.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/7a/dd/af65ac94fb019eff59a3b726506872ef9376246368ef9e036bc4ba4b95f4/pystac_ext_mgrs-1.0.1-py3-none-any.whl
@@ -1528,9 +1529,9 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/b8/44/7bd2007260da11cccca29ba2d4c345f1287aa663db38ee7cefeabf6386a5/zipp-4.1.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b9/fa/123043af240e49752f1c4bd24da5053b6bd00cad78c2be53c0d1e8b975bc/backports.tarfile-1.2.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bc/2c/eb4825a5eb122a6418a820514d3cd81f09627609086a3f537f218e462c36/hydrolib_core-1.6.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/be/82/79e02a0e5dd4aca81894842b9d6522624a40048a913c6384efb2987a4144/geopandas-1.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c0/d6/3c65df53ac66532e4451917ed63dcc7c260db30eed0d5c5f1782fcc4128e/pystac_core-1.15.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c1/2b/238f02a4927fa2e27aa995371d240a468b52e42eae44a678434aff736b38/distlib-0.4.4-py2.py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/c4/64/7d344cfcef5efddf9cf32f59af7f855828e9d74b5f862eddf5bfd9f25323/geopandas-1.0.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c6/d8/48301a9e6476583be3a5e0a409ac786ee37eca1bc1a38c75dc06f5ab1f1a/hydromt-1.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c7/06/519a5ebb48b6f94beb48396e55c905f12246a25c3a3608a7ec7bceabf50e/propcache-0.5.4-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/c7/18/c86eb8e0202e32dd3df50d43d7ff9854f8e0603945ff398974c1d91ac1ef/tomli_w-1.2.0-py3-none-any.whl
@@ -1630,9 +1631,9 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/46/87/4ba592099172764aa56e66919b0c3ddaf944c775433e806e36e165062095/fonttools-4.68.0-cp311-cp311-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/48/da/1e49d4f77d21ed70d6f4cfdb53822f9877eb9a7ba4601085bfeedd268069/netcdf4-1.7.5.1.post1-cp311-cp311-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/4a/3b/4380946f87ea708b6a56d7d650eb1f3ccecd320c7660f74c9cac2d197c34/pyproj-3.4.0-cp311-cp311-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/4b/72/ac5ca81fe9121fcaa9d828d21017cba00a16a98e4ea5fb60c878f93dda4f/readme_renderer-46.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/4e/08/b66ad4239f592e05202e25925c08cdd04cc14c3994000ec70ec61fea202c/geoalchemy2-0.20.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/4e/de/748bd7609c71cae5d737f0ba9192f19329f70180ecda8fff3cac02c5abe3/psycopg-3.3.6-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/4f/ef/c66110d46fb800dda0bf33164182dfadabe26a90e4476844d502a23dca8e/pytz-2026.5-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/51/37/400db9f0bb967a04ba8bcf4134f4ae985f439bd1018d627ce457f9ca01bd/numba-0.68.1-cp311-cp311-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/51/39/1f5d8c8877a0fa327db959c19341d4be61660de1ab6b7391f9eb805bcd67/pytest-9.2.0-py3-none-any.whl
@@ -1711,10 +1712,10 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/b8/44/7bd2007260da11cccca29ba2d4c345f1287aa663db38ee7cefeabf6386a5/zipp-4.1.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b9/fa/123043af240e49752f1c4bd24da5053b6bd00cad78c2be53c0d1e8b975bc/backports.tarfile-1.2.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bc/2c/eb4825a5eb122a6418a820514d3cd81f09627609086a3f537f218e462c36/hydrolib_core-1.6.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/be/82/79e02a0e5dd4aca81894842b9d6522624a40048a913c6384efb2987a4144/geopandas-1.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bf/9f/6f9e489c188200e6fb3193935501894811e8c97577c8ffe9033589bf3521/kiwisolver-1.5.1-cp311-cp311-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/c0/d6/3c65df53ac66532e4451917ed63dcc7c260db30eed0d5c5f1782fcc4128e/pystac_core-1.15.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c1/2b/238f02a4927fa2e27aa995371d240a468b52e42eae44a678434aff736b38/distlib-0.4.4-py2.py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/c4/64/7d344cfcef5efddf9cf32f59af7f855828e9d74b5f862eddf5bfd9f25323/geopandas-1.0.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c5/de/0415cce69e2402a5c186cdb5462a0edd3fa44d69d1a1630e68e58daaa6a4/black-26.10.1-cp311-cp311-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/c6/d8/48301a9e6476583be3a5e0a409ac786ee37eca1bc1a38c75dc06f5ab1f1a/hydromt-1.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c7/18/c86eb8e0202e32dd3df50d43d7ff9854f8e0603945ff398974c1d91ac1ef/tomli_w-1.2.0-py3-none-any.whl
@@ -1741,6 +1742,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/dd/1a/5d9a402b39ec892d856bbdd9db502ff73ce28cdf4aff72eb1ce1d6843506/universal_pathlib-0.3.10-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/3d/8161f7711c017e01ac9f008dfddd9410dff3674334c233bde66e7ba65bbf/pywin32_ctypes-0.2.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/7c/ba8ca8cbe9dbef8e83a95fc208fed8e6686c98b4719aaa0aa7f3d31fe390/zarr-3.1.6-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/e0/07/fbc65db1c4c9b387b0c8bf9ed4d26d6544026c40ebe930e645bb22f20ee1/pyproj-3.5.0-cp311-cp311-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/e0/1b/5e74289a1878e666bb4b65fe5805a04cafcac2aa5f519ef1ead67ef91c56/filelock-4.2.4-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e7/05/c19819d5e3d95294a6f5947fb9b9629efb316b96de511b418c53d245aae6/cycler-0.12.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e8/fc/fdf8cf52ff21cd5bf158f20978991cf985325842f74283eb6df26c8a39d8/charset_normalizer-3.5.2-cp311-cp311-win_amd64.whl
@@ -4209,14 +4211,14 @@ packages:
   name: hydromt-delft3dfm
   requires_dist:
   - hydromt>=1.4.0
-  - geopandas>=1.0.1
+  - geopandas>=1.1.0
   - numpy>=2.2.0
   - pandas>=2.2.2,<4
   - xarray>=2024.7.0
   - hydrolib-core>=1.6
   - xugrid>=0.15.2
   - meshkernel>=8.3.0
-  - pyproj>=3.4.0
+  - pyproj>=3.5.0
   - shapely>=2.1.2
   - scipy>=1.13.0
   - pyflwdir>=0.5.12
@@ -5332,6 +5334,13 @@ packages:
   - typing-extensions>=4.13.2 ; python_full_version < '3.11'
   - bcrypt>=3.1.5 ; extra == 'ssh'
   requires_python: '!=3.9.0,>=3.9,!=3.9.1'
+- pypi: https://files.pythonhosted.org/packages/1b/01/6df17f3b802b2d49480c102516dff30d294c4d300dbc3dfa9a9867b83609/pyproj-3.5.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+  name: pyproj
+  version: 3.5.0
+  sha256: 1b7c2113c4d11184a238077ec85e31eda1dcc58ffeb9a4429830e0a7036e787d
+  requires_dist:
+  - certifi
+  requires_python: '>=3.8'
 - pypi: https://files.pythonhosted.org/packages/1c/3e/ef786310a3774ae7aacaa288ca6d1e1dfd03c24214137478e4b630b76af0/fonttools-4.68.0-cp312-cp312-win_amd64.whl
   name: fonttools
   version: 4.68.0
@@ -6939,13 +6948,6 @@ packages:
   version: 4.16.0
   sha256: 481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8
   requires_python: '>=3.9'
-- pypi: https://files.pythonhosted.org/packages/4a/3b/4380946f87ea708b6a56d7d650eb1f3ccecd320c7660f74c9cac2d197c34/pyproj-3.4.0-cp311-cp311-win_amd64.whl
-  name: pyproj
-  version: 3.4.0
-  sha256: 25a36e297f3e0524694d40259e3e895edc1a47492a0e30608268ffc1328e3f5d
-  requires_dist:
-  - certifi
-  requires_python: '>=3.8'
 - pypi: https://files.pythonhosted.org/packages/4a/cc/aa1a47f8c92280d37498a5ea56a2a36606d034383e3e6472d64cbb56cf85/msgspec-0.22.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
   name: msgspec
   version: 0.22.0
@@ -8231,13 +8233,6 @@ packages:
   - pyzmq ; extra == 'complete'
   - blosc ; extra == 'complete'
   requires_python: '>=3.9'
-- pypi: https://files.pythonhosted.org/packages/72/85/4e56ddf15803f71130f61f89d4ca9a8c530ee876f29c98dfbaf9a652d59f/pyproj-3.4.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-  name: pyproj
-  version: 3.4.0
-  sha256: a454a7c4423faa2a14e939d08ef293ee347fa529c9df79022b0585a6e1d8310c
-  requires_dist:
-  - certifi
-  requires_python: '>=3.8'
 - pypi: https://files.pythonhosted.org/packages/72/8d/27c054166bac671770d1ea0ef7716134fe8119c0df224a58c89fd735a61c/scikit_learn-1.9.1-cp312-cp312-win_amd64.whl
   name: scikit-learn
   version: 1.9.1
@@ -10635,6 +10630,34 @@ packages:
   - sphinx ; extra == 'doc'
   - gitpython ; extra == 'doc'
   requires_python: '>=3.10'
+- pypi: https://files.pythonhosted.org/packages/be/82/79e02a0e5dd4aca81894842b9d6522624a40048a913c6384efb2987a4144/geopandas-1.1.0-py3-none-any.whl
+  name: geopandas
+  version: 1.1.0
+  sha256: b19b18bdc736ee05b237f5e9184211c452768a4c883f7d7f8421b0cbe1da5875
+  requires_dist:
+  - numpy>=1.24
+  - pyogrio>=0.7.2
+  - packaging
+  - pandas>=2.0.0
+  - pyproj>=3.5.0
+  - shapely>=2.0.0
+  - psycopg[binary]>=3.1.0 ; extra == 'all'
+  - sqlalchemy>=2.0 ; extra == 'all'
+  - geopy ; extra == 'all'
+  - matplotlib>=3.7 ; extra == 'all'
+  - mapclassify>=2.5 ; extra == 'all'
+  - xyzservices ; extra == 'all'
+  - folium ; extra == 'all'
+  - geoalchemy2 ; extra == 'all'
+  - pyarrow>=10.0.0 ; extra == 'all'
+  - scipy ; extra == 'all'
+  - pytest>=3.1.0 ; extra == 'dev'
+  - pytest-cov ; extra == 'dev'
+  - pytest-xdist ; extra == 'dev'
+  - codecov ; extra == 'dev'
+  - pre-commit ; extra == 'dev'
+  - ruff ; extra == 'dev'
+  requires_python: '>=3.10'
 - pypi: https://files.pythonhosted.org/packages/be/c7/71eb0d51cdcbb63b857c931aa4e9218b078b5d9f8ecd383b234f28fe7b0f/jedi-0.20.1-py2.py3-none-any.whl
   name: jedi
   version: 0.20.1
@@ -10773,33 +10796,6 @@ packages:
   - colorama>=0.4.6 ; sys_platform == 'win32'
   - defusedxml>=0.7.1 ; extra == 'test'
   requires_python: '>=3.13'
-- pypi: https://files.pythonhosted.org/packages/c4/64/7d344cfcef5efddf9cf32f59af7f855828e9d74b5f862eddf5bfd9f25323/geopandas-1.0.1-py3-none-any.whl
-  name: geopandas
-  version: 1.0.1
-  sha256: 01e147d9420cc374d26f51fc23716ac307f32b49406e4bd8462c07e82ed1d3d6
-  requires_dist:
-  - numpy>=1.22
-  - pyogrio>=0.7.2
-  - packaging
-  - pandas>=1.4.0
-  - pyproj>=3.3.0
-  - shapely>=2.0.0
-  - psycopg-binary>=3.1.0 ; extra == 'all'
-  - sqlalchemy>=1.3 ; extra == 'all'
-  - geopy ; extra == 'all'
-  - matplotlib>=3.5.0 ; extra == 'all'
-  - mapclassify ; extra == 'all'
-  - xyzservices ; extra == 'all'
-  - folium ; extra == 'all'
-  - geoalchemy2 ; extra == 'all'
-  - pyarrow>=8.0.0 ; extra == 'all'
-  - pytest>=3.1.0 ; extra == 'dev'
-  - pytest-cov ; extra == 'dev'
-  - pytest-xdist ; extra == 'dev'
-  - codecov ; extra == 'dev'
-  - black ; extra == 'dev'
-  - pre-commit ; extra == 'dev'
-  requires_python: '>=3.9'
 - pypi: https://files.pythonhosted.org/packages/c5/17/8bbd530b8659e9d963f5b16f6cb8e159f4cd174b4d6304e48969ab12dba8/pydantic_core-2.50.1-cp312-cp312-win_amd64.whl
   name: pydantic-core
   version: 2.50.1
@@ -11808,6 +11804,13 @@ packages:
   - ruff>=0.12.0 ; extra == 'dev'
   - cython-lint>=0.12.2 ; extra == 'dev'
   requires_python: '>=3.12'
+- pypi: https://files.pythonhosted.org/packages/e0/07/fbc65db1c4c9b387b0c8bf9ed4d26d6544026c40ebe930e645bb22f20ee1/pyproj-3.5.0-cp311-cp311-win_amd64.whl
+  name: pyproj
+  version: 3.5.0
+  sha256: e97573de0ab3bbbcb4c7748bc41f4ceb6da10b45d35b1a294b5820701e7c25f0
+  requires_dist:
+  - certifi
+  requires_python: '>=3.8'
 - pypi: https://files.pythonhosted.org/packages/e0/1b/5e74289a1878e666bb4b65fe5805a04cafcac2aa5f519ef1ead67ef91c56/filelock-4.2.4-py3-none-any.whl
   name: filelock
   version: 4.2.4
