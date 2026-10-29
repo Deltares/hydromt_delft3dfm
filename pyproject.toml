@@ -4,6 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "hydromt_delft3dfm"
+version = "0.4.0"
 authors = [
     { name = "Rinske Hutten", email = "rinske.hutten@deltares.nl" },
     { name = "Xiaohan Li", email = "xiaohan.li@deltares.nl" },
@@ -55,7 +56,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
 ]
-dynamic = ['version', 'description']
+dynamic = ['description']
 
 [project.optional-dependencies]
 dev = [
