@@ -8,7 +8,11 @@ The format is based on `Keep a Changelog`_, and this project adheres to
 
 UNRELEASED
 ==========
-This release supports Python 3.11 and up. Some new features are only available from D-Flow FM version 2027.01 and up.
+
+
+v0.4.0 (29 October 2026)
+========================
+This release supports Python 3.11 and up. Some new features are only available from D-Flow FM version 2027.01 and up. It includes many updates to support hydromt v1+ and hydrolib-core v1+ and up to date versions of several dependencies. The formatting of the yaml files has slightly changed so check your input carefully by comparing to the reference files in the repository.
 
 Added
 -----

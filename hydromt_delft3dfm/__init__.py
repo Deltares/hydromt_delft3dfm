@@ -1,12 +1,16 @@
 """hydroMT plugin for Delft3D FM models."""
 
-from importlib.metadata import version
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
-
 import pandas as pd
 from packaging.version import Version
 
-__version__ = "0.3.1.dev"
+try:
+    __version__ = version("hydromt_delft3dfm")
+except PackageNotFoundError:
+    # Package is not installed
+    __version__ = "unknown"
+
 DATADIR = Path(__file__).parent / "data"
 
 from hydromt_delft3dfm.dflowfm import DFlowFMModel
