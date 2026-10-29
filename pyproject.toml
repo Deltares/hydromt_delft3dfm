@@ -28,8 +28,8 @@ dependencies = [
     "hydrolib-core>=1.6",
     #consistent projected/geographic properties and crs attributes in the resulting datasets
     "xugrid>=0.15.2",
-    #meshkernel>=8.3.0 supports interpolation of arbitrary properties like bathymetry
-    "meshkernel>=8.3.0",
+    #meshkernel>=8.4.0 improved triangular meshes, correct internal boundaries, correct xy coords in geomertrylists, global grid extends to the poles
+    "meshkernel>=8.4.0",
     #pyproj>=3.5.0 is required by geopandas>=1.1.0
 	"pyproj>=3.5.0",
     #shapely>=2.1.2 required by hydromt 1.4
@@ -38,7 +38,7 @@ dependencies = [
 	"scipy>=1.13.0",
     #pyflwdir 0.5.12 fixed river widths computation
     "pyflwdir>=0.5.12",
-    "networkx",
+    "networkx>=3.5",
     # TODO: temporary pin on affine, to be fixed in https://github.com/Deltares/hydromt_delft3dfm/issues/337
     "affine<3",
 ]
@@ -177,12 +177,12 @@ pandas = "==2.2.2"
 xarray = "==2024.7.0"
 hydrolib-core = "==1.6"
 xugrid = "==0.15.2"
-meshkernel = "==8.3.0"
+meshkernel = "==8.4.0"
 pyproj = "==3.5.0"
 shapely = "==2.1.2"
 scipy = "==1.13.0"
 pyflwdir = "==0.5.12"
-networkx = "*"
+networkx = "==3.5"
 
 # Define features for different Python versions and Hydromt versions
 [tool.pixi.feature.py311.dependencies]
