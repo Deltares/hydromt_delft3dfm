@@ -22,6 +22,6 @@ jobs:
         run: |
           pixi list
 
-      - name: Run tests
+      - name: Linting
         run: |
           pixi run pre-commit run --show-diff-on-failure --color=always --all-files
