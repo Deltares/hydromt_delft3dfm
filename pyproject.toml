@@ -25,7 +25,8 @@ dependencies = [
     #xarray>=2024.7.0 includes fix for numpy v2: https://github.com/pydata/xarray/issues/9179
 	"xarray>=2024.7.0",
     #hydrolib-core>=1.6 is latest version with most up to date extforce status/warnings and stricter validation and no obsolete mdu keywords for delft3dfm 2027.01
-    "hydrolib-core>=1.6",
+    #hydrolib-core>=1.6.1 has bugfix for friction validator
+    "hydrolib-core>=1.6.1",
     #consistent projected/geographic properties and crs attributes in the resulting datasets
     "xugrid>=0.15.2",
     #meshkernel>=8.4.0 improved triangular meshes, correct internal boundaries, correct xy coords in geomertrylists, global grid extends to the poles
@@ -175,7 +176,7 @@ geopandas = "==1.1.0"
 numpy = "==2.2.0"
 pandas = "==2.2.2"
 xarray = "==2024.7.0"
-hydrolib-core = "==1.6"
+hydrolib-core = "==1.6.1"
 xugrid = "==0.15.2"
 meshkernel = "==8.4.0"
 pyproj = "==3.5.0"
