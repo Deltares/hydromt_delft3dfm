@@ -1,63 +1,50 @@
 ---
-name: Build Docs
+name: docs
 
-# Also build for PR's since this also tests whether all notebooks run properly
-# However, do not upload to gh-pages if built from PR
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
-  # Build docs on Linux
-  Docs:
-    name: build docs
+  build:
     runs-on: ubuntu-latest
-    env:
-      DOC_VERSION: dev
-    defaults:
-      run:
-        shell: bash -l {0}
+
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup environment
-        uses: conda-incubator/setup-miniconda@v3
+      - uses: actions/checkout@v7
+      - uses: prefix-dev/setup-pixi@v0.11.2
         with:
-          python-version: "3.11"
-          channels: conda-forge
-          channel-priority: strict
-
-      - name: Install hydromt-delft3dfm
+          pixi-version: "v0.83.0"
+          environments: default
+      - name: List env contents
         run: |
-          conda install flit
-          conda install pandoc # does not work via pip
-          flit install
-
-      - name: list env contents
-        run: |
-          pip list
-          hydromt --models
-
+          pixi list -e default
       - name: Build docs
         run: |
-          pushd docs
-          make html
-          popd
-
-      - name: Set doc version
-        run: echo "DOC_VERSION=$(python -c 'from hydromt_delft3dfm import __version__ as v; print("dev" if "dev" in v else "v"+v.replace(".dev",""))')"
-          >> $GITHUB_ENV
-
-      - name: Upload to GitHub Pages
-        if: ${{ github.event_name != 'pull_request'}}
-        uses: peaceiris/actions-gh-pages@v3.8.0
+          pixi run docs-build
+      - uses: actions/upload-pages-artifact@v5
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/_build/html
-          exclude_assets: '.buildinfo,_sources/*,_examples/*.ipynb'
-          destination_dir: ./${{ env.DOC_VERSION }}
-          keep_files: false
-          full_commit_message: Deploy ${{ env.DOC_VERSION }} to GitHub Pages
+          path: docs/_build/
+
+  # Deploy the artifact to GitHub pages.
+  # This is a separate job so that only actions/deploy-pages has the necessary permissions.
+  deploy:
+    if: ${{ github.event_name != 'pull_request'}}
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

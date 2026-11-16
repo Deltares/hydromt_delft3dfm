@@ -1,4 +1,4 @@
-"""Workflows to prepare branches for Delft3D-FM model."""
+"""Workflows to prepare branches for Delft3D FM model."""
 
 import logging
 from typing import List, Literal, Tuple
@@ -8,16 +8,14 @@ import numpy as np
 import pandas as pd
 import pyproj
 import shapely
-from hydromt import gis_utils
-from hydromt.gis_utils import nearest_merge
+from hydromt.gis.vector_utils import nearest_merge
 from scipy.spatial import distance
 from shapely.geometry import LineString, MultiLineString, MultiPoint, Point
 
-from hydromt_delft3dfm import graph_utils, mesh_utils
+from hydromt_delft3dfm.utils import graph_utils, mesh_utils
+from hydromt_delft3dfm.utils.gis_utils import cut_pieces, split_lines
 
-from ..gis_utils import cut_pieces, split_lines
-
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(f"hydromt.{__name__}")
 
 
 __all__ = [
@@ -47,7 +45,6 @@ def prepare_branches(
     snap_offset: float = 0.0,
     allow_intersection_snapping: bool = False,
     allowed_columns: List[str] = [],
-    logger: logging.Logger = logger,
 ) -> Tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
     """
     Set all common steps to add branches type of objects.
@@ -84,8 +81,6 @@ def prepare_branches(
         By default True.
     allowed_columns: list, optional
         List of columns to filter in branches GeoDataFrame
-    logger: logging.Logger, optional
-        Logger.
 
     Returns
     -------
@@ -96,7 +91,7 @@ def prepare_branches(
     """
     # 1. Filter features based on filter
     if filter is not None and "branchtype" in gdf_br.columns:
-        gdf_br = gdf_br[gdf_br["branchtype"].str.lower() == filter.lower()]
+        gdf_br = gdf_br[gdf_br["branchtype"].str.lower() == filter.lower()].copy()
         logger.info(f"Set {filter} locations filtered from branches as {br_type} .")
     # Check if features are present
     if len(gdf_br) == 0:
@@ -135,7 +130,6 @@ def prepare_branches(
         snap_offset=snap_offset,
         allow_intersection_snapping=allow_intersection_snapping,
         smooth_branches=br_type == "pipe",
-        logger=logger,
     )
     logger.info("Validating branches")
     validate_branches(branches)
@@ -216,10 +210,11 @@ def _get_possible_unsnappednodes(newbranches):
 def _snap_unsnappednodes_to_nodes(
     unsnapped_nodes: gpd.GeoDataFrame, nodes: gpd.GeoDataFrame, snap_offset: float
 ) -> gpd.GeoDataFrame:
-    snapped_nodes = gis_utils.nearest_merge(
+    snapped_nodes = nearest_merge(
         unsnapped_nodes, nodes, max_dist=snap_offset, overwrite=False
     )
-    snapped_nodes = snapped_nodes[snapped_nodes.index_right != -1]  # drop not snapped
+    # drop not snapped
+    snapped_nodes = snapped_nodes[snapped_nodes.index_right.notna()]
     snapped_nodes["geometry_left"] = snapped_nodes["geometry"]
     snapped_nodes["geometry_right"] = [
         nodes.at[i, "geometry"] for i in snapped_nodes["index_right"]
@@ -282,7 +277,6 @@ def update_data_columns_attribute_from_query(
     branches: gpd.GeoDataFrame,
     attribute: pd.DataFrame,
     attribute_name: str,
-    logger=logger,
 ):
     """
     Update an attribute column of branches.
@@ -364,7 +358,6 @@ def process_branches(
     snap_offset: float = 0.01,
     allow_intersection_snapping: bool = True,
     smooth_branches: bool = False,
-    logger=logger,
 ):
     """Process the branches.
 
@@ -385,8 +378,6 @@ def process_branches(
     smooth_branches: bool, optional
         whether to return branches that are smoothed (straightend), needed for pipes
         Default to False.
-    logger
-        The logger to log messages with.
 
     Returns
     -------
@@ -404,16 +395,15 @@ def process_branches(
         id_col=id_col,
         snap_offset=snap_offset,
         allow_intersection_snapping=allow_intersection_snapping,
-        logger=logger,
     )
 
     logger.debug("Splitting branches based on spacing")
     # TODO: add check, if spacing is used,
     # then in branch cross section cannot be setup later
-    branches = space_branches(branches, smooth_branches=smooth_branches, logger=logger)
+    branches = space_branches(branches, smooth_branches=smooth_branches)
 
     logger.debug("Generating branchnodes")
-    branch_nodes = generate_branchnodes(branches, id_col, logger=logger)
+    branch_nodes = generate_branchnodes(branches, id_col)
 
     return branches, branch_nodes
 
@@ -423,7 +413,6 @@ def cleanup_branches(
     id_col: str = "branchid",
     snap_offset: float = 0.01,
     allow_intersection_snapping: bool = True,
-    logger=logger,
 ):
     """Clean up the branches.
 
@@ -449,8 +438,6 @@ def cleanup_branches(
     allow_intersection_snapping : bool, optional
         Allow snapping at all branch ends, including intersections.
         Defaults to True.
-    logger
-        The logger to log messages with.
 
     Returns
     -------
@@ -563,7 +550,6 @@ def space_branches(
     branches: gpd.GeoDataFrame,
     spacing_col: str = "spacing",
     smooth_branches: bool = False,
-    logger=logger,
 ):
     """
     Space the branches based on the spacing_col on the branch.
@@ -579,8 +565,6 @@ def space_branches(
         The branches to clean up.
     spacing_col : str, optional
         The branch id column name. Defaults to 'spacing'.
-    logger
-        The logger to log messages with.
 
     Returns
     -------
@@ -602,7 +586,6 @@ def space_branches(
 def generate_branchnodes(
     branches: gpd.GeoDataFrame,
     id_col: str = None,
-    logger=logger,
 ):
     """Generate branch nodes at the branch ends.
 
@@ -612,8 +595,6 @@ def generate_branchnodes(
         The branches to generate the end nodes for.
     id_col : str, optional
         The branch id column name. Defaults to None.
-    logger
-        The logger to log messages with.
 
     Returns
     -------
@@ -656,9 +637,8 @@ def generate_branchnodes(
     return nodes
 
 
-def validate_branches(
-    branches: gpd.GeoDataFrame, logger=logger
-):  # TODO: add more content and maybe make a seperate module
+# TODO: add more content and maybe make a seperate module
+def validate_branches(branches: gpd.GeoDataFrame):
     """Validate the branches.
 
     Logs an error when one or more branches have a length of 0 meter.
@@ -667,8 +647,6 @@ def validate_branches(
     ----------
     branches : gpd.GeoDataFrame
         The branches to validate.
-    logger
-        The logger to log messages with.
     """
     # validate pipe geometry
     if sum(branches.geometry.length <= 0) == 0:
@@ -687,7 +665,6 @@ def split_branches(
     spacing_const: float = float("inf"),
     spacing_col: str = None,
     smooth_branches: bool = False,
-    logger=logger,
 ):
     """
     Split branches based on a given spacing.
@@ -711,8 +688,6 @@ def split_branches(
         Default to None.
     smooth_branches: bool, optional
         Switch to split branches into straight lines. By default False.
-    logger
-        The logger to log messages with.
 
     Returns
     -------
@@ -732,7 +707,7 @@ def split_branches(
 
     elif branches[spacing_col].astype(float).notna().any():
         logger.info(
-            "Splitting branches with spacing specifed"
+            "Splitting branches with spacing specified "
             f"in datamodel branches[{spacing_col}]"
         )
         split_branches = []
@@ -897,9 +872,13 @@ def reduce_gdf_precision(gdf: gpd.GeoDataFrame, rounding_precision: int = 8):
     Raises
     ------
     NotImplementedError
-        If the geometry is not a LineString or Point.
+        If the geometry is not a LineString or Point, or if the types are mixed.
     """
-    if isinstance(gdf.geometry[0], LineString):
+    # check for mixed geometry types
+    if len(gdf.geometry.geom_type.unique()) != 1:
+        raise NotImplementedError("Mixed geometry types are not supported.")
+
+    if isinstance(gdf.geometry.iloc[0], LineString):
         branches = gdf.copy()
         for i_branch, branch in enumerate(branches.itertuples()):
             points = shapely.wkt.loads(
@@ -909,7 +888,7 @@ def reduce_gdf_precision(gdf: gpd.GeoDataFrame, rounding_precision: int = 8):
             ).coords[:]
             branches.at[i_branch, "geometry"] = LineString(points)
 
-    elif isinstance(gdf.geometry[0], Point):
+    elif isinstance(gdf.geometry.iloc[0], Point):
         points = gdf.copy()
         for i_point, point in enumerate(points.itertuples()):
             new_point = shapely.wkt.loads(
@@ -918,7 +897,7 @@ def reduce_gdf_precision(gdf: gpd.GeoDataFrame, rounding_precision: int = 8):
             points.at[i_point, "geometry"] = Point(new_point)
 
     else:
-        raise NotImplementedError
+        raise NotImplementedError("Only LineString and Point geometry types supported.")
 
     return gdf
 
@@ -1132,9 +1111,9 @@ def find_nearest_branch(
 
     # For rows where distance is greater than maxdist, set branch_id
     # to empty and branch_offset to NaN
-    result.loc[~valid_rows, "branch_id"] = ""
-    result.loc[~valid_rows, "branch_offset"] = np.nan
-    result.loc[~valid_rows, "branch_distance"] = np.nan
+    result.loc[~valid_rows, "branch_id"] = None
+    result.loc[~valid_rows, "branch_offset"] = None
+    result.loc[~valid_rows, "branch_distance"] = None
 
     return result
 
@@ -1225,7 +1204,7 @@ def _remove_branches_with_ring_geometries(
 ) -> gpd.GeoDataFrame:
     first_nodes = [l.coords[0] for l in branches.geometry]
     last_nodes = [l.coords[-1] for l in branches.geometry]
-    duplicate_ids = np.isclose(first_nodes, last_nodes, atol=0, rtol=1e-10)
+    duplicate_ids = np.isclose(first_nodes, last_nodes)
     duplicate_ids = [
         branches.index[i] for i in range(len(branches)) if np.all(duplicate_ids[i])
     ]
@@ -1279,7 +1258,7 @@ def intersect_lines(gdf1, gdf2):
     points_exploded = union_points.explode().reset_index(drop=True)
 
     # Filter the exploded lines based on the source identifiers
-    gdf1_intersected = lines_exploded[lines_exploded["_from_left"] == True].drop(
+    gdf1_intersected = lines_exploded[lines_exploded["_from_left"]].drop(
         columns=["_from_left", "_from_right"]
     )
     columns_to_drop = [col for col in gdf1_intersected.columns if col.endswith("_2")]
@@ -1289,7 +1268,7 @@ def intersect_lines(gdf1, gdf2):
     }
     gdf1_cleaned = gdf1_cleaned.rename(columns=columns_to_rename)
 
-    gdf2_intersected = lines_exploded[lines_exploded["_from_right"] == True].drop(
+    gdf2_intersected = lines_exploded[lines_exploded["_from_right"]].drop(
         columns=["_from_left", "_from_right"]
     )
     columns_to_drop = [col for col in gdf2_intersected.columns if col.endswith("_1")]

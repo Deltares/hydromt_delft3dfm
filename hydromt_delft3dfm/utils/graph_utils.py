@@ -1,4 +1,4 @@
-"""Utilities graph functions for Delft3D-FM model."""
+"""Utilities graph functions for Delft3D FM model."""
 
 import logging
 import pickle
@@ -12,7 +12,7 @@ from pyproj import CRS, Transformer
 from shapely.geometry import LineString, Point, box
 from shapely.ops import transform
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(f"hydromt.{__name__}")
 
 
 __all__ = [

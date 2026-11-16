@@ -1,0 +1,3 @@
+﻿branchtype,numLevels,levels,storageArea,interpolate
+river,2,0 10,100 100,linear
+channel,2,0 10,100 100,linear

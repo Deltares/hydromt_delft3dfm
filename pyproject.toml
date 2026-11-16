@@ -4,6 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "hydromt_delft3dfm"
+version = "0.4.0"
 authors = [
     { name = "Rinske Hutten", email = "rinske.hutten@deltares.nl" },
     { name = "Xiaohan Li", email = "xiaohan.li@deltares.nl" },
@@ -12,38 +13,53 @@ authors = [
     { name = "Sebastian Hartgring", email = "sebastian.hartgring@deltares.nl" },
 ]
 dependencies = [
-    "hydromt>=0.10.0, <1", # TODO: move to hydromt>=1: https://github.com/Deltares/hydromt_delft3dfm/issues/137
-    "geopandas>=0.10, !=1.0.0", # gpd 1.0.0 has sjoin bug: https://github.com/geopandas/geopandas/issues/352
-    "numpy",
-    "pandas>=2.0.0",
-    "xarray",
-    "hydrolib-core>=0.8.0",
-    "xugrid>=0.9.0",
-    "meshkernel>=4.3.0",
-    "pyproj",
-    "shapely>=2.0.0",
-    "scipy",
-    "pyflwdir>=0.5.4",
-    "networkx",
-	"momepy", # graph utils
-	"osmnx", # osm graph
+    #hydromt 1.4.0 has different default geoms precision and bugfix for nearest_merge and bugfix for mesh properties
+    "hydromt>=1.4.0",
+	#geopandas>=1.1.0 resolves shapely.geos DeprecationWarning: https://github.com/geopandas/geopandas/pull/3453
+	"geopandas>=1.1.0",
+    #numpy>=2.2.0 is oldest supported version in Q4 2026, numpy 2.1 has vulnerability issues
+	"numpy>=2.2.0",
+    #pandas>=2.2.2 supports numpy 2: https://github.com/Deltares/dfm_tools/issues/1330
+    #first resolve Pandas4Warning before allowing for pandas 4: https://github.com/Deltares/hydromt_delft3dfm/issues/354
+    "pandas>=2.2.2,<4",
+    #xarray>=2024.7.0 includes fix for numpy v2: https://github.com/pydata/xarray/issues/9179
+	"xarray>=2024.7.0",
+    #hydrolib-core>=1.6 is latest version with most up to date extforce status/warnings and stricter validation and no obsolete mdu keywords for delft3dfm 2027.01
+    #hydrolib-core>=1.6.1 has bugfix for friction validator
+    "hydrolib-core>=1.6.1",
+    #consistent projected/geographic properties and crs attributes in the resulting datasets
+    "xugrid>=0.15.2",
+    #meshkernel>=8.4.0 improved triangular meshes, correct internal boundaries, correct xy coords in geomertrylists, global grid extends to the poles
+    "meshkernel>=8.4.0",
+    #pyproj>=3.5.0 is required by geopandas>=1.1.0
+	"pyproj>=3.5.0",
+    #shapely>=2.1.2 required by hydromt 1.4
+	"shapely>=2.1.2",
+    #scipy>=1.13.0 is the first version to support numpy 2.0
+	"scipy>=1.13.0",
+    #pyflwdir 0.5.12 fixed river widths computation
+    "pyflwdir>=0.5.12",
+    "networkx>=3.5",
+    "momepy", # graph utils
+    "osmnx", # osm graph
+    # TODO: temporary pin on affine, to be fixed in https://github.com/Deltares/hydromt_delft3dfm/issues/337
+    "affine<3",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 readme = "README.rst"
 classifiers = [
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
-    "Development Status :: 2 - Pre-Alpha",
-    "Intended Audience :: Developers",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Hydrology",
     "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
-dynamic = ['version', 'description']
+dynamic = ['description']
 
 [project.optional-dependencies]
 dev = [
@@ -65,6 +81,9 @@ docs = [
     "sphinx_design",
     "pydata-sphinx-theme",
     "sphinx_autosummary_accessors",
+	"ipython",
+	"ipykernel",
+	#"pandoc", # install via conda via features
 ]
 examples = [
     "jupyterlab",  # run examples in jupyter notebook
@@ -78,19 +97,18 @@ Documentation = "http://deltares.github.io/hydromt_delft3dfm/latest/"
 Source = "https://github.com/Deltares/hydromt_delft3dfm"
 
 [project.entry-points."hydromt.models"]
-dflowfm = "hydromt_delft3dfm.dflowfm:DFlowFMModel"
+dflowfm = "hydromt_delft3dfm.dflowfm"
 
 [tool.black]
 line-length = 88
-target-version = ['py39']
+target-version = ['py311']
 
 [tool.ruff]
 line-length = 88
 # enable pydocstyle (E), pyflake (F) and isort (I), pytest-style (PT)
 select = ["E", "F", "I", "PT", "D"]
-ignore-init-module-imports = true
-ignore = ["D211", "D213", "E741", "D105", "E712"]
-exclude = ["examples", "tests", "docs"]
+ignore = ["E741"]
+exclude = ["examples", "docs"]
 
 [tool.ruff.per-file-ignores]
 "hydromt_delft3dfm/__init__.py" = ["E402", "F403"]
@@ -105,3 +123,105 @@ exclude = ["docs", "examples", "envs", "tests", ".github"]
 
 [tool.pytest.ini_options]
 addopts = "--durations=0"
+filterwarnings = [
+	"error",
+    # TODO: fix Pandas4Warning instead of filtering them: https://github.com/Deltares/hydromt_delft3dfm/issues/354
+    # pandas.errors.Pandas4Warning does not exist in pandas 2, but since it is built upon DeprecationWarning we can filter on that
+    "ignore:Setting a value on a DataFrame via .at with a key that does not exist in the index is deprecated:DeprecationWarning",
+    "ignore:The inplace keyword in GeoDataFrame.reset_index is deprecated:DeprecationWarning",
+    "ignore:The inplace keyword in GeoDataFrame.rename is deprecated:DeprecationWarning",
+    "ignore:The inplace keyword in GeoDataFrame.dropna is deprecated:DeprecationWarning",
+    "ignore:The inplace keyword in GeoDataFrame.drop is deprecated:DeprecationWarning",
+    # support for pandas 2
+    "ignore:__array__ implementation doesn't accept a copy keyword:DeprecationWarning",
+    # TODO: ignore xugrid ugrid infer xy coords UserWarning until https://github.com/Deltares/HYDROLIB-core/issues/577 is fixed
+	# note the use of single quote below to denote "raw" strings in TOML
+	'''ignore:No standard_name of \('projection_x_coordinate':UserWarning''',
+    # TODO: ignore xugrid crs UserWarning until https://github.com/Deltares/hydromt_delft3dfm/issues/119 is fixed
+	"ignore:No CRS or recognizable standard_name found for topology:UserWarning",
+    # ignore "Geometry is in a geographic CRS. Results from interpolate/length are likely incorrect"
+    # since length>0 is still valid and midpoint interpolation (0.5 normalized) is also still valid
+    "ignore:Geometry is in a geographic CRS:UserWarning",
+    # TODO: filtering extforce deprecationwarnings, to be fixed in https://github.com/Deltares/hydromt_delft3dfm/issues/332
+	# note the use of single quote below to denote "raw" strings in TOML
+    "ignore:Operand value 'O' is deprecated; use 'override' instead:DeprecationWarning",
+    'ignore:`InitialField` \(and `\[Initial\]` blocks in inifield files\):DeprecationWarning',
+    'ignore:`ParameterField` \(and `\[Parameter\]` blocks in inifield files\):DeprecationWarning',
+    "ignore:`ExtModel.meteo` is deprecated; use `ExtModel.spatial` instead:DeprecationWarning",
+	]
+markers = [
+	"slow: slow tests",
+	"timeout: tests are aborted if they take too much time",
+]
+
+## Pixi related entries
+[tool.pixi.workspace]
+channels  = ["conda-forge"]
+platforms = ["linux-64", "win-64"]
+
+[tool.pixi.feature.test.tasks]
+test = { cmd = ["pytest", "--cov=hydromt_delft3dfm", "--cov-report=xml", "--cov-report=term"] }
+
+[tool.pixi.feature.docs.tasks]
+docs-build = { cmd = ["sphinx-build", "docs", "docs/_build"] }
+
+# Install your code in editable mode, dependencies here are installed in all environments
+# Takes the dependencies from pyproject.toml, which will be overridden in the features below.
+[tool.pixi.pypi-dependencies]
+hydromt_delft3dfm = { path = ".", editable = true }
+
+[tool.pixi.feature.minimal.pypi-dependencies]
+# the versions are a manual copy of [project.dependencies],
+# but with == to test with the lowest versions of direct dependencies
+hydromt = "==1.4.0"
+geopandas = "==1.1.0"
+numpy = "==2.2.0"
+pandas = "==2.2.2"
+xarray = "==2024.7.0"
+hydrolib-core = "==1.6.1"
+xugrid = "==0.15.2"
+meshkernel = "==8.4.0"
+pyproj = "==3.5.0"
+shapely = "==2.1.2"
+scipy = "==1.13.0"
+pyflwdir = "==0.5.12"
+networkx = "==3.5"
+
+# Define features for different Python versions and Hydromt versions
+[tool.pixi.feature.py311.dependencies]
+python = "3.11.*"
+
+[tool.pixi.feature.py312.dependencies]
+python = "3.12.*"
+
+[tool.pixi.feature.py313.dependencies]
+python = "3.13.*"
+
+[tool.pixi.feature.py314.dependencies]
+python = "3.14.*"
+
+[tool.pixi.feature.hydromt_dev.pypi-dependencies]
+# Get the latest version from main
+hydromt = { git = "https://github.com/Deltares/hydromt.git", branch = "main" }
+
+[tool.pixi.feature.hydrolibcore_dev.pypi-dependencies]
+# Get the latest version from main
+hydrolib-core = { git = "https://github.com/Deltares/hydrolib-core.git", branch = "main" }
+
+[tool.pixi.feature.docs.dependencies]
+pandoc = "*"
+
+# Define environments to combine features
+[tool.pixi.environments]
+default = { features = ["py314", "dev", "docs", "test", "examples"] }
+
+pypi-311 = { features = ["py311", "dev", "test"]}
+pypi-312 = { features = ["py312", "dev", "test"]}
+pypi-313 = { features = ["py313", "dev", "test"]}
+pypi-314 = { features = ["py314", "dev", "test"]}
+
+dev-314 = { features = ["py314", "dev", "test", "hydromt_dev"]}
+
+hcdev-314= { features = ["py314", "dev", "test", "hydrolibcore_dev"]}
+
+py311-mindeps = { features = ["py311", "dev", "test", "minimal"]}

@@ -14,7 +14,7 @@ data libraries are set, you can build a model by using:
 
 Configuration file
 ------------------
-Settings to build or update a Delft3DFM model are managed in a configuration file. In this file,
+Settings to build or update a Delft3D FM model are managed in a configuration file. In this file,
 every option from each :ref:`model method <model_methods>` can be changed by the user
 in its corresponding section.
 
@@ -26,11 +26,11 @@ Note that the order in which the components are listed in the yml file is import
 - When setting up a 1D2D model, both of the above should be run first, before calling `setup_link1d2d`.
 
 
-Below is an example yml file that can be used to build a complete Delft3DFM model
-:download:`.yml file <../_examples/delft3dfm_build.yml>`. Each section corresponds
+Below is an example yml file that can be used to build a complete Delft3D FM model
+:download:`.yml file <../_examples/dflowfm_build_piave.yml>`. Each section corresponds
 to a model component with the same name.
 
-.. literalinclude:: ../_examples/delft3dfm_build.yml
+.. literalinclude:: ../_examples/dflowfm_build_piave.yml
    :language: yaml
 
 Selecting data
@@ -53,4 +53,8 @@ are three ways for the user to select which data libraries to use:
 .. toctree::
     :hidden:
 
-    Example: Build Delft3DFM 1D2D model <../_examples/build_1d2dmodel.ipynb>
+    Example: Introduction to HydroMT Delft3D FM <../_examples/hydromt_tutorial.ipynb>
+    Example: Build Delft3D FM 1D model <../_examples/build_1dmodel.ipynb>
+    Example: Build Delft3D FM 2D model <../_examples/build_2dmodel.ipynb>
+    Example: Build Delft3D FM 1D2D model <../_examples/build_1d2dmodel.ipynb>
+    Example: Plot mesh <../_examples/plot_dflowfm_mesh.ipynb>

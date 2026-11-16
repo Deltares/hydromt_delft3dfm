@@ -14,10 +14,11 @@ import osmnx
 import pandas as pd
 import pyproj
 import xarray as xr
-from hydromt import DataCatalog, flw
-from hydromt.gis_utils import nearest_merge
+from hydromt import DataCatalog
+from hydromt.gis import flw
+from hydromt.gis.vector_utils import nearest_merge
 
-from hydromt_delft3dfm import graph_utils
+from hydromt_delft3dfm.utils import graph_utils
 from hydromt_delft3dfm.workflows import explode_and_deduplicate_geometries
 
 logger = logging.getLogger(__name__)

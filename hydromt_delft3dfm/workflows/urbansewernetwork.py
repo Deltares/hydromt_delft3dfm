@@ -13,7 +13,8 @@ import xarray as xr
 from hydromt import DataCatalog
 from scipy.optimize import curve_fit
 
-from hydromt_delft3dfm import graph_utils, workflows
+from hydromt_delft3dfm import workflows
+from hydromt_delft3dfm.utils import graph_utils
 
 logger = logging.getLogger(__name__)
 
