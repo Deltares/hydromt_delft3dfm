@@ -1009,7 +1009,8 @@ class DFlowFMModel(Model):
         - Optimizes the network based on cost methods and hydrological parameters.
         - Calculates and applies hydraulic parameters based on rainfall data and
             assumptions about pipe dimensions and flow velocity.
-        - Generates manholes at pipe nodes using the default manhole settings.
+        - Generates manholes at pipe nodes using the default manhole settings,
+          including at a river connection when needed to represent a pipe in the GUI.
 
         The function requires certain datasets to be provided and may perform complex
         computations and optimizations, which can be computationally intensive.
@@ -1098,7 +1099,7 @@ class DFlowFMModel(Model):
             region={"bbox": region.to_crs(4326).total_bounds},
             pipes_fn=pipes,
         )
-        self.setup_manholes()
+        self.setup_manholes(ensure_pipe_manhole=True)
 
         # Appendixes.
         # A1. Setup network connections based on flow directions from DEM
@@ -1575,25 +1576,6 @@ class DFlowFMModel(Model):
             gdf_cs = workflows.set_point_crosssections(
                 branches, gdf_cs, maxdist=maxdist
             )
-
-        elif crosssections_type == "special":  # read from the output
-            # required columns
-
-            # Read the crosssection data
-            gdf_cs = self.data_catalog.get_geodataframe(
-                crosssections_fn,
-                geom=region,
-                buffer=100,
-                predicate="contains",
-            )
-            # assign id
-            id_col = "crsid"
-            gdf_cs.index = gdf_cs[id_col]
-            gdf_cs.index.name = id_col
-
-            # reproject to model crs
-            gdf_cs.to_crs(self.crs)
-
         else:
             raise NotImplementedError(
                 f"Method {crosssections_type} is not implemented."
@@ -1609,6 +1591,7 @@ class DFlowFMModel(Model):
         bedlevel_shift: float = -0.5,
         dem_fn: str | None = None,
         snap_offset: float = 1e-3,
+        ensure_pipe_manhole: bool = False,
     ):
         """
         Prepare the 1D manholes to pipes or tunnels.
@@ -1667,6 +1650,9 @@ class DFlowFMModel(Model):
             Snapping tolenrance to automatically connecting manholes to network nodes.
             By default 0.001. Use a higher value if large number of user manholes are
             missing.
+        ensure_pipe_manhole: bool, optional
+            Generate a manhole at the downstream end of any pipe that would otherwise
+            have no manholes, even if it connects to an open branch. By default False.
         """
         # geom columns for manholes
         # id = storage node id, considered identical to manhole id
@@ -1693,6 +1679,7 @@ class DFlowFMModel(Model):
             use_branch_variables=["diameter", "width"],
             id_prefix="manhole_",
             id_suffix="_generated",
+            ensure_pipe_manhole=ensure_pipe_manhole,
         )
         # FIXME Xiaohan: why do we need set_branches here? Because of branches.gui
         # --> add a high level write_gui files same level as write_mesh

@@ -21,6 +21,7 @@ def generate_manholes_on_branches(
     bedlevel_shift: float = 0.0,
     id_prefix: str = "",
     id_suffix: str = "",
+    ensure_pipe_manhole: bool = False,
 ):
     """Generate manhole location and bedlevel from branches.
 
@@ -60,6 +61,10 @@ def generate_manholes_on_branches(
     id_suffix: str, optional
         suffix to add to the id convention
         By default "", no suffix are used.
+    ensure_pipe_manhole: bool, optional
+        Generate a manhole at the downstream end of a pipe if neither end would
+        otherwise have one, including when both ends connect to an open branch.
+        By default False.
 
     """
     # generate
@@ -143,7 +148,25 @@ def generate_manholes_on_branches(
         nodes_to_remove = nearest_merge(
             nodes_pipes, nodes_channels, max_dist=0.001, overwrite=True
         )
-        nodes_pipes = nodes_pipes.loc[nodes_to_remove.index_right.isna()]
+        keep = nodes_to_remove.index_right.isna()
+        if ensure_pipe_manhole:
+            retained = set(nodes_pipes.loc[keep, "where"])
+            extra_manholes = 0
+            for geom in pipes.geometry:
+                up = Point(geom.coords[0]).wkb
+                down = Point(geom.coords[-1]).wkb
+                if up not in retained and down not in retained:
+                    retained.add(down)
+                    extra_manholes += 1
+            if extra_manholes:
+                logger.warning(
+                    "Generating %d additional manholes at open-network connections "
+                    "to give each pipe a manhole.",
+                    extra_manholes,
+                )
+            # pandas isin can truncate trailing null bytes in WKB values.
+            keep = nodes_pipes["where"].map(lambda value: value in retained)
+        nodes_pipes = nodes_pipes.loc[keep]
 
     # manhole generated
     manholes_generated = gpd.GeoDataFrame(
