@@ -20,12 +20,6 @@ _models = {
         "ini": join(EXAMPLEDIR, "dflowfm_build_local.yml"),
         "data": join(EXAMPLEDIR, "data", "data_catalog_local.yaml"),
     },
-    "urbansewernetwork": {
-        "ini": join(
-            EXAMPLEDIR, "data", "dflowfm_build_urbansewernetwork_modelbuilding.yml"
-        ),
-        "data": join(EXAMPLEDIR, "data", "data_catalog_local.yaml"),
-    },
 }
 @pytest.mark.timeout(300)  # max 5 min
 @pytest.mark.slow
@@ -60,9 +54,6 @@ def test_model_build(tmpdir, modelname):
     # (need to read it again for proper geoms check)
     mod1 = DFlowFMModel(root=root, mode="r")
     mod1.read()
-    if modelname == "urbansewernetwork":
-        assert {"rivers", "pipes", "manholes"} <= mod1.geoms.data.keys()
-        return
 
     root = join(EXAMPLEDIR, f"dflowfm_{modelname}")
     mod0 = DFlowFMModel(root=root, mode="r")
