@@ -921,6 +921,7 @@ class DFlowFMModel(Model):
         assumption_rainfall_intensity: float = 30.0,
         assumption_flow_velocity: float = 1.0,
         rainfall_stats_fn: Union[str, Path] = None,
+        minimum_pipe_diameter: float = 0.3,
         **kwargs,
     ) -> None:
         """
@@ -987,6 +988,9 @@ class DFlowFMModel(Model):
             File path for historical rainfall statistics data.
             Used to derive rainfall intensity-duration relationships.
 
+        minimum_pipe_diameter : float, optional
+            Minimum generated pipe diameter in meters. Defaults to 0.3 m.
+
         kwargs : dict
             Additional keyword arguments.
 
@@ -1005,6 +1009,7 @@ class DFlowFMModel(Model):
         - Optimizes the network based on cost methods and hydrological parameters.
         - Calculates and applies hydraulic parameters based on rainfall data and
             assumptions about pipe dimensions and flow velocity.
+        - Generates manholes at pipe nodes using the default manhole settings.
 
         The function requires certain datasets to be provided and may perform complex
         computations and optimizations, which can be computationally intensive.
@@ -1072,6 +1077,7 @@ class DFlowFMModel(Model):
             flow_velocity=assumption_flow_velocity,
             rainfall_depth_function=rainfall_depth_function,
             rounding_precision=1,
+            minimum_pipe_diameter=minimum_pipe_diameter,
         )  # FIXME the calculated diameters are still large
 
         # 6. any additional steps to add the network to delft3dfm model
@@ -1092,6 +1098,7 @@ class DFlowFMModel(Model):
             region={"bbox": region.to_crs(4326).total_bounds},
             pipes_fn=pipes,
         )
+        self.setup_manholes()
 
         # Appendixes.
         # A1. Setup network connections based on flow directions from DEM
