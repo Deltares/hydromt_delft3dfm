@@ -233,3 +233,20 @@ roughness_manning:
   data_adapter:
     rename:
       frictioncoefficient: roughness_manning
+landuse:
+  data_type: RasterDataset
+  uri: local_data/landuse.tif
+  driver:
+    name: rasterio
+    options: {}
+  metadata:
+    category: landuse
+    history: temporary landuse within model extent
+    crs: 4326
+gpex:
+  data_type: RasterDataset
+  uri: local_data/gpex_clip.nc
+  driver:
+    name: raster_xarray
+  metadata:
+    crs: 4326

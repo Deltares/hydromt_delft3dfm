@@ -3,7 +3,7 @@
 import logging
 from os.path import exists, isfile, join
 from pathlib import Path
-from typing import Any, List
+from typing import Any, List, Union
 
 import geopandas as gpd
 import hydromt
@@ -28,7 +28,7 @@ from hydromt_delft3dfm.components import (
     IniFieldComponent,
     MDUComponent,
 )
-from hydromt_delft3dfm.utils import gis_utils, mesh_utils
+from hydromt_delft3dfm.utils import gis_utils, graph_utils, mesh_utils
 from hydromt_delft3dfm.utils.io_utils import get_fm_paths_from_dimr
 from hydromt_delft3dfm.utils.translate_utils import (
     meteo_unit_from_type,
@@ -822,6 +822,7 @@ class DFlowFMModel(Model):
 
         # Read data and filter within region
         region = workflows.parse_region_geometry(region, self.crs)
+        rivers_fn = rivers_fn.name if isinstance(rivers_fn, Path) else rivers_fn
         gdf_br = self.data_catalog.get_geodataframe(
             rivers_fn, geom=region, buffer=0, predicate="intersects"
         )
@@ -904,6 +905,235 @@ class DFlowFMModel(Model):
         )
         self.mesh.set(network1d, grid_name="network1d", overwrite_grid=True)
         self.mesh.set(mesh1d, grid_name="mesh1d", overwrite_grid=True)
+
+    @hydromt_step
+    def setup_urban_sewer_network_from_osm(
+        self,
+        region: dict,
+        waterway_types: list[str] = None,
+        highway_types: list[str] = None,
+        dem_fn: Union[str, Path] = None,
+        landuse_fn: Union[str, Path] = None,
+        landuse_reclass_fn: Union[str, Path] = None,
+        runoff_distance: float = 30.0,
+        method_cost: str = "length",
+        pipe_depth: float = 0.5,
+        assumption_rainfall_intensity: float = 30.0,
+        assumption_flow_velocity: float = 1.0,
+        rainfall_stats_fn: Union[str, Path] = None,
+        minimum_pipe_diameter: float = 0.3,
+        **kwargs,
+    ) -> None:
+        """
+        Set up and optimizes an urban sewer network open datasets.
+
+        The function builds a network topology from OSM data, integrates elevation data
+        from a Digital Elevation Model (DEM), and adds land use data to calculate runoff
+        areas. It optimizes the network for water flow based on given parameters and
+        adds physical parameters such as diameter based on historical rainfall data.
+
+        Parameters
+        ----------
+        region : dict
+            The geographical region of interest for the sewer network.
+            The region can be defined by bounding box coordinates or a polygon geometry
+            file path.
+            Only CRS 4326 is supported for bounding box format.
+            Example:
+                {'bbox': [xmin, ymin, xmax, ymax]}
+                {'geom': 'path/to/polygon_geometry'}
+
+        waterway_types : list[str], optional
+            List of waterway types to be considered from OSM data.
+            Defaults to None, use default waterway types.
+
+        highway_types : list[str], optional
+            List of highway types to be considered from OSM data.
+            Defaults to None, use default highway types.
+
+        dem_fn : Union[str, Path], optional
+            File path for the Digital Elevation Model (DEM) data
+            used to determine flow directions.
+
+        landuse_fn : Union[str, Path], optional
+            File path for land use data used to derive runoff areas.
+
+        landuse_reclass_fn : Union[str, Path], optional
+            File path for reclassified land use data to derive runoff areas.
+
+        runoff_distance : float, optional
+            Maximum distance for runoff water to reach a sewer network.
+            Defaults to 30.0 meters.
+
+        method_cost : str, optional
+            Method used to determine the cost of network paths, typically based on
+            "length" or "static_cost".
+            Defaults to "length".
+
+        pipe_depth : float, optional
+            Assumed depth of the pipes in meters.
+            Defaults to 0.5 meters, measured to the top of the pipes.
+
+        assumption_rainfall_intensity : float, optional
+            Assumed intensity of rainfall in mm/hour.
+            Used to estimate the rainfall depth that the pipes needs to accomondate.
+            Defaults to 30.0 mm/hour.
+
+        assumption_flow_velocity : float, optional
+            Assumed flow velocity in the sewer network in m/s.
+            Used to estimate the concentration time of the pipes.
+            Defaults to 1.0 m/s.
+
+        rainfall_stats_fn : Union[str, Path], optional
+            File path for historical rainfall statistics data.
+            Used to derive rainfall intensity-duration relationships.
+
+        minimum_pipe_diameter : float, optional
+            Minimum generated pipe diameter in meters. Defaults to 0.3 m.
+
+        kwargs : dict
+            Additional keyword arguments.
+
+        Returns
+        -------
+        None
+            The function does not return anything but modifies the sewer network data
+            structure within the class.
+
+        Notes
+        -----
+        This function performs several steps:
+        - Builds the initial network topology from OSM data.
+        - Integrates elevation data from DEM to determine flow directions.
+        - Adds land use data to calculate runoff areas.
+        - Optimizes the network based on cost methods and hydrological parameters.
+        - Calculates and applies hydraulic parameters based on rainfall data and
+            assumptions about pipe dimensions and flow velocity.
+        - Generates manholes at pipe nodes using the default manhole settings,
+          including at a river connection when needed to represent a pipe in the GUI.
+
+        The function requires certain datasets to be provided and may perform complex
+        computations and optimizations, which can be computationally intensive.
+        """
+        logger.info("Preparing urban sewer network.")
+        region = workflows.parse_region_geometry(region, self.crs)
+
+        # 1. Build the graph from OpenStreetMap data
+        graph = workflows.setup_urban_sewer_network_topology_from_osm(
+            region,
+            waterway_types=waterway_types,
+            highway_types=highway_types,
+            simplify=False,
+            use_connected_only=True,
+            logger=logger,
+        )
+        self.geoms.set(graph_utils.graph_to_network(graph)[0], "osm_network")
+
+        # 2. build the graph into digraph using dem data
+        # add "elevtn" to nodes
+        graph = workflows.setup_urban_sewer_network_bedlevel_from_dem(
+            graph=graph,
+            data_catalog=self.data_catalog,
+            dem_fn=dem_fn,
+            fill_method="nearest",
+            logger=logger,
+        )
+
+        # 3. add landuse data
+        # add "runoff_area" to edges
+        graph = workflows.setup_urban_sewer_network_runpoffarea_from_landuse(
+            graph=graph,
+            data_catalog=self.data_catalog,
+            landuse_fn=landuse_fn,
+            landuse_reclass_fn=landuse_reclass_fn,
+            runoff_distance=runoff_distance,
+            logger=logger,
+        )
+
+        # seperate workflows
+        graph_rivers = workflows.select_connected_branches(graph, "river")
+        graph_pipes = workflows.select_connected_branches(graph, "pipe")
+
+        # 4. optimise graph directions
+        # add "geometry", "length", "gradient" to edges
+        graph_pipe_dag = workflows.optimise_pipe_topology(
+            graph=graph_pipes,
+            method_for_weight=method_cost,
+            logger=logger,
+        )  # FIXME missing edges in between but nondag when add
+
+        # 4. get rainfall_depth_function (of concentration time) from historical data
+        rainfall_depth_function = workflows.setup_rainfall_function_from_stats(
+            rainfall_fn=rainfall_stats_fn,
+            region=region,
+            data_catalog=self.data_catalog,
+            assumption_rainfall_intensity=assumption_rainfall_intensity,
+        )
+
+        # 5. Setup network physical parameters
+        # add "diameter", "invlev_up", "invlev_dn" to edges
+        graph_pipe_dag_with_dimention = workflows.calculate_hydraulic_parameters(
+            graph_pipe_dag,
+            pipe_depth=pipe_depth,
+            flow_velocity=assumption_flow_velocity,
+            rainfall_depth_function=rainfall_depth_function,
+            rounding_precision=1,
+            minimum_pipe_diameter=minimum_pipe_diameter,
+        )  # FIXME the calculated diameters are still large
+
+        # 6. any additional steps to add the network to delft3dfm model
+        rivers = graph_utils.graph_to_network(graph_rivers)[0]
+        # reindex
+        rivers["branchid"] = [f"river_{i}" for i in rivers.index]
+        self.geoms.set(rivers, "rivers")
+        pipes = graph_utils.graph_to_network(graph_pipe_dag_with_dimention)[0]
+        pipes["branchid"] = [f"pipe_{i}" for i in pipes.index]
+        self.geoms.set(pipes, "pipes")
+
+        # FIXME error in build a model
+        self.setup_rivers(
+            region={"bbox": region.to_crs(4326).total_bounds},
+            rivers_fn=rivers,
+        )
+        self.setup_pipes(
+            region={"bbox": region.to_crs(4326).total_bounds},
+            pipes_fn=pipes,
+        )
+        self.setup_manholes(ensure_pipe_manhole=True)
+
+        # Appendixes.
+        # A1. Setup network connections based on flow directions from DEM
+        # read data
+        # ds_hydro = self.data_catalog.get_rasterdataset(dem_fn, geom=region, buffer=10)
+        # if isinstance(ds_hydro, xr.DataArray):
+        #     ds_hydro = ds_hydro.to_dataset()
+        # graph_flwdir = workflows.create_graph_from_hydrography(
+        #     region=region,
+        #     ds_hydro=ds_hydro,
+        #     min_sto=1,  # all stream that starts with stream order = 1
+        # )
+        # A2. extra writing for graph objects
+        # branches = graph_utils.graph_to_network(graph_flwdir)[0]
+        # branch_nodes = graph_utils.graph_to_network(graph_flwdir)[1]
+        # graph_utils.write_graph(
+        #     graph_flwdir, graph_fn=Path(self.root).joinpath("graphs/graph_flwdir.gml")
+        # )
+        # graph_utils.write_graph(
+        #     graph_flwdir,
+        #     graph_fn=Path(self.root).joinpath("graphs/graph_flwdir.geojson"),
+        # )
+        # A3. make plots
+        # import matplotlib.pyplot as plt
+        # fig, ax = plt.subplots()
+        # branches.plot("branchtype", ax=ax)
+        # branch_nodes.plot("nodetype", ax=ax, cmap="Reds_r")
+        # fig, ax = plt.subplots()
+        # branches.plot("gradient", ax=ax, vmin=0.0, vmax=0.01, legend=True)
+        # plt.gcf().axes[-1].set(title="gradient", ylabel="m/m")
+        # branch_nodes.plot("elevtn", ax=ax, vmin=0.0, vmax=10.0, legend=True)
+        # plt.gcf().axes[-1].set(title="elevtn", ylabel="mAD")
+
+        return None
 
     @hydromt_step
     def setup_pipes(
@@ -1050,6 +1280,7 @@ class DFlowFMModel(Model):
 
         # Read data and filter within region
         region = workflows.parse_region_geometry(region, self.crs)
+        pipes_fn = pipes_fn.name if isinstance(pipes_fn, Path) else pipes_fn
         gdf_br = self.data_catalog.get_geodataframe(
             pipes_fn, geom=region, buffer=0, predicate="intersects"
         )
@@ -1233,11 +1464,13 @@ class DFlowFMModel(Model):
 
             * Required variables: crsid, shape, shift, closed
             * Optional variables:
-                if shape = 'rectangle': 'width', 'height'
-                if shape = 'trapezoid': 'width', 't_width', 'height'
-                if shape = 'yz': 'yzcount','ycoordinates','zcoordinates'
+                if shape = 'rectangle': 'width', 'height', 'closed',
+                if shape = 'trapezoid': 'width', 't_width', 'height', 'closed',
+                if shape = 'yz': 'yzcount','ycoordinates','zcoordinates','closed',
                 if shape = 'zw': 'numlevels', 'levels', 'flowwidths','totalwidths',
-                    'fricitonid', 'frictiontype', 'frictionvalue'
+                    'closed','fricitonid', 'frictiontype', 'frictionvalue'
+                if shape = 'xyz': 'xyzcount','xcoordinates','ycoordinates',
+                    'zcoordinates','closed','frictionpositions'
                 if shape = 'zwRiver': Not Supported
                 Note that list input must be strings seperated by a whitespace ''.
             By default None, crosssections will be set from branches
@@ -1358,6 +1591,7 @@ class DFlowFMModel(Model):
         bedlevel_shift: float = -0.5,
         dem_fn: str | None = None,
         snap_offset: float = 1e-3,
+        ensure_pipe_manhole: bool = False,
     ):
         """
         Prepare the 1D manholes to pipes or tunnels.
@@ -1416,6 +1650,9 @@ class DFlowFMModel(Model):
             Snapping tolenrance to automatically connecting manholes to network nodes.
             By default 0.001. Use a higher value if large number of user manholes are
             missing.
+        ensure_pipe_manhole: bool, optional
+            Generate a manhole at the downstream end of any pipe that would otherwise
+            have no manholes, even if it connects to an open branch. By default False.
         """
         # geom columns for manholes
         # id = storage node id, considered identical to manhole id
@@ -1442,6 +1679,7 @@ class DFlowFMModel(Model):
             use_branch_variables=["diameter", "width"],
             id_prefix="manhole_",
             id_suffix="_generated",
+            ensure_pipe_manhole=ensure_pipe_manhole,
         )
         # FIXME Xiaohan: why do we need set_branches here? Because of branches.gui
         # --> add a high level write_gui files same level as write_mesh

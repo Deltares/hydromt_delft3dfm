@@ -40,6 +40,8 @@ dependencies = [
     #pyflwdir 0.5.12 fixed river widths computation
     "pyflwdir>=0.5.12",
     "networkx>=3.5",
+    "momepy", # graph utils
+    "osmnx", # osm graph
     # TODO: temporary pin on affine, to be fixed in https://github.com/Deltares/hydromt_delft3dfm/issues/337
     "affine<3",
 ]

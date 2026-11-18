@@ -21,8 +21,6 @@ _models = {
         "data": join(EXAMPLEDIR, "data", "data_catalog_local.yaml"),
     },
 }
-
-
 @pytest.mark.timeout(300)  # max 5 min
 @pytest.mark.slow
 @pytest.mark.parametrize("modelname", list(_models.keys()))
@@ -56,6 +54,7 @@ def test_model_build(tmpdir, modelname):
     # (need to read it again for proper geoms check)
     mod1 = DFlowFMModel(root=root, mode="r")
     mod1.read()
+
     root = join(EXAMPLEDIR, f"dflowfm_{modelname}")
     mod0 = DFlowFMModel(root=root, mode="r")
     mod0.read()
