@@ -245,7 +245,7 @@ landuse:
     crs: 4326
 gpex:
   data_type: RasterDataset
-  uri: urbansewer_data/gpex_clip.nc
+  uri: local_data/gpex_clip.nc
   driver:
     name: raster_xarray
   metadata:

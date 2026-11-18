@@ -1009,7 +1009,7 @@ class DFlowFMModel(Model):
         The function requires certain datasets to be provided and may perform complex
         computations and optimizations, which can be computationally intensive.
         """
-        self.logger.info("Preparing urban sewer network.")
+        logger.info("Preparing urban sewer network.")
         region = workflows.parse_region_geometry(region, self.crs)
 
         # 1. Build the graph from OpenStreetMap data
@@ -1019,7 +1019,7 @@ class DFlowFMModel(Model):
             highway_types=highway_types,
             simplify=False,
             use_connected_only=True,
-            logger=self.logger,
+            logger=logger,
         )
         self.geoms.set(graph_utils.graph_to_network(graph)[0], "osm_network")
 
@@ -1030,7 +1030,7 @@ class DFlowFMModel(Model):
             data_catalog=self.data_catalog,
             dem_fn=dem_fn,
             fill_method="nearest",
-            logger=self.logger,
+            logger=logger,
         )
 
         # 3. add landuse data
@@ -1041,7 +1041,7 @@ class DFlowFMModel(Model):
             landuse_fn=landuse_fn,
             landuse_reclass_fn=landuse_reclass_fn,
             runoff_distance=runoff_distance,
-            logger=self.logger,
+            logger=logger,
         )
 
         # seperate workflows
@@ -1053,7 +1053,7 @@ class DFlowFMModel(Model):
         graph_pipe_dag = workflows.optimise_pipe_topology(
             graph=graph_pipes,
             method_for_weight=method_cost,
-            logger=self.logger,
+            logger=logger,
         )  # FIXME missing edges in between but nondag when add
 
         # 4. get rainfall_depth_function (of concentration time) from historical data

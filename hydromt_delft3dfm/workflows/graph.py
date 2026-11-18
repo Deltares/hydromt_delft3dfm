@@ -347,7 +347,7 @@ def setup_graph_from_rasterdataset(
     # Read raster data, select variables, and interpolate na if needed
     if isinstance(raster_fn, str) or isinstance(raster_fn, Path):
         ds = data_catalog.get_rasterdataset(
-            raster_fn, region=region, buffer=1000, variables=variables
+            raster_fn, geom=region, buffer=1000, variables=variables
         )
     else:
         ds = raster_fn

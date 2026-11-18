@@ -9,7 +9,7 @@ global:
 steps:
   - setup_urban_sewer_network_from_osm:
       region:
-        geom: 'examples\data\local_data\region.geojson'
+        geom: 'examples\data\local_data\1D_extent.geojson'
       dem_fn: dem
       landuse_fn: landuse
       landuse_reclass_fn: vito_mapping
