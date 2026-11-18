@@ -500,6 +500,7 @@ def calculate_hydraulic_parameters(
     rainfall_depth_function=lambda x: 20,
     rounding_precision: int = 1,
     logger=logger,
+    minimum_pipe_diameter: float = 0.3,
 ):
     """
     Calculate radius for a pipe network.
@@ -531,6 +532,8 @@ def calculate_hydraulic_parameters(
         Number of decimal places to round to for the estimated dimentions.
         Applies to "diameter", "invlev_up", "invlev_dn".
         By default 1.
+    minimum_pipe_diameter: float
+        Minimum physical pipe diameter in meters. By default 0.3 m.
 
     Returns
     -------
@@ -540,6 +543,8 @@ def calculate_hydraulic_parameters(
     """
     if not nx.is_directed_acyclic_graph(pipe_network_graph):
         raise ValueError("The input graph must be a directed acyclic graph (DAG)")
+    if not np.isfinite(minimum_pipe_diameter) or minimum_pipe_diameter <= 0:
+        raise ValueError("minimum_pipe_diameter must be a finite positive value")
 
     # Calculate pipe radius in topological order
     pipe_network_graph = _calculate_pipe_radius(
@@ -550,7 +555,7 @@ def calculate_hydraulic_parameters(
     for s, t in pipe_network_graph.edges():
         # calculate other dimentions
         radius = pipe_network_graph[s][t]["radius"]
-        current_pipe_diameter = radius * 2
+        current_pipe_diameter = max(radius * 2, minimum_pipe_diameter)
         invertlevel_up = (
             pipe_network_graph.nodes[s]["elevtn"] - current_pipe_diameter
         ) - pipe_depth
@@ -561,7 +566,10 @@ def calculate_hydraulic_parameters(
             pipe_network_graph,
             {
                 (s, t): {
-                    "diameter": round(current_pipe_diameter, rounding_precision),
+                    "diameter": max(
+                        round(current_pipe_diameter, rounding_precision),
+                        minimum_pipe_diameter,
+                    ),
                     "invlev_up": round(invertlevel_up, rounding_precision),
                     "invlev_dn": round(invertlevel_down, rounding_precision),
                 }

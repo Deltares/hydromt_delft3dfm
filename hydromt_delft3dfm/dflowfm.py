@@ -921,6 +921,7 @@ class DFlowFMModel(Model):
         assumption_rainfall_intensity: float = 30.0,
         assumption_flow_velocity: float = 1.0,
         rainfall_stats_fn: Union[str, Path] = None,
+        minimum_pipe_diameter: float = 0.3,
         **kwargs,
     ) -> None:
         """
@@ -987,6 +988,9 @@ class DFlowFMModel(Model):
             File path for historical rainfall statistics data.
             Used to derive rainfall intensity-duration relationships.
 
+        minimum_pipe_diameter : float, optional
+            Minimum generated pipe diameter in meters. Defaults to 0.3 m.
+
         kwargs : dict
             Additional keyword arguments.
 
@@ -1005,11 +1009,13 @@ class DFlowFMModel(Model):
         - Optimizes the network based on cost methods and hydrological parameters.
         - Calculates and applies hydraulic parameters based on rainfall data and
             assumptions about pipe dimensions and flow velocity.
+        - Generates manholes at pipe nodes using the default manhole settings,
+          including at a river connection when needed to represent a pipe in the GUI.
 
         The function requires certain datasets to be provided and may perform complex
         computations and optimizations, which can be computationally intensive.
         """
-        self.logger.info("Preparing urban sewer network.")
+        logger.info("Preparing urban sewer network.")
         region = workflows.parse_region_geometry(region, self.crs)
 
         # 1. Build the graph from OpenStreetMap data
@@ -1019,7 +1025,7 @@ class DFlowFMModel(Model):
             highway_types=highway_types,
             simplify=False,
             use_connected_only=True,
-            logger=self.logger,
+            logger=logger,
         )
         self.geoms.set(graph_utils.graph_to_network(graph)[0], "osm_network")
 
@@ -1030,7 +1036,7 @@ class DFlowFMModel(Model):
             data_catalog=self.data_catalog,
             dem_fn=dem_fn,
             fill_method="nearest",
-            logger=self.logger,
+            logger=logger,
         )
 
         # 3. add landuse data
@@ -1041,7 +1047,7 @@ class DFlowFMModel(Model):
             landuse_fn=landuse_fn,
             landuse_reclass_fn=landuse_reclass_fn,
             runoff_distance=runoff_distance,
-            logger=self.logger,
+            logger=logger,
         )
 
         # seperate workflows
@@ -1053,7 +1059,7 @@ class DFlowFMModel(Model):
         graph_pipe_dag = workflows.optimise_pipe_topology(
             graph=graph_pipes,
             method_for_weight=method_cost,
-            logger=self.logger,
+            logger=logger,
         )  # FIXME missing edges in between but nondag when add
 
         # 4. get rainfall_depth_function (of concentration time) from historical data
@@ -1072,6 +1078,7 @@ class DFlowFMModel(Model):
             flow_velocity=assumption_flow_velocity,
             rainfall_depth_function=rainfall_depth_function,
             rounding_precision=1,
+            minimum_pipe_diameter=minimum_pipe_diameter,
         )  # FIXME the calculated diameters are still large
 
         # 6. any additional steps to add the network to delft3dfm model
@@ -1092,6 +1099,7 @@ class DFlowFMModel(Model):
             region={"bbox": region.to_crs(4326).total_bounds},
             pipes_fn=pipes,
         )
+        self.setup_manholes(ensure_pipe_manhole=True)
 
         # Appendixes.
         # A1. Setup network connections based on flow directions from DEM
@@ -1568,25 +1576,6 @@ class DFlowFMModel(Model):
             gdf_cs = workflows.set_point_crosssections(
                 branches, gdf_cs, maxdist=maxdist
             )
-
-        elif crosssections_type == "special":  # read from the output
-            # required columns
-
-            # Read the crosssection data
-            gdf_cs = self.data_catalog.get_geodataframe(
-                crosssections_fn,
-                geom=region,
-                buffer=100,
-                predicate="contains",
-            )
-            # assign id
-            id_col = "crsid"
-            gdf_cs.index = gdf_cs[id_col]
-            gdf_cs.index.name = id_col
-
-            # reproject to model crs
-            gdf_cs.to_crs(self.crs)
-
         else:
             raise NotImplementedError(
                 f"Method {crosssections_type} is not implemented."
@@ -1602,6 +1591,7 @@ class DFlowFMModel(Model):
         bedlevel_shift: float = -0.5,
         dem_fn: str | None = None,
         snap_offset: float = 1e-3,
+        ensure_pipe_manhole: bool = False,
     ):
         """
         Prepare the 1D manholes to pipes or tunnels.
@@ -1660,6 +1650,9 @@ class DFlowFMModel(Model):
             Snapping tolenrance to automatically connecting manholes to network nodes.
             By default 0.001. Use a higher value if large number of user manholes are
             missing.
+        ensure_pipe_manhole: bool, optional
+            Generate a manhole at the downstream end of any pipe that would otherwise
+            have no manholes, even if it connects to an open branch. By default False.
         """
         # geom columns for manholes
         # id = storage node id, considered identical to manhole id
@@ -1686,6 +1679,7 @@ class DFlowFMModel(Model):
             use_branch_variables=["diameter", "width"],
             id_prefix="manhole_",
             id_suffix="_generated",
+            ensure_pipe_manhole=ensure_pipe_manhole,
         )
         # FIXME Xiaohan: why do we need set_branches here? Because of branches.gui
         # --> add a high level write_gui files same level as write_mesh

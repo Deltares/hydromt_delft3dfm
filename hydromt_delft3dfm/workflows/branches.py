@@ -1228,9 +1228,9 @@ def intersect_lines(gdf1, gdf2):
     Returns
     -------
     - gdf1_cleaned : geopandas.GeoDataFrame
-        Part of gdf1 that intersects with gdf2.
+        Lines from gdf1, split at intersections with gdf2.
     - gdf2_cleaned : geopandas.GeoDataFrame
-        Part of gdf2 that intersects with gdf1.
+        Lines from gdf2, split at intersections with gdf1.
     - points_cleaned : geopandas.GeoDataFrame
         The intersection points between gdf1 and gdf2.
     """
@@ -1258,7 +1258,7 @@ def intersect_lines(gdf1, gdf2):
     points_exploded = union_points.explode().reset_index(drop=True)
 
     # Filter the exploded lines based on the source identifiers
-    gdf1_intersected = lines_exploded[lines_exploded["_from_left"]].drop(
+    gdf1_intersected = lines_exploded[lines_exploded["_from_left"].notna()].drop(
         columns=["_from_left", "_from_right"]
     )
     columns_to_drop = [col for col in gdf1_intersected.columns if col.endswith("_2")]
@@ -1268,7 +1268,7 @@ def intersect_lines(gdf1, gdf2):
     }
     gdf1_cleaned = gdf1_cleaned.rename(columns=columns_to_rename)
 
-    gdf2_intersected = lines_exploded[lines_exploded["_from_right"]].drop(
+    gdf2_intersected = lines_exploded[lines_exploded["_from_right"].notna()].drop(
         columns=["_from_left", "_from_right"]
     )
     columns_to_drop = [col for col in gdf2_intersected.columns if col.endswith("_1")]
