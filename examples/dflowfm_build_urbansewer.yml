@@ -16,6 +16,7 @@ steps:
       runoff_distance: 30.0
       method_cost: length
       pipe_depth: 0.5
+      minimum_pipe_diameter: 0.3
       assumption_rainfall_intensity: 40
       assumption_flow_velocity: 1
       rainfall_stats_fn: gpex
