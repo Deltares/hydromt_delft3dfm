@@ -233,19 +233,20 @@ roughness_manning:
   data_adapter:
     rename:
       frictioncoefficient: roughness_manning
-urbansewernetwork_rivers:
-  data_type: GeoDataFrame
-  uri: urbansewer_data/rivers.geojson
+landuse:
+  data_type: RasterDataset
+  uri: local_data/landuse.tif
   driver:
-    name: pyogrio
+    name: rasterio
     options: {}
   metadata:
-    crs: 32647
-urbansewernetwork_pipes:
-  data_type: GeoDataFrame
-  uri: urbansewer_data/pipes.geojson
+    category: landuse
+    history: temporary landuse within model extent
+    crs: 4326
+gpex:
+  data_type: RasterDataset
+  uri: urbansewer_data/gpex_clip.nc
   driver:
-    name: pyogrio
-    options: {}
+    name: raster_xarray
   metadata:
-    crs: 32647
+    crs: 4326
